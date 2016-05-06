@@ -1,0 +1,131 @@
+html {
+	height: 100vh;
+	width: 100vw;
+}
+
+body{
+	font-family: 'Open Sans', 'Slabo 27px', serif, georgia, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	height: 100vh;
+	min-height: 100vh;
+	width: 100vw;
+}
+
+.fill{
+	height: 100%;
+	min-height: 100%;
+}
+
+.fill-parent{
+	height: inherit;
+}
+
+.page{
+	padding-right: 0px;
+	padding-left: 0px;
+	width: 100vw;
+}
+
+#nav-me{
+	background-color: #FFFFff;
+	opacity: 100%;
+}
+
+#nav-me a{
+	color: #4E4E4E;
+}
+
+.navbar-brand img{
+	width: auto;
+	height: 100%;
+}
+
+#map{
+	height: 90vh;
+}
+
+#map-section{
+	height: 90%;
+}
+
+#offers-list{
+	overflow: auto;
+}
+
+.conn-input{
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+.list-group-item{
+	border-right: 0px;
+	border-left: 0px;
+}
+
+.no-side-padding {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.list-opportunity img{
+	height: 35px;
+	width: 35px;
+}
+
+a{
+	text-decoration: none;
+	color:#E8E52C;
+}
+
+a:hover{
+	text-decoration: none;
+}
+
+.firstColor{
+	color:#25A191;
+}
+
+.secondColor{
+	color:#E8E52C;
+}
+
+.thirdColor{
+	color:#FF1CB5;
+}
+
+.list-opportunity li:hover{
+    background-color: #E8E52C;
+}
+
+.starring{
+	background-color: #E8E52C;
+}
+
+.my-modal-body {
+	color: white;
+	background-image: url('../images/28.jpg');
+	background-color: #C8FFC0;
+}
+
+.pinkow {
+	background-color: #FF1CB5;
+	color: #E8E52C;
+}
+
+.pinkow:hover{
+	background-color: #E8E52C;
+	color: #FF1CB5;
+}
+
+.btn-default {
+	background-color: #25A191;
+	color: #FFC629;
+}
+
+.label-danger {
+	color: #FF1CB5;
+    background-color: #E8E52C;
+}
+
+.favorite {
+	color: #FF1CB5;
+}

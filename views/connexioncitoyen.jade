@@ -1,0 +1,45 @@
+extends ./layout.jade
+block vars
+  - var title = 'Home'
+
+block content
+      #map-section.container-fluid
+        .row
+          .col-md-6.col-md-offset-3
+            .page-header
+              h1
+                | Connexion 
+                small Citoyen
+            if error
+              p.alert.alert-danger ERROR : #{error}
+
+            form#cit_con_form(action='connexioncitoyen', method='post')
+              .input-group.conn-input
+                span#basic-addon1.input-group-addon Nom
+                |               
+                input#lname.form-control(type='text', placeholder='Nom', name='lname', aria-describedby='basic-addon1')
+              |             
+              .input-group.conn-input
+                span#basic-addon1.input-group-addon Mail
+                |               
+                input#mail.form-control(type='email', placeholder='Mail', name='mail', aria-describedby='basic-addon1')
+                |               
+                input(type='submit', style='position: absolute; left: -9999px; width: 1px; height: 1px;', tabindex='-1')
+            |           
+            span#note
+            |           
+            button.btn.btn-default(type='submit', form='cit_con_form') Connexion
+            |           
+            .g-signin2.conn-input(data-onsuccess='onSignIn')
+    // jQuery (necessary for Bootstrap's JavaScript plugins)
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+    // jQuery
+    script(src='javascripts/my-jquery.js')
+    // Include all compiled plugins (below), or include individual files as needed
+    script(src='javascripts/bootstrap.min.js')
+    script(src='/socket.io/socket.io.js')
+    script.
+      var socket = io.connect('http://localhost:3000');
+      socket.on('misss', function(misss){
+      alert('Le serveur vient d\\'envoyer un misss :' + misss.content + ' d\'importance: ' + misss.importance );
+      })
