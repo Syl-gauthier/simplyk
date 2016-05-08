@@ -23,9 +23,16 @@ app.set('view engine', 'jade');
 //connect to mongo
 mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl');
 
+var Organism = mongoose.model('Organism', new Schema({
+	id: ObjectId,
+	oName: String,
+	email: String,
+	favs: [String]//mails des utilisateurs qui ont mis l'opportunité en favori
+}));
+
 app.use(session({
 	cookieName: 'session',
-	secret: 'rcmscgsamfion81152627lolmamparohu,,loui',
+	secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
 	activeDuration: 1500 * 60 * 1000
 }));
 
@@ -37,7 +44,7 @@ app.use(stormpath.init(app, {
 			}
 		},
 		login: {
-			nextUri: "/map",
+			nextUri: "/dashboard",
 			form: {
 				fields: {
 					login: {
@@ -59,11 +66,24 @@ app.use(stormpath.init(app, {
 		customData: true,
 	},
 	postRegistrationHandler: function (account, req, res, next) {
-		console.log('The account has just been registered!');
-		next();
+		var organism = new Organism({
+			oName: account.customData.oname,
+			email: account.email
+		});
+		organism.save(function(err){
+			if(err){
+				var error = 'Something bad happened! Try again!';
+				console.log(error);
+				next();
+			}
+			else{
+				console.log('The account has just been registered!');
+				next();
+		}
+		})
 	},
 	postLoginHandler: function (account, req, res, next) {
-		console.log('User:', account.email, 'just logged in! ');
+		console.log('Organism:', account.customData.oname, 'just logged in! ');
 		next();
 	}
 }));

@@ -24,7 +24,7 @@ var Opp = mongoose.model('Opp', new Schema({
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	res.render('accueil.jade');
+	res.redirect('http://platform.simplyk.org');
 });
 
 /* GET home page. */
@@ -33,20 +33,20 @@ router.get('/user', stormpath.getUser, function(req, res, next) {
 });
 
 router.get('/customData', stormpath.getUser, stormpath.loginRequired, function(req, res, next) {
-	var customData = req.user.getCustomData();
+	var customData = req.user.customData;
 	res.json(customData);
 });
 
-/*GET map page*/
-router.get('/map', stormpath.getUser, stormpath.loginRequired, function(req, res){
-	Opp.find({}, function(err, opps){
+/*GET dashboard page*/
+router.get('/dashboard', stormpath.getUser, stormpath.loginRequired, function(req, res){
+	Opp.find({oName: req.user.customData.oname}, function(err, opps){
 		if(err){
 			console.log(err);
-			res.render('map.jade', {session: req.session});
+			res.render('dashboard.jade', {session: req.session});
 		}
 		//Create opps list
 		else{
-			res.render('map.jade', {opps: opps, session: req.session});
+			res.render('dashboard.jade', {opps: opps, session: req.session});
 		}
 	})
 });
@@ -76,7 +76,7 @@ router.post('/addopp', stormpath.getUser, function(req,res){
 			res.render('addopp.jade', {error: err})
 		}
 		else{
-			res.redirect('/map');
+			res.redirect('/dashboard');
 		}
 	})
 });
@@ -115,11 +115,5 @@ router.post('/addfavopp', stormpath.loginRequired, stormpath.getUser, function(r
 	console.log('out addfavapp');
 	res.end();
 });
-
-router.post('/add', stormpath.loginRequired, stormpath.getUser, function(req,res){
-	console.log('in post'+ req.orgName);
-	res.end();
-	console.log('out addfavapp');
-})
 
 module.exports = router;
