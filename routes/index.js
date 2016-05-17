@@ -25,11 +25,11 @@ var Opp = mongoose.model('Opp', new Schema({
 
 //Google Maps initialization
 var publicConfig = {
-	key: 'AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk',
+	key: 'AIzaSyANe9e2wczal0DBI-UvUtVM2WAEn-cHzwo',
 	stagger_time:1000, // for elevationPath 
-	encode_polylines:false,
+	encode_polylines:false/*,
 	secure:true, // use https 
-	proxy:'http://127.0.0.1:9999' // optional, set a proxy for HTTP requests 
+	proxy:'http://127.0.0.1:9999' // optional, set a proxy for HTTP requests */
 };
 var gmAPI = new GoogleMapsAPI(publicConfig);
 
@@ -74,15 +74,15 @@ router.get('/addopp', /*stormpath.groupsRequired(['organism'], false),*/ functio
 router.post('/addopp', stormpath.getUser, function(req,res){
 	//Transform address into lon/lat
 	console.log('address sent to gmaps: ' + req.body.address)
-	var latlon = codeAddress(req.body.address, function(latlon){
-		console.log(latlon);
+	codeAddress(req.body.address, function(lat, lon){
+		console.log(lat + lon);
 		var opp = new Opp({
 			intitule: req.body.intitule,
 			oName: req.user.customData.oname,
 			nbBenevoles: req.body.nbBenevoles,
 			date: req.body.date,
-			lat: req.body.lat,
-			lon: req.body.lon,
+			lat: lat,
+			lon: lon,
 			mail: req.user.email
 		});
 		opp.save(function(err){
@@ -104,10 +104,11 @@ function codeAddress(address, done) {
 			console.log('geocode error: ');
 			console.log(err);
 		} else {
-			var lat = results[0].geometry.location.lat();
-			var lon = results[0].geometry.location.lon();
+			console.log(result.results[0].geometry.location);
+			var lat = result.results[0].geometry.location.lat;
+			var lon = result.results[0].geometry.location.lng;
 			console.log('latitude result: ' + lat)
-			return done({latitude: lat, longitude: lon});
+			return done(lat, lon);
 		}
 	});
 }
