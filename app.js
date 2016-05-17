@@ -37,6 +37,15 @@ app.use(session({
 }));
 
 app.use(stormpath.init(app, {
+	// WARNING: USING THIS ONLY DURING TEST PROCESS, DON'T PUT IT IN PRODUCTION IN HEROKU
+	apiKey: {
+		id: '6PUTYR1PU3WZ7BW7PUSH8D8CF',
+		secret: 'wM6YrTbfIU4jeJ/XpbhTuevsOoUBMoaeYUAXJOGklG0'
+	},
+	application: {
+		href: `https://api.stormpath.com/v1/applications/4VwVIc6IoowGSfAE594Rv7`
+	},
+	//WARNING END
 	web: {
 		register: {
 			form: {
@@ -79,7 +88,7 @@ app.use(stormpath.init(app, {
 			else{
 				console.log('The account has just been registered!');
 				next();
-		}
+			}
 		})
 	},
 	postLoginHandler: function (account, req, res, next) {
