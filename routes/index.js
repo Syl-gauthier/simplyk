@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var stormpath = require('express-stormpath');
 var mongoose = require('mongoose');
+var GoogleMapsAPI = require('googlemaps');
 var stormpathGroupsRequired = require('../middlewares/stormpathGroupsRequired').stormpathGroupsRequired;
 
 var Schema = mongoose.Schema;
@@ -21,6 +22,16 @@ var Opp = mongoose.model('Opp', new Schema({
 	mail: String,
 	favs: [String]//mails des utilisateurs qui ont mis l'opportunité en favori
 }));
+
+//Google Maps initialization
+var publicConfig = {
+	key: 'AIzaSyANe9e2wczal0DBI-UvUtVM2WAEn-cHzwo',
+	stagger_time:1000, // for elevationPath 
+	encode_polylines:false/*,
+	secure:true, // use https 
+	proxy:'http://127.0.0.1:9999' // optional, set a proxy for HTTP requests */
+};
+var gmAPI = new GoogleMapsAPI(publicConfig);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -61,59 +72,45 @@ router.get('/addopp', /*stormpath.groupsRequired(['organism'], false),*/ functio
 });
 
 router.post('/addopp', stormpath.getUser, function(req,res){
-	var opp = new Opp({
-		intitule: req.body.intitule,
-		oName: req.user.fullName,
-		nbBenevoles: req.body.nbBenevoles,
-		date: req.body.date,
-		lat: req.body.lat,
-		lon: req.body.lon,
-		mail: req.user.email
-	});
-	opp.save(function(err){
-		if(err){
-			var error = 'Something bad happened! Try again!';
-			res.render('addopp.jade', {error: err})
-		}
-		else{
-			res.redirect('/dashboard');
-		}
-	})
-});
-
-router.post('/addfavopp', stormpath.loginRequired, stormpath.getUser, function(req,res){
-	console.log('orgName: ' + req.body.orgName + ' and intitule: ' + req.body.intitule);
-	Opp.findOne({'oName': req.body.orgName, 'intitule': req.body.intitule}, 'favs',function(err, opps){
-		if (err) return handleError(err);
-		//Create opps list
-		console.log('opps: '+opps + 'and opps.fav: ' + opps.favs);
-		opps.favs.addToSet(req.user.email);
-		opps.save(function(err){
+	//Transform address into lon/lat
+	console.log('address sent to gmaps: ' + req.body.address)
+	codeAddress(req.body.address, function(lat, lon){
+		console.log(lat + lon);
+		var opp = new Opp({
+			intitule: req.body.intitule,
+			oName: req.user.customData.oname,
+			nbBenevoles: req.body.nbBenevoles,
+			date: req.body.date,
+			lat: lat,
+			lon: lon,
+			mail: req.user.email
+		});
+		opp.save(function(err){
 			if(err){
-				console(err);
+				var error = 'Something bad happened! Try again!';
+				res.render('addopp.jade', {error: err})
 			}
 			else{
+				res.redirect('/dashboard');
 			}
 		});
+
 	});
-	if(req.user.customData.favopps){
-		req.user.customData.favopps.push(req.body.orgName + ' ' + req.body.intitule);
-	}
-	else{
-		req.user.customData.favopps = [];
-		req.user.customData.favopps.push(req.body.orgName + ' ' + req.body.intitule);
-	}
-	req.user.customData.save(function (err) {
+});
+
+function codeAddress(address, done) {
+	gmAPI.geocode( {'address': address}, function(err, result) {
 		if (err) {
-			res.status(400).end('Oops!  There was an error: ' + err.userMessage);
-		}else{
-			console.log('Name was changed!');
+			console.log('geocode error: ');
+			console.log(err);
+		} else {
+			console.log(result.results[0].geometry.location);
+			var lat = result.results[0].geometry.location.lat;
+			var lon = result.results[0].geometry.location.lng;
+			console.log('latitude result: ' + lat)
+			return done(lat, lon);
 		}
 	});
-	console.log('before addfavapp');
-	console.log('out addfavapp');
-	console.log('out addfavapp');
-	res.end();
-});
+}
 
 module.exports = router;

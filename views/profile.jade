@@ -13,23 +13,17 @@ block content
         |           
         ul.list-group
           li.list-group-item
-            | Prénom: #{user.givenName}
+            | Nom de l'organisme: #{user.customData.oname}
             small
-          |             
           li.list-group-item
-            | Nom: #{user.surname}
+            | Nom du contact: #{user.fullName}
             small
-          |             
-          li.list-group-item
-            | Âge: #{user.customData.age}
-            small
-          |             
           li.list-group-item
             | Adresse mail: #{user.email}
             small
       .col-md-4.col-md-offset-2
         .page-header
-          h1 Mes favoris
+          h1 Mes mandats passés
         if favs
           #offers-list.no-side-padding
             ul.list-group.list-opportunity
