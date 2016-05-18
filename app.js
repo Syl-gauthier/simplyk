@@ -25,8 +25,10 @@ mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/herok
 
 var Organism = mongoose.model('Organism', new Schema({
 	id: ObjectId,
-	oName: String,
-	email: String,
+	name: String,
+	cName: String,
+	phone: String,
+	mail: String,
 	favs: [String]//mails des utilisateurs qui ont mis l'opportunité en favori
 }));
 
@@ -35,6 +37,8 @@ app.use(session({
 	secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
 	activeDuration: 1500 * 60 * 1000
 }));
+
+
 
 app.use(stormpath.init(app, {
 	// WARNING: USING THIS ONLY DURING TEST PROCESS, DON'T PUT IT IN PRODUCTION IN HEROKU
@@ -49,22 +53,20 @@ app.use(stormpath.init(app, {
 	web: {
 		register: {
 			form: {
-				fieldOrder: ['email', 'password' ]
-			}
-		},
-		login: {
-			nextUri: "/dashboard",
-			form: {
 				fields: {
-					login: {
-						label: 'Your Username or Mail',
-						placeholder: 'email@trustyapp.com'
-					},
-					password: {
-						label: 'Your password'
+					oname: {
+						enabled: true,
+						label: 'Organism Name',
+						name:'oname',
+						required: true,
+						type: 'text'
 					}
 				}
 			}
+		},
+		login: {
+			enabled: true,
+			nextUri: "/dashboard"
 		},
 		logout: {
 			enabled: true,
@@ -76,11 +78,13 @@ app.use(stormpath.init(app, {
 	},
 	postRegistrationHandler: function (account, req, res, next) {
 		var organism = new Organism({
-			oName: account.customData.oname,
-			email: account.email
+			name: account.oname,
+			cName: account.givenName + ' ' +account.surname,
+			mail: account.email
 		});
 		organism.save(function(err){
 			if(err){
+				console.log(err);
 				var error = 'Something bad happened! Try again!';
 				console.log(error);
 				next();
@@ -90,12 +94,9 @@ app.use(stormpath.init(app, {
 				next();
 			}
 		})
-	},
-	postLoginHandler: function (account, req, res, next) {
-		console.log('Organism:', account.customData.oname, 'just logged in! ');
-		next();
 	}
 }));
+
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

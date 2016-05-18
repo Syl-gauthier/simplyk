@@ -20,6 +20,7 @@ var Opp = mongoose.model('Opp', new Schema({
 	lat: Number,
 	lon: Number,
 	mail: String,
+	address: String,
 	favs: [String]//mails des utilisateurs qui ont mis l'opportunité en favori
 }));
 
