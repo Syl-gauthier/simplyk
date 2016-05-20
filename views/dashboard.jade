@@ -21,8 +21,6 @@ block content
                     a.firstColor= val.intitule
                     p= 'Pour ' + val.nbBenevoles + ' bénévoles'
                   div.media-right.media-middle
-                    .i.icon.icon-star.icon-2x.favorite
-                  div.media-right.media-middle
                     button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target="#myModal") Informations
                     #myModal.modal.fade(tabindex='-1', role='dialog')
                       .modal-dialog
@@ -42,8 +40,7 @@ block content
                                 a(href='mailto:'+val.mail+'?subject=Participation%20à%20:%20'+val.intitule) Contactez
           .col-md-5.col-md-offset-2.no-side-padding
             h1.page-header Mes actions
-            button.btn.btn-success-outline.pinkow
-              a(href='addopp') Ajouter un mandat !
+            button.btn.btn-success-outline.pinkow(onclick="location.href='addopp';") Ajouter un mandat !
 
 
 block footscript

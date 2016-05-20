@@ -16,7 +16,7 @@ router.get('/', stormpath.getUser, function(req, res){
 router.post('/', stormpath.getUser, function(req,res){
 	//Transform address into lon/lat
 	console.log('address sent to gmaps: ' + req.body.address)
-	Organism.findOne({'id': req.user.customData.id}, 'name', function(err, organism){
+	Organism.findOne({'_id': req.user.customData.id}, 'name', function(err, organism){
 		if (err){
 			res.render('addopp.jade', {error: err})
 		}

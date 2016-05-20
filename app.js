@@ -108,6 +108,7 @@ app.use(stormpath.init(app, {
 	},
 	postRegistrationHandler: function(account, req, res, next){
 		account.customData.id = req.session.organism_id;
+		account.customData.save();
 		console.log('Organism:', account.customData.id, 'has just been registered! ');
 		next();
 	},

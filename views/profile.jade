@@ -13,15 +13,15 @@ block content
         |           
         ul.list-group
           li.list-group-item
-            | Prénom: #{user.givenName}
+            | Nom de l'organisme: #{user.customData.name}
             small
           |             
           li.list-group-item
-            | Nom: #{user.surname}
+            | Prénom du contact: #{user.givenName}
             small
           |             
           li.list-group-item
-            | Âge: #{user.customData.age}
+            | Nom du contact: #{user.surname}
             small
           |             
           li.list-group-item
