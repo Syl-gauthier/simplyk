@@ -13,6 +13,7 @@ var users = require('./routes/users');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
+var Organism = require('./models/organism_model.js');
 
 
 var app = express();
@@ -23,13 +24,6 @@ app.set('view engine', 'jade');
 //connect to mongo
 mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl');
 
-var Organism = mongoose.model('Organism', new Schema({
-	id: ObjectId,
-	oName: String,
-	email: String,
-	favs: [String]//mails des utilisateurs qui ont mis l'opportunité en favori
-}));
-
 app.use(session({
 	cookieName: 'session',
 	secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
@@ -37,10 +31,27 @@ app.use(session({
 }));
 
 app.use(stormpath.init(app, {
+	// WARNING: USING THIS ONLY DURING TEST PROCESS, DON'T PUT IT IN PRODUCTION IN HEROKU
+	apiKey: {
+		id: '6PUTYR1PU3WZ7BW7PUSH8D8CF',
+		secret: 'wM6YrTbfIU4jeJ/XpbhTuevsOoUBMoaeYUAXJOGklG0'
+	},
+	application: {
+		href: `https://api.stormpath.com/v1/applications/4VwVIc6IoowGSfAE594Rv7`
+	},
+	//WARNING END
 	web: {
 		register: {
 			form: {
-				fieldOrder: ['email', 'password' ]
+				fields: {
+					name: {
+						enabled: true,
+						label: 'Organism Name',
+						name: 'name',
+						required: true,
+						type: 'text'
+					}
+				}
 			}
 		},
 		login: {
@@ -48,7 +59,7 @@ app.use(stormpath.init(app, {
 			form: {
 				fields: {
 					login: {
-						label: 'Your Username or Mail',
+						label: 'Your Username or email',
 						placeholder: 'email@trustyapp.com'
 					},
 					password: {
@@ -65,25 +76,40 @@ app.use(stormpath.init(app, {
 	expand: {
 		customData: true,
 	},
-	postRegistrationHandler: function (account, req, res, next) {
+	preRegistrationHandler: function (formData, req, res, next) {
 		var organism = new Organism({
-			oName: account.customData.oname,
-			email: account.email
+			name: formData.name,
+			email: formData.email
 		});
 		organism.save(function(err){
 			if(err){
-				var error = 'Something bad happened! Try again!';
-				console.log(error);
-				next();
+				var error = 'Something bad happened! Try again! Click previous !';
+				console.log('@ organism.save : '+err);
+				res.json({error: error});
 			}
 			else{
-				console.log('The account has just been registered!');
-				next();
-		}
+				Organism.findOne({'name': formData.name, 'email': formData.email}, 'id', function(err, organism){
+					if(err){
+						var error = 'Something bad happened! Try again! Click previous !';
+						console.log('@ organism.findone : '+err);
+						res.json({error: error + '    ' + err});
+					}
+					else{
+						req.session.organism_id = organism._id;
+						console.log('organism.id = ' + organism._id);
+						next();
+					}
+				})
+			}
 		})
 	},
+	postRegistrationHandler: function(account, req, res, next){
+		account.customData.id = req.session.organism_id;
+		console.log('Organism:', account.customData.id, 'has just been registered! ');
+		next();
+	},
 	postLoginHandler: function (account, req, res, next) {
-		console.log('Organism:', account.customData.oname, 'just logged in! ');
+		console.log('Organism:', account.customData.id, 'just logged in! ');
 		next();
 	}
 }));
