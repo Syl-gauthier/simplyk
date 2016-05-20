@@ -8,6 +8,8 @@ block content
         .row.fill
           #offers-list.col-md-4.col-md-offset-1.no-side-padding
             h1.page-header Mes mandats
+            if error
+              p.alert.alert-danger #{error}
             ul.list-group.list-opportunity
               each val, index in opps
                 li.list-group-item
