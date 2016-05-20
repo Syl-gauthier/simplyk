@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var stormpath = require('express-stormpath');
 var mongoose = require('mongoose');
+var GoogleMapsAPI = require('googlemaps');
 var stormpathGroupsRequired = require('../middlewares/stormpathGroupsRequired').stormpathGroupsRequired;
 
 
@@ -12,6 +13,15 @@ var Organism = require('../models/organism_model.js');
 
 var app = express();
 
+//Google Maps initialization
+var publicConfig = {
+	key: 'AIzaSyANe9e2wczal0DBI-UvUtVM2WAEn-cHzwo',
+	stagger_time:1000, // for elevationPath 
+	encode_polylines:false/*,
+	secure:true, // use https 
+	proxy:'http://127.0.0.1:9999' // optional, set a proxy for HTTP requests */
+};
+var gmAPI = new GoogleMapsAPI(publicConfig);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -52,33 +62,51 @@ router.get('/addopp', /*stormpath.groupsRequired(['organism'], false),*/ functio
 });
 
 router.post('/addopp', stormpath.getUser, function(req,res){
+	//Transform address into lon/lat
+	console.log('address sent to gmaps: ' + req.body.address)
 	Organism.findOne({'id': req.user.customData.id}, 'name', function(err, organism){
 		if (err){
 			res.render('addopp.jade', {error: err})
 		}
 		else{
-			var opp = new Opp({
-				intitule: req.body.intitule,
-				oName: organism.name,
-				nbBenevoles: req.body.nbBenevoles,
-				adress: req.body.address,
-				date: req.body.date,
-				lat: req.body.lat,
-				lon: req.body.lon,
-				mail: req.user.email
+			codeAddress(req.body.address, function(lat, lon){
+				var opp = new Opp({
+					intitule: req.body.intitule,
+					oName: organism.name,
+					nbBenevoles: req.body.nbBenevoles,
+					adress: req.body.address,
+					date: req.body.date,
+					lat: lat,
+					lon: lon,
+					mail: req.user.email
+				});
+				opp.save(function(err){
+					if(err){
+						var error = 'Something bad happened! Try again!';
+						res.render('addopp.jade', {error: err})
+					}
+					else{
+						res.redirect('/dashboard');
+					}
+				});
 			});
-			opp.save(function(err){
-				if(err){
-					var error = 'Something bad happened! Try again!';
-					res.render('addopp.jade', {error: err})
-				}
-				else{
-					res.redirect('/dashboard');
-				}
-			})
 		}
 	})
 });
 
+function codeAddress(address, done) {
+	gmAPI.geocode( {'address': address}, function(err, result) {
+		if (err) {
+			console.log('geocode error: ');
+			console.log(err);
+		} else {
+			console.log(result.results[0].geometry.location);
+			var lat = result.results[0].geometry.location.lat;
+			var lon = result.results[0].geometry.location.lng;
+			console.log('latitude result: ' + lat)
+			return done(lat, lon);
+		}
+	});
+};
 
 module.exports = router;
