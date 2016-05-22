@@ -18,6 +18,8 @@ $RECYCLE.BIN/
 *.lnk
 *.log
 
+node_modules/
+
 # =========================
 # Operating System Files
 # =========================

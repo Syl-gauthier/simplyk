@@ -8,11 +8,15 @@ var stormpath = require('express-stormpath');
 var mongoose = require('mongoose');
 var session = require('client-sessions');
 
+//Routes files
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var addopp = require('./routes/addopp');
+var profile = require('./routes/profile');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
+var Organism = require('./models/organism_model.js');
 
 
 var app = express();
@@ -20,17 +24,10 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+
 //connect to mongo
 mongoose.connect('mongodb://localhost/test');
-
-var Organism = mongoose.model('Organism', new Schema({
-	id: ObjectId,
-	name: String,
-	cName: String,
-	phone: String,
-	mail: String,
-	favs: [String]//mails des utilisateurs qui ont mis l'opportunité en favori
-}));
+//mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
 
 app.use(session({
 	cookieName: 'session',
@@ -38,28 +35,40 @@ app.use(session({
 	activeDuration: 1500 * 60 * 1000
 }));
 
-
-
 app.use(stormpath.init(app, {
-	// WARNING: USING THIS ONLY DURING TEST PROCESS, DON'T PUT IT IN PRODUCTION IN HEROKU
-	apiKey: {
-		id: '6PUTYR1PU3WZ7BW7PUSH8D8CF',
-		secret: 'wM6YrTbfIU4jeJ/XpbhTuevsOoUBMoaeYUAXJOGklG0'
-	},
-	application: {
-		href: "https://api.stormpath.com/v1/applications/4VwVIc6IoowGSfAE594Rv7"
-	},
+	// // WARNING: USING THIS ONLY DURING TEST PROCESS, DON'T PUT IT IN PRODUCTION IN HEROKU
+	// apiKey: {
+	// 	id: '6PUTYR1PU3WZ7BW7PUSH8D8CF',
+	// 	secret: 'wM6YrTbfIU4jeJ/XpbhTuevsOoUBMoaeYUAXJOGklG0'
+	// },
+	// application: {
+	// 	href: "https://api.stormpath.com/v1/applications/4VwVIc6IoowGSfAE594Rv7"
+	// },
 	//WARNING END
 	web: {
 		register: {
 			form: {
 				fields: {
-					oname: {
+					name: {
 						enabled: true,
 						label: 'Organism Name',
-						name:'oname',
+						name: 'name',
 						required: true,
 						type: 'text'
+					}
+				}
+			}
+		},
+		login: {
+			nextUri: "/dashboard",
+			form: {
+				fields: {
+					login: {
+						label: 'Your Username or email',
+						placeholder: 'email@trustyapp.com'
+					},
+					password: {
+						label: 'Your password'
 					}
 				}
 			}
@@ -76,24 +85,42 @@ app.use(stormpath.init(app, {
 	expand: {
 		customData: true,
 	},
-	postRegistrationHandler: function (account, req, res, next) {
+	preRegistrationHandler: function (formData, req, res, next) {
 		var organism = new Organism({
-			name: account.oname,
-			cName: account.givenName + ' ' +account.surname,
-			mail: account.email
+			name: formData.name,
+			email: formData.email
 		});
 		organism.save(function(err){
 			if(err){
-				console.log(err);
-				var error = 'Something bad happened! Try again!';
-				console.log(error);
-				next();
+				var error = 'Something bad happened! Try again! Click previous !';
+				console.log('@ organism.save : '+err);
+				res.json({error: error});
 			}
 			else{
-				console.log('The account has just been registered!');
-				next();
+				Organism.findOne({'name': formData.name, 'email': formData.email}, 'id', function(err, organism){
+					if(err){
+						var error = 'Something bad happened! Try again! Click previous !';
+						console.log('@ organism.findone : '+err);
+						res.json({error: error + '    ' + err});
+					}
+					else{
+						req.session.organism_id = organism._id;
+						console.log('organism.id = ' + organism._id);
+						next();
+					}
+				})
 			}
 		})
+	},
+	postRegistrationHandler: function(account, req, res, next){
+		account.customData.id = req.session.organism_id;
+		account.customData.save();
+		console.log('Organism:', account.customData.id, 'has just been registered! ');
+		next();
+	},
+	postLoginHandler: function (account, req, res, next) {
+		console.log('Organism:', account.customData.id, 'just logged in! ');
+		next();
 	}
 }));
 
@@ -108,6 +135,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/addopp', addopp);
+app.use('/profile', profile);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

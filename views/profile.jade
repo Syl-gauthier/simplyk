@@ -10,13 +10,15 @@ block content
           h1
             | Mon profil 
             small
-        |           
         ul.list-group
           li.list-group-item
-            | Nom de l'organisme: #{user.customData.oname}
+            | Nom de l'organisme: #{user.customData.name}
             small
           li.list-group-item
-            | Nom du contact: #{user.fullName}
+            | Prénom du contact: #{user.givenName}
+            small
+          li.list-group-item
+            | Nom du contact: #{user.surname}
             small
           li.list-group-item
             | Adresse mail: #{user.email}

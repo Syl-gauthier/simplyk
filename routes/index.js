@@ -7,21 +7,12 @@ var stormpathGroupsRequired = require('../middlewares/stormpathGroupsRequired').
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
+var Opp = require('../models/opp_model.js');
 
 var app = express();
 
 var Opp = require('../models/opp_model.js');
 var User = require('../models/user_model.js');
-
-//Google Maps initialization
-var publicConfig = {
-	key: 'AIzaSyANe9e2wczal0DBI-UvUtVM2WAEn-cHzwo',
-	stagger_time:1000, // for elevationPath
-	encode_polylines:false/*,
-	secure:true, // use https
-	proxy:'http://127.0.0.1:9999' // optional, set a proxy for HTTP requests */
-};
-var gmAPI = new GoogleMapsAPI(publicConfig);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -40,55 +31,16 @@ router.get('/customData', stormpath.getUser, stormpath.loginRequired, function(r
 
 /*GET dashboard page*/
 router.get('/dashboard', stormpath.getUser, stormpath.loginRequired, function(req, res){
-	Opp.find({oName: req.user.customData.oname}, function(err, opps){
+	Opp.find({oName: req.user.customData.name}, function(err, opps){
 		if(err){
 			console.log(err);
-			res.render('dashboard.jade', {session: req.session});
+			res.render('dashboard.jade', {session: req.session, error: err});
 		}
 		//Create opps list
 		else{
       console.log(opps.toString());
 			res.render('dashboard.jade', {opps: opps, session: req.session});
 		}
-	});
-});
-
-router.get('/profile', stormpath.getUser, stormpath.loginRequired, function(req,res){
-	console.log(req.user.customData);
-	res.render('profile.jade', {session: req.session, favs: req.user.customData.favopps});
-});
-
-router.get('/addopp', /*stormpath.groupsRequired(['organism'], false),*/ function(req, res){
-	res.render('addopp.jade');
-});
-
-router.post('/addopp', stormpath.getUser, function(req,res){
-	//Transform address into lon/lat
-	console.log('address sent to gmaps: ' + req.body.address)
-	codeAddress(req.body.address, function(lat, lon){
-		console.log(lat + lon);
-
-		var opp = new Opp({
-			intitule: req.body.intitule,
-			oName: req.user.customData.oname,
-			nbBenevoles: req.body.nbBenevoles,
-			date: req.body.date,
-      venue: req.body.address,
-			lat: lat,
-			lon: lon,
-			mail: req.user.email
-		});
-
-		opp.save(function(err){
-			if(err){
-				var error = 'Something bad happened! Try again!';
-				res.render('addopp.jade', {error: err})
-			}
-			else{
-				res.redirect('/dashboard');
-			}
-		});
-
 	});
 });
 
@@ -133,20 +85,5 @@ router.post('/getOppUsers', function(req, res){
 		}
 	});
 });
-
-function codeAddress(address, done) {
-	gmAPI.geocode( {'address': address}, function(err, result) {
-		if (err) {
-			console.log('geocode error: ');
-			console.log(err);
-		} else {
-			console.log(result.results[0].geometry.location);
-			var lat = result.results[0].geometry.location.lat;
-			var lon = result.results[0].geometry.location.lng;
-			console.log('latitude result: ' + lat)
-			return done(lat, lon);
-		}
-	});
-}
 
 module.exports = router;
