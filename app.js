@@ -21,7 +21,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 //connect to mongo
-mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl');
+mongoose.connect('mongodb://localhost/test');
 
 var Organism = mongoose.model('Organism', new Schema({
 	id: ObjectId,
@@ -47,7 +47,7 @@ app.use(stormpath.init(app, {
 		secret: 'wM6YrTbfIU4jeJ/XpbhTuevsOoUBMoaeYUAXJOGklG0'
 	},
 	application: {
-		href: `https://api.stormpath.com/v1/applications/4VwVIc6IoowGSfAE594Rv7`
+		href: "https://api.stormpath.com/v1/applications/4VwVIc6IoowGSfAE594Rv7"
 	},
 	//WARNING END
 	web: {
