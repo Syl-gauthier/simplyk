@@ -25,13 +25,16 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 //connect to mongo
-mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl');
+mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
+
 
 app.use(session({
 	cookieName: 'session',
 	secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
 	activeDuration: 1500 * 60 * 1000
 }));
+
+
 
 app.use(stormpath.init(app, {
 	// WARNING: USING THIS ONLY DURING TEST PROCESS, DON'T PUT IT IN PRODUCTION IN HEROKU
@@ -70,6 +73,10 @@ app.use(stormpath.init(app, {
 					}
 				}
 			}
+		},
+		login: {
+			enabled: true,
+			nextUri: "/dashboard"
 		},
 		logout: {
 			enabled: true,
@@ -117,6 +124,7 @@ app.use(stormpath.init(app, {
 		next();
 	}
 }));
+
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

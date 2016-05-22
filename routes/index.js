@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var stormpath = require('express-stormpath');
 var mongoose = require('mongoose');
+var GoogleMapsAPI = require('googlemaps');
 var stormpathGroupsRequired = require('../middlewares/stormpathGroupsRequired').stormpathGroupsRequired;
 
 var Schema = mongoose.Schema;
@@ -9,7 +10,6 @@ var ObjectId = Schema.ObjectId;
 var Opp = require('../models/opp_model.js');
 
 var app = express();
-
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -36,9 +36,8 @@ router.get('/dashboard', stormpath.getUser, stormpath.loginRequired, function(re
 		//Create opps list
 		else{
 			res.render('dashboard.jade', {opps: opps, session: req.session});
-		}
+		};
 	});
 });
-
 
 module.exports = router;

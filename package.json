@@ -1,5 +1,5 @@
 {
-  "name": "simplyk",
+  "name": "simplyk-org",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -14,7 +14,7 @@
     "express-stormpath": "^3.1.2",
     "googlemaps": "^1.6.0",
     "jade": "~1.11.0",
-    "mongoose": "^4.4.12",
+    "mongoose": "^4.4.17",
     "morgan": "~1.6.1",
     "serve-favicon": "~2.3.0"
   },
