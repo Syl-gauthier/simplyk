@@ -31,6 +31,8 @@ router.get('/customData', stormpath.getUser, stormpath.loginRequired, function(r
 
 /*GET dashboard page*/
 router.get('/dashboard', stormpath.getUser, stormpath.loginRequired, function(req, res){
+  console.log(req.user.customData);
+
 	Opp.find({oName: req.user.customData.name}, function(err, opps){
 		if(err){
 			console.log(err);
