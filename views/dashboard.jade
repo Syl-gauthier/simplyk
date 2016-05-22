@@ -10,7 +10,7 @@ block content
             h1.page-header Mes mandats
             ul.list-group.list-opportunity
               each val, index in opps
-                li.list-group-item(id= val.intitule)
+                li.list-group-item(id= val._id)
                   div.media-left.media-middle
                     a(href='profile')
                       img.media-object(src='images/clouds.jpg')
@@ -20,8 +20,8 @@ block content
                     p= 'Adresse: '+val.venue
                     p= val.users.length+' people applied'
                   div.media-right.media-middle
-                    #info-button.button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target="#myModal") Informations
-                    #myModal.modal.fade(tabindex='-1', role='dialog')
+                    button.info-button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+val._id) Informations
+                    div(tabindex='-1', role='dialog', class= 'modal fade '+val._id)
                       .modal-dialog
                           .modal-content
                             .modal-header
@@ -32,7 +32,7 @@ block content
                               p= 'Date: '+ val.date
                               p= 'Pour ' + val.nbBenevoles + ' bénévoles'
                               p= 'Adresse: '+ val.venue
-                              p= 'Uses:'
+                              p= 'Applicants:'
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Close
                               button.btn.btn-primary.pinkow(type='button')
@@ -53,13 +53,18 @@ block footscript
 
   //ajax call to get users data of a specific Opp
   script.
-    $("#info-button").click(function(){
-      parent_li = $("#info-button").closest("li");
-      console.log(parent_li); // .attr('id')
-      $.post('/getOppUsers', {intitule: parent_li.attr('id')}, function(data){
-        console.log(data);
+    //Each info-button has a click event listener
+    $(".info-button").click(function(){
+      var button_clicked = this;
 
+      parent_li = $(this).closest("li");
+      console.log(parent_li);
+      console.log(parent_li.attr('id'));
+
+      $.post('/getOppUsers', {opp_id: parent_li.attr('id')}, function(data){
+        console.log(data);
         //Add data to the pop up .modal-body.my-modal-body
-        parent_li.find(".modal-body.my-modal-body").append("<p>"+data+"<p>");
+        console.log(parent_li.find(".my-modal-body"));
+        parent_li.find(".my-modal-body").append("<p>"+data+"<p>");
       });
     });

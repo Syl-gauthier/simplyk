@@ -4,7 +4,6 @@ var ObjectId = Schema.ObjectId;
 
 var User = mongoose.model('User', new Schema({
 	_id: ObjectId,
-  id: Number, //To remove
 	name: String,
 	email: String
 }));

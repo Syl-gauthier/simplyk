@@ -95,33 +95,32 @@ router.post('/addopp', stormpath.getUser, function(req,res){
 //for ajax call only (for now)
 //Get users info from an opp intitule
 router.post('/getOppUsers', function(req, res){
-  console.log("body" + req.body);
+  console.log("opp_id: " + req.body.opp_id);
 
-  //Need to find by Id but it is enough for now
-  Opp.findOne({intitule: req.body.intitule}, function(err, opp){
+  Opp.findById(req.body.opp_id, function(err, opp){
 		if(err){
 			console.log(err);
       res.write(err);
       res.end();
 		}
-		//Create opps list
 		else{
-      console.log(req.body);
       console.log(opp.toString());
 
       //Extract ids
       var extract_ids = function(users_array){
         user_ids = [];
-        users = opp.users
+        users = users_array;
         for(var i = 0; i < users_array.length; i++)
         {
           user_ids.push(users_array[i].id);
         }
-        console.log(user_ids);
+        console.log("user_ids: "+user_ids.toString());
         return user_ids;
       };
 
-      User.find({id: {$in: extract_ids(opp.users)}}, function(err, users_in_opp){
+      User.find({_id: {$in: extract_ids(opp.users)}}, function(err, users_in_opp){
+        if(err) console.log(error);
+
         console.log(users_in_opp.toString());
         if(users_in_opp){
           res.write(users_in_opp.toString());
