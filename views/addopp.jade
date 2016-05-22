@@ -33,7 +33,7 @@ block footscript
 	script.
 		var input;
 		function initAutocomplete(){
-		input = (document.getElementById('address'));
-		var autocomplete = new google.maps.places.Autocomplete(input);
+			input = (document.getElementById('address'));
+			var autocomplete = new google.maps.places.Autocomplete(input);
 		}
 	script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&signed_in=true&libraries=places&callback=initAutocomplete" async defer)

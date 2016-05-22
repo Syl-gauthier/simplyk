@@ -19,7 +19,7 @@ block content
                   div.media-body
                     h4.media-heading= val.intitule
                     p= 'Pour ' + val.nbBenevoles + ' bénévoles'
-                    p= 'Adresse: '+val.venue
+                    p= 'Adresse: '+val.address
                     p= val.users.length+' people applied'
                   div.media-right.media-middle
                     button.info-button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+val._id) Informations
@@ -33,8 +33,8 @@ block content
                             .modal-body.my-modal-body
                               p= 'Date: '+ val.date
                               p= 'Pour ' + val.nbBenevoles + ' bénévoles'
-                              p= 'Adresse: '+ val.venue
-                              p= 'Applicants:'
+                              p= 'Adresse: '+ val.address
+                              p.applicants= 'Applicants:'
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Close
                               button.btn.btn-primary.pinkow(type='button')
@@ -57,15 +57,13 @@ block footscript
     //Each info-button has a click event listener
     $(".info-button").click(function(){
       var button_clicked = this;
-
       parent_li = $(this).closest("li");
-      console.log(parent_li);
-      console.log(parent_li.attr('id'));
-
+      console.log('id attribute from parent_li :  ' + parent_li.attr('id'));
       $.post('/getOppUsers', {opp_id: parent_li.attr('id')}, function(data){
-        console.log(data);
+        console.log('data from post : ');
+        console.log('data from post : ' + data);
         //Add data to the pop up .modal-body.my-modal-body
-        console.log(parent_li.find(".my-modal-body"));
-        parent_li.find(".my-modal-body").append("<p>"+data+"<p>");
+        console.log(parent_li.find(".my-modal-body").children(".applicants"));
+        parent_li.find(".my-modal-body").children(".applicants").replaceWith("<p>"+data+"<p>");
       });
     });
