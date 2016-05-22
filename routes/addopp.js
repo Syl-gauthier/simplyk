@@ -28,6 +28,7 @@ router.post('/', stormpath.getUser, function(req,res){
 					nbBenevoles: req.body.nbBenevoles,
 					adress: req.body.address,
 					date: req.body.date,
+          venue: String,
 					lat: lat,
 					lon: lon,
 					mail: req.user.email

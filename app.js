@@ -24,17 +24,16 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-//connect to mongo
-mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
 
+//connect to mongo
+//mongoose.connect('mongodb://localhost/test');
+mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
 
 app.use(session({
 	cookieName: 'session',
 	secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
 	activeDuration: 1500 * 60 * 1000
 }));
-
-
 
 app.use(stormpath.init(app, {
 	// WARNING: USING THIS ONLY DURING TEST PROCESS, DON'T PUT IT IN PRODUCTION IN HEROKU
@@ -43,9 +42,8 @@ app.use(stormpath.init(app, {
 		secret: 'wM6YrTbfIU4jeJ/XpbhTuevsOoUBMoaeYUAXJOGklG0'
 	},
 	application: {
-		href: `https://api.stormpath.com/v1/applications/4VwVIc6IoowGSfAE594Rv7`
+		href: "https://api.stormpath.com/v1/applications/4VwVIc6IoowGSfAE594Rv7"
 	},
-	//WARNING END
 	web: {
 		register: {
 			form: {

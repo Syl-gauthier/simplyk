@@ -2,10 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
-var Organism = mongoose.model('Organism', new Schema({
-	id: ObjectId,
+var User = mongoose.model('User', new Schema({
+	_id: ObjectId,
 	name: String,
 	email: String
 }));
 
-module.exports = Organism;
+module.exports = User;
