@@ -1,0 +1,7 @@
+div
+  each application, index in applications
+    p
+      | #{application.applicant.name}, email:
+      | #{application.applicant.email}, Status: #{application.status}
+      | , Story: #{application.story}
+    p= '--'

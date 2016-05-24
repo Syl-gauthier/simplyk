@@ -4,6 +4,7 @@ var stormpath = require('express-stormpath');
 var mongoose = require('mongoose');
 var GoogleMapsAPI = require('googlemaps');
 var stormpathGroupsRequired = require('../middlewares/stormpathGroupsRequired').stormpathGroupsRequired;
+var jade = require('jade');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -50,40 +51,15 @@ router.get('/dashboard', stormpath.getUser, stormpath.loginRequired, function(re
 router.post('/getOppUsers', function(req, res){
 	console.log("opp_id: " + req.body.opp_id);
 
-	Opp.findById(req.body.opp_id, function(err, opp){
+	Opp.findById(req.body.opp_id).populate("applications.applicant").exec(function(err, opp){
 		if(err){
 			console.log(err);
 			res.write(err);
 			res.end();
 		}
 		else{
-			console.log(opp.toString());
-
-			//Extract ids
-			var extract_ids = function(users_array){
-				user_ids = [];
-				users = users_array;
-				for(var i = 0; i < users_array.length; i++)
-				{
-					console.log(i);
-					user_ids.push(users_array[i]);
-				}
-				console.log("user_ids: "+user_ids.toString());
-				return user_ids;
-			};
-
-			User.find({_id: {$in: extract_ids(opp.users)}}, function(err, users_in_opp){
-				if(err) console.log(err);
-				console.log(users_in_opp.toString());
-				if(users_in_opp){
-					res.write(users_in_opp.toString());
-					res.end();
-				}
-				else{
-					res.write("empty");
-					res.end();
-				}
-			});
+      console.log(opp.toString());
+      res.render('applicants.jade', {applications: opp.applications});
 		}
 	});
 });
