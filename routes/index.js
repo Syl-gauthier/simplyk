@@ -29,6 +29,25 @@ router.get('/customData', stormpath.getUser, stormpath.loginRequired, function(r
 	res.json(customData);
 });
 
+  /* Handle Login POST */
+  router.post('/login', passport.authenticate('login', {
+    successRedirect: '/home',
+    failureRedirect: '/',
+    failureFlash : true 
+  }));
+ 
+  /* GET Registration Page */
+  router.get('/signup', function(req, res){
+    res.render('register',{message: req.flash('message')});
+  });
+ 
+  /* Handle Registration POST */
+  router.post('/signup', passport.authenticate('signup', {
+    successRedirect: '/home',
+    failureRedirect: '/signup',
+    failureFlash : true 
+  }));
+
 /*GET dashboard page*/
 router.get('/dashboard', stormpath.getUser, stormpath.loginRequired, function(req, res){
 	console.log(req.user.customData);

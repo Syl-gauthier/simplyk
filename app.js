@@ -4,9 +4,9 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var stormpath = require('express-stormpath');
 var mongoose = require('mongoose');
 var session = require('client-sessions');
+var passport = require('passport');
 
 //Routes files
 var routes = require('./routes/index');
@@ -26,101 +26,102 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 //connect to mongo
-//mongoose.connect('mongodb://localhost/test');
-mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
+mongoose.connect('mongodb://localhost/test');
+//mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
+
+// passport/login.js
+passport.use('login', new LocalStrategy({
+    passReqToCallback : true
+  },
+  function(req, username, password, done) { 
+    // check in mongo if a user with username exists or not
+    User.findOne({ 'username' :  username }, 
+      function(err, user) {
+        // In case of any error, return using the done method
+        if (err)
+          return done(err);
+        // Username does not exist, log error & redirect back
+        if (!user){
+          console.log('User Not Found with username '+username);
+          return done(null, false, 
+                req.flash('message', 'User Not found.'));                 
+        }
+        // User exists but wrong password, log the error 
+        if (!isValidPassword(user, password)){
+          console.log('Invalid Password');
+          return done(null, false, 
+              req.flash('message', 'Invalid Password'));
+        }
+        // User and password both match, return user from 
+        // done method which will be treated like success
+        return done(null, user);
+      }
+    );
+}));
+
+passport.use('signup', new LocalStrategy({
+    passReqToCallback : true
+  },
+  function(req, username, password, done) {
+    findOrCreateUser = function(){
+      // find a user in Mongo with provided username
+      User.findOne({'username':username},function(err, user) {
+        // In case of any error return
+        if (err){
+          console.log('Error in SignUp: '+err);
+          return done(err);
+        }
+        // already exists
+        if (user) {
+          console.log('User already exists');
+          return done(null, false, 
+             req.flash('message','User Already Exists'));
+        } else {
+          // if there is no user with that email
+          // create the user
+          var newUser = new User();
+          // set the user's local credentials
+          newUser.username = username;
+          newUser.password = createHash(password);
+          newUser.email = req.param('email');
+          newUser.firstName = req.param('firstName');
+          newUser.lastName = req.param('lastName');
+ 
+          // save the user
+          newUser.save(function(err) {
+            if (err){
+              console.log('Error in Saving user: '+err);  
+              throw err;  
+            }
+            console.log('User Registration succesful');    
+            return done(null, newUser);
+          });
+        }
+      });
+    };
+    process.nextTick(findOrCreateUser);
+  });
+);
+
+// Generates hash using bCrypt
+var createHash = function(password){
+ return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
+}
+
+passport.serializeUser(function(user, done) {
+  done(null, user._id);
+});
+ 
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
 
 app.use(session({
 	cookieName: 'session',
 	secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
 	activeDuration: 1500 * 60 * 1000
-}));
-
-app.use(stormpath.init(app, {
-	// WARNING: USING THIS ONLY DURING TEST PROCESS, DON'T PUT IT IN PRODUCTION IN HEROKU
-	apiKey: {
-		id: '6PUTYR1PU3WZ7BW7PUSH8D8CF',
-		secret: 'wM6YrTbfIU4jeJ/XpbhTuevsOoUBMoaeYUAXJOGklG0'
-	},
-	application: {
-		href: "https://api.stormpath.com/v1/applications/4VwVIc6IoowGSfAE594Rv7"
-	},
-	web: {
-		register: {
-			form: {
-				fields: {
-					name: {
-						enabled: true,
-						label: 'Organism Name',
-						name: 'name',
-						required: true,
-						type: 'text'
-					}
-				}
-			}
-		},
-		login: {
-			nextUri: "/dashboard",
-			form: {
-				fields: {
-					login: {
-						label: 'Your Username or email',
-						placeholder: 'email@trustyapp.com'
-					},
-					password: {
-						label: 'Your password'
-					}
-				}
-			}
-		},
-		login: {
-			enabled: true,
-			nextUri: "/dashboard"
-		},
-		logout: {
-			enabled: true,
-			nextUri: '/'
-		}
-	},
-	expand: {
-		customData: true,
-	},
-	preRegistrationHandler: function (formData, req, res, next) {
-		var organism = new Organism({
-			name: formData.name,
-			email: formData.email
-		});
-		organism.save(function(err){
-			if(err){
-				var error = 'Something bad happened! Try again! Click previous !';
-				console.log('@ organism.save : '+err);
-				res.json({error: error});
-			}
-			else{
-				Organism.findOne({'name': formData.name, 'email': formData.email}, 'id', function(err, organism){
-					if(err){
-						var error = 'Something bad happened! Try again! Click previous !';
-						console.log('@ organism.findone : '+err);
-						res.json({error: error + '    ' + err});
-					}
-					else{
-						req.session.organism_id = organism._id;
-						console.log('organism.id = ' + organism._id);
-						next();
-					}
-				})
-			}
-		})
-	},
-	postRegistrationHandler: function(account, req, res, next){
-		account.customData.id = req.session.organism_id;
-		account.customData.save();
-		console.log('Organism:', account.customData.id, 'has just been registered! ');
-		next();
-	},
-	postLoginHandler: function (account, req, res, next) {
-		console.log('Organism:', account.customData.id, 'just logged in! ');
-		next();
-	}
 }));
 
 
