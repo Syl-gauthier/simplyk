@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var stormpath = require('express-stormpath');
+var passport = require('passport')
 var mongoose = require('mongoose');
 var GoogleMapsAPI = require('googlemaps');
-var stormpathGroupsRequired = require('../middlewares/stormpathGroupsRequired').stormpathGroupsRequired;
 var jade = require('jade');
+var LocalStrategy = require('passport-local').Strategy;
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -20,49 +20,39 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET home page. */
-router.get('/user', stormpath.getUser, function(req, res, next) {
-	res.json(req.user);
+
+/* Handle Login POST */
+router.post('/login', passport.authenticate('login', {
+  successRedirect: '/home',
+  failureRedirect: '/',
+  failureFlash : true 
+}));
+
+/* GET Registration Page */
+router.get('/register/org', function(req, res){
+  res.render('signup.jade', {group: 'organism'});
 });
 
-router.get('/customData', stormpath.getUser, stormpath.loginRequired, function(req, res, next) {
-	var customData = req.user.customData;
-	res.json(customData);
+router.get('/register/platform', function(req, res){
+  res.render('signup.jade', {group: 'user'});
 });
 
-  /* Handle Login POST */
-  router.post('/login', passport.authenticate('login', {
-    successRedirect: '/home',
-    failureRedirect: '/',
-    failureFlash : true 
-  }));
- 
-  /* GET Registration Page */
-  router.get('/signup', function(req, res){
-    res.render('register',{message: req.flash('message')});
+/* Handle Registration POST */
+router.post('/register', function(req, res){
+  //Add user
+  newUser = new User({
+    username: req.body.username,
+    password: req.body.password
   });
- 
-  /* Handle Registration POST */
-  router.post('/signup', passport.authenticate('signup', {
+  newUser.save({});
+
+  passport.authenticate('signup', {
     successRedirect: '/home',
-    failureRedirect: '/signup',
+    failureRedirect: '/register',
     failureFlash : true 
-  }));
+  });
 
-/*GET dashboard page*/
-router.get('/dashboard', stormpath.getUser, stormpath.loginRequired, function(req, res){
-	console.log(req.user.customData);
-
-	Opp.find({oName: req.user.customData.name}, function(err, opps){
-		if(err){
-			console.log(err);
-			res.render('dashboard.jade', {session: req.session, error: err});
-		}
-		//Create opps list
-		else{
-			console.log(opps.toString());
-			res.render('dashboard.jade', {opps: opps, session: req.session});
-		}
-	});
+  res.render('accueil.jade');
 });
 
 //for ajax call only (for now)
