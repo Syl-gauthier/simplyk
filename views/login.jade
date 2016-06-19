@@ -1,0 +1,11 @@
+extends ./layout.jade
+block vars
+
+block content
+    form(action="/login", method="post") 
+        input(type="hidden", name="group", value="pouet")
+        p Username
+        input(type="text", name="username")
+        p password
+        input(type="text", name="password")
+        input(type="submit", value="Log in")

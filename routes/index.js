@@ -19,21 +19,23 @@ router.get('/', function(req, res, next) {
 	res.render('accueil.jade');
 });
 
-/* GET home page. */
+router.get('/login_org', function(req, res, next){
+  res.render('login.jade');
+});
 
 /* Handle Login POST */
-router.post('/login', passport.authenticate('login', {
+router.post('/login', passport.authenticate('local', {
   successRedirect: '/home',
   failureRedirect: '/',
   failureFlash : true 
 }));
 
 /* GET Registration Page */
-router.get('/register/org', function(req, res){
+router.get('/register_org', function(req, res){
   res.render('signup.jade', {group: 'organism'});
 });
 
-router.get('/register/platform', function(req, res){
+router.get('/register_platform', function(req, res){
   res.render('signup.jade', {group: 'user'});
 });
 
