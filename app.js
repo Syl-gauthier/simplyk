@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var session = require('client-sessions');
+var flash = require('connect-flash');
 
 //Auth
 var passport = require('passport');
@@ -40,7 +41,7 @@ passport.use(new LocalStrategy(
       if (!user) {
         return done(null, false, { message: 'Incorrect username.' });
       }
-      if (!user.validPassword(password)) {
+      if (user.password != password) {
         return done(null, false, { message: 'Incorrect password.' });
       }
       return done(null, user);
@@ -77,6 +78,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());
+app.use(flash());
 
 app.use('/', routes);
 app.use('/users', users);
@@ -113,10 +116,5 @@ app.use(function(err, req, res, next) {
 		error: {}
 	});
 });
-
-app.on('stormpath.ready', function () {
-	console.log('Stormpath Ready!');
-});
-
 
 module.exports = app;
