@@ -1,11 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport')
-var mongoose = require('mongoose');
-var GoogleMapsAPI = require('googlemaps');
 var jade = require('jade');
 var LocalStrategy = require('passport-local').Strategy;
 
+var GoogleMapsAPI = require('googlemaps');
+
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var Opp = require('../models/opp_model.js');
@@ -16,19 +17,27 @@ var app = express();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	res.render('accueil.jade');
+  res.render('accueil.jade');
 });
 
 router.get('/login_org', function(req, res, next){
-  res.render('login.jade');
+  res.render('login.jade', {group: 'organism'});
+});
+
+router.get('/login_platform', function(req, res, next){
+  res.render('login.jade', {group: 'platform'});
 });
 
 /* Handle Login POST */
-router.post('/login', passport.authenticate('local', {
-  successRedirect: '/home',
-  failureRedirect: '/',
-  failureFlash : true 
-}));
+router.post('/login_org', function(req, res, next){
+  //Use different authenticate for each group
+  passport.authenticate('local-user', {
+    successRedirect: '/home',
+    failureRedirect: '/',
+    failureFlash : true 
+  });
+  res.render('');
+});
 
 /* GET Registration Page */
 router.get('/register_org', function(req, res){

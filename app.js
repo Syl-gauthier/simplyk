@@ -4,7 +4,6 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
 var session = require('client-sessions');
 var flash = require('connect-flash');
 
@@ -18,6 +17,7 @@ var users = require('./routes/users');
 var addopp = require('./routes/addopp');
 var profile = require('./routes/profile');
 
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var Organism = require('./models/organism_model.js');
@@ -34,7 +34,7 @@ app.set('view engine', 'jade');
 mongoose.connect('mongodb://localhost/test');
 //mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
 
-passport.use(new LocalStrategy(
+passport.use('local-user', new LocalStrategy(
   function(username, password, done) {
     User.findOne({username: username }, function (err, user) {
       if (err) { return done(err); }
