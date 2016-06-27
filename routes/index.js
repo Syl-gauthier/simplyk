@@ -35,7 +35,12 @@ router.post('/login',
   {failureRedirect: '/login?login_error=1'}),
   function(req, res){
     console.log(JSON.stringify(req.user));
-    res.redirect('/');
+    if(req.user.group == "org"){
+      res.redirect('/'); 
+    }
+    else if(req.user.group == "platform"){
+      res.redirect('/map');
+    }
 });
 
 
@@ -89,6 +94,23 @@ router.post('/getOppUsers', function(req, res){
       res.render('applicants.jade', {applications: opp.applications});
 		}
 	});
+});
+
+/*GET map page*/
+router.get('/map', function(req, res){
+  Opp.find({}, function(err, opps){
+    if(err){
+      console.log(err);
+      res.render('map.jade', {session: req.session, 
+        error: err});
+    }
+    //Create opps list
+    else{			
+      res.render('map.jade', {opps: opps, 
+        session: req.session, 
+        user: req.user});
+    }
+  });
 });
 
 module.exports = router;

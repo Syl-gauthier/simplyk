@@ -44,6 +44,8 @@ passport.use('local-user', new LocalStrategy(
       if (user.password != password) {
         return done(null, false, { message: 'Incorrect password.' });
       }
+      user = user.toJSON();
+      user.group = "platform";
       return done(null, user);
     });
   }
@@ -59,7 +61,10 @@ passport.use('local-org', new LocalStrategy(
       if (org.password != password) {
         return done(null, false, { message: 'Incorrect password.' });
       }
-      return done(null, org);
+
+      org = org.toJSON();
+      org.group = "org";
+      return done(null, org, 'ok');
     });
   }
 ));
