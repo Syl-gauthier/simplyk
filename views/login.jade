@@ -2,8 +2,9 @@ extends ./layout.jade
 block vars
 
 block content
-    form(action="/login_org", method="post") 
-        input(type="hidden", name="group", value="pouet")
+    if error == 1
+      p Wrong username or password
+    form(action="/login", method="post") 
         p Username
         input(type="text", name="username")
         p password

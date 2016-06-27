@@ -11,6 +11,7 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var Opp = require('../models/opp_model.js');
 var User = require('../models/user_model.js');
+var Organism = require('../models/organism_model.js');
 
 var app = express();
 
@@ -20,24 +21,23 @@ router.get('/', function(req, res, next) {
   res.render('accueil.jade');
 });
 
-router.get('/login_org', function(req, res, next){
-  res.render('login.jade', {group: 'organism'});
+router.get('/login', function(req, res, next){
+  if(req.query.login_error){
+    res.render('login.jade', {error: 1});
+  }
+  else{
+    res.render('login.jade');
+  }
 });
 
-router.get('/login_platform', function(req, res, next){
-  res.render('login.jade', {group: 'platform'});
+router.post('/login', 
+  passport.authenticate(['local-user', 'local-org'], 
+  {failureRedirect: '/login?login_error=1'}),
+  function(req, res){
+    console.log(JSON.stringify(req.user));
+    res.redirect('/');
 });
 
-/* Handle Login POST */
-router.post('/login_org', function(req, res, next){
-  //Use different authenticate for each group
-  passport.authenticate('local-user', {
-    successRedirect: '/home',
-    failureRedirect: '/',
-    failureFlash : true 
-  });
-  res.render('');
-});
 
 /* GET Registration Page */
 router.get('/register_org', function(req, res){
@@ -45,11 +45,11 @@ router.get('/register_org', function(req, res){
 });
 
 router.get('/register_platform', function(req, res){
-  res.render('signup.jade', {group: 'user'});
+  res.render('signup.jade', {group: 'platform'});
 });
 
 /* Handle Registration POST */
-router.post('/register', function(req, res){
+router.post('/register_platform', function(req, res){
   //Add user
   newUser = new User({
     username: req.body.username,
@@ -57,11 +57,18 @@ router.post('/register', function(req, res){
   });
   newUser.save({});
 
-  passport.authenticate('signup', {
-    successRedirect: '/home',
-    failureRedirect: '/register',
-    failureFlash : true 
+  res.render('accueil.jade');
+});
+
+/* Handle Registration POST */
+router.post('/register_organism', function(req, res){
+  //Add user
+  newOrganism = new Organism({
+    username: req.body.username,
+    orgName: req.body.organism,
+    password: req.body.password
   });
+  newOrganism.save({});
 
   res.render('accueil.jade');
 });

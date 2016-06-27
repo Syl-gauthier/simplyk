@@ -49,6 +49,21 @@ passport.use('local-user', new LocalStrategy(
   }
 ));
 
+passport.use('local-org', new LocalStrategy(
+  function(username, password, done) {
+    Organism.findOne({username: username }, function (err, org) {
+      if (err) { return done(err); }
+      if (!org) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (org.password != password) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, org);
+    });
+  }
+));
+
 // Generates hash using bCrypt
 var createHash = function(password){
  return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
@@ -79,6 +94,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
+app.use(passport.session());
 app.use(flash());
 
 app.use('/', routes);

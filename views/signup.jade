@@ -3,7 +3,7 @@ block vars
     - var test = true
 
 block content
-    form(action="/register", method="post") 
+    form(action="/register_#{group}", method="post") 
         input(type="hidden", name="group", value="pouet")
         p Username
         input(type="text", name="username")

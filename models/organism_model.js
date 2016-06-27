@@ -4,8 +4,10 @@ var ObjectId = Schema.ObjectId;
 
 var Organism = mongoose.model('Organism', new Schema({
 	id: ObjectId,
-	name: String,
-	email: String
+    username: String,
+	orgName: String,
+	email: String,
+    password: String,
 }));
 
 module.exports = Organism;
