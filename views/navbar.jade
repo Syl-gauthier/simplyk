@@ -1,6 +1,5 @@
 // navbar
 block vars
-  - var session = session
   - var page
 
 nav#nav-me.navbar.navbar-default
@@ -19,7 +18,9 @@ nav#nav-me.navbar.navbar-default
         unless page=='dashboard'
           li.navbar-link(role='presentation')
             a(href='dashboard') Tableau de Bord
-      if user
         li(role='presentation')
           form.navbar-form( method='post', action='logout')
             button.btn.btn-success-outline.pinkow(type='submit') Déconnexion
+      else
+        li.navbar-link
+          p NOT CONNECTED

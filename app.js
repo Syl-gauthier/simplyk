@@ -78,11 +78,23 @@ passport.serializeUser(function(user, done) {
   done(null, user._id);
 });
  
-passport.deserializeUser(function(id, done) {
+passport.deserializeUser(function(req, id, done) {
   console.log("Deserialize");
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
+  console.log(req.session);
+
+  if(req.session.group == "platform"){
+    User.findById(id, function(err, user) {
+      done(err, user);
+    });
+  }
+  else if(req.session.group == "org"){
+    Organism.findById(id, function(err, org){
+        done(err, org);
+    });
+  }
+  else{
+    done(null, false);
+  }
 });
 
 app.use(session({

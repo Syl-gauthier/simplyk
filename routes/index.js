@@ -35,13 +35,19 @@ router.post('/login',
   function(req, res){
     console.log(JSON.stringify(req.user));
     if(req.user.group == "org"){
+      req.session.group = "org";
       res.redirect('/dashboard'); 
     }
     else if(req.user.group == "platform"){
+      req.session.group = "platform";
       res.redirect('/map');
     }
 });
 
+router.post('/logout', function(req, res){
+  req.session.destroy();
+  res.redirect('/');
+});
 
 /* GET Registration Page */
 router.get('/register_org', function(req, res){
@@ -78,38 +84,28 @@ router.post('/register_organism', function(req, res){
 });
 
 router.get('/dashboard', function(req, res){
-  console.log(req.session);
-  console.log(req.user);
-  
-  Opp.find({oName: req.user.customData.name}, function(err, opps){
-    if(err){
-      console.log(err);
-      res.render('dashboard.jade', {session: req.session, error: err});
-    }
-    //Create opps list
-    else{
-      console.log(opps.toString());
-      res.render('dashboard.jade', {opps: opps, session: req.session, error: err});
-    }
+  Opp.find({oName: req.user.orgName}, function(err, opps){
+    res.render('dashboard.jade', {opps: opps,
+      user: req.isAuthenticated()});
   });
 });
 
 //for ajax call only (for now)
 //Get users info from an opp intitule
 router.post('/getOppUsers', function(req, res){
-	console.log("opp_id: " + req.body.opp_id);
+  console.log("opp_id: " + req.body.opp_id);
 
-	Opp.findById(req.body.opp_id).populate("applications.applicant").exec(function(err, opp){
-		if(err){
-			console.log(err);
-			res.write(err);
-			res.end();
-		}
-		else{
+  Opp.findById(req.body.opp_id).populate("applications.applicant").exec(function(err, opp){
+    if(err){
+        console.log(err);
+        res.write(err);
+        res.end();
+    }
+    else{
       console.log(opp.toString());
       res.render('applicants.jade', {applications: opp.applications});
-		}
-	});
+    }
+  });
 });
 
 /*GET map page*/
@@ -121,10 +117,9 @@ router.get('/map', function(req, res){
         error: err});
     }
     //Create opps list
-    else{			
+    else{           
       res.render('map.jade', {opps: opps, 
-        session: req.session, 
-        user: req.user});
+        user: req.isAuthenticated()});
     }
   });
 });
