@@ -47,10 +47,12 @@ router.post('/login',
   function(req, res){
     console.log(JSON.stringify(req.user));
     if(req.user.group == "organism"){
+      req.session.organism = req.user;
       req.session.group = "organism";
       res.redirect('/dashboard'); 
     }
     else if(req.user.group == "volunteer"){
+      req.session.volunteer = req.user;
       req.session.group = "volunteer";
       res.redirect('/map');
     }
@@ -75,11 +77,13 @@ router.post('/register_volunteer', function(req, res){
   //Add user
   newUser = new User({
     mail: req.body.mail,
-    password: req.body.password
+    password: req.body.password,
+    lastname: req.body.lastname,
+    firstname: req.body.firstname,
+    birthdate: req.body.birthdate
   });
   newUser.save({});
-
-  res.render('accueil.jade');
+  res.redirect('/');
 });
 
 /* Handle Registration POST */
@@ -87,12 +91,17 @@ router.post('/register_organism', function(req, res){
   //Add user
   newOrganism = new Organism({
     mail: req.body.mail,
-    orgName: req.body.organism,
-    password: req.body.password
+    name: req.body.name,
+    lastname: req.body.lastname,
+    firstname: req.body.firstname,
+    password: req.body.password,
+    phone: req.body.phone,
+    website: req.body.website,
+    neq: req.body.neq,
+    cause: req.body.cause
   });
   newOrganism.save({});
-
-  res.render('accueil.jade');
+  res.redirect('/');
 });
 
 router.get('/dashboard', function(req, res){
@@ -125,8 +134,7 @@ router.get('/map', function(req, res){
   Opp.find({}, function(err, opps){
     if(err){
       console.log(err);
-      res.render('map.jade', {session: req.session, 
-        error: err});
+      res.render('map.jade', {session: req.session, error: err});
     }
     //Create opps list
     else{           
