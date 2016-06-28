@@ -17,7 +17,16 @@ var app = express();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('accueil.jade');
+  Opp.find({}, function(err, opps){
+    if(err){
+      console.log(err);
+      res.render('accueil.jade', {session: req.session, error: err});
+    }
+    //Create opps list
+    else{
+      res.render('accueil.jade', {opps: opps, session: req.session, user: req.user});
+    }
+  });
 });
 
 router.get('/login', function(req, res, next){
