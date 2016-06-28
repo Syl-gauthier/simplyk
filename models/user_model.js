@@ -4,12 +4,28 @@ var ObjectId = Schema.ObjectId;
 
 var User = mongoose.model('Users', new Schema({
 	id: ObjectId,
-    username: String,
-    password: String,
-	fname: String,
-	lname: String,
-	email: String,
-	birth: Date
+	password: String,
+	firstname: String,
+	lastname: String,
+	mail: String,
+	birthdate: Date,
+	age: Number,
+	phone: String,
+	hours: Number,
+	interests: [String],
+	skills: [String],
+	complete: Boolean,
+	emergency : { // this contact is needed for minors
+		em_name: String,
+		em_phone: Number,
+	
+	},
+	student: Boolean, //if has a school or not
+	admin: {
+		admin_id: ObjectId,
+		admin_name: String,
+		admin_mail: String
+	}
 }));
 
 module.exports = User;

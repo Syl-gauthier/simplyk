@@ -1,12 +1,17 @@
 // navbar
 block vars
+  - var session = session
   - var page
 
 nav#nav-me.navbar.navbar-default
   .container-fluid
     .navbar-header
-      a.navbar-brand(href='dashboard')
-        img(alt='Brand', src='images/simplyk-text-egg-hor.png')
+      if user
+        a.navbar-brand(href='map')
+          img(alt='Brand', src='images/simplyk-text-egg-hor.png')
+      else
+        a.navbar-brand(href='/')
+          img(alt='Brand', src='images/simplyk-text-egg-hor.png')
     ul.nav.navbar-nav.navbar-left
       li.navbar-brand(role='presentation')
         span.label.label-danger SITE EN CONSTRUCTION
@@ -15,12 +20,25 @@ nav#nav-me.navbar.navbar-default
         unless page=='profile'
           li.navbar-link(role='presentation')
             a(href='profile') Mon profil
-        unless page=='dashboard'
+        unless page=='map'
           li.navbar-link(role='presentation')
-            a(href='dashboard') Tableau de Bord
+            a(href='map') Carte
         li(role='presentation')
           form.navbar-form( method='post', action='logout')
             button.btn.btn-success-outline.pinkow(type='submit') Déconnexion
       else
-        li.navbar-link
-          p NOT CONNECTED
+        li.navbar-link(role='presentation')
+          a(href='register_organism') Je cherche des bénévoles !
+        li(role='presentation')
+          form.navbar-form
+            li.dropdown
+              button.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Inscris-toi ! 
+                span.caret
+              ul.dropdown-menu
+                li
+                  a(href='register_organism') Organismes
+                li
+                  a(href='register_volunteer') Bénévoles
+        li(role='presentation')
+          form.navbar-form( method='get', action='login')
+            button.btn.btn-success-outline.pinkow(type='submit') Connexion

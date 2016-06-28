@@ -31,39 +31,45 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 //connect to mongo
-mongoose.connect('mongodb://localhost/test');
-//mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
+//mongoose.connect('mongodb://localhost/test');
+mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
 
-passport.use('local-user', new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({username: username }, function (err, user) {
+passport.use('local-volunteer', new LocalStrategy({
+    usernameField: 'mail',
+    passwordField: 'password'
+  },
+  function(mail, password, done) {
+    User.findOne({mail: mail }, function (err, user) {
       if (err) { return done(err); }
       if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
+        return done(null, false, { message: 'Incorrect mail.' });
       }
       if (user.password != password) {
         return done(null, false, { message: 'Incorrect password.' });
       }
       user = user.toJSON();
-      user.group = "platform";
+      user.group = "volunteer";
       return done(null, user);
     });
   }
 ));
 
-passport.use('local-org', new LocalStrategy(
-  function(username, password, done) {
-    Organism.findOne({username: username }, function (err, org) {
+passport.use('local-organism', new LocalStrategy({
+    usernameField: 'mail',
+    passwordField: 'password'
+  },
+  function(mail, password, done) {
+    Organism.findOne({mail: mail }, function (err, org) {
       if (err) { return done(err); }
       if (!org) {
-        return done(null, false, { message: 'Incorrect username.' });
+        return done(null, false, { message: 'Incorrect mail.' });
       }
       if (org.password != password) {
         return done(null, false, { message: 'Incorrect password.' });
       }
 
       org = org.toJSON();
-      org.group = "org";
+      org.group = "organism";
       return done(null, org, 'ok');
     });
   }
@@ -82,12 +88,12 @@ passport.deserializeUser(function(req, id, done) {
   console.log("Deserialize");
   console.log(req.session);
 
-  if(req.session.group == "platform"){
+  if(req.session.group == "volunteer"){
     User.findById(id, function(err, user) {
       done(err, user);
     });
   }
-  else if(req.session.group == "org"){
+  else if(req.session.group == "organism"){
     Organism.findById(id, function(err, org){
         done(err, org);
     });
