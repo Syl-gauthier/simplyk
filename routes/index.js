@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport')
 var jade = require('jade');
-var LocalStrategy = require('passport-local').Strategy;
 
 var GoogleMapsAPI = require('googlemaps');
 
@@ -36,7 +35,7 @@ router.post('/login',
   function(req, res){
     console.log(JSON.stringify(req.user));
     if(req.user.group == "org"){
-      res.redirect('/'); 
+      res.redirect('/dashboard'); 
     }
     else if(req.user.group == "platform"){
       res.redirect('/map');
@@ -76,6 +75,23 @@ router.post('/register_organism', function(req, res){
   newOrganism.save({});
 
   res.render('accueil.jade');
+});
+
+router.get('/dashboard', function(req, res){
+  console.log(req.session);
+  console.log(req.user);
+  
+  Opp.find({oName: req.user.customData.name}, function(err, opps){
+    if(err){
+      console.log(err);
+      res.render('dashboard.jade', {session: req.session, error: err});
+    }
+    //Create opps list
+    else{
+      console.log(opps.toString());
+      res.render('dashboard.jade', {opps: opps, session: req.session, error: err});
+    }
+  });
 });
 
 //for ajax call only (for now)
