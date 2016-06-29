@@ -8,6 +8,7 @@ var GoogleMapsAPI = require('googlemaps');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
+
 var Opp = require('../models/opp_model.js');
 var User = require('../models/user_model.js');
 var Organism = require('../models/organism_model.js');
@@ -16,7 +17,16 @@ var app = express();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('accueil.jade');
+  Opp.find({}, function(err, opps){
+    if(err){
+      console.log(err);
+      res.render('accueil.jade', {session: req.session, error: err});
+    }
+    //Create opps list
+    else{
+      res.render('accueil.jade', {opps: opps, session: req.session, user: req.user});
+    }
+  });
 });
 
 router.get('/login', function(req, res, next){
@@ -66,7 +76,6 @@ router.get('/register_volunteer', function(req, res){
 router.post('/register_volunteer', function(req, res){
   //Add user
   newUser = new User({
-    username: req.body.username,
     email: req.body.email,
     lastname: req.body.lastname,
     firstname: req.body.firstname,
@@ -82,9 +91,8 @@ router.post('/register_volunteer', function(req, res){
 /* Handle Registration POST */
 router.post('/register_organism', function(req, res){
   newOrganism = new Organism({
-    username: req.body.username,
+    email: req.body.email,
     orgName: req.body.organism,
-    email: req.body.mail,
     name: req.body.name,
     lastname: req.body.lastname,
     firstname: req.body.firstname,

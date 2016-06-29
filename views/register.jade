@@ -2,8 +2,6 @@ extends ./layout.jade
 block vars
   - var page = 'register'
 
-
-
 block content
       #map-section.container-fluid
         .row
@@ -17,7 +15,7 @@ block content
             form#registerform(action="/register_#{group}", method="post", role='form')
               .input-group.conn-input
                 span#basic-addon1.input-group-addon Adresse mail
-                input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='mail', aria-describedby='basic-addon1', required)
+                input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='email', aria-describedby='basic-addon1', required)
               if group == 'volunteer'
                 .input-group.conn-input
                   span#basic-addon1.input-group-addon Nom

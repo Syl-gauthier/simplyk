@@ -6,11 +6,10 @@ var crypt = require('../auth/crypt');
 
 var OrganismSchema = new Schema({
 	id: ObjectId,
-    username: String,
+	email: String,
 	orgName: String,
 	neq: Number,
 	website: String,
-	email: String,
     password: String,
 	firstname: String,
 	lastname: String,

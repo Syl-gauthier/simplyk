@@ -34,11 +34,11 @@ mongoose.connect('mongodb://localhost/test');
 //mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
 
 passport.use('local-volunteer', new LocalStrategy({
-    usernameField: 'username',
+    usernameField: 'email',
     passwordField: 'password'
   },
-  function(username, password, done) {
-    User.findOne({username: username}, function (err, user) {
+  function(email, password, done) {
+    User.findOne({email: email}, function (err, user) {
       if (err) { return done(err); }
       if (!user) {
         return done(null, false, { message: 'Incorrect mail.' });
@@ -54,11 +54,11 @@ passport.use('local-volunteer', new LocalStrategy({
 ));
 
 passport.use('local-organism', new LocalStrategy({
-    usernameField: 'username',
+    usernameField: 'email',
     passwordField: 'password'
   },
-  function(username, password, done) {
-    Organism.findOne({username: username}, function (err, org) {
+  function(email, password, done) {
+    Organism.findOne({email: email}, function (err, org) {
       if (err) { return done(err); }
       if (!org) {
         return done(null, false, { message: 'Incorrect mail.' });
