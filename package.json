@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "bcrypt": "^0.8.7",
     "body-parser": "~1.13.2",
     "client-sessions": "^0.7.0",
     "connect-flash": "^0.1.1",

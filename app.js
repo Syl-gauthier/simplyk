@@ -23,7 +23,6 @@ var ObjectId = Schema.ObjectId;
 var Organism = require('./models/organism_model.js');
 var User = require('./models/user_model.js');
 
-
 var app = express();
 
 // view engine setup
@@ -41,7 +40,7 @@ passport.use('local-user', new LocalStrategy(
       if (!user) {
         return done(null, false, { message: 'Incorrect username.' });
       }
-      if (user.password != password) {
+      if (!user.validPassword(password)) {
         return done(null, false, { message: 'Incorrect password.' });
       }
       user = user.toJSON();
@@ -58,7 +57,7 @@ passport.use('local-org', new LocalStrategy(
       if (!org) {
         return done(null, false, { message: 'Incorrect username.' });
       }
-      if (org.password != password) {
+      if (!org.validPassword(password)) {
         return done(null, false, { message: 'Incorrect password.' });
       }
 
@@ -68,11 +67,6 @@ passport.use('local-org', new LocalStrategy(
     });
   }
 ));
-
-// Generates hash using bCrypt
-var createHash = function(password){
- return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
-}
 
 passport.serializeUser(function(user, done) {
   done(null, user._id);

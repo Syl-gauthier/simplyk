@@ -2,7 +2,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
-var User = mongoose.model('Users', new Schema({
+var crypt = require('../auth/crypt');
+
+var UserSchema = new Schema({
 	id: ObjectId,
     username: String,
     password: String,
@@ -10,6 +12,11 @@ var User = mongoose.model('Users', new Schema({
 	lname: String,
 	email: String,
 	birth: Date
-}));
+});
+
+UserSchema.methods.generateHash = crypt.generateHash;
+UserSchema.methods.validPassword = crypt.validPassword;
+
+var User = mongoose.model('Users', UserSchema);
 
 module.exports = User;

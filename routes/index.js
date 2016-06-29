@@ -14,7 +14,6 @@ var Organism = require('../models/organism_model.js');
 
 var app = express();
 
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('accueil.jade');
@@ -61,10 +60,10 @@ router.get('/register_platform', function(req, res){
 /* Handle Registration POST */
 router.post('/register_platform', function(req, res){
   //Add user
-  newUser = new User({
-    username: req.body.username,
-    password: req.body.password
-  });
+  newUser = new User({});
+  newUser.username = req.body.username;
+  newUser.password = newUser.generateHash(req.body.password)
+ 
   newUser.save({});
 
   res.render('accueil.jade');
@@ -73,11 +72,11 @@ router.post('/register_platform', function(req, res){
 /* Handle Registration POST */
 router.post('/register_organism', function(req, res){
   //Add user
-  newOrganism = new Organism({
-    username: req.body.username,
-    orgName: req.body.organism,
-    password: req.body.password
-  });
+  newOrganism = new Organism();
+  newOrganism.username = req.body.username;
+  newOrganism.orgName = req.body.organism;
+  newOrganism.password = newOrganism.generateHash(req.body.password);
+  
   newOrganism.save({});
 
   res.render('accueil.jade');
@@ -118,6 +117,7 @@ router.get('/map', function(req, res){
     }
     //Create opps list
     else{           
+      console.log(req.isAuthenticated());
       res.render('map.jade', {opps: opps, 
         user: req.isAuthenticated()});
     }
