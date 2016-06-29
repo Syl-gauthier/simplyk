@@ -33,36 +33,42 @@ app.set('view engine', 'jade');
 mongoose.connect('mongodb://localhost/test');
 //mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
 
-passport.use('local-user', new LocalStrategy(
+passport.use('local-volunteer', new LocalStrategy({
+    usernameField: 'username',
+    passwordField: 'password'
+  },
   function(username, password, done) {
-    User.findOne({username: username }, function (err, user) {
+    User.findOne({username: username}, function (err, user) {
       if (err) { return done(err); }
       if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
+        return done(null, false, { message: 'Incorrect mail.' });
       }
       if (!user.validPassword(password)) {
         return done(null, false, { message: 'Incorrect password.' });
       }
       user = user.toJSON();
-      user.group = "platform";
+      user.group = "volunteer";
       return done(null, user);
     });
   }
 ));
 
-passport.use('local-org', new LocalStrategy(
+passport.use('local-organism', new LocalStrategy({
+    usernameField: 'username',
+    passwordField: 'password'
+  },
   function(username, password, done) {
-    Organism.findOne({username: username }, function (err, org) {
+    Organism.findOne({username: username}, function (err, org) {
       if (err) { return done(err); }
       if (!org) {
-        return done(null, false, { message: 'Incorrect username.' });
+        return done(null, false, { message: 'Incorrect mail.' });
       }
       if (!org.validPassword(password)) {
         return done(null, false, { message: 'Incorrect password.' });
       }
 
       org = org.toJSON();
-      org.group = "org";
+      org.group = "organism";
       return done(null, org, 'ok');
     });
   }
@@ -76,12 +82,12 @@ passport.deserializeUser(function(req, id, done) {
   console.log("Deserialize");
   console.log(req.session);
 
-  if(req.session.group == "platform"){
+  if(req.session.group == "volunteer"){
     User.findById(id, function(err, user) {
       done(err, user);
     });
   }
-  else if(req.session.group == "org"){
+  else if(req.session.group == "organism"){
     Organism.findById(id, function(err, org){
         done(err, org);
     });

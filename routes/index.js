@@ -29,19 +29,24 @@ router.get('/login', function(req, res, next){
 });
 
 router.post('/login', 
-  passport.authenticate(['local-user', 'local-org'], 
-  {failureRedirect: '/login?login_error=1'}),
+  passport.authenticate(['local-volunteer', 'local-organism'], 
+  {
+    failureRedirect: '/login?login_error=1',
+    failureFlash: true
+  }),
   function(req, res){
     console.log(JSON.stringify(req.user));
-    if(req.user.group == "org"){
-      req.session.group = "org";
+    if(req.user.group == "organism"){
+      req.session.organism = req.user;
+      req.session.group = "organism";
       res.redirect('/dashboard'); 
     }
-    else if(req.user.group == "platform"){
-      req.session.group = "platform";
+    else if(req.user.group == "volunteer"){
+      req.session.volunteer = req.user;
+      req.session.group = "volunteer";
       res.redirect('/map');
     }
-});
+  });
 
 router.post('/logout', function(req, res){
   req.session.destroy();
@@ -49,37 +54,51 @@ router.post('/logout', function(req, res){
 });
 
 /* GET Registration Page */
-router.get('/register_org', function(req, res){
-  res.render('signup.jade', {group: 'organism'});
+router.get('/register_organism', function(req, res){
+  res.render('register.jade', {group: 'organism'});
 });
 
-router.get('/register_platform', function(req, res){
-  res.render('signup.jade', {group: 'platform'});
+router.get('/register_volunteer', function(req, res){
+  res.render('register.jade', {group: 'volunteer'});
 });
 
 /* Handle Registration POST */
-router.post('/register_platform', function(req, res){
+router.post('/register_volunteer', function(req, res){
   //Add user
-  newUser = new User({});
-  newUser.username = req.body.username;
-  newUser.password = newUser.generateHash(req.body.password)
- 
-  newUser.save({});
+  newUser = new User({
+    username: req.body.username,
+    email: req.body.email,
+    lastname: req.body.lastname,
+    firstname: req.body.firstname,
+    birthdate: req.body.birthdate
+  });
 
-  res.render('accueil.jade');
+  newUser.password = newUser.generateHash(req.body.password);
+
+  newUser.save({});
+  res.redirect('/');
 });
 
 /* Handle Registration POST */
 router.post('/register_organism', function(req, res){
-  //Add user
-  newOrganism = new Organism();
-  newOrganism.username = req.body.username;
-  newOrganism.orgName = req.body.organism;
-  newOrganism.password = newOrganism.generateHash(req.body.password);
-  
-  newOrganism.save({});
+  newOrganism = new Organism({
+    username: req.body.username,
+    orgName: req.body.organism,
+    email: req.body.mail,
+    name: req.body.name,
+    lastname: req.body.lastname,
+    firstname: req.body.firstname,
+    password: req.body.password,
+    phone: req.body.phone,
+    website: req.body.website,
+    neq: req.body.neq,
+    cause: req.body.cause
+  });
 
-  res.render('accueil.jade');
+  newOrganism.password = newOrganism.generateHash(req.body.password);
+
+  newOrganism.save({});
+  res.redirect('/');
 });
 
 router.get('/dashboard', function(req, res){
@@ -96,9 +115,9 @@ router.post('/getOppUsers', function(req, res){
 
   Opp.findById(req.body.opp_id).populate("applications.applicant").exec(function(err, opp){
     if(err){
-        console.log(err);
-        res.write(err);
-        res.end();
+      console.log(err);
+      res.write(err);
+      res.end();
     }
     else{
       console.log(opp.toString());
@@ -112,8 +131,7 @@ router.get('/map', function(req, res){
   Opp.find({}, function(err, opps){
     if(err){
       console.log(err);
-      res.render('map.jade', {session: req.session, 
-        error: err});
+      res.render('map.jade', {session: req.session, error: err});
     }
     //Create opps list
     else{           
