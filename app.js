@@ -30,8 +30,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 //connect to mongo
-mongoose.connect('mongodb://localhost/test');
-//mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
+//mongoose.connect('mongodb://localhost/test');
+mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
 
 passport.use('local-volunteer', new LocalStrategy({
     usernameField: 'email',
