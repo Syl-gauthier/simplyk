@@ -4,9 +4,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var stormpath = require('express-stormpath');
-var mongoose = require('mongoose');
 var session = require('client-sessions');
+var flash = require('connect-flash');
+
+//Auth
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 
 //Routes files
 var routes = require('./routes/index');
@@ -14,10 +17,11 @@ var users = require('./routes/users');
 var addopp = require('./routes/addopp');
 var profile = require('./routes/profile');
 
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var Organism = require('./models/organism_model.js');
-
+var User = require('./models/user_model.js');
 
 var app = express();
 
@@ -29,98 +33,74 @@ app.set('view engine', 'jade');
 //mongoose.connect('mongodb://localhost/test');
 mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
 
+passport.use('local-volunteer', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  function(email, password, done) {
+    User.findOne({email: email}, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect mail.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      user = user.toJSON();
+      user.group = "volunteer";
+      return done(null, user);
+    });
+  }
+));
+
+passport.use('local-organism', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  function(email, password, done) {
+    Organism.findOne({email: email}, function (err, org) {
+      if (err) { return done(err); }
+      if (!org) {
+        return done(null, false, { message: 'Incorrect mail.' });
+      }
+      if (!org.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+
+      org = org.toJSON();
+      org.group = "organism";
+      return done(null, org, 'ok');
+    });
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  done(null, user._id);
+});
+ 
+passport.deserializeUser(function(req, id, done) {
+  console.log("Deserialize");
+  console.log(req.session);
+
+  if(req.session.group == "volunteer"){
+    User.findById(id, function(err, user) {
+      done(err, user);
+    });
+  }
+  else if(req.session.group == "organism"){
+    Organism.findById(id, function(err, org){
+        done(err, org);
+    });
+  }
+  else{
+    done(null, false);
+  }
+});
+
 app.use(session({
 	cookieName: 'session',
 	secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
 	activeDuration: 1500 * 60 * 1000
-}));
-
-app.use(stormpath.init(app, {
-	// WARNING: USING THIS ONLY DURING TEST PROCESS, DON'T PUT IT IN PRODUCTION IN HEROKU
-	apiKey: {
-		id: '6PUTYR1PU3WZ7BW7PUSH8D8CF',
-		secret: 'wM6YrTbfIU4jeJ/XpbhTuevsOoUBMoaeYUAXJOGklG0'
-	},
-	application: {
-		href: "https://api.stormpath.com/v1/applications/4VwVIc6IoowGSfAE594Rv7"
-	},
-	web: {
-		register: {
-			form: {
-				fields: {
-					name: {
-						enabled: true,
-						label: 'Organism Name',
-						name: 'name',
-						required: true,
-						type: 'text'
-					}
-				}
-			}
-		},
-		login: {
-			nextUri: "/dashboard",
-			form: {
-				fields: {
-					login: {
-						label: 'Your Username or email',
-						placeholder: 'email@trustyapp.com'
-					},
-					password: {
-						label: 'Your password'
-					}
-				}
-			}
-		},
-		login: {
-			enabled: true,
-			nextUri: "/dashboard"
-		},
-		logout: {
-			enabled: true,
-			nextUri: '/'
-		}
-	},
-	expand: {
-		customData: true,
-	},
-	preRegistrationHandler: function (formData, req, res, next) {
-		var organism = new Organism({
-			name: formData.name,
-			email: formData.email
-		});
-		organism.save(function(err){
-			if(err){
-				var error = 'Something bad happened! Try again! Click previous !';
-				console.log('@ organism.save : '+err);
-				res.json({error: error});
-			}
-			else{
-				Organism.findOne({'name': formData.name, 'email': formData.email}, 'id', function(err, organism){
-					if(err){
-						var error = 'Something bad happened! Try again! Click previous !';
-						console.log('@ organism.findone : '+err);
-						res.json({error: error + '    ' + err});
-					}
-					else{
-						req.session.organism_id = organism._id;
-						console.log('organism.id = ' + organism._id);
-						next();
-					}
-				})
-			}
-		})
-	},
-	postRegistrationHandler: function(account, req, res, next){
-		account.customData.id = req.session.organism_id;
-		account.customData.save();
-		console.log('Organism:', account.customData.id, 'has just been registered! ');
-		next();
-	},
-	postLoginHandler: function (account, req, res, next) {
-		console.log('Organism:', account.customData.id, 'just logged in! ');
-		next();
-	}
 }));
 
 
@@ -131,6 +111,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
 app.use('/', routes);
 app.use('/users', users);
@@ -167,10 +150,5 @@ app.use(function(err, req, res, next) {
 		error: {}
 	});
 });
-
-app.on('stormpath.ready', function () {
-	console.log('Stormpath Ready!');
-});
-
 
 module.exports = app;

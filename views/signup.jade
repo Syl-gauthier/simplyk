@@ -1,0 +1,20 @@
+extends ./layout.jade
+block vars
+    - var test = true
+
+block content
+    form(action="/register_#{group}", method="post") 
+        input(type="hidden", name="group", value="pouet")
+        p Username
+        input(type="text", name="username")
+        if group == 'user'
+            p First name
+            input(type="text", name="First name")
+            p Last name
+            input(type="text", name="Last name")
+        else if group == 'organism'
+            p Organism name:
+            input(type="text", name="organism")
+        p password
+        input(type="text", name="password")
+        input(type="submit", value="Log in")

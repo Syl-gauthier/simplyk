@@ -1,0 +1,58 @@
+extends ./layout.jade
+block vars
+  - var page = 'register'
+
+block content
+      #map-section.container-fluid
+        .row
+          .col-md-6.col-md-offset-3
+            .page-header
+              h1 Inscris-toi !
+              if error
+                p.alert.alert-danger #{error}
+        .row
+          .col-md-6.col-md-offset-3
+            form#registerform(action="/register_#{group}", method="post", role='form')
+              .input-group.conn-input
+                span#basic-addon1.input-group-addon Adresse mail
+                input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='email', aria-describedby='basic-addon1', required)
+              if group == 'volunteer'
+                .input-group.conn-input
+                  span#basic-addon1.input-group-addon Nom
+                  input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', required)
+                .input-group.conn-input
+                  span#basic-addon1.input-group-addon Prénom
+                  input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', required)
+                .input-group.conn-input
+                  span#basic-addon1.input-group-addon Date de naissance
+                  input#birthdate.form-control(type='date', placeholder='', name='birthdate', aria-describedby='basic-addon1')
+              if group == 'organism'
+                .input-group.conn-input
+                  span#basic-addon1.input-group-addon Nom
+                  input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', required)
+                .input-group.conn-input
+                  span#basic-addon1.input-group-addon Prénom
+                  input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', required)
+                .input-group.conn-input
+                  span#basic-addon1.input-group-addon Nom de l'organisme
+                  input#name.form-control(type='text', placeholder='', name='name', aria-describedby='basic-addon1', required)
+                .input-group.conn-input
+                  span#basic-addon1.input-group-addon Numéro de téléphone
+                  input#phone.form-control(type='tel', placeholder='', name='phone', aria-describedby='basic-addon1')
+                .input-group.conn-input
+                  span#basic-addon1.input-group-addon Site web de l'organisme
+                  input#website.form-control(type='url', placeholder='', name='website', aria-describedby='basic-addon1')
+                .input-group.conn-input
+                  span#basic-addon1.input-group-addon NEQ
+                  input#neq.form-control(type='text', placeholder='', name='neq', aria-describedby='basic-addon1')
+                .input-group.conn-input
+                  span#basic-addon1.input-group-addon Cause
+                  select#cause.form-control(placeholder='', name='cause', aria-describedby='basic-addon1')
+                    option Environnement
+                    option Solidarité
+                    option Culture
+              .input-group.conn-input
+                  span#basic-addon1.input-group-addon Mot de passe
+                  input#password.form-control(type='password', placeholder='', name='password', aria-describedby='basic-addon1', required)
+              input(type='submit', style='position: absolute; left: -9999px; width: 1px; height: 1px;', tabindex='-1', form='registerform')
+            button.btn.btn-default.mbot(type='submit', form='registerform') S'inscrire

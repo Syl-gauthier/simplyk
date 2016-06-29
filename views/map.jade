@@ -1,18 +1,9 @@
 extends ./layout.jade
 block vars
-  - var page = 'accueil'
-  
+  - var page = 'map'
+
 
 block content
-      .container-fluid.degrade
-        #first_section_entrance.row
-          .col-md-8.col-md-offset-2
-            .logo
-              img#logo_entrance(src='images/simplyk_log_text_v2.png', align='middle')
-              h2.text-center Trouve-toi une opportunité de bénévolat ! <br><br>
-                i.fa.fa-arrow-circle-down.fa-2x.text-center.firstColor(aria-hidden='true')
-            if error
-              p.alert.alert-danger ERROR : #{error}
       .container-fluid
         .row.fill
           .col-md-7.no-side-padding
@@ -46,20 +37,14 @@ block content
                               p= 'Pour ' + val.nbBenevoles + ' bénévoles'
                               p= 'Adresse: '+ val.address
                             .modal-footer
-                              #subscribe.button.btn.btn-default.pinkowa
-                                a(href='signup') S'inscrire
+                              button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+                              #subscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+val._id aria-expanded="false" aria-controls="collapseExample") S'inscrire
                               button.btn.btn-primary.pinkow(type='button')
-                                a(href='signup') Contactez
-      .container-fluid.footer
-        .row
-          .col-md-8.col-md-offset-2
-            p.text-center.white Simplyk, Facilitateur de Bénévolat
-          .col-md-2
-            p.white Suivez-nous !
-            a(href="https://www.facebook.com/simplykMTL/?fref=ts")
-              i.icon.icon-2x.icon-sk.icon-sk-white.icon-facebook-official
-            a(href="https://twitter.com/simplykMTL")
-              i.icon.icon-2x.icon-sk.icon-sk-white.icon-twitter
+                                a(href='mailto:'+val.mail+'?subject=Participation%20à%20:%20'+val.intitule, target='_blank') Contactez
+                              div.collapse.tp-15(id = "collapse" + val._id)
+                                div.well Es-tu sûr de vouloir t'inscrire ? <br> Ton aide sera très appréciée ! L'organisme va en être informé et confirmera ta participation. Tu peux aussi le contacter directement grâce au bouton 'S'inscrire' ci-dessus !<br> <br>
+                                  button.btn.btn-primary.pinkow.subscribe-button(type='button') Oui
+                                  button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
 
 
 block footscript
@@ -137,6 +122,12 @@ block footscript
     }
   script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&callback=initMap"
          async defer)
+  // jQuery (necessary for Bootstrap's JavaScript plugins)
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+  // jQuery
+  script(src='javascripts/my-jquery.js')
+  // Include all compiled plugins (below), or include individual files as needed
+  script(src='javascripts/bootstrap.min.js')
   //Modal bootstrap
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {

@@ -20,6 +20,8 @@ $RECYCLE.BIN/
 
 node_modules/
 
+bower_components/
+
 # =========================
 # Operating System Files
 # =========================
