@@ -9,8 +9,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
-var Opp = require('../models/opp_model.js');
-var User = require('../models/user_model.js');
+var Opp = require('../models/opp_model.js'); var User = require('../models/user_model.js');
 var Organism = require('../models/organism_model.js');
 
 var app = express();
@@ -148,6 +147,10 @@ router.get('/map', function(req, res){
         user: req.isAuthenticated()});
     }
   });
+});
+
+router.get('/forgot', function(req, res){
+  res.render('forgot.jade');
 });
 
 module.exports = router;
