@@ -119,8 +119,8 @@ app.use(flash());
 app.use('/', routes);
 app.use('/', users);
 app.use('/', auth);
+app.use('/', profile);
 app.use('/addopp', addopp);
-app.use('/profile', profile);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

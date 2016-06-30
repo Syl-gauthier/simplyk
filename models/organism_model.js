@@ -11,7 +11,7 @@ var OrganismSchema = new Schema({
 	neq: Number,
 	website: String,
     password: String,
-	firstname: String,
+	firstname: String, //Contact info
 	lastname: String,
 	color: String,
 	phone: String,

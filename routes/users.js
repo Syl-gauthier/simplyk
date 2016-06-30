@@ -36,6 +36,7 @@ router.post('/subscribe', function(req,res){
       console.log('Failure to find opportunity');
       return handleError(err);
     }
+
     console.log(opportunity.toJSON());
     //If the user has already subscribed to this opp, end, if not, subscription and go to profile
     subscribe.findApplicants(opportunity, function(applicantsList){
@@ -53,8 +54,11 @@ router.post('/subscribe', function(req,res){
             console(err);
           }
           else{
-            console.log('redirect to profile')
-            res.send({redirect: 'profile'});
+            req.user.opportunities.push({opp: opportunity._id});
+            req.user.save({}, function(err){
+              console.log('redirect to profile')
+              res.send({redirect: 'profile'});
+            })
           }
         });
       }

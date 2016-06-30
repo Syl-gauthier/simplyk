@@ -26,7 +26,7 @@ var UserSchema = new Schema({
   admin: {
       admin_id: ObjectId
   },
-  opportunities: [],
+  opportunities: [{opp: {type: Schema.Types.ObjectId, ref: 'Opp'}}],
 });
 
 UserSchema.methods.generateHash = crypt.generateHash;
