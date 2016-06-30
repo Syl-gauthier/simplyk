@@ -1,12 +1,14 @@
 //Volunteer related routes
 var express = require('express');
 
+var permissions = require('../permissions.js');
+
 var Opp = require('../models/opp_model.js');
 var subscribe = require('../middlewares/subscribe.js');
 var router = express.Router();
 
 /*GET map page*/
-router.get('/map', function(req, res){
+router.get('/map', permissions.requireGroup('volunteer'), function(req, res){
   Opp.find({}, function(err, opps){
     if(err){
       console.log(err);

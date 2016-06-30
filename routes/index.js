@@ -9,6 +9,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
+var permissions = require('../permissions.js');
 var Opp = require('../models/opp_model.js');
 var User = require('../models/user_model.js');
 var Organism = require('../models/organism_model.js');
@@ -29,8 +30,8 @@ router.get('/', function(req, res, next) {
   });
 });
 
-
-router.get('/dashboard', function(req, res){
+router.get('/dashboard', permissions.requireGroup('organism'), 
+  function(req, res){
   Opp.find({oName: req.user.orgName}, function(err, opps){
     res.render('dashboard.jade', {opps: opps,
       user: req.isAuthenticated()});
