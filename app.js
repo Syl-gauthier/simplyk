@@ -16,6 +16,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var addopp = require('./routes/addopp');
 var profile = require('./routes/profile');
+var auth = require('./routes/auth');
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
@@ -30,8 +31,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 //connect to mongo
-//mongoose.connect('mongodb://localhost/test');
-mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
+mongoose.connect('mongodb://localhost/test');
+//mongoose.connect('mongodb://simplyk-org:Oeuf2poule@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000');
 
 passport.use('local-volunteer', new LocalStrategy({
     usernameField: 'email',
@@ -116,9 +117,10 @@ app.use(passport.session());
 app.use(flash());
 
 app.use('/', routes);
-app.use('/users', users);
+app.use('/', users);
+app.use('/', auth);
+app.use('/', profile);
 app.use('/addopp', addopp);
-app.use('/profile', profile);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
