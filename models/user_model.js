@@ -24,10 +24,9 @@ var UserSchema = new Schema({
   },
   student: Boolean, //if has a school or not
   admin: {
-      admin_id: ObjectId,
-      admin_name: String,
-      admin_mail: String
-  }
+      admin_id: ObjectId
+  },
+  opportunities: [],
 });
 
 UserSchema.methods.generateHash = crypt.generateHash;

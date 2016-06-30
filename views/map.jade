@@ -43,21 +43,19 @@ block content
                                 a(href='mailto:'+val.mail+'?subject=Participation%20à%20:%20'+val.intitule, target='_blank') Contactez
                               div.collapse.tp-15(id = "collapse" + val._id)
                                 div.well Es-tu sûr de vouloir t'inscrire ? <br> Ton aide sera très appréciée ! L'organisme va en être informé et confirmera ta participation. Tu peux aussi le contacter directement grâce au bouton 'S'inscrire' ci-dessus !<br> <br>
-                                  button.btn.btn-primary.pinkow.subscribe-button(type='button') Oui
+                                  button#subscribe-button.btn.btn-primary.pinkow Oui
                                   button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
 
 
 block footscript
   script.
     $( document ).ready(function() {
-      $('.subscribe').click(function(){
-
-      });
-      $('.subscribe-button').click(function(){
-        var identifiant = $(this).parents().parents().children('.media-body').children('#identifiant').children('p').html();
+      $('#subscribe-button').click(function(){
+        var identifiant = $(this).parents().parents().
+            children('.media-body').children('#identifiant').children('p').html();
         console.log('id : ' + identifiant);
         //On utilise l'identifiant de l'opp dans mongoDB pour traiter l'ajout de ce favori dans /addfavopp
-        $.post('subscribe', {identifiant: identifiant}).done(function(data, status){
+        $.post('subscribe', {opportunity_id: identifiant}).done(function(data, status){
           if(data.error){
             alert("Remarque: " + data.error);
           }
