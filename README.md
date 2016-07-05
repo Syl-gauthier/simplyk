@@ -1,0 +1,2 @@
+Environment variable required:
+MONGO_DB_CREDENTIALS
