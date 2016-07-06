@@ -29,15 +29,17 @@ block content
             | Adresse mail: #{user.email}
             small
           li.list-group-item#password-group
-            | Password: ******
+            p Password: #[span.display ******]
             ul.list-group#edit-password-list.hidden.editing
+              li.list-group-item.hidden#password-error
+                p.alert.alert-danger Wrong password
               li.list-group-item
                 input(id="current-password", type="password", placeholder="Current password")
               li.list-group-item
                 input(id="new-password", type="password", placeholder="New password")
               li.list-group-item
                 input(id="confirm-password" type="password", placeholder="Confirm password")
-            button#edit-password-button Edit
+            button#edit-password-button.display Edit
             button#cancel-password-button.editing.hidden Cancel
             button#save-password-button.editing.hidden Save
       .col-md-4.col-md-offset-2
@@ -97,23 +99,25 @@ block footscript
     //Edit password functions
     $('#edit-password-button').click(function(){
       console.log("Change");
-      $('#edit-password-button').addClass('hidden');
-
+      $('#password-group').find('.display').addClass('hidden');
       $('#password-group').find('.editing').removeClass('hidden');
     });
 
     var closeEditPassword = function(){
-      $('#edit-password-button').removeClass('hidden');
+      $('#password-group').find('.display').removeClass('hidden');
 
       $('#password-group').find('.editing').addClass('hidden');
       //Clear inputs
       $('#password-group').find('input').val("");
+      $('#password-error').addClass('hidden');
+    }
+
+    var openEditPassword = function(){
     }
 
     $('#cancel-password-button').click(function(){
       closeEditPassword();
     });
-
 
     $('#save-password-button').click(function(){
       console.log("Save password");
@@ -136,6 +140,8 @@ block footscript
               closeEditPassword();
             }
             else{
+              //Show error
+              $("#password-error").removeClass("hidden");
             }
           });
       }
