@@ -34,6 +34,7 @@ body{
 }
 
 .navbar-brand img{
+	max-width: 150px !important;
 	width: auto;
 	height: 100%;
 }
@@ -110,7 +111,7 @@ a:hover{
 
 .my-modal-body {
 	color: white;
-	background-image: url('../images/28.jpg');
+	background-image: url('/images/28.jpg');
 	background-color: #C8FFC0;
 }
 
@@ -144,7 +145,7 @@ a:hover{
 
 #first_section_entrance{
 	height: 500px;
-	background-image: url('../images/congruent_pentagon.png');
+	background-image: url('/images/congruent_pentagon.png');
 }
 
 .favorite {
