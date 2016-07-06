@@ -25,12 +25,12 @@ router.post('/login',
     if(req.user.group == "organism"){
       req.session.organism = req.user;
       req.session.group = "organism";
-      res.redirect('/dashboard'); 
+      res.redirect('/organism/dashboard'); 
     }
     else if(req.user.group == "volunteer"){
       req.session.volunteer = req.user;
       req.session.group = "volunteer";
-      res.redirect('/map');
+      res.redirect('/volunteer/map');
     }
   });
 
