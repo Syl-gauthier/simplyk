@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var stormpath = require('express-stormpath');
 
 var User = require('../models/user_model.js');
 var Opp = require('../models/opp_model.js');

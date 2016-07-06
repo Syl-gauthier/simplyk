@@ -9,7 +9,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
-var permissions = require('../permissions.js');
+var permissions = require('../middlewares/permissions.js');
 var Opp = require('../models/opp_model.js');
 var User = require('../models/user_model.js');
 var Organism = require('../models/organism_model.js');
