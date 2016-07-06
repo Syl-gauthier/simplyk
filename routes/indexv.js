@@ -7,54 +7,70 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var Opp = require('../models/opp_model.js');
 
+var permissions = require('../middlewares/permissions.js');
 var subscribe = require('../middlewares/subscribe.js');
 var app = express();
 
 
 /*GET map page*/
-router.get('/map', function(req, res){
-	Opp.find({}, function(err, opps){
-		if(err){
-			console.log(err);
-			res.render('map.jade', {session: req.session, error: err});
-		}
-		//Create opps list
-		else{			
-			res.render('map.jade', {opps: opps, session: req.session, user: req.user});
-		}
-	});
+router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req, res){
+  Opp.find({}, function(err, opps){
+    if(err){
+      console.log(err);
+      res.render('map.jade', {session: req.session, error: err});
+    }
+    //Create opps list
+    else{           
+      console.log(req.isAuthenticated());
+      res.render('map.jade', {opps: opps, volunteer: req.isAuthenticated()});
+    }
+  });
 });
 
-router.post('/subscribe', function(req,res){
-	//identifiant de l'opp sur laquelle on a cliqué
-	var id_new_favorite=req.body.identifiant;
-	//Search opp in DB
-	Opp.findById(id_new_favorite, function(err, opp){
-		if (err) return handleError(err);
-		//If the user has already subscribed to this opp, end, if not, subscription and go to profile
-		subscribe.findApplicants(opp, function(applicantsList){
-			console.log('applicantsList: '+applicantsList);
-			if (applicantsList.indexOf(req.user.customData.id) !== -1){
-				var error = 'Tu es déjà inscrit à cet évènement ! :)';
-				console.log(error);
-				res.send({error: error});
-			}
-			else{
-				console.log('The user has not yet subscribed to this opp');
-				opp.applications.addToSet({"applicant": req.user.customData.id, "status": "Pending", "story": null});
-				opp.save(function(err){
-					if(err){
-						console(err);
-					}
-					else{
-						console.log('redirect to profile')
-						res.send({redirect: 'profile'});
-					}
-				});
-			}
-		});
-		
-	});
+
+router.post('/volunteer/subscribe', function(req,res){
+  //identifiant de l'opp sur laquelle on a cliqué
+  console.log(req.body.opportunity_id);
+
+  //Search opp in DB
+  Opp.findById(req.body.opportunity_id, function(err, opportunity){
+    if (err){
+      console.log('Failure to find opportunity');
+      return handleError(err);
+    }
+
+    console.log(opportunity.toJSON());
+    //If the user has already subscribed to this opp, end, if not, subscription and go to profile
+    subscribe.findApplicants(opportunity, function(applicantsList){
+      console.log('applicantsList: '+applicantsList);
+      if (opportunity.applications.indexOf(req.user._id) !== -1){
+        var error = 'Tu es déjà inscrit à cet évènement ! :)';
+        console.log(error);
+        res.send({error: error});
+      }
+      else{
+        console.log('The user has not yet subscribed to this opp');
+        opportunity.applications.addToSet({"applicant": req.user._id, "status": "Pending", "story": null});
+        opportunity.save(function(err){
+          if(err){
+            console(err);
+          }
+          else{
+            req.user.opportunities.push({opp: opportunity._id});
+            req.user.save({}, function(err){
+              console.log('redirect to profile')
+              res.send({redirect: '/volunteer/profile'});
+            })
+          }
+        });
+      }
+    });
+  });
+});
+
+router.post('/volunteer/logout', function(req, res){
+  req.session.destroy();
+  res.redirect('/');
 });
 
 module.exports = router;

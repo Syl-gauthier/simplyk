@@ -15,7 +15,7 @@ block content
               each val, index in opps
                 li.list-group-item
                   div.media-left.media-middle
-                    a(href='profile')
+                    a(href='/volunteer/profile')
                       img.media-object(src='/images/clouds.jpg')
                   div.media-body
                     h4.media-heading= val.oName
@@ -60,7 +60,7 @@ block footscript
             alert("Remarque: " + data.error);
           }
           else if (data.redirect){
-            window.location.replace("/profile");
+            window.location.replace("/volunteer/profile");
           };
         });
       });

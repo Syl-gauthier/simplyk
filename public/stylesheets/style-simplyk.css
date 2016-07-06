@@ -34,7 +34,6 @@ body{
 }
 
 .navbar-brand img{
-	max-width: 150px !important;
 	width: auto;
 	height: 100%;
 }

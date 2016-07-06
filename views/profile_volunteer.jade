@@ -14,32 +14,35 @@ block content
             p.alert.alert-danger #{error}
         ul.list-group
           li.list-group-item
-            | Prénom: #{user.fname}
+            | Prénom: #{volunteer.firstname}
             small
           |             
           li.list-group-item
-            | Nom: #{user.lname}
+            | Nom: #{volunteer.lastname}
             small
           |             
           li.list-group-item
-            | Date de naissance: #{user.birthdate}
+            | Date de naissance: #{volunteer.birthdate}
             small
           |             
           li.list-group-item
-            | Adresse mail: #{user.email}
+            | Adresse mail: #{volunteer.email}
+            small
+          li.list-group-item
+            | Téléphone: #{volunteer.phone}
             small
       .col-md-4.col-md-offset-2
         .page-header
           h1 Mes inscriptions
         #offers-list.no-side-padding
             ul.list-group.list-opportunity
-              if opportunities.length == 0
-                p Pas d opportunites
-              each opp, index in opportunities
+              if opps.length == 0
+                p Pas d'opportunités
+              each opp, index in opps
                 li.list-group-item
                   div.media-left.media-middle
                     a(href='profile')
-                      img.media-object(src='images/clouds.jpg')
+                      img.media-object(src='/images/clouds.jpg')
                   div.media-body
                     h4.media-heading= opp.oName
                     a.firstColor= opp.intitule
@@ -81,7 +84,6 @@ block footscript
         $(this).parent().parent().hide();
       });
     });
-  script(src='javascripts/bootstrap.min.js')
   //Modal bootstrap
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {

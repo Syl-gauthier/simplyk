@@ -25,7 +25,7 @@ router.get('/', function(req, res, next) {
     }
     //Create opps list
     else{
-      res.render('accueil.jade', {opps: opps, session: req.session, user: req.user});
+      res.render('accueil.jade', {opps: opps, session: req.session});
     }
   });
 });

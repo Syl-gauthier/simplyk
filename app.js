@@ -123,8 +123,8 @@ app.use('/', users);
 app.use('/', auth);
 app.use('/', profile);
 app.use('/addopp', addopp);
-app.use('/volunteer', vroutes);
-app.use('/volunteer/profile', vprofile);
+app.use('/', vroutes);
+app.use('/', vprofile);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
