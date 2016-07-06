@@ -1,7 +1,7 @@
 //Volunteer related routes
 var express = require('express');
 
-var permissions = require('../permissions.js');
+var permissions = require('../middlewares/permissions.js');
 
 var Opp = require('../models/opp_model.js');
 var subscribe = require('../middlewares/subscribe.js');
