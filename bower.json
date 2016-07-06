@@ -1,6 +1,6 @@
 {
-  "name": "simplyk-org",
-  "description": "Simplyk platform for organizations",
+  "name": "simplyk",
+  "description": "Simplyk platform",
   "main": "app.js",
   "authors": [
     "ThibautJaurou"
