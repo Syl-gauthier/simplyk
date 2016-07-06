@@ -138,6 +138,7 @@ block footscript
             console.log("Change password attempt: "+data.success);   
             if(data.success){
               closeEditPassword();
+              BootstrapDialog.show({message: "Password changed successfully!"});
             }
             else{
               //Show error
@@ -148,6 +149,7 @@ block footscript
     });
 
   script(src='javascripts/bootstrap.min.js')
+  script(src='bower_components/bootstrap3-dialog/src/js/bootstrap-dialog.js')
   //Modal bootstrap
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
