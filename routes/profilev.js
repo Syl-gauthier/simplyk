@@ -11,12 +11,12 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
 	Opp.find({applications: {$elemMatch: { applicant: req.user._id}}}, function(err, opps){
 		if(err){
 			console.log(err);
-			res.render('profile_volunteer.jade', {session: req.session, error: err});
+			res.render('v_profile.jade', {session: req.session, error: err});
 		}
 		//Create opps list
 		else{
 			console.log(req.session.volunteer);
-			res.render('profile_volunteer.jade', {opps: opps, volunteer: req.session.volunteer});
+			res.render('v_profile.jade', {opps: opps, volunteer: req.session.volunteer});
 		}
 	});
 });

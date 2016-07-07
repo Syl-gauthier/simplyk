@@ -8,7 +8,7 @@ var Organism = require('../models/organism_model.js');
 var Opp = require('../models/opp_model.js');
 
 router.get('/organism/addopp', permissions.requireGroup('organism'), function(req, res){
-  res.render('addopp.jade', {organism: req.isAuthenticated()});
+  res.render('o_addopp.jade', {organism: req.isAuthenticated()});
 });
 
 router.post('/organism/addopp', permissions.requireGroup('organism'), function(req,res){
@@ -29,7 +29,7 @@ router.post('/organism/addopp', permissions.requireGroup('organism'), function(r
     opp.save(function(err){
       if(err){
           var error = 'Something bad happened! Try again!';
-          res.render('addopp.jade', {error: err, organism: req.isAuthenticated()})
+          res.render('o_addopp.jade', {error: err, organism: req.isAuthenticated()})
       }
       else{
           res.redirect('/dashboard');

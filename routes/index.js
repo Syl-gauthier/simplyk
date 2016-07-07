@@ -33,7 +33,7 @@ router.get('/', function(req, res, next) {
 router.get('/organism/dashboard', permissions.requireGroup('organism'), 
   function(req, res){
   Opp.find({oName: req.user.orgName}, function(err, opps){
-    res.render('dashboard.jade', {opps: opps, organism: req.isAuthenticated()});
+    res.render('o_dashboard.jade', {opps: opps, organism: req.isAuthenticated()});
   });
 });
 

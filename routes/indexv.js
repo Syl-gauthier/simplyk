@@ -17,12 +17,12 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
   Opp.find({}, function(err, opps){
     if(err){
       console.log(err);
-      res.render('map.jade', {session: req.session, error: err});
+      res.render('v_map.jade', {session: req.session, error: err});
     }
     //Create opps list
     else{           
       console.log(req.isAuthenticated());
-      res.render('map.jade', {opps: opps, volunteer: req.isAuthenticated()});
+      res.render('v_map.jade', {opps: opps, volunteer: req.isAuthenticated()});
     }
   });
 });
