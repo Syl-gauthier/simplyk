@@ -122,7 +122,7 @@ app.use('/', routes);
 app.use('/', users);
 app.use('/', auth);
 app.use('/', profile);
-app.use('/addopp', addopp);
+app.use('/', addopp);
 app.use('/', vroutes);
 app.use('/', vprofile);
 

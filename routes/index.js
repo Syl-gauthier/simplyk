@@ -30,17 +30,16 @@ router.get('/', function(req, res, next) {
   });
 });
 
-router.get('/dashboard', permissions.requireGroup('organism'), 
+router.get('/organism/dashboard', permissions.requireGroup('organism'), 
   function(req, res){
   Opp.find({oName: req.user.orgName}, function(err, opps){
-    res.render('dashboard.jade', {opps: opps,
-      user: req.isAuthenticated()});
+    res.render('dashboard.jade', {opps: opps, organism: req.isAuthenticated()});
   });
 });
 
 //for ajax call only (for now)
 //Get users info from an opp intitule
-router.post('/getOppUsers', function(req, res){
+router.post('/organism/getOppUsers', function(req, res){
   console.log("opp_id: " + req.body.opp_id);
 
   Opp.findById(req.body.opp_id).populate("applications.applicant").exec(function(err, opp){
@@ -54,6 +53,11 @@ router.post('/getOppUsers', function(req, res){
       res.render('applicants.jade', {applications: opp.applications});
     }
   });
+});
+
+router.post('/organism/logout', function(req, res){
+  req.session.destroy();
+  res.redirect('/');
 });
 
 module.exports = router;

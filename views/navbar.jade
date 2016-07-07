@@ -16,13 +16,19 @@ nav#nav-me.navbar.navbar-default
       li.navbar-brand(role='presentation')
         span.label.label-danger SITE EN CONSTRUCTION
     ul.nav.navbar-nav.navbar-right
-      if volunteer || organism
+      if volunteer
         unless page=='profile'
           li.navbar-link(role='presentation')
             a(href='profile') Mon profil
         unless page=='map'
           li.navbar-link(role='presentation')
             a(href='map') Carte
+        li(role='presentation')
+          form.navbar-form( method='post', action='./logout')
+            button.btn.btn-success-outline.pinkow(type='submit') Déconnexion
+      else if organism
+        li.navbar-link(role='presentation')
+            a(href='profile') Mon profil
         li(role='presentation')
           form.navbar-form( method='post', action='./logout')
             button.btn.btn-success-outline.pinkow(type='submit') Déconnexion

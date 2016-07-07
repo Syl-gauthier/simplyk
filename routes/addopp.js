@@ -3,14 +3,15 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var gmaps = require('../middlewares/gmaps.js');
 
+var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
 var Opp = require('../models/opp_model.js');
 
-router.get('/', function(req, res){
-  res.render('addopp.jade');
+router.get('/organism/addopp', permissions.requireGroup('organism'), function(req, res){
+  res.render('addopp.jade', {organism: req.isAuthenticated()});
 });
 
-router.post('/', function(req,res){
+router.post('/organism/addopp', permissions.requireGroup('organism'), function(req,res){
   //Transform address into lon/lat
   console.log('address sent to gmaps: ' + req.body.address)
 
@@ -25,11 +26,10 @@ router.post('/', function(req,res){
       lon: lon,
       mail: req.user.email
     });
-
     opp.save(function(err){
       if(err){
           var error = 'Something bad happened! Try again!';
-          res.render('addopp.jade', {error: err})
+          res.render('addopp.jade', {error: err, organism: req.isAuthenticated()})
       }
       else{
           res.redirect('/dashboard');
