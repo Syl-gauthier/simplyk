@@ -30,18 +30,19 @@ block content
             small
           li.list-group-item#password-group
             p Password: #[span.display ******]
-            ul.list-group#edit-password-list.hidden.editing
-              li.list-group-item.hidden#password-error
-                p.alert.alert-danger Wrong password
-              li.list-group-item
-                input(id="current-password", type="password", placeholder="Current password")
-              li.list-group-item
-                input(id="new-password", type="password", placeholder="New password")
-              li.list-group-item
-                input(id="confirm-password" type="password", placeholder="Confirm password")
-            button#edit-password-button.display Edit
-            button#cancel-password-button.editing.hidden Cancel
-            button#save-password-button.editing.hidden Save
+            form#edit-password-form.form-horizontal.hidden.editing
+              .input-group.conn-input
+                p.alert.alert-danger#password-error Wrong password
+                .input-group.conn-input
+                  input#password.form-control(type="password", placeholder="Current password")
+                .input-group.conn-input
+                  input#password.form-control(name="newPassword", type="password", placeholder="New password")
+                .input-group.conn-input
+                  input#password.form-control(name="confirmPassword", type="password", placeholder="Confirm password")
+            div.btn-toolbar
+                button.btn.btn-default#edit-password-button.display Edit
+                button.btn.btn-default#cancel-password-button.editing.hidden Cancel
+                button.btn.btn-default#save-password-button.editing.hidden Save
       .col-md-4.col-md-offset-2
         .page-header
           h1 Mes inscriptions
@@ -78,24 +79,6 @@ block content
 
 block footscript
   script.
-    $(document).ready(function() {
-      $('.favorite').hover(function(){
-        $(this).addClass('icon-spin');
-      }, function(){
-        $('.favorite').removeClass('icon-spin');
-      });
-      $('.favorite').click(function(){
-        var orgName = $(this).parents().parents().children('.media-body').children('.media-heading').html();
-        var intitule = $(this).parents().parents().children('.media-body').children('a').html();
-        var nbBenevoles = $(this).parents().parents().children('.media-body').children('p').html();
-        var identifiant = $(this).parents().parents().children('.media-body').children('#identifiant').children('p').html();
-        //On applique la même procédure que si on ajoutait (ou retirait) un favori depuis la map. Il sera retiré.
-        $.post('addfavopp', {orgName: orgName, intitule: intitule, nbBenevoles: nbBenevoles, identifiant:identifiant}).done(function(){});
-        //On retire ce favori de l'affichage de la liste
-        $(this).parent().parent().hide();
-      });
-    });
-    
     //Edit password functions
     $('#edit-password-button').click(function(){
       console.log("Change");
@@ -110,9 +93,6 @@ block footscript
       //Clear inputs
       $('#password-group').find('input').val("");
       $('#password-error').addClass('hidden');
-    }
-
-    var openEditPassword = function(){
     }
 
     $('#cancel-password-button').click(function(){
@@ -148,8 +128,29 @@ block footscript
       }
     });
 
-  script(src='javascripts/bootstrap.min.js')
+    $(document).ready(function(){
+      $('#edit-password-form').formValidation({
+          framework: 'bootstrap',
+          icon: {
+              valid: 'glyphicon glyphicon-ok',
+              invalid: 'glyphicon glyphicon-remove',
+              validating: 'glyphicon glyphicon-refresh'
+          },
+          fields: {
+              confirmPassword: {
+                  validators: {
+                      identical: {
+                          field: 'new-password',
+                          message: 'The password and its confirm are not the same'
+                      }
+            }}}});
+    });
+
+  script(src='bower_components/bootstrap/dist/js/bootstrap.min.js')
+  script(src='bower_components/form.validation/dist/js/formValidation.min.js')
+  script(src='bower_components/form.validation/dist/js/framework/bootstrap.min.js')
   script(src='bower_components/bootstrap3-dialog/src/js/bootstrap-dialog.js')
+
   //Modal bootstrap
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
