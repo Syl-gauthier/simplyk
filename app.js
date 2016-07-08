@@ -12,17 +12,21 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
 //Routes files
-var routes = require('./routes/index');
+var a_routes = require('./routes/a_index');
+var o_routes = require('./routes/o_index');
 var users = require('./routes/users');
-var addopp = require('./routes/addopp');
-var profile = require('./routes/profile');
-var auth = require('./routes/auth');
+var o_addopp = require('./routes/o_addopp');
+var o_profile = require('./routes/o_profile');
+var g_auth = require('./routes/g_auth');
+var v_routes = require('./routes/v_index');
+var v_profile = require('./routes/v_profile');
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var Organism = require('./models/organism_model.js');
 var User = require('./models/user_model.js');
+var Admin = require('./models/admin_model.js');
 
 var app = express();
 
@@ -75,6 +79,26 @@ passport.use('local-organism', new LocalStrategy({
   }
 ));
 
+passport.use('local-admin', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  function(email, password, done) {
+    Admin.findOne({email: email}, function (err, admin) {
+      if (err) { return done(err); }
+      if (!admin) {
+        return done(null, false, { message: 'Incorrect mail.' });
+      }
+      if (!admin.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      admin = admin.toJSON();
+      admin.group = "admin";
+      return done(null, admin);
+    });
+  }
+));
+
 passport.serializeUser(function(user, done) {
   done(null, user._id);
 });
@@ -90,6 +114,11 @@ passport.deserializeUser(function(req, id, done) {
   }
   else if(req.session.group == "organism"){
     Organism.findById(id, function(err, org){
+        done(err, org);
+    });
+  }
+  else if(req.session.group == "admin"){
+    Admin.findById(id, function(err, org){
         done(err, org);
     });
   }
@@ -116,11 +145,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-app.use('/', routes);
+app.use('/', a_routes);
+app.use('/', o_routes);
 app.use('/', users);
-app.use('/', auth);
-app.use('/', profile);
-app.use('/addopp', addopp);
+app.use('/', g_auth);
+app.use('/', o_profile);
+app.use('/', o_addopp);
+app.use('/', v_routes);
+app.use('/', v_profile);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -136,7 +168,7 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
 	app.use(function(err, req, res, next) {
 		res.status(err.status || 500);
-		res.render('error', {
+		res.render('g_error', {
 			message: err.message,
 			error: err
 		});
@@ -147,7 +179,7 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
 	res.status(err.status || 500);
-	res.render('error', {
+	res.render('g_error', {
 		message: err.message,
 		error: {}
 	});

@@ -17,8 +17,7 @@ router.get('/map', permissions.requireGroup('volunteer'), function(req, res){
     //Create opps list
     else{           
       console.log(req.isAuthenticated());
-      res.render('map.jade', {opps: opps, 
-        user: req.isAuthenticated()});
+      res.render('map.jade', {opps: opps, user: req.isAuthenticated()});
     }
   });
 });

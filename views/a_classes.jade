@@ -1,0 +1,111 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'students'
+
+
+block content
+      .container-fluid
+        .row.fill
+          ol.breadcrumb
+              li
+                a(href="/admin/dashboard") Tableau de bord
+              li.active Mes étudiants
+          .col-md-10.col-md-offset-1
+            h1.page-header.firstColor Mes étudiants
+            div.table-responsive
+              table.table.table-striped.table-bordered.table-hover.table-condensed
+                th Nom
+                th Prénom
+                th Heures effectués
+                th Dossier
+                tr.warning
+                  td 1ère secondaire
+                  td
+                  td
+                  td
+                tr.success
+                  td Beaudet
+                  td Martin
+                  td 14 h
+                  td
+                    button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
+                tr.success
+                  td Onereau
+                  td Thibaut
+                  td 12 h
+                  td
+                    button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
+                tr
+                  td Gély
+                  td Paul
+                  td 8 h
+                  td
+                    button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
+                tr
+                  td Pessé
+                  td Samy
+                  td 1 h
+                  td
+                    button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
+                tr
+                  td Brard
+                  td Aurore
+                  td 3 h
+                  td
+                    button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
+                tr.success
+                  td Massol
+                  td Élise
+                  td 20 h
+                  td
+                    button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
+                tr.warning
+                  td 2ème secondaire
+                  td
+                  td
+                  td
+                tr.success
+                  td Guiral
+                  td Jordan
+                  td 12 h
+                  td
+                    button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
+                tr.success
+                  td Czapla
+                  td Damien
+                  td 14 h
+                  td
+                    button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
+                tr
+                  td Magliozzi
+                  td Fiona
+                  td 3 h
+                  td
+                    button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
+                tr.success
+                  td Ferrec
+                  td Guillaume
+                  td 24 h
+                  td
+                    button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
+                tr.success
+                  td Sudre
+                  td Arthur
+                  td 45 h
+                  td
+                    button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
+                tr
+                  td Gaborit
+                  td Nicolas
+                  td 6 h
+                  td
+                    button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
+
+
+block footscript
+  // jQuery (necessary for Bootstrap's JavaScript plugins)
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+  // jQuery
+  script(src='javascripts/my-jquery.js')
+  // Include all compiled plugins (below), or include individual files as needed
+  script(src='javascripts/bootstrap.min.js')
