@@ -147,6 +147,14 @@ a:hover{
 	background-image: url('/images/congruent_pentagon.png');
 }
 
+.background-stars {
+	background-image: url('../images/starsbig.jpg');
+	background-size: cover;
+	color: white;
+	font-weight: lighter;
+	border: solid 5px #E8E52C;
+}
+
 .favorite {
 	color: #FF1CB5;
 }

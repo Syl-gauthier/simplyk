@@ -1,0 +1,82 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'studentexample'
+
+
+block content
+      .container-fluid
+        .row.fill
+          ol.breadcrumb
+              li
+                a(href="/admin/dashboard") Tableau de bord
+              li
+                a(href="/admin/classes") Mes classes
+              li
+                a(href="/admin/classexample") 4ème secondaire
+              li.active Martin Beaudet
+          .col-md-6.col-md-offset-3
+            h1.page-header.text-center.firstColor Martin Beaudet - <br> Maison du développement durable
+            h3 L'opportunité
+            li.list-group-item
+                  div.media-left.media-middle
+                    a(href='/admin/profile')
+                      img.media-object(src='images/clouds.jpg')
+                  div.media-body
+                    h4.media-heading Maison du développement durable
+                    a.firstColor Accueil des invités
+                    p 4 h effectués le <strong>06/01/2016</strong>
+            h3 L'élève
+            li.list-group-item
+                  div.media-left.media-middle
+                    a(href='/admin/profile')
+                      img.media-object(src='images/p1.jpg')
+                  div.media-body
+                    h4.media-heading Martin Beaudet
+                    a.firstColor 14 h effectués
+                    p Date de naissance : 02/04/2001
+        .row
+          .col-md-10.col-md-offset-1
+            h1.page-header Le dossier
+            div.panel.panel-default
+              div.panel-heading
+                h3 Pré-questionnement de l’élève :
+                p Complété le <strong>04/01/2016</strong> par <strong>Martin Beaudet</strong>
+              div.panel-body
+                div.panel.panel-warning
+                  div.panel-heading
+                    h4 A quel problème de fond répond cette action ? 
+                  div.panel-body
+                    p Cette action participe à l’effort global de préserver l’environnement et la planète.
+            div.panel.panel-default
+              div.panel-heading
+                h3 Retours de l'organisme sur l'élève
+                p Complété le <strong>06/01/2016</strong> par <strong>la Maison du développement durable</strong>
+              div.panel-body
+                div.panel.panel-info
+                  div.panel-heading
+                    h4 Quel point positif pouvez-vous mettre en avant sur l’élève, et qu’est-ce que l’élève pourrait améliorer ?
+                  div.panel-body
+                    p Elève très autonome qui prend de bonnes initiatives. Attention à toujours bien rester à l’écoute des instructions !
+            div.panel.panel-default
+              div.panel-heading
+                h3 Retour de l’élève sur lui-même 
+                p Complété le <strong>14/01/2016</strong> par <strong>Martin Beaudet</strong>
+              div.panel-body
+                div.panel.panel-warning
+                  div.panel-heading
+                    h4 Identifie une qualité du profil de l’apprenant que tu as développé au cours de cette activité et explique pourquoi.
+                  div.panel-body
+                    p Au cours de cette activité je suis devenu plus « Audacieux ». Par exemple, je suis allé à la rencontre des participants pour leur expliquer la mission de la Maison de Développement Durable.
+                div.panel.panel-warning
+                  div.panel-heading
+                    h4 Comment pourrais-tu prolonger ton expérience de bénévolat ?
+                  div.panel-body
+                    p Je vais continuer à chercher des informations sur la protection de l’environnement, et je vais participer à d’autres actions concernant ce domaine.
+
+block footscript
+  // jQuery (necessary for Bootstrap's JavaScript plugins)
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+  // jQuery
+  script(src='javascripts/my-jquery.js')
+  // Include all compiled plugins (below), or include individual files as needed
+  script(src='javascripts/bootstrap.min.js')
