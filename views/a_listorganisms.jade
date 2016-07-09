@@ -1,0 +1,40 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'listorganisms'
+  
+
+block content
+      .container-fluid
+        .row.fill
+          .col-md-8.col-md-offset-2.no-side-padding.scrollable
+            h1.text-center Liste des organismes
+            h4.text-center Tous les organismes inscrit et postant des opportunités sur Simplyk
+            ul.list-group.margintop
+              if error
+                p.alert.alert-danger #{error}
+              if organisms
+                each val, index in organisms
+                  li.list-group-item
+                    div.media-left.media-middle
+                      if (val.cause==='culture')
+                        i.icon.icon-2x.icon-rocket(style= "color:#{val.color}") 
+                      else if (val.cause === 'environment')
+                        i.icon.icon-2x.icon-leaf(style= "color:#{val.color}") 
+                      else
+                        i.icon.icon-2x.icon-puzzle-piece(style= "color:#{val.color}") 
+                    div.media-body
+                      if val.validation
+                        h4.media-heading= val.name 
+                          i.icon.icon-check.firstColor.icon-fw(href="#" data-toggle="tooltip" data-placement="top" title="Organisme vérifié par Simplyk")
+                      else
+                        h4.media-heading= val.name
+                      a.firstColor(href="#" data-toggle="tooltip" data-placement="top" title="Organisme vérifié par Simplyk")= val.cause
+                    div.media-right.media-middle
+                      button.btn.btn-primary Opportunités 
+                        span.badge= val.neq
+
+block footscript
+  script.
+    jQuery( document ).ready(function( $ ) {
+      $('[data-toggle="tooltip"]').tooltip();
+    });

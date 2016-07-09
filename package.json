@@ -1,5 +1,5 @@
 {
-  "name": "simplyk-org",
+  "name": "simplyk",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -28,7 +28,7 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ThibautJ/simplyk-org.git"
+    "url": "git+https://github.com/ThibautJ/simplyk.git"
   },
   "keywords": [
     "volunteer"
@@ -36,8 +36,8 @@
   "author": "ThibautJ",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ThibautJ/simplyk-org/issues"
+    "url": "https://github.com/ThibautJ/simplyk/issues"
   },
-  "homepage": "https://github.com/ThibautJ/simplyk-org#readme",
+  "homepage": "https://github.com/ThibautJ/simplyk#readme",
   "description": ""
 }
