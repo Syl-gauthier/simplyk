@@ -15,8 +15,8 @@ var AdminSchema = new Schema({
 	lat: Number,
 	lon: Number,
 	email: String,
-	users: [{
-		id: { type: Schema.Types.ObjectId, ref: 'Users' },
+	volunteers: [{
+		id: { type: Schema.Types.ObjectId, ref: 'Volunteers' },
 		status: String
 	}]//mails des utilisateurs qui ont mis l'Adminortunité en favori
 });

@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var permissions = require('../middlewares/permissions.js');
-var User = require('../models/user_model.js');
+var Volunteer = require('../models/volunteer_model.js');
 var Opp = require('../models/opp_model.js');
 
 

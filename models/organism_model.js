@@ -20,7 +20,7 @@ var OrganismSchema = new Schema({
 	cause: String, // solidarité, environnement, culture
 	validation: Boolean,//Simplyk approved ?
 	volunteers: [{
-		id: { type: Schema.Types.ObjectId, ref: 'Users' },
+		id: { type: Schema.Types.ObjectId, ref: 'Volunteers' },
 		user_name: String,
 		user_age: Number
 	}],

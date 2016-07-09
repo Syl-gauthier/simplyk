@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport')
 
-var User = require('../models/user_model.js');
+var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
 var Admin = require('../models/admin_model.js');
 
@@ -60,17 +60,17 @@ router.get('/register_admin', function(req, res){
 
 /* Handle Registration POST for volunteer*/
 router.post('/register_volunteer', function(req, res){
-  //Add user
-  newUser = new User({
+  //Add volunteer
+  newVolunteer = new Volunteer({
     email: req.body.email,
     lastname: req.body.lastname,
     firstname: req.body.firstname,
     birthdate: req.body.birthdate
   });
 
-  newUser.password = newUser.generateHash(req.body.password);
+  newVolunteer.password = newVolunteer.generateHash(req.body.password);
 
-  newUser.save({});
+  newVolunteer.save({});
   res.redirect('/');
 });
 
@@ -78,8 +78,7 @@ router.post('/register_volunteer', function(req, res){
 router.post('/register_organism', function(req, res){
   newOrganism = new Organism({
     email: req.body.email,
-    orgName: req.body.organism,
-    name: req.body.name,
+    orgName: req.body.name,
     lastname: req.body.lastname,
     firstname: req.body.firstname,
     password: req.body.password,
@@ -97,7 +96,7 @@ router.post('/register_organism', function(req, res){
 
 /* Handle Registration POST for admin*/
 router.post('/register_admin', function(req, res){
-  //Add user
+  //Add Volunteer
   newAdmin = new Admin({
     email: req.body.email,
     name: req.body.name,

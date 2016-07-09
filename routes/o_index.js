@@ -11,7 +11,7 @@ var ObjectId = Schema.ObjectId;
 
 var permissions = require('../middlewares/permissions.js');
 var Opp = require('../models/opp_model.js');
-var User = require('../models/user_model.js');
+var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
 
 var app = express();
@@ -32,7 +32,8 @@ router.get('/', function(req, res, next) {
 
 router.get('/organism/dashboard', permissions.requireGroup('organism'), 
   function(req, res){
-  Opp.find({oName: req.user.orgName}, function(err, opps){
+  Opp.find({orgName: req.user.orgName}, function(err, opps){
+    //res.json({opps: opps});
     res.render('o_dashboard.jade', {opps: opps, organism: req.isAuthenticated()});
   });
 });

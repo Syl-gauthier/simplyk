@@ -4,7 +4,7 @@ var ObjectId = Schema.ObjectId;
 
 var crypt = require('../auth/crypt');
 
-var UserSchema = new Schema({
+var VolunteerSchema = new Schema({
   id: ObjectId,
   email: String,
   password: String,
@@ -29,9 +29,9 @@ var UserSchema = new Schema({
   opportunities: [{opp: {type: Schema.Types.ObjectId, ref: 'Opp'}}],
 });
 
-UserSchema.methods.generateHash = crypt.generateHash;
-UserSchema.methods.validPassword = crypt.validPassword;
+VolunteerSchema.methods.generateHash = crypt.generateHash;
+VolunteerSchema.methods.validPassword = crypt.validPassword;
 
-var User = mongoose.model('Users', UserSchema);
+var Volunteer = mongoose.model('Volunteers', VolunteerSchema);
 
-module.exports = User;
+module.exports = Volunteer;

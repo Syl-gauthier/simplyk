@@ -26,7 +26,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var Organism = require('./models/organism_model.js');
-var User = require('./models/user_model.js');
+var Volunteer = require('./models/volunteer_model.js');
 var Admin = require('./models/admin_model.js');
 
 var app = express();
@@ -49,17 +49,17 @@ passport.use('local-volunteer', new LocalStrategy({
     passwordField: 'password'
   },
   function(email, password, done) {
-    User.findOne({email: email}, function (err, user) {
+    Volunteer.findOne({email: email}, function (err, volunteer) {
       if (err) { return done(err); }
-      if (!user) {
+      if (!volunteer) {
         return done(null, false, { message: 'Incorrect mail.' });
       }
-      if (!user.validPassword(password)) {
+      if (!volunteer.validPassword(password)) {
         return done(null, false, { message: 'Incorrect password.' });
       }
-      user = user.toJSON();
-      user.group = "volunteer";
-      return done(null, user);
+      volunteer = volunteer.toJSON();
+      volunteer.group = "volunteer";
+      return done(null, volunteer);
     });
   }
 ));
@@ -114,8 +114,8 @@ passport.deserializeUser(function(req, id, done) {
   console.log(req.session);
 
   if(req.session.group == "volunteer"){
-    User.findById(id, function(err, user) {
-      done(err, user);
+    Volunteer.findById(id, function(err, volunteer) {
+      done(err, volunteer);
     });
   }
   else if(req.session.group == "organism"){
@@ -124,8 +124,8 @@ passport.deserializeUser(function(req, id, done) {
     });
   }
   else if(req.session.group == "admin"){
-    Admin.findById(id, function(err, org){
-        done(err, org);
+    Admin.findById(id, function(err, admin){
+        done(err, admin);
     });
   }
   else{

@@ -29,12 +29,14 @@ block content
                             .modal-header
                               button.close(type='button', data-dismiss='modal', aria-label='Close')
                                 span(aria-hidden='true') &times;
-                              #myModalLabel.h4.modal-title= val.oName + ' - ' + val.intitule
+                              #myModalLabel.h4.modal-title= val.orgName + ' - ' + val.intitule
                             .modal-body.my-modal-body
                               p= 'Date: '+ val.date
                               p= 'Pour ' + val.nbBenevoles + ' bénévoles'
                               p= 'Adresse: '+ val.address
-                              p.applicants= 'Applicants:'
+                              p= 'Applicants'
+                              each value, i in val.applications
+                                p.applicants= value.applicant
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Close
                               button.btn.btn-primary.pinkow(type='button')

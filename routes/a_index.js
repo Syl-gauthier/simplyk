@@ -6,7 +6,8 @@ var ObjectId = Schema.ObjectId;
 
 var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
-/* GET users listing. */
+
+
 router.get('/admin/classes', permissions.requireGroup('admin'), function(req, res, next) {
   res.render('a_classes.jade', {session: req.session, admin: req.isAuthenticated()});
 });

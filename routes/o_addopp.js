@@ -18,7 +18,7 @@ router.post('/organism/addopp', permissions.requireGroup('organism'), function(r
   gmaps.codeAddress(req.body.address, function(lat, lon){
     var opp = new Opp({
       intitule: req.body.intitule,
-      oName: req.user.orgName,
+      orgName: req.user.orgName,
       nbBenevoles: req.body.nbBenevoles,
       address: req.body.address,
       date: req.body.date,
@@ -32,7 +32,7 @@ router.post('/organism/addopp', permissions.requireGroup('organism'), function(r
           res.render('o_addopp.jade', {error: err, organism: req.isAuthenticated()})
       }
       else{
-          res.redirect('/dashboard');
+          res.redirect('/organism/dashboard');
       }
     });
   });

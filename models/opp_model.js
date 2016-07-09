@@ -5,7 +5,7 @@ var ObjectId = Schema.ObjectId;
 //Opportunity schema creation
 var Opp = mongoose.model('Opp', new Schema({
 	intitule: String,
-	oName: String,
+	orgName: String,
 	nbBenevoles: Number,
 	date: Date,
 	address: String, //Full adress for convenience
@@ -13,7 +13,7 @@ var Opp = mongoose.model('Opp', new Schema({
 	lon: Number,
 	mail: String,
 	applications: [{
-		applicant: { type: Schema.Types.ObjectId, ref: 'User' },
+		applicant: { type: Schema.Types.ObjectId, ref: 'Volunteers' },
 		status: String,
 		story: String
 	}]
