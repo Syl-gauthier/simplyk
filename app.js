@@ -111,10 +111,10 @@ passport.serializeUser(function(user, done) {
  
 passport.deserializeUser(function(req, id, done) {
   console.log("Deserialize");
-  console.log(req.session);
 
   if(req.session.group == "volunteer"){
     User.findById(id, function(err, user) {
+      console.log(user.toJSON())
       done(err, user);
     });
   }

@@ -31,6 +31,21 @@ block content
           li.list-group-item
             | Téléphone: #{volunteer.phone}
             small
+          li.list-group-item#password-group
+            p Password: #[span.display ******]
+            form#edit-password-form.form-horizontal.hidden.editing
+              .input-group.conn-input
+                p#password-error.alert.alert-danger.hidden Wrong password
+                .input-group.conn-input
+                  input.form-control(name="current-password", type="password", placeholder="Current password")
+                .input-group.conn-input
+                  input.form-control(name="new-password", type="password", placeholder="New password")
+                .input-group.conn-input
+                  input.form-control(name="confirm-password", type="password", placeholder="Confirm password")
+            div.btn-toolbar
+                button.btn.btn-default#edit-password-button.display Edit
+                button.btn.btn-default#cancel-password-button.editing.hidden Cancel
+                button.btn.btn-default#save-password-button.editing.hidden Save
       .col-md-4.col-md-offset-2
         .page-header
           h1 Mes inscriptions
@@ -66,24 +81,9 @@ block content
                               button.btn.btn-default(type='button', data-dismiss='modal') Fermer
 
 block footscript
-  script.
-    $(document).ready(function() {
-      $('.favorite').hover(function(){
-        $(this).addClass('icon-spin');
-      }, function(){
-        $('.favorite').removeClass('icon-spin');
-      });
-      $('.favorite').click(function(){
-        var orgName = $(this).parents().parents().children('.media-body').children('.media-heading').html();
-        var intitule = $(this).parents().parents().children('.media-body').children('a').html();
-        var nbBenevoles = $(this).parents().parents().children('.media-body').children('p').html();
-        var identifiant = $(this).parents().parents().children('.media-body').children('#identifiant').children('p').html();
-        //On applique la même procédure que si on ajoutait (ou retirait) un favori depuis la map. Il sera retiré.
-        $.post('addfavopp', {orgName: orgName, intitule: intitule, nbBenevoles: nbBenevoles, identifiant:identifiant}).done(function(){});
-        //On retire ce favori de l'affichage de la liste
-        $(this).parent().parent().hide();
-      });
-    });
+  script(src='/edit-password.js')
+  script(src='/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.js')
+
   //Modal bootstrap
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
