@@ -108,13 +108,13 @@ passport.use('local-admin', new LocalStrategy({
 passport.serializeUser(function(user, done) {
   done(null, user._id);
 });
- 
+
 passport.deserializeUser(function(req, id, done) {
   console.log("Deserialize");
 
   if(req.session.group == "volunteer"){
     Volunteer.findById(id, function(err, volunteer) {
-      console.log(volunteer.toJSON())
+      //console.log(volunteer.toJSON())
       done(err, volunteer);
     });
   }
@@ -134,9 +134,9 @@ passport.deserializeUser(function(req, id, done) {
 });
 
 app.use(session({
-	cookieName: 'session',
-	secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
-	activeDuration: 1500 * 60 * 1000
+  cookieName: 'session',
+  secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
+  activeDuration: 1500 * 60 * 1000
 }));
 
 
@@ -162,9 +162,9 @@ app.use('/', v_profile);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-	var err = new Error('Not Found');
-	err.status = 404;
-	next(err);
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
 // error handlers
@@ -172,23 +172,23 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-	app.use(function(err, req, res, next) {
-		res.status(err.status || 500);
-		res.render('g_error', {
-			message: err.message,
-			error: err
-		});
-	});
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('g_error', {
+      message: err.message,
+      error: err
+    });
+  });
 }
 
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-	res.status(err.status || 500);
-	res.render('g_error', {
-		message: err.message,
-		error: {}
-	});
+  res.status(err.status || 500);
+  res.render('g_error', {
+    message: err.message,
+    error: {}
+  });
 });
 
 module.exports = app;

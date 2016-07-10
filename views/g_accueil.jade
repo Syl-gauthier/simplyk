@@ -1,7 +1,7 @@
 extends ./g_layout.jade
 block vars
   - var page = 'accueil'
-  
+
 
 block content
       .container-fluid.degrade
@@ -39,7 +39,7 @@ block content
                           .modal-content
                             .modal-header
                               button.close(type='button', data-dismiss='modal', aria-label='Close')
-                                span(aria-hidden='true') &times;        
+                                span(aria-hidden='true') &times;
                               #myModalLabel.h4.modal-title= val.oName + ' - ' + val.intitule
                             .modal-body.my-modal-body
                               p= 'Date: '+ val.date
@@ -65,9 +65,6 @@ block content
 block footscript
   script.
     $( document ).ready(function() {
-      $('.subscribe').click(function(){
-
-      });
       $('.subscribe-button').click(function(){
         var identifiant = $(this).parents().parents().children('.media-body').children('#identifiant').children('p').html();
         console.log('id : ' + identifiant);
