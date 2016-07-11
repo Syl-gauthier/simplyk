@@ -43,6 +43,7 @@ bower_components/
 .TemporaryItems
 .Trashes
 .VolumeIcon.icns
+.env
 
 # Directories potentially created on remote AFP share
 .AppleDB

@@ -5,7 +5,9 @@ var findApplicants = function(opp, callback) {
   console.log('opp.applications');
   console.log(opp.applications);
   for (var i = 0; i < opp.applications.length; i++) {
-    list.push(opp.applications[i].applicant.toHexString());
+    if (typeof opp.applications[i].applicant !== 'undefined') {
+      list.push(opp.applications[i].applicant.toHexString());
+    }
   }
   return callback(list);
 };
@@ -16,10 +18,12 @@ var findApplicants = function(opp, callback) {
  * @param  {opportunity} opportunity
  * @return {list} list of applicants
  */
-function list_Applicants(opportunity) {
+function list_Applicants(opp) {
   var list = [];
-  for (var i = 0; i < opportunity.applications.length; i++) {
-    list.push(opportunity.applications[i].applicant.toHexString());
+  for (var i = 0; i < opp.applications.length; i++) {
+    if (typeof opp.applications[i].applicant !== 'undefined') {
+      list.push(opp.applications[i].applicant.toHexString());
+    }
   }
   return list;
 }
@@ -37,6 +41,8 @@ var subscribeUserToOpp = function(opportunity, user, res) {
   console.log('---------------');
   console.log('user id : ' + user._id);
   console.log('---------------');
+  //console.log('opportunity : ');
+  //console.log(opportunity);
 
   var applicants_list = list_Applicants(opportunity);
   console.log('applicants_list : ');
@@ -57,7 +63,7 @@ var subscribeUserToOpp = function(opportunity, user, res) {
   } else {
 
     console.log('---------------');
-    console.log('The user is not subscribed yet.');
+    console.log('The user is not subscribed yet. Subscribing user.');
     console.log('---------------\n');
 
     opportunity.applications.addToSet({

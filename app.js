@@ -1,3 +1,5 @@
+/*jslint node: true */
+
 require('newrelic');
 var express = require('express');
 var path = require('path');
@@ -28,6 +30,8 @@ var ObjectId = Schema.ObjectId;
 var Organism = require('./models/organism_model.js');
 var Volunteer = require('./models/volunteer_model.js');
 var Admin = require('./models/admin_model.js');
+
+require('dotenv').config();
 
 var app = express();
 
