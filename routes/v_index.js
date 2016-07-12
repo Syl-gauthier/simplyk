@@ -50,7 +50,7 @@ router.post('/volunteer/subscribe', function(req,res){
       }
       else{
         console.log('The user has not yet subscribed to this opp');
-        opportunity.applications.addToSet({"applicant": req.user._id, "status": "Pending", "story": null});
+        opportunity.applications.addToSet({"applicant": req.user._id, "status": "Pending", "story": null, "applicant_name": req.user.firstname + " " +req.user.lastname});
         opportunity.save(function(err){
           if(err){
             console(err);

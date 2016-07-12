@@ -50,7 +50,7 @@ router.post('/organism/getOppUsers', function(req, res){
       res.end();
     }
     else{
-      console.log(opp.toString());
+      console.log(opp.applications.toString());
       res.render('applicants.jade', {applications: opp.applications});
     }
   });
