@@ -43,10 +43,8 @@ router.post('/volunteer/subscribe', function(req, res) {
       console.log('Failure to find opportunity');
       return handleError(err);
     }
-
     // fonction defined in ../middlewares/subscribe
     subscribe.subscribeUserToOpp(opportunity, req.user, res);
-
   });
 });
 

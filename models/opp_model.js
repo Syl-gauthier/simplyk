@@ -14,6 +14,7 @@ var Opp = mongoose.model('Opp', new Schema({
 	mail: String,
 	applications: [{
 		applicant: { type: Schema.Types.ObjectId, ref: 'Volunteers' },
+		applicant_name: String,
 		status: String,
 		story: String
 	}]

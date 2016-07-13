@@ -20,6 +20,7 @@
     "bootstrap": "^3.3.6",
     "font-awesome": "fontawesome#^4.6.3",
     "bootstrap3-dialog": "bootstrap-dialog#^1.35.2",
-    "form.validation": "*"
+    "form.validation": "*",
+    "angular": "^1.5.7"
   }
 }
