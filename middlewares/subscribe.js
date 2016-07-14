@@ -1,5 +1,7 @@
 /*jslint node: true */
 
+var Opp = require('../models/opp_model.js');
+
 var findApplicants = function(opp, callback) {
   var list = [];
   console.log('opp.applications');
@@ -34,60 +36,70 @@ function list_Applicants(opp) {
  * @param  {user} user
  * @param {response} res
  */
-var subscribeUserToOpp = function(opportunity, user, res) {
+var subscribeUserToOpp = function(req, res) {
 
-  console.log('\n=========\n PROCESSING SUBSCRIPTION\n=========\n');
-  console.log('opportunity name : ' + opportunity.intitule);
-  console.log('---------------');
-  console.log('user id : ' + user._id);
-  console.log('---------------');
-  //console.log('opportunity : ');
-  //console.log(opportunity);
+  Opp.findById(req.body.opportunity_id, function(err, opportunity) {
+    if (err) {
+      console.log('Failure to find opportunity');
+      return handleError(err);
+    }
 
-  var applicants_list = list_Applicants(opportunity);
-  console.log('applicants_list : ');
-  console.log(applicants_list);
+    // get user
+    var user = req.user;
 
-  if (applicants_list.indexOf(user._id.toHexString()) !== -1) {
-
+    console.log('\n=========\n PROCESSING SUBSCRIPTION\n=========\n');
+    console.log('opportunity name : ' + opportunity.intitule);
     console.log('---------------');
-    console.log('The user is already subscribed to this opportunity.');
-    console.log('---------------\n');
-
-    console.log('=========\n  REDIRECTING TO PROFILE \n=========\n ');
-    res.send({
-      redirect: '/volunteer/profile'
-    });
-
-
-  } else {
-
+    console.log('user id : ' + user._id);
     console.log('---------------');
-    console.log('The user is not subscribed yet. Subscribing user.');
-    console.log('---------------\n');
+    //console.log('opportunity : ');
+    //console.log(opportunity);
 
-    opportunity.applications.addToSet({
-      "applicant": user._id,
-      "applicant_name": user.firstname + ' '  + user.lastname,
-      "status": "Pending",
-      "story": null
-    });
-    opportunity.save(function(err) {
-      if (err) {
-        console(err);
-      } else {
-        user.opportunities.push({
-          opp: opportunity._id
-        });
-        user.save({}, function() {
-          console.log('=========\n  REDIRECTING TO PROFILE \n=========\n ');
-          res.send({
-            redirect: '/volunteer/profile'
+    var applicants_list = list_Applicants(opportunity);
+    console.log('applicants_list : ');
+    console.log(applicants_list);
+
+    if (applicants_list.indexOf(user._id.toHexString()) !== -1) {
+
+      console.log('---------------');
+      console.log('The user is already subscribed to this opportunity.');
+      console.log('---------------\n');
+
+      console.log('=========\n  REDIRECTING TO PROFILE \n=========\n ');
+      res.send({
+        redirect: '/volunteer/profile'
+      });
+
+
+    } else {
+
+      console.log('---------------');
+      console.log('The user is not subscribed yet. Subscribing user.');
+      console.log('---------------\n');
+
+      opportunity.applications.addToSet({
+        "applicant": user._id,
+        "applicant_name": user.firstname + ' ' + user.lastname,
+        "status": "Pending",
+        "story": null
+      });
+      opportunity.save(function(err) {
+        if (err) {
+          console(err);
+        } else {
+          user.opportunities.push({
+            opp: opportunity._id
           });
-        });
-      }
-    });
-  }
+          user.save({}, function() {
+            console.log('=========\n  REDIRECTING TO PROFILE \n=========\n ');
+            res.send({
+              redirect: '/volunteer/profile'
+            });
+          });
+        }
+      });
+    }
+  });
 };
 
 module.exports = {

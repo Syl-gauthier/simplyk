@@ -34,18 +34,10 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
   });
 });
 
-
 router.post('/volunteer/subscribe', function(req, res) {
 
-  //Search opp in DB
-  Opp.findById(req.body.opportunity_id, function(err, opportunity) {
-    if (err) {
-      console.log('Failure to find opportunity');
-      return handleError(err);
-    }
-    // fonction defined in ../middlewares/subscribe
-    subscribe.subscribeUserToOpp(opportunity, req.user, res);
-  });
+    subscribe.subscribeUserToOpp(req, res);
+
 });
 
 router.post('/volunteer/logout', function(req, res) {
