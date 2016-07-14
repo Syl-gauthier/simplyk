@@ -68,7 +68,7 @@ var subscribeUserToOpp = function(opportunity, user, res) {
 
     opportunity.applications.addToSet({
       "applicant": user._id,
-      "applicant_name": user.firstname + user.firstname,
+      "applicant_name": user.firstname + ' '  + user.lastname,
       "status": "Pending",
       "story": null
     });

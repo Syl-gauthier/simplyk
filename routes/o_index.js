@@ -1,3 +1,5 @@
+/*jslint node: true */
+
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
@@ -16,47 +18,62 @@ var Organism = require('../models/organism_model.js');
 
 var app = express();
 
+var opp_management = require('../middlewares/opp_management.js');
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  Opp.find({}, function(err, opps){
-    if(err){
+  Opp.find({}, function(err, opps) {
+    if (err) {
       console.log(err);
-      res.render('g_accueil.jade', {session: req.session, error: err});
+      res.render('g_accueil.jade', {
+        session: req.session,
+        error: err
+      });
     }
     //Create opps list
-    else{
-      res.render('g_accueil.jade', {opps: opps, session: req.session});
+    else {
+      res.render('g_accueil.jade', {
+        opps: opps,
+        session: req.session
+      });
     }
   });
 });
 
-router.get('/organism/dashboard', permissions.requireGroup('organism'), 
-  function(req, res){
-  Opp.find({orgName: req.user.orgName}, function(err, opps){
-    //res.json({opps: opps});
-    res.render('o_dashboard.jade', {opps: opps, organism: req.isAuthenticated()});
+router.get('/organism/dashboard', permissions.requireGroup('organism'),
+  function(req, res) {
+    Opp.find({
+      orgName: req.user.orgName
+    }, function(err, opps) {
+      //res.json({opps: opps});
+      res.render('o_dashboard.jade', {
+        opps: opps,
+        organism: req.isAuthenticated()
+      });
+    });
   });
-});
 
 //for ajax call only (for now)
 //Get users info from an opp intitule
-router.post('/organism/getOppUsers', function(req, res){
-  console.log("opp_id: " + req.body.opp_id);
+router.post('/organism/getOppUsers', function(req, res) {
 
-  Opp.findById(req.body.opp_id).populate("applications.applicant").exec(function(err, opp){
-    if(err){
-      console.log(err);
-      res.write(err);
-      res.end();
-    }
-    else{
-      console.log(opp.applications.toString());
-      res.render('applicants.jade', {applications: opp.applications});
-    }
-  });
+  opp_management.getOppUsers(req.body.opp_id, req, res);
+
 });
 
-router.post('/organism/logout', function(req, res){
+router.post('/organism/validate',function(req,res){
+
+  opp_management.validate_application(req, res);
+
+});
+
+router.post('/organism/reject',function(req,res){
+
+  opp_management.reject_application(req, res);
+
+});
+
+router.post('/organism/logout', function(req, res) {
   req.session.destroy();
   res.redirect('/');
 });
