@@ -37,9 +37,12 @@ block content
                               p= 'Applicants'
                               if val.applications
                                 each value, i in val.applications
-                                  p= value.applicant.firstname
-                                  p DATAS :
-                                  p.applicants
+                                  p='-----------------'
+                                  p= value.applicant_name + ', statut : ' + value.status
+                                  p(style='display:none')= value.applicant_name
+                                  p(style='display:none')= value.applicant
+                                  button.btn.btn-primary(type='button', class='validate') Valider
+                                  button.btn.btn-primary(type='button', class='reject') Rejeter
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Close
                               button.btn.btn-primary.pinkow(type='button')
@@ -56,10 +59,17 @@ block footscript
   //ajax call to get users data of a specific Opp
   script.
     //Each info-button has a click event listener
+    $(".btn").mouseup(function(){
+    $(this).blur();
+    });
+
+    /*
     $(".info-button").click(function(){
-      var button_clicked = this;
       parent_li = $(this).closest("li");
+      console.log("======= parent li");
+      console.log(parent_li);
       console.log('id attribute from parent_li :  ' + parent_li.attr('id'));
+
       $.post('/organism/getOppUsers', {opp_id: parent_li.attr('id')}, function(data){
         console.log('data from post : ');
         console.log('data from post : ' + data);
@@ -67,4 +77,56 @@ block footscript
         console.log(parent_li.find(".my-modal-body").children(".applicants"));
         parent_li.find(".my-modal-body").children(".applicants").replaceWith("<p>"+data+"<p>");
       });
+
     });
+    */
+
+    $('.validate').click(function(){
+      // validate volunteer participation
+      // get applicant id
+      var applicant_id = $(this).prev().html();
+      console.log('applicant id :  ' + applicant_id);
+
+      // dinamically display the status (pending, accepted, or rejected) on front page. Better done with angular ?
+      var applicant_name = $(this).prev().prev().html();
+      $(this).prev().prev().prev().html(applicant_name+", statut : ACCEPTÉ");
+
+      // get opp id
+      var opp_id = $(this).closest("li").attr('id')
+      console.log('opp id :  ' + opp_id);
+
+      $.post('/organism/validate', {opp_id: opp_id, applicant_id:applicant_id}).done(function(data, status){
+        if(data.error){
+          alert("Remarque: " + data.error);
+        }
+        else if (data.redirect){
+          window.location.replace("/organism/dashboard");
+        };
+      });
+    });
+
+    $('.reject').click(function(){
+      // reject volunteer participation
+      // get applicant id
+      var applicant_id = $(this).prev().prev().html();
+      console.log('applicant id :  ' + applicant_id);
+
+      // dinamically display the status (pending, accepted, or rejected) on front page. Better done with angular ?
+      var applicant_name = $(this).prev().prev().prev().html();
+      $(this).prev().prev().prev().prev().html(applicant_name+", statut : REJETÉ");
+
+      // get opp id
+      var opp_id = $(this).closest("li").attr('id')
+      console.log('opp id :  ' + opp_id);
+
+      $.post('/organism/reject', {opp_id: opp_id, applicant_id:applicant_id}).done(function(data, status){
+        if(data.error){
+          alert("Remarque: " + data.error);
+        }
+        else if (data.redirect){
+          window.location.replace("/organism/dashboard");
+        };
+      });
+
+    });
+
