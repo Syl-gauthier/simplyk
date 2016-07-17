@@ -40,6 +40,12 @@ router.post('/volunteer/subscribe', function(req, res) {
 
 });
 
+router.post('/volunteer/unsubscribe', function(req, res) {
+
+    subscribe.unsubscribeUserToOpp(req, res);
+
+});
+
 router.post('/volunteer/logout', function(req, res) {
   req.session.destroy();
   res.redirect('/');
