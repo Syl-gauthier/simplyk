@@ -12,36 +12,36 @@ block content
             ul.list-group.list-opportunity
               if error
                 p.alert.alert-danger #{error}
-              each val, index in opps
+              each opp, index in opps
                 li.list-group-item
                   div.media-left.media-middle
                     a(href='/volunteer/profile')
                       img.media-object(src='/images/clouds.jpg')
                   div.media-body
-                    h4.media-heading= val.orgName
-                    a.firstColor= val.intitule
-                    p= 'Pour ' + val.nbBenevoles + ' bénévoles'
+                    h4.media-heading= opp.orgName
+                    a.firstColor= opp.intitule
+                    p= 'Pour ' + opp.nbBenevoles + ' bénévoles'
                     #identifiant(style="display:none")
-                      p= val._id
+                      p= opp._id
                   div.media-right.media-middle
-                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+val._id) Informations
-                    #myModal(tabindex='-1', role='dialog', class='modal fade ' + val._id)
+                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+opp._id) Informations
+                    #myModal(tabindex='-1', role='dialog', class='modal fade ' + opp._id)
                       .modal-dialog
                           .modal-content
                             .modal-header
                               button.close(type='button', data-dismiss='modal', aria-label='Close')
                                 span(aria-hidden='true') &times;
-                              #myModalLabel.h4.modal-title= val.orgName + ' - ' + val.intitule
+                              #myModalLabel.h4.modal-title= opp.orgName + ' - ' + opp.intitule
                             .modal-body.my-modal-body
-                              p= 'Date: '+ val.date
-                              p= 'Pour ' + val.nbBenevoles + ' bénévoles'
-                              p= 'Adresse: '+ val.address
+                              p= 'Date: '+ opp.date
+                              p= 'Pour ' + opp.nbBenevoles + ' bénévoles'
+                              p= 'Adresse: '+ opp.address
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                              #subscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+val._id aria-expanded="false" aria-controls="collapseExample") S'inscrire
+                              #subscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+opp._id aria-expanded="false" aria-controls="collapseExample") S'inscrire
                               button.btn.btn-primary.pinkow(type='button')
-                                a(href='mailto:'+val.mail+'?subject=Participation%20à%20:%20'+val.intitule, target='_blank') Contactez
-                              div.collapse.tp-15(id = "collapse" + val._id)
+                                a(href='mailto:'+opp.mail+'?subject=Participation%20à%20:%20'+opp.intitule, target='_blank') Contactez
+                              div.collapse.tp-15(id = "collapse" + opp._id)
                                 div.well Es-tu sûr de vouloir t'inscrire ? <br> Ton aide sera très appréciée ! L'organisme va en être informé et confirmera ta participation. Tu peux aussi le contacter directement grâce au bouton 'S'inscrire' ci-dessus !<br> <br>
                                   button.subscribe-button.btn.btn-primary.pinkow Oui
                                   button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
@@ -49,12 +49,12 @@ block content
 
 block footscript
   script.
-    $( document ).ready(function() {
+    $(function() {
       $('.subscribe-button').click(function(){
         var identifiant = $(this).parents().parents().children('.media-body').children('#identifiant').children('p').html();
         console.log('id : ' + identifiant);
         //On utilise l'identifiant de l'opp dans mongoDB pour traiter l'ajout de ce favori dans /addfavopp
-        $.post('/volunteer/subscribe', {opportunity_id: identifiant}).done(function(data, status){
+        $.post('/volunteer/subscribe', {opp_id: identifiant}).done(function(data, status){
           if(data.error){
             alert("Remarque: " + data.error);
           }

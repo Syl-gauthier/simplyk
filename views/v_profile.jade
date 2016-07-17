@@ -8,7 +8,7 @@ block content
       .col-md-4.col-md-offset-1
         .page-header
           h1
-            | Mon profil 
+            | Mon profil
             small
           if error
             p.alert.alert-danger #{error}
@@ -16,15 +16,12 @@ block content
           li.list-group-item
             | Prénom: #{volunteer.firstname}
             small
-          |             
           li.list-group-item
             | Nom: #{volunteer.lastname}
             small
-          |             
           li.list-group-item
             | Date de naissance: #{volunteer.birthdate}
             small
-          |             
           li.list-group-item
             | Adresse mail: #{volunteer.email}
             small
@@ -59,28 +56,52 @@ block content
                     a(href='profile')
                       img.media-object(src='/images/clouds.jpg')
                   div.media-body
-                    h4.media-heading= opp.oName
+                    h4.media-heading= opp.orgName
                     a.firstColor= opp.intitule
                     p= 'Pour ' + opp.nbBenevoles + ' bénévoles'
-                    #identifiant(style="display:none")
+                    #identifiant(style='display:none')
                       p= opp._id
                   div.media-right.media-middle
-                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target="#myModal") Informations
-                    #myModal.modal.fade(tabindex='-1', role='dialog')
+                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target="."+opp._id) Informations
+                    #myModal.modal.fade(tabindex='-1', role='dialog', class='modal fade ' + opp._id)
                       .modal-dialog
                           .modal-content
                             .modal-header
                               button.close(type='button', data-dismiss='modal', aria-label='Close')
-                                span(aria-hidden='true') &times;        
-                              #myModalLabel.h4.modal-title= opp.oName + ' - ' + opp.intitule
+                                span(aria-hidden='true') &times;
+                              #myModalLabel.h4.modal-title= opp.orgName + ' - ' + opp.intitule
                             .modal-body.my-modal-body
                               p= 'Date: '+ opp.date
                               p= 'Pour ' + opp.nbBenevoles + ' bénévoles'
                               p= 'Adresse: '+ opp.address
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+                              #unsubscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+opp._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
+                              button.btn.btn-primary.pinkow(type='button')
+                                a(href='mailto:'+opp.mail+'?subject=Participation%20à%20:%20'+opp.intitule, target='_blank') Contactez
+                              div.collapse.tp-15(id = "collapse" + opp._id)
+                                div.well Es-tu sûr de vouloir te désinscrire ? <br> <br>
+                                  button.unsubscribe-button.btn.btn-primary.pinkow Oui
+                                  button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
 
 block footscript
+  script.
+    $(function() {
+      $('.unsubscribe-button').click(function(){
+        // get opp id
+        var opp_id = $(this).parents().parents().children('.media-body').children('#identifiant').children('p').html();
+        console.log('opp_id : ' + opp_id);
+        $.post('/volunteer/unsubscribe', {opp_id: opp_id}).done(function(data, status){
+          if(data.error){
+            alert("Remarque: " + data.error);
+          }
+          else if (data.redirect){
+            console.log("Post request done.");
+            window.location.replace("/volunteer/profile");
+          };
+        });
+      });
+    });
   script(src='/edit-password.js')
   script(src='/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.js')
 
@@ -88,5 +109,4 @@ block footscript
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
       $('#myInput').focus();
-    });
-
+  });
