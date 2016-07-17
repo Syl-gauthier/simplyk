@@ -30,6 +30,16 @@ function list_Applicants(opp) {
   return list;
 }
 
+function list_opps(user) {
+  var list = [];
+  for (var i = 0; i < user.opportunities.length; i++) {
+    if (typeof user.opportunities[i].opp !== 'undefined') {
+      list.push(user.opportunities[i].opp.toHexString());
+    }
+  }
+  return list;
+}
+
 /**
  * unsubscribes user to opp
  * @param  {opp} opp
@@ -52,8 +62,6 @@ var subscribeUserToOpp = function(req, res) {
     console.log('---------------');
     console.log('user id : ' + user._id);
     console.log('---------------');
-    //console.log('opp : ');
-    //console.log(opp);
 
     var applicants_list = list_Applicants(opp);
     console.log('applicants_list : ');
@@ -69,7 +77,6 @@ var subscribeUserToOpp = function(req, res) {
       res.send({
         redirect: '/volunteer/profile'
       });
-
 
     } else {
 
@@ -87,9 +94,19 @@ var subscribeUserToOpp = function(req, res) {
         if (err) {
           console(err);
         } else {
-          user.opportunities.push({
-            opp: opp._id
-          });
+
+          // add the opportinuty in the user document
+          var user_opps = list_opps(user);
+          var opp_id_obj = opp._id;
+          var opp_id = opp_id_obj.toHexString();
+
+          // in case it is already in the document (eg due to database update)
+          if (user_opps.indexOf(opp_id) == -1) {
+            user.opportunities.push({
+              opp: opp._id
+            });
+          }
+
           user.save({}, function() {
             console.log('=========\n  REDIRECTING TO PROFILE \n=========\n ');
             res.send({
@@ -119,28 +136,45 @@ var unsubscribeUserToOpp = function(req, res) {
 
     console.log('opp name : ' + opp.intitule);
     console.log('---------------');
+    console.log('opp id : ' + opp._id);
+    console.log('---------------');
     console.log('user id : ' + user._id);
     console.log('---------------');
+    console.log('REMOVE USER APPLICATION FROM OPP APPLICATIONS');
+    console.log('---------------');
 
-    for (var i = 0; i < opp.applications.length; i++) {
-      if (typeof opp.applications[i].applicant !== 'undefined') {
-        if (opp.applications[i].applicant.toHexString() == user._id) {
-          //opp.applications[i].applicant.splice(i,1);
-          console.log('---------------');
-          console.log('OPP.APPLICATIONS[i]');
-          console.log(opp.applications[i]);
-          opp.applications.remove(opp.applications[i]);
-        }
-      }
-    }
+    // get user application to this opp
+    var opp_applications = list_Applicants(opp);
+    var user_id_obj = user._id;
+    var user_id = user_id_obj.toHexString();
+    var application_index = opp_applications.indexOf(user_id);
+    console.log('application_index : ' + application_index);
+
+    opp.applications.remove(opp.applications[application_index]);
 
     opp.save(function(err) {
       if (err) {
         console(err);
       } else {
-        console.log('=========\n  REDIRECTING TO PROFILE \n=========\n ');
-        res.send({
-          redirect: '/volunteer/profile'
+
+        console.log('---------------');
+        console.log('REMOVE OPP FROM USER OPPORTUNITIES');
+        console.log('---------------');
+
+        // get opp to remove in user opportunities
+        var user_opps = list_opps(user);
+        var opp_id_obj = opp._id;
+        var opp_id = opp_id_obj.toHexString();
+        var opp_index = user_opps.indexOf(opp_id);
+        console.log('opp_index : ' + opp_index);
+
+        user.opportunities.remove(user.opportunities[opp_index]);
+
+        user.save({}, function() {
+          console.log('=========\nREDIRECTING TO PROFILE \n=========\n ');
+          res.send({
+            redirect: '/volunteer/profile'
+          });
         });
       }
     });
