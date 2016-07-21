@@ -11,4 +11,11 @@ router.get('/organism/profile', permissions.requireGroup('organism'), function(r
   res.json(req.session.organism);
 });
 
+router.get('/organism/profile', permissions.requireGroup('volunteer'), function(req,res){
+	console.log('Begin get /profile')
+    res.render('o_profile.jade', {organism: req.user});
+		}
+	});
+});
+
 module.exports = router;

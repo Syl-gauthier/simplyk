@@ -18,7 +18,11 @@ var o_routes = require('./routes/o_index');
 var users = require('./routes/users');
 var o_addopp = require('./routes/o_addopp');
 var o_profile = require('./routes/o_profile');
+
+var g_profile = require('./routes/g_profile');
 var g_auth = require('./routes/g_auth');
+
+
 var v_routes = require('./routes/v_index');
 var v_profile = require('./routes/v_profile');
 
@@ -155,8 +159,11 @@ app.use('/', a_routes);
 app.use('/', o_routes);
 app.use('/', users);
 app.use('/', g_auth);
+app.use('/', g_profile);
+
 app.use('/', o_profile);
 app.use('/', o_addopp);
+
 app.use('/', v_routes);
 app.use('/', v_profile);
 

@@ -66,7 +66,7 @@ $(document).ready(function() {
       console.log("Passwords different");
     }
     else{
-      $.post("editPassword", passwordData)
+      $.post("../editPassword", passwordData)
         .done(function(data){
           console.log("Change password attempt: "+data.success);   
           if(data.success){
