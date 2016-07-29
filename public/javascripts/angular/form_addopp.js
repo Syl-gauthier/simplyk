@@ -5,15 +5,18 @@
 	});
 	var listfields= [{
 			'name': 'Intitulé de l\'opportunitée',
-			'type': 'text'
+			'type': 'text',
+			'id': 'intitule'
 		},
 		{
 			'name': 'Date',
-			'type': 'date'
+			'type': 'date',
+			'id': 'date'
 		},
 		{
 			'name': 'Saint-Tropez',
-			'type': 'number'
+			'type': 'number',
+			'id': 'place'
 		}
 		];
 })();

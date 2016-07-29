@@ -3,12 +3,12 @@ block vars
 	- var page = 'addopp'
 
 block head
-			script(type='text/javascript', scr='/javascripts/form_addopp.js')
+			script(type='text/javascript', scr='/javascripts/angular/form_addopp.js')
 
 
 
 block content
-			script(src="/javascripts/form_addopp.js", type="text/javascript")
+			script(src="/javascripts/angular/form_addopp.js", type="text/javascript")
 			#map-section.container-fluid(ng-app='form')
 				.row
 					.col-md-6.col-md-offset-3
@@ -30,7 +30,7 @@ block content
 
 							.input-group.conn-input(ng-repeat='field in form.listfields')
 								span#basic-addon1.input-group-addon {{field.name}}
-								input#intitule.form-control(type='{{field.type}}', placeholder='Ex: Nettoyage du Parc Jarry', name='intitule', aria-describedby='basic-addon1', required)
+								input#intitule.form-control(type='{{field.type}}', placeholder='{{field.trop}}', name='intitule', aria-describedby='basic-addon1', required)
 							.input-group.conn-input
 								span#basic-addon1.input-group-addon Date
 								input#date.form-control(type='date', placeholder='', name='date', aria-describedby='basic-addon1', required)
