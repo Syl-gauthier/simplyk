@@ -7,7 +7,7 @@ var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
-var Opp = require('../models/opp_model.js');
+var Organism = require('../models/organism_model.js');
 
 var permissions = require('../middlewares/permissions.js');
 var subscribe = require('../middlewares/subscribe.js');
@@ -15,7 +15,7 @@ var app = express();
 
 /*GET map page*/
 router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req, res) {
-  Opp.find({}, function(err, opps) {
+  Organism.find({}, 'events', function(err, events){
     if (err) {
       console.log(err);
       res.render('v_map.jade', {
@@ -27,7 +27,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
     else {
       console.log(req.isAuthenticated());
       res.render('v_map.jade', {
-        opps: opps,
+        opps: events,
         volunteer: req.isAuthenticated()
       });
     }
@@ -37,16 +37,17 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
 
 router.post('/volunteer/subscribe', function(req, res) {
 
-  //Search opp in DB
-  Opp.findById(req.body.opportunity_id, function(err, opportunity) {
+  //Search events in DB
+  Organism.findOne({'event.id': req.event_id}, function(err, event) {
     if (err) {
-      console.log('Failure to find opportunity');
+      console.log('Failure to find event');
       return handleError(err);
     }
     // fonction defined in ../middlewares/subscribe
-    subscribe.subscribeUserToOpp(opportunity, req.user, res);
+    subscribe.subscribeUserToOpp(event, req.user, res);
   });
 });
+
 
 router.post('/volunteer/logout', function(req, res) {
   req.session.destroy();

@@ -18,14 +18,14 @@ block content
                     a(href='/volunteer/profile')
                       img.media-object(src='/images/clouds.jpg')
                   div.media-body
-                    h4.media-heading= val.orgName
+                    h4.media-heading= val.org_name
                     a.firstColor= val.intitule
-                    p= 'Pour ' + val.nbBenevoles + ' bénévoles'
+                    p= 'Pour ' + val.activities[0].vol_nb + ' bénévoles'
                     #identifiant(style="display:none")
-                      p= val._id
+                      p= val.id
                   div.media-right.media-middle
-                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+val._id) Informations
-                    #myModal(tabindex='-1', role='dialog', class='modal fade ' + val._id)
+                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+val.id) Informations
+                    #myModal(tabindex='-1', role='dialog', class='modal fade ' + val.id)
                       .modal-dialog
                           .modal-content
                             .modal-header
@@ -34,14 +34,14 @@ block content
                               #myModalLabel.h4.modal-title= val.orgName + ' - ' + val.intitule
                             .modal-body.my-modal-body
                               p= 'Date: '+ val.date
-                              p= 'Pour ' + val.nbBenevoles + ' bénévoles'
+                              p= 'Pour ' + val.activities[0].vol_nb + ' bénévoles'
                               p= 'Adresse: '+ val.address
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                              #subscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+val._id aria-expanded="false" aria-controls="collapseExample") S'inscrire
+                              #subscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+val.id aria-expanded="false" aria-controls="collapseExample") S'inscrire
                               button.btn.btn-primary.pinkow(type='button')
-                                a(href='mailto:'+val.mail+'?subject=Participation%20à%20:%20'+val.intitule, target='_blank') Contactez
-                              div.collapse.tp-15(id = "collapse" + val._id)
+                                a(href='mailto:'+val.email+'?subject=Participation%20à%20:%20'+val.intitule, target='_blank') Contactez
+                              div.collapse.tp-15(id = "collapse" + val.id)
                                 div.well Es-tu sûr de vouloir t'inscrire ? <br> Ton aide sera très appréciée ! L'organisme va en être informé et confirmera ta participation. Tu peux aussi le contacter directement grâce au bouton 'S'inscrire' ci-dessus !<br> <br>
                                   button.subscribe-button.btn.btn-primary.pinkow Oui
                                   button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
@@ -54,7 +54,7 @@ block footscript
         var identifiant = $(this).parents().parents().children('.media-body').children('#identifiant').children('p').html();
         console.log('id : ' + identifiant);
         //On utilise l'identifiant de l'opp dans mongoDB pour traiter l'ajout de ce favori dans /addfavopp
-        $.post('/volunteer/subscribe', {opportunity_id: identifiant}).done(function(data, status){
+        $.post('/volunteer/subscribe', {event_id: identifiant}).done(function(data, status){
           if(data.error){
             alert("Remarque: " + data.error);
           }

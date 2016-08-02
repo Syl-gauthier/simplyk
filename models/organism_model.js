@@ -7,59 +7,59 @@ var crypt = require('../auth/crypt');
 var OrganismSchema = new Schema({
 	id: ObjectId,
 	email: String,
-	orgName: String,
+	org_name: String,
 	neq: Number,
 	website: String,
     password: String,
 	firstname: String, //Contact info
 	lastname: String,
-	color: String,
 	phone: String,
-	mail: String,
 	description: String,
 	cause: String, // solidarité, environnement, culture
 	validation: Boolean,//Simplyk approved ?
-	volunteers: [{
-		id: { type: Schema.Types.ObjectId, ref: 'Volunteers' },
-		user_name: String,
-		user_age: Number
-	}],
-	opp_long: [{
-		id: { type: Schema.Types.ObjectId, ref: 'LongOpps' },
-		title: String,
-		description: String,
-		langage: String,
-		contact: String,// dans le cas ou ce n'est pas le même que celui qui rentre l'opp ??
-		age_min: Number,
-		expiration: Date,//?
-		judicial:Boolean,//Judicial verification
+	events: [{
+		id: ObjectId,
+		intitule: String,
+		dates: [Date],
 		address: String,
-		cause: String,
-		slot: String,
-		mandats_long: [{
-			slot: String,
-			duration: String,
-			vol_number: Number,
-			tags: [String]
+		language: String,
+		lat: Number,
+		lon: Number,
+		description: String,
+		status: String,
+		activities: [{
+			intitule: String,
+			description: String,
+			min_hours: Number,
+			start_time: Date,
+			end_time: Date,
+			day: Date,
+			vol_nb: Number,
+			applications: [{
+				applicant_id: {type: Schema.Types.ObjectId, ref: 'Volunteer'},
+				applicant_name: String
+			}]
 		}]
 	}],
-	opp_short: [{
-		id: { type: Schema.Types.ObjectId, ref: 'ShortOpps' },
-		title: String,
+	long_terms: [{
+		intitule: String,
 		description: String,
-		langage: String,
-		contact: String,
-		age_min: String,
-		date: Date,
-		judicial:Boolean,
 		address: String,
-		cause: String,
-		mandats_short: [{
-			start_hour: Date,
-			end_hour: Date,
-			activity: String,
-			flexible: Boolean,
-			vol_number: Number
+		lat: Number,
+		lon: Number,
+		expiration_date: Date,
+		min_hours: Number,
+		slot: String,
+		vol_nb: Number,
+		language: String,
+		min_age: Number,
+		antecedents: Boolean,
+		tags: String,
+		applications: [{
+			applicant_id: {type: Schema.Types.ObjectId, ref: 'Volunteer'},
+			applicant_name: String,
+			hours_done: Number,
+			hours_pending: Number
 		}]
 	}]
 });

@@ -3,7 +3,6 @@ var router = express.Router();
 
 var permissions = require('../middlewares/permissions.js');
 var Volunteer = require('../models/volunteer_model.js');
-var Opp = require('../models/opp_model.js');
 
 
 router.get('/organism/profile', permissions.requireGroup('organism'), function(req,res){

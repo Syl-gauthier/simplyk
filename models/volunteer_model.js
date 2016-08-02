@@ -11,27 +11,47 @@ var VolunteerSchema = new Schema({
   firstname: String,
   lastname: String,
   birthdate: Date,
-  age: Number,
   phone: String,
-  hours: Number,
-  interests: [String],
-  skills: [String],
   complete: Boolean,
   emergency : { // this contact is needed for underaged
       em_name: String,
       em_phone: Number,
-  
   },
+  events : [{
+    intitule: String,
+    address: String,
+    lat: Number,
+    lon: Number,
+    day: Date,
+    description_event: String,
+    description_activity: String,
+    org_id: {type: Schema.Types.ObjectId, ref:'Organism'},
+    org_name: String,
+    start_time: Date,
+    end_time: Date,
+    hours_done: Number,
+    status: String,
+    hours_pending: Number
+  }],
+  longTerms: [{
+    intitule: String,
+    description: String,
+    address: String,
+    lat: Number,
+    lon: Number,
+    slot: String,
+    hours_pending: Number,
+    hours_done: Number
+  }],
   student: Boolean, //if has a school or not
   admin: {
-      admin_id: ObjectId
-  },
-  opportunities: [{opp: {type: Schema.Types.ObjectId, ref: 'Opp'}}],
+      admin_id: {type: Schema.Types.ObjectId, ref: 'Admin'}
+  }
 });
 
 VolunteerSchema.methods.generateHash = crypt.generateHash;
 VolunteerSchema.methods.validPassword = crypt.validPassword;
 
-var Volunteer = mongoose.model('Volunteers', VolunteerSchema);
+var Volunteer = mongoose.model('Volunteer', VolunteerSchema);
 
 module.exports = Volunteer;

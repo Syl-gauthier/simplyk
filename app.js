@@ -157,7 +157,7 @@ app.use(flash());
 
 app.use('/', a_routes);
 app.use('/', o_routes);
-app.use('/', users);
+//app.use('/', users);
 app.use('/', g_auth);
 app.use('/', o_profile);
 app.use('/', o_addopp);

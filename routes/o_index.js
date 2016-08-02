@@ -10,7 +10,6 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
 var permissions = require('../middlewares/permissions.js');
-var Opp = require('../models/opp_model.js');
 var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
 
@@ -18,24 +17,25 @@ var app = express();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  Opp.find({}, function(err, opps){
+  Organism.find({}, function(err, organism){
     if(err){
       console.log(err);
       res.render('g_accueil.jade', {session: req.session, error: err});
     }
     //Create opps list
     else{
-      res.render('g_accueil.jade', {opps: opps, session: req.session});
+      var list_events = [];
+      for (var i = organism.length - 1; i >= 0; i--) {
+        console.log('1 organisme de + : ' + organism[i]);
+      }
+      console.log('events_list : \n ' + list_events);
+      res.render('g_accueil.jade', {opps: list_events, session: req.session});
     }
   });
 });
 
-router.get('/organism/dashboard', permissions.requireGroup('organism'), 
-  function(req, res){
-  Opp.find({orgName: req.user.orgName}, function(err, opps){
-    //res.json({opps: opps});
-    res.render('o_dashboard.jade', {opps: opps, organism: req.isAuthenticated()});
-  });
+router.get('/organism/dashboard', permissions.requireGroup('organism'), function(req, res){
+  res.render('o_dashboard.jade', {opps: req.session.organism.events, organism: req.isAuthenticated()});
 });
 
 //for ajax call only (for now)

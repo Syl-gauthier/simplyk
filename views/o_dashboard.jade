@@ -20,7 +20,7 @@ block content
                     h4.media-heading= val.intitule
                     p= 'Pour ' + val.nbBenevoles + ' bénévoles'
                     p= 'Adresse: '+ val.address
-                    p= val.applications.length+' people applied'
+                    //p= val.activities[0].applications.length+' people applied'
                   div.media-right.media-middle
                     button.info-button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+val._id) Informations
                     div(tabindex='-1', role='dialog', class= 'modal fade '+val._id)
