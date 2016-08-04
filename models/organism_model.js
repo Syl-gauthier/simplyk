@@ -31,13 +31,15 @@ var OrganismSchema = new Schema({
 			intitule: String,
 			description: String,
 			min_hours: Number,
-			start_time: String,
-			end_time: String,
-			day: Date,
-			vol_nb: Number,
-			applications: [{
-				applicant_id: {type: Schema.Types.ObjectId, ref: 'Volunteer'},
-				applicant_name: String
+			days: [{
+				start_time: String,
+				end_time: String,
+				day: Date,
+				vol_nb: Number,
+				applications: [{
+					applicant_id: {type: Schema.Types.ObjectId, ref: 'Volunteer'},
+					applicant_name: String
+				}]
 			}]
 		}]
 	}],

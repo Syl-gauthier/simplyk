@@ -80,7 +80,7 @@
 			'id': 'activity_description'
 		}];
 	var unnecessaryActivityFields= [{
-			'title': 'Heures minimales à effectuer dans la journée',
+			'title': 'Heures minimales à effectuer dans une journée',
 			'type': 'number',
 			'id': 'min_hours'
 		}];

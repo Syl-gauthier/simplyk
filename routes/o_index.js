@@ -35,7 +35,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/organism/dashboard', permissions.requireGroup('organism'), function(req, res){
-  res.render('o_dashboard.jade', {opps: req.session.organism.events, organism: req.isAuthenticated()});
+  res.render('o_dashboard.jade', {events: req.session.organism.events, organism: req.isAuthenticated()});
 });
 
 //for ajax call only (for now)

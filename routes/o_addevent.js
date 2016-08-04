@@ -21,6 +21,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
   gmaps.codeAddress(req.body.address, function(lat, lon){
     Organism.findById(req.session.organism._id, function(err, organism){
       console.log('Organism : ' + organism);
+      var keysList = Object.keys(req.body);
       var event = {
         intitule: req.body.intitule_event,
         dates: [],
@@ -32,370 +33,76 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
         lat: lat,
         lon: lon
       };
-      //IT'S AWFULLLLLLL !!!!
-      //////AARRRRGGGGGGHHHHH
-      if(req.body.activity1_day1=='on'){
-        console.log('activity1_day1 exists');
-        var activity1_day1 = {
-          intitule: req.body.activity1_intitule_activity,
-          description: req.body.activity1_activity_description,
-          min_hours: req.body.activity1_min_hours,
-          start_time: req.body.activity1_day1_startTime,
-          end_time: req.body.activity1_day1_endTime,
-          day: req.body.day1,
-          vol_nb: req.body.activity1_day1_vol_nb,
-          applications: []
+      //Days number calculated
+      var nb_days = 0;
+      var days_iterator = -1;
+      console.log('Keylist.length : ' + keysList.length + ' and keylist = ' + keysList);
+      do{
+        nb_days++;
+        var days_exists = false;
+        for (var d = keysList.length - 1; d >= 0; d--) {
+          console.log('Keylist.searchday : '+keysList[d].search('day'+(nb_days+1)));
+          if (keysList[d].search('day'+(nb_days+1)) === 0){
+            days_exists = true;
+            console.log('On est dans le if days');
+          }
         };
-        event.activities.push(activity1_day1);
-      };
-      if(req.body.activity1_day2=='on'){
-        console.log('activity1_day2 exists');
-        var activity1_day2 = {
-          intitule: req.body.activity1_intitule_activity,
-          description: req.body.activity1_activity_description,
-          min_hours: req.body.activity1_min_hours,
-          start_time: req.body.activity1_day2_startTime,
-          end_time: req.body.activity1_day2_endTime,
-          day: req.body.day2,
-          vol_nb: req.body.activity1_day2_vol_nb,
-          applications: []
+      }
+      while(days_exists);
+      console.log('There are ' + nb_days + ' days in the event !');
+      //Activities number calculated: nb_activities
+      var nb_activities = 0;
+      var activities_iterator = -1;
+      do{
+        nb_activities++;
+        var activities_exists = false;
+        for (var d = keysList.length - 1; d >= 0; d--) {
+          if (keysList[d].search('day'+(nb_activities+1)) === 0){
+            activities_exists = true;
+            console.log('On est dans le if activities');
+          }
         };
-        event.activities.push(activity1_day2);
-      };
-      if(req.body.activity1_day3=='on'){
-        console.log('activity1_day3 exists');
-        var activity1_day3 = {
-          intitule: req.body.activity1_intitule_activity,
-          description: req.body.activity1_activity_description,
-          min_hours: req.body.activity1_min_hours,
-          start_time: req.body.activity1_day3_startTime,
-          end_time: req.body.activity1_day3_endTime,
-          day: req.body.day3,
-          vol_nb: req.body.activity1_day3_vol_nb,
-          applications: []
+      }
+      while(activities_exists===true);
+      console.log('There are ' + nb_activities + ' activities in the event !');
+      //Create activities
+      var activitiesList = [];
+      for (var i = 1; i<nb_activities+1; i++){
+        var activity = {
+          intitule: req.body['activity'+i+'_intitule_activity'],
+          description: req.body['activity'+i+'_activity_description'],
+          min_hours: req.body['activity'+i+'_min_hours'],
+          days: []
         };
-        event.activities.push(activity1_day3);
-      };
-      if(req.body.activity1_day4=='on'){
-        console.log('activity1_day4 exists');
-        var activity1_day4 = {
-          intitule: req.body.activity1_intitule_activity,
-          description: req.body.activity1_activity_description,
-          min_hours: req.body.activity1_min_hours,
-          start_time: req.body.activity1_day4_startTime,
-          end_time: req.body.activity1_day4_endTime,
-          day: req.body.day4,
-          vol_nb: req.body.activity1_day4_vol_nb,
-          applications: []
+        for (var j = 1; j<nb_days+1; j++){
+          if (req.body['activity'+i+'_day'+j] === 'on'){
+            var day = {
+              start_time: req.body['activity'+i+'_day'+j+'_startTime'],
+              end_time: req.body['activity'+i+'_day'+j+'_endTime'],
+              vol_nb: req.body['activity'+i+'_day'+j+'_vol_nb'],
+              day: req.body['day'+j+'_submit'],
+              applications: []
+            };
+            activity.days.push(day);
+            console.log('day : ' + j + JSON.stringify(day));
+          };
         };
-        event.activities.push(activity1_day4);
+        event.activities.push(activity);
+        console.log('activity : ' + i + JSON.stringify(activity));
       };
-      if(req.body.activity1_day5=='on'){
-        console.log('activity1_day5 exists');
-        var activity1_day5 = {
-          intitule: req.body.activity1_intitule_activity,
-          description: req.body.activity1_activity_description,
-          min_hours: req.body.activity1_min_hours,
-          start_time: req.body.activity1_day5_startTime,
-          end_time: req.body.activity1_day5_endTime,
-          day: req.body.day5,
-          vol_nb: req.body.activity1_day5_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity1_day5);
-      };
-      if(req.body.activity2_day1=='on'){
-        console.log('activity2_day1 exists');
-        var activity2_day1 = {
-          intitule: req.body.activity2_intitule_activity,
-          description: req.body.activity2_activity_description,
-          min_hours: req.body.activity2_min_hours,
-          start_time: req.body.activity2_day1_startTime,
-          end_time: req.body.activity2_day1_endTime,
-          day: req.body.day1,
-          vol_nb: req.body.activity2_day1_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity2_day1);
-      };
-      if(req.body.activity2_day2=='on'){
-        console.log('activity2_day2 exists');
-        var activity2_day2 = {
-          intitule: req.body.activity2_intitule_activity,
-          description: req.body.activity2_activity_description,
-          min_hours: req.body.activity2_min_hours,
-          start_time: req.body.activity2_day2_startTime,
-          end_time: req.body.activity2_day2_endTime,
-          day: req.body.day2,
-          vol_nb: req.body.activity2_day2_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity2_day2);
-      };
-      if(req.body.activity2_day3=='on'){
-        console.log('activity2_day3 exists');
-        var activity2_day3 = {
-          intitule: req.body.activity2_intitule_activity,
-          description: req.body.activity2_activity_description,
-          min_hours: req.body.activity2_min_hours,
-          start_time: req.body.activity2_day3_startTime,
-          end_time: req.body.activity2_day3_endTime,
-          day: req.body.day3,
-          vol_nb: req.body.activity2_day3_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity2_day3);
-      };
-      if(req.body.activity2_day4=='on'){
-        console.log('activity2_day4 exists');
-        var activity2_day4 = {
-          intitule: req.body.activity2_intitule_activity,
-          description: req.body.activity2_activity_description,
-          min_hours: req.body.activity2_min_hours,
-          start_time: req.body.activity2_day4_startTime,
-          end_time: req.body.activity2_day4_endTime,
-          day: req.body.day4,
-          vol_nb: req.body.activity2_day4_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity2_day4);
-      };
-      if(req.body.activity2_day5=='on'){
-        console.log('activity2_day5 exists');
-        var activity2_day5 = {
-          intitule: req.body.activity2_intitule_activity,
-          description: req.body.activity2_activity_description,
-          min_hours: req.body.activity2_min_hours,
-          start_time: req.body.activity2_day5_startTime,
-          end_time: req.body.activity2_day5_endTime,
-          day: req.body.day5,
-          vol_nb: req.body.activity2_day5_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity2_day5);
-      };
-      if(req.body.activity3_day1=='on'){
-        console.log('activity3_day1 exists');
-        var activity3_day1 = {
-          intitule: req.body.activity3_intitule_activity,
-          description: req.body.activity3_activity_description,
-          min_hours: req.body.activity3_min_hours,
-          start_time: req.body.activity3_day1_startTime,
-          end_time: req.body.activity3_day1_endTime,
-          day: req.body.day1,
-          vol_nb: req.body.activity3_day1_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity3_day1);
-      };
-      if(req.body.activity3_day2=='on'){
-        console.log('activity3_day2 exists');
-        var activity3_day2 = {
-          intitule: req.body.activity3_intitule_activity,
-          description: req.body.activity3_activity_description,
-          min_hours: req.body.activity3_min_hours,
-          start_time: req.body.activity3_day2_startTime,
-          end_time: req.body.activity3_day2_endTime,
-          day: req.body.day2,
-          vol_nb: req.body.activity3_day2_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity3_day2);
-      };
-      if(req.body.activity3_day3=='on'){
-        console.log('activity3_day3 exists');
-        var activity3_day3 = {
-          intitule: req.body.activity3_intitule_activity,
-          description: req.body.activity3_activity_description,
-          min_hours: req.body.activity3_min_hours,
-          start_time: req.body.activity3_day3_startTime,
-          end_time: req.body.activity3_day3_endTime,
-          day: req.body.day3,
-          vol_nb: req.body.activity3_day3_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity3_day3);
-      };
-      if(req.body.activity3_day4=='on'){
-        console.log('activity3_day4 exists');
-        var activity3_day4 = {
-          intitule: req.body.activity3_intitule_activity,
-          description: req.body.activity3_activity_description,
-          min_hours: req.body.activity3_min_hours,
-          start_time: req.body.activity3_day4_startTime,
-          end_time: req.body.activity3_day4_endTime,
-          day: req.body.day4,
-          vol_nb: req.body.activity3_day4_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity3_day4);
-      };
-      if(req.body.activity3_day5=='on'){
-        console.log('activity3_day5 exists');
-        var activity3_day5 = {
-          intitule: req.body.activity3_intitule_activity,
-          description: req.body.activity3_activity_description,
-          min_hours: req.body.activity3_min_hours,
-          start_time: req.body.activity3_day5_startTime,
-          end_time: req.body.activity3_day5_endTime,
-          day: req.body.day5,
-          vol_nb: req.body.activity3_day5_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity3_day5);
-      };
-      if(req.body.activity4_day1=='on'){
-        console.log('activity4_day1 exists');
-        var activity4_day1 = {
-          intitule: req.body.activity4_intitule_activity,
-          description: req.body.activity4_activity_description,
-          min_hours: req.body.activity4_min_hours,
-          start_time: req.body.activity4_day1_startTime,
-          end_time: req.body.activity4_day1_endTime,
-          day: req.body.day1,
-          vol_nb: req.body.activity4_day1_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity4_day1);
-      };
-      if(req.body.activity4_day2=='on'){
-        console.log('activity4_day2 exists');
-        var activity4_day2 = {
-          intitule: req.body.activity4_intitule_activity,
-          description: req.body.activity4_activity_description,
-          min_hours: req.body.activity4_min_hours,
-          start_time: req.body.activity4_day2_startTime,
-          end_time: req.body.activity4_day2_endTime,
-          day: req.body.day2,
-          vol_nb: req.body.activity4_day2_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity4_day2);
-      };
-      if(req.body.activity4_day3=='on'){
-        console.log('activity4_day3 exists');
-        var activity4_day3 = {
-          intitule: req.body.activity4_intitule_activity,
-          description: req.body.activity4_activity_description,
-          min_hours: req.body.activity4_min_hours,
-          start_time: req.body.activity4_day3_startTime,
-          end_time: req.body.activity4_day3_endTime,
-          day: req.body.day3,
-          vol_nb: req.body.activity4_day3_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity4_day3);
-      };
-      if(req.body.activity4_day4=='on'){
-        console.log('activity4_day4 exists');
-        var activity4_day4 = {
-          intitule: req.body.activity4_intitule_activity,
-          description: req.body.activity4_activity_description,
-          min_hours: req.body.activity4_min_hours,
-          start_time: req.body.activity4_day4_startTime,
-          end_time: req.body.activity4_day4_endTime,
-          day: req.body.day4,
-          vol_nb: req.body.activity4_day4_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity4_day4);
-      };
-      if(req.body.activity4_day5=='on'){
-        console.log('activity4_day5 exists');
-        var activity4_day5 = {
-          intitule: req.body.activity4_intitule_activity,
-          description: req.body.activity4_activity_description,
-          min_hours: req.body.activity4_min_hours,
-          start_time: req.body.activity4_day5_startTime,
-          end_time: req.body.activity4_day5_endTime,
-          day: req.body.day5,
-          vol_nb: req.body.activity4_day5_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity4_day5);
-      };
-      if(req.body.activity5_day1=='on'){
-        console.log('activity5_day1 exists');
-        var activity5_day1 = {
-          intitule: req.body.activity5_intitule_activity,
-          description: req.body.activity5_activity_description,
-          min_hours: req.body.activity5_min_hours,
-          start_time: req.body.activity5_day1_startTime,
-          end_time: req.body.activity5_day1_endTime,
-          day: req.body.day1,
-          vol_nb: req.body.activity5_day1_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity5_day1);
-      };
-      if(req.body.activity5_day2=='on'){
-        console.log('activity5_day2 exists');
-        var activity5_day2 = {
-          intitule: req.body.activity5_intitule_activity,
-          description: req.body.activity5_activity_description,
-          min_hours: req.body.activity5_min_hours,
-          start_time: req.body.activity5_day2_startTime,
-          end_time: req.body.activity5_day2_endTime,
-          day: req.body.day2,
-          vol_nb: req.body.activity5_day2_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity5_day2);
-      };
-      if(req.body.activity5_day3=='on'){
-        console.log('activity5_day3 exists');
-        var activity5_day3 = {
-          intitule: req.body.activity5_intitule_activity,
-          description: req.body.activity5_activity_description,
-          min_hours: req.body.activity5_min_hours,
-          start_time: req.body.activity5_day3_startTime,
-          end_time: req.body.activity5_day3_endTime,
-          day: req.body.day3,
-          vol_nb: req.body.activity5_day3_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity5_day3);
-      };
-      if(req.body.activity5_day4=='on'){
-        console.log('activity5_day4 exists');
-        var activity5_day4 = {
-          intitule: req.body.activity5_intitule_activity,
-          description: req.body.activity5_activity_description,
-          min_hours: req.body.activity5_min_hours,
-          start_time: req.body.activity5_day4_startTime,
-          end_time: req.body.activity5_day4_endTime,
-          day: req.body.day4,
-          vol_nb: req.body.activity5_day4_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity5_day4);
-      };
-      if(req.body.activity5_day5=='on'){
-        console.log('activity5_day5 exists');
-        var activity5_day5 = {
-          intitule: req.body.activity5_intitule_activity,
-          description: req.body.activity5_activity_description,
-          min_hours: req.body.activity5_min_hours,
-          start_time: req.body.activity5_day5_startTime,
-          end_time: req.body.activity5_day5_endTime,
-          day: req.body.day5,
-          vol_nb: req.body.activity5_day5_vol_nb,
-          applications: []
-        };
-        event.activities.push(activity5_day5);
-      };
+      console.log('event : ' + JSON.stringify(event));
       organism.events.push(event);
       organism.save(function(err){
         if(err){
-            var error = 'Something bad happened! Try again!';
-            res.render('o_addevent.jade', {error: err, organism: req.isAuthenticated()})
+          var error = 'Something bad happened! Try again!';
+          res.render('o_addevent.jade', {error: err, organism: req.isAuthenticated()})
         }
         else{
-            req.session.organism.events.push(event);
-            res.redirect('/organism/dashboard');
+          req.session.organism.events.push(event);
+          res.redirect('/organism/dashboard');
         }
       });
-    })
+    });
   });
 });
 
