@@ -18,7 +18,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var a_routes = require('./routes/a_index');
 var o_routes = require('./routes/o_index');
 var users = require('./routes/users');
-var o_addopp = require('./routes/o_addopp');
+var o_addevent = require('./routes/o_addevent');
 var o_profile = require('./routes/o_profile');
 var g_auth = require('./routes/g_auth');
 var v_routes = require('./routes/v_index');
@@ -160,7 +160,7 @@ app.use('/', o_routes);
 //app.use('/', users);
 app.use('/', g_auth);
 app.use('/', o_profile);
-app.use('/', o_addopp);
+app.use('/', o_addevent);
 app.use('/', v_routes);
 app.use('/', v_profile);
 

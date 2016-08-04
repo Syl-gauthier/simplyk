@@ -31,8 +31,8 @@ var OrganismSchema = new Schema({
 			intitule: String,
 			description: String,
 			min_hours: Number,
-			start_time: Date,
-			end_time: Date,
+			start_time: String,
+			end_time: String,
 			day: Date,
 			vol_nb: Number,
 			applications: [{

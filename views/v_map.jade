@@ -20,7 +20,7 @@ block content
                   div.media-body
                     h4.media-heading= val.org_name
                     a.firstColor= val.intitule
-                    p= 'Pour ' + val.activities[0].vol_nb + ' bénévoles'
+                    //p= 'Pour ' + val.activities[0].vol_nb + ' bénévoles'
                     #identifiant(style="display:none")
                       p= val.id
                   div.media-right.media-middle
@@ -34,7 +34,7 @@ block content
                               #myModalLabel.h4.modal-title= val.orgName + ' - ' + val.intitule
                             .modal-body.my-modal-body
                               p= 'Date: '+ val.date
-                              p= 'Pour ' + val.activities[0].vol_nb + ' bénévoles'
+                              //p= 'Pour ' + val.activities[0].vol_nb + ' bénévoles'
                               p= 'Adresse: '+ val.address
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Fermer
