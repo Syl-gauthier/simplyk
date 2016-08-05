@@ -17,19 +17,38 @@ var app = express();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  Organism.find({}, function(err, organism){
+  Organism.find({}, 'events id org_name', function(err, organisms){
     if(err){
       console.log(err);
       res.render('g_accueil.jade', {session: req.session, error: err});
     }
-    //Create opps list
-    else{
-      var list_events = [];
-      for (var i = organism.length - 1; i >= 0; i--) {
-        console.log('1 organisme de + : ' + organism[i]);
+    //Create events list
+    else {
+      console.log(req.isAuthenticated());
+      console.log('**************');
+      var activitiesList = [];
+      //Add org_name and event details in the activities and create the list of all the activities
+      for (var orgI = organisms.length - 1; orgI >= 0; orgI--) {
+        for (var eventI = organisms[orgI].events.length - 1; eventI >= 0; eventI--) {
+          for (var activityI = organisms[orgI].events[eventI].activities.length - 1; activityI >= 0; activityI--) {
+            var activity = {
+              intitule: organisms[orgI].events[eventI].activities[activityI].intitule,
+              description: organisms[orgI].events[eventI].activities[activityI].description,
+              min_hours: organisms[orgI].events[eventI].activities[activityI].min_hours,
+              days: organisms[orgI].events[eventI].activities[activityI].days,
+              org_id: organisms[orgI]._id,
+              event_intitule: organisms[orgI].events[eventI].intitule,
+              event_lat: organisms[orgI].events[eventI].lat,
+              event_lon: organisms[orgI].events[eventI].lon,
+              event_address: organisms[orgI].events[eventI].address,
+              org_name: organisms[orgI].org_name,
+              id: organisms[orgI].events[eventI].activities[activityI]._id
+            };
+            activitiesList.push(activity);
+          }
+        }
       }
-      console.log('events_list : \n ' + list_events);
-      res.render('g_accueil.jade', {opps: list_events, session: req.session});
+      res.render('g_accueil.jade', {activities: activitiesList, session: req.session});
     }
   });
 });

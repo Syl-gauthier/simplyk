@@ -32,7 +32,6 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       for (var orgI = organisms.length - 1; orgI >= 0; orgI--) {
         for (var eventI = organisms[orgI].events.length - 1; eventI >= 0; eventI--) {
           for (var activityI = organisms[orgI].events[eventI].activities.length - 1; activityI >= 0; activityI--) {
-            console.log('activityI : '+JSON.stringify(activityI));
             var activity = {
               intitule: organisms[orgI].events[eventI].activities[activityI].intitule,
               description: organisms[orgI].events[eventI].activities[activityI].description,
@@ -50,20 +49,9 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           }
         }
       }
-      /*console.log('events[0].events[0].intitule : '+JSON.stringify(organism.events[0].events[0].intitule));
-      console.log('**************');
-      console.log('events[0].events[0] : '+JSON.stringify(organism.events[0].events[0]));
-      console.log('**************');
-      console.log('activities : '+JSON.stringify(organism.events[0].activities));
-      console.log('**************');*/
       console.log('**************');
       console.log('activitiesList : '+JSON.stringify(activitiesList));
       console.log('**************');
-      console.log('ACTIVITY id : '+JSON.stringify(activitiesList[0].id));
-      /*console.log('**************');
-      console.log('activity.event_lat : '+JSON.stringify(activitiesList[0]['event_lat']));
-      console.log('**************');
-      console.log('activity.event_lat : '+JSON.stringify(typeof activitiesList[0].event_lat));*/
       res.render('v_map.jade', {
         activities: activitiesList,
         volunteer: req.isAuthenticated()
