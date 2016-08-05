@@ -28,6 +28,7 @@ var OrganismSchema = new Schema({
 		description: String,
 		status: String,
 		activities: [{
+			id: ObjectId,
 			intitule: String,
 			description: String,
 			min_hours: Number,

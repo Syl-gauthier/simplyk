@@ -15,7 +15,7 @@ var app = express();
 
 /*GET map page*/
 router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req, res) {
-  Organism.find({}, 'events', function(err, events){
+  Organism.find({}, 'events id org_name', function(err, organisms){
     if (err) {
       console.log(err);
       res.render('v_map.jade', {
@@ -26,8 +26,46 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
     //Create opps list
     else {
       console.log(req.isAuthenticated());
+      console.log('**************');
+      var activitiesList = [];
+      //Add org_name and event details in the activities and create the list of all the activities
+      for (var orgI = organisms.length - 1; orgI >= 0; orgI--) {
+        for (var eventI = organisms[orgI].events.length - 1; eventI >= 0; eventI--) {
+          for (var activityI = organisms[orgI].events[eventI].activities.length - 1; activityI >= 0; activityI--) {
+            console.log('activityI : '+JSON.stringify(activityI));
+            var activity = {
+              intitule: organisms[orgI].events[eventI].activities[activityI].intitule,
+              description: organisms[orgI].events[eventI].activities[activityI].description,
+              min_hours: organisms[orgI].events[eventI].activities[activityI].min_hours,
+              days: organisms[orgI].events[eventI].activities[activityI].days,
+              org_id: organisms[orgI]._id,
+              event_intitule: organisms[orgI].events[eventI].intitule,
+              event_lat: organisms[orgI].events[eventI].lat,
+              event_lon: organisms[orgI].events[eventI].lon,
+              event_address: organisms[orgI].events[eventI].address,
+              org_name: organisms[orgI].org_name,
+              id: organisms[orgI].events[eventI].activities[activityI]._id
+            };
+            activitiesList.push(activity);
+          }
+        }
+      }
+      /*console.log('events[0].events[0].intitule : '+JSON.stringify(organism.events[0].events[0].intitule));
+      console.log('**************');
+      console.log('events[0].events[0] : '+JSON.stringify(organism.events[0].events[0]));
+      console.log('**************');
+      console.log('activities : '+JSON.stringify(organism.events[0].activities));
+      console.log('**************');*/
+      console.log('**************');
+      console.log('activitiesList : '+JSON.stringify(activitiesList));
+      console.log('**************');
+      console.log('ACTIVITY id : '+JSON.stringify(activitiesList[0].id));
+      /*console.log('**************');
+      console.log('activity.event_lat : '+JSON.stringify(activitiesList[0]['event_lat']));
+      console.log('**************');
+      console.log('activity.event_lat : '+JSON.stringify(typeof activitiesList[0].event_lat));*/
       res.render('v_map.jade', {
-        opps: events,
+        activities: activitiesList,
         volunteer: req.isAuthenticated()
       });
     }
