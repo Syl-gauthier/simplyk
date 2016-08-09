@@ -78,10 +78,7 @@ router.get('/activity/:act_id', permissions.requireGroup('volunteer'), function(
   }, function(err, organism){
     if (err) {
       console.log(err);
-      res.render('v_map.jade', {
-        session: req.session,
-        error: err
-      });
+      res.redirect('/volunteer/map?error='+err);
     }
     else {
       //Find event and activity from organisms infos
