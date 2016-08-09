@@ -5,40 +5,13 @@ var router = express.Router();
 
 
 var permissions = require('../middlewares/permissions.js');
-var Opp = require('../models/opp_model.js');
 
 
-router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function(req, res) {
 
-  console.log('Begin get /profile');
-
-  Opp.find({
-    applications: {
-      $elemMatch: {
-        applicant: req.user._id
-      }
-    }
-  }, function(err, opps) {
-    if (err) {
-      console.log(err);
-      res.render('v_profile.jade', {
-        session: req.session,
-        error: err
-      });
-    } else {
-
-      console.log('-----------');
-      console.log('volunteer : ');
-      console.log(req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname);
-      console.log('-----------');
-
-      res.render('v_profile.jade', {
-        opps: opps,
-        volunteer: req.session.volunteer
-      });
-
-    }
-  });
+router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function(req,res){
+	console.log('Begin get /profile')
+	console.log(req.session.volunteer);
+	res.render('v_profile.jade', {opps: req.session.volunteer.events, volunteer: req.session.volunteer});
 });
 
 router.post('/volunteer/editPassword', function(req, res) {

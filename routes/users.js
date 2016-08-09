@@ -1,14 +1,14 @@
 //Volunteer related routes
-var express = require('express');
+/*var express = require('express');
 
 var permissions = require('../middlewares/permissions.js');
 
 var Opp = require('../models/opp_model.js');
 var subscribe = require('../middlewares/subscribe.js');
-var router = express.Router();
+var router = express.Router();*/
 
 /*GET map page*/
-router.get('/map', permissions.requireGroup('volunteer'), function(req, res){
+/*router.get('/map', permissions.requireGroup('volunteer'), function(req, res){
   Opp.find({}, function(err, opps){
     if(err){
       console.log(err);
@@ -20,10 +20,10 @@ router.get('/map', permissions.requireGroup('volunteer'), function(req, res){
       res.render('map.jade', {opps: opps, user: req.isAuthenticated()});
     }
   });
-});
+});*/
 
 /* GET users listing. */
-router.get('/users', function(req, res, next) {
+/*router.get('/users', function(req, res, next) {
   res.send('respond with a resource');
 });
 
@@ -67,4 +67,4 @@ router.post('/subscribe', function(req,res){
   });
 });
 
-module.exports = router;
+module.exports = router;*/

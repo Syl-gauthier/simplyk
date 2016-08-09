@@ -1,0 +1,91 @@
+extends ./g_layout.jade
+block vars
+	- var page = 'addevent'
+
+block head
+	script(src='/bower_components/pickadate/lib/picker.js', type='text/javascript')
+	script(src='/bower_components/pickadate/lib/picker.date.js', type='text/javascript')
+	script(src='/bower_components/pickadate/lib/picker.time.js', type='text/javascript')
+	script(src='/bower_components/pickadate/lib/legacy.js', type='text/javascript')
+	link(href='/bower_components/pickadate/lib/themes/classic.css', rel='stylesheet')
+	link(href='/bower_components/pickadate/lib/themes/classic.date.css', rel='stylesheet')
+	link(href='/bower_components/pickadate/lib/themes/classic.time.css', rel='stylesheet')
+
+
+
+block content
+			script(src="/javascripts/angular/form_addevent.js", type="text/javascript")
+			#map-section.container-fluid(ng-app='form')
+				.row
+					.col-md-6.col-md-offset-3
+						.page-header
+							h1 Ajoute un évènement
+							if error
+								p.alert.alert-danger #{error}
+				.row
+					.col-md-6.col-md-offset-3(ng-controller='FormController as form')
+						h2 Mon évènement
+						form#creationeventform.form-horizontal(action='addevent', method='post')
+							.input-group.conn-input(ng-repeat='field in form.requiredEventFields')
+								span#basic-addon1.input-group-addon {{field.title}}
+								input.form-control(id='{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{field.id}}', aria-describedby='basic-addon1', required)
+							.input-group.conn-input(ng-repeat='field in form.unnecessaryEventFields')
+								span#basic-addon1.input-group-addon {{field.title}}
+								input.form-control(id='{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{field.id}}', aria-describedby='basic-addon1')
+							h4 Dates de l'évènement
+							div.pickadatediv.input-group.conn-input(ng-repeat='day in form.daysList' on-last-repeat)
+								span#basic-addon1.input-group-addon {{day.title}}
+								input.datepicker.form-control(id='day{{day.nb}}', type='text', name='day{{day.nb}}', placeholder='Choisis un jour')
+							button.btn.btn-default(ng-click='form.addDay()', type='button') Ajouter un jour
+							.input-group.conn-input.form-group
+								span.col-md-2 Langage
+								label.radio-inline
+									input(type='radio', name='language', value='enfr', checked)
+									p  Français/English
+								label.radio-inline
+									input(type='radio', name='language', value='en')
+									p English only
+								label.radio-inline
+									input(type='radio', name='language', value='fr')
+									p Seulement Français
+							div(ng-repeat='activity in form.activitiesList')
+								h2 {{activity.activityTitle}}
+								.input-group.conn-input(ng-repeat='field in activity.activityRequiredFields')
+									span#basic-addon1.input-group-addon {{field.title}}
+									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1', required)
+								.row.form-group(ng-repeat = 'day in form.daysList' on-last-repeat)
+									label.col-md-1
+										input(type='checkbox', name='{{activity.activityName}}_{{day.name}}') 
+									div.col-md-2
+										p Jour {{day.nb}}
+									div.col-md-2
+										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_startTime', placeholder='Début')
+									div.col-md-2
+										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_endTime', placeholder='Fin')
+									div.col-md-2
+										input(type='number', name='{{activity.activityName}}_{{day.name}}_vol_nb', placeholder='Nombre de bénévoles')
+								.input-group.conn-input(ng-repeat='field in activity.activityUnnecessaryFields')
+									span#basic-addon1.input-group-addon {{field.title}}
+									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1')
+						button.btn.btn-default(ng-click='form.addActivity()') Ajouter une activité
+						button.btn.btn-default(type='submit', form='creationeventform') Terminer
+block footscript
+	script.
+		var input;
+		function initAutocomplete(){
+			input = (document.getElementById('address'));
+			var autocomplete = new google.maps.places.Autocomplete(input);
+		};
+	script.
+		$( document ).ready(function() {
+			var input = $('.datepicker');
+			input.pickadate({
+				firstDay: 1,
+				formatSubmit: 'yyyy-mm-dd'
+			});
+			var input = $('.timepicker');
+			input.pickatime({
+			});
+		});
+
+	script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&signed_in=true&libraries=places&callback=initAutocomplete" async defer)

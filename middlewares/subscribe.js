@@ -1,30 +1,34 @@
 /*jslint node: true */
-
-var Opp = require('../models/opp_model.js');
-
-var findApplicants = function(opp, callback) {
+/*
+var findApplicants = function(day, callback) {
   var list = [];
-  console.log('opp.applications');
-  console.log(opp.applications);
-  for (var i = 0; i < opp.applications.length; i++) {
-    if (typeof opp.applications[i].applicant !== 'undefined') {
-      list.push(opp.applications[i].applicant.toHexString());
+  console.log('event.applications');
+  console.log(event.applications);
+  for (var i = 0; i < event.applications.length; i++) {
+    if (typeof event.applications[i].applicant_id !== 'undefined') {
+      list.push(event.applications[i].applicant_id.toHexString());
     }
   }
   return callback(list);
-};
+};*/
 
 /**
+<<<<<<< HEAD
  * Lists applicants to an opp.
  * The returned list is used in subscribeUserToOpp
  * @param  {opp} opp
+=======
+ * Lists applicants to an event.
+ * The returned list is used in subscribeUserToOpp
+ * @param  {event} event
+>>>>>>> update_models
  * @return {list} list of applicants
- */
-function list_Applicants(opp) {
+ *//*
+function list_Applicants(event) {
   var list = [];
-  for (var i = 0; i < opp.applications.length; i++) {
-    if (typeof opp.applications[i].applicant !== 'undefined') {
-      list.push(opp.applications[i].applicant.toHexString());
+  for (var i = 0; i < event.applications.length; i++) {
+    if (typeof event.applications[i].applicant_id !== 'undefined') {
+      list.push(event.applications[i].applicant_id.toHexString());
     }
   }
   return list;
@@ -38,21 +42,42 @@ function list_opps(user) {
     }
   }
   return list;
-}
+}*/
 
 /**
+<<<<<<< HEAD
  * unsubscribes user to opp
  * @param  {opp} opp
  * @param  {user} user
  * @param {response} res
- */
+ *//*
 var subscribeUserToOpp = function(req, res) {
 
   Opp.findById(req.body.opp_id, function(err, opp) {
     if (err) {
       console.log('Failure to find opp');
       return handleError(err);
-    }
+    }*/
+    /*
+ * Subscribes user to event, if he is not yet subscribed.
+ * @param  {opportunityortunity} event
+ * @param  {user} user
+ * @param {response} res
+ *//*
+var subscribeUserToOpp = function(event, user, res) {
+
+  console.log('\n=========\n PROCESSING SUBSCRIPTION\n=========\n');
+  console.log('event name : ' + event.intitule);
+  console.log('---------------');
+  console.log('user id : ' + user._id);
+  console.log('---------------');
+  //console.log('event : ');
+  //console.log(event);
+
+  var applicants_list = list_Applicants(event);
+  console.log('applicants_list : ');
+  console.log(applicants_list);
+>>>>>>> update_models
 
     // get user
     var user = req.user;
@@ -62,6 +87,11 @@ var subscribeUserToOpp = function(req, res) {
     console.log('---------------');
     console.log('user id : ' + user._id);
     console.log('---------------');
+<<<<<<< HEAD
+=======
+    console.log('The user is already subscribed to this event.');
+    console.log('---------------\n');
+>>>>>>> update_models
 
     var applicants_list = list_Applicants(opp);
     console.log('applicants_list : ');
@@ -136,6 +166,7 @@ var unsubscribeUserToOpp = function(req, res) {
 
     console.log('opp name : ' + opp.intitule);
     console.log('---------------');
+<<<<<<< HEAD
     console.log('opp id : ' + opp._id);
     console.log('---------------');
     console.log('user id : ' + user._id);
@@ -170,6 +201,22 @@ var unsubscribeUserToOpp = function(req, res) {
 
         user.opportunities.remove(user.opportunities[opp_index]);
 
+=======
+    console.log('The user is not subscribed yet. Subscribing user.');
+    console.log('---------------\n');
+
+    event.applications.addToSet({
+      "applicant_id": user._id,
+      "applicant_name": user.firstname + user.firstname,
+    });
+    event.save(function(err) {
+      if (err) {
+        console(err);
+      } else {
+        user.opportunities.push({
+          event: event._id
+        });
+>>>>>>> update_models
         user.save({}, function() {
           console.log('=========\nREDIRECTING TO PROFILE \n=========\n ');
           res.send({
@@ -185,4 +232,4 @@ module.exports = {
   findApplicants: findApplicants,
   subscribeUserToOpp: subscribeUserToOpp,
   unsubscribeUserToOpp: unsubscribeUserToOpp,
-};
+};*/

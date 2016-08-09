@@ -7,49 +7,52 @@ block content
       .container-fluid
         .row.fill
           #offers-list.col-md-4.col-md-offset-1.no-side-padding
-            h1.page-header Mes mandats
+            h1.page-header Mes évènements
             if error
               p.alert.alert-danger #{error}
+            button.btn.btn-success-outline.pinkow(onclick="location.href='/organism/addevent';") Ajouter un évènement !
+            h3
             ul.list-group.list-opportunity
-              each val, index in opps
-                li.list-group-item(id= val._id)
+              each event, event_i in events
+                li.list-group-item(id= event._id)
                   div.media-left.media-middle
                     a(href='profile')
                       img.media-object(src='/images/clouds.jpg')
                   div.media-body
-                    h4.media-heading= val.intitule
-                    p= 'Pour ' + val.nbBenevoles + ' bénévoles'
-                    p= 'Adresse: '+ val.address
-                    p= val.applications.length+' people applied'
-                  div.media-right.media-middle
-                    button.info-button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+val._id) Informations
-                    div(tabindex='-1', role='dialog', class= 'modal fade '+val._id)
-                      .modal-dialog
-                          .modal-content
-                            .modal-header
-                              button.close(type='button', data-dismiss='modal', aria-label='Close')
-                                span(aria-hidden='true') &times;
-                              #myModalLabel.h4.modal-title= val.orgName + ' - ' + val.intitule
-                            .modal-body.my-modal-body
-                              p= 'Date: '+ val.date
-                              p= 'Pour ' + val.nbBenevoles + ' bénévoles'
-                              p= 'Adresse: '+ val.address
-                              p= 'Applicants'
-                              if val.applications
-                                each value, i in val.applications
-                                  p='-----------------'
-                                  p= value.applicant_name + ', statut : ' + value.status
-                                  p(style='display:none')= value.applicant_name
-                                  p(style='display:none')= value.applicant
-                                  button.btn.btn-primary(type='button', class='validate') Valider
-                                  button.btn.btn-primary(type='button', class='reject') Rejeter
-                            .modal-footer
-                              button.btn.btn-default(type='button', data-dismiss='modal') Close
-                              button.btn.btn-primary.pinkow(type='button')
-                                a(href='mailto:'+val.mail+'?subject=Participation%20à%20:%20'+val.intitule) Contactez
+                    h4.media-heading= event.intitule
+                    p= 'Adresse : '+ event.address
+                    each act, act_i in event.activities
+                      p= 'Activité : '+ act.intitule
+                      each day, day_i in act.days
+                        p= 'Date : ' + day.day
+                        p= day.applications.length+' bénévoles se sont inscrits'
+                      div.media-right.media-middle
+                        button.info-button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Informations
+                        div(tabindex='-1', role='dialog', class= 'modal fade '+act._id)
+                          .modal-dialog
+                              .modal-content
+                                .modal-header
+                                  button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') &times;
+                                  #myModalLabel.h4.modal-title= event.intitule + ' - ' + act.intitule
+                                .modal-body.my-modal-body
+                                  p= 'Adresse: '+ event.address
+                                  each day, day_i in act.days
+                                    p= 'Date : ' + day.day
+                                    p= day.applications.length+' bénévoles se sont inscrits'
+                                    p= 'Pour ' + day.vol_nb + ' bénévoles recherchés'
+                                  p= 'Inscrits :'
+                                  if event.applications
+                                    each value, i in event.applications
+                                      p= value.applicant.firstname
+                                      p DATAS :
+                                      p.applicants
+                                .modal-footer
+                                  button.btn.btn-default(type='button', data-dismiss='modal') Close
+                                  button.btn.btn-primary.pinkow(type='button')
+                                    a(href='#') Détails
           .col-md-5.col-md-offset-2.no-side-padding
-            h1.page-header Mes actions
-            button.btn.btn-success-outline.pinkow(onclick="location.href='/organism/addopp';") Ajouter un mandat !
+            h1.page-header Mes engagements
 
 
 block footscript

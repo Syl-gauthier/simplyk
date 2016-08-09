@@ -1,6 +1,5 @@
 /*jslint node: true */
 
-var Opp = require('../models/opp_model.js');
 
 var getOppUsers = function(opp_id, req, res) {
 

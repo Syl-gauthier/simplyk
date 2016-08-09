@@ -65,7 +65,8 @@ router.post('/register_volunteer', function(req, res){
     email: req.body.email,
     lastname: req.body.lastname,
     firstname: req.body.firstname,
-    birthdate: req.body.birthdate
+    birthdate: req.body.birthdate,
+    password: req.body.password
   });
 
   newVolunteer.password = newVolunteer.generateHash(req.body.password);
@@ -78,7 +79,7 @@ router.post('/register_volunteer', function(req, res){
 router.post('/register_organism', function(req, res){
   newOrganism = new Organism({
     email: req.body.email,
-    orgName: req.body.name,
+    org_name: req.body.name,
     lastname: req.body.lastname,
     firstname: req.body.firstname,
     password: req.body.password,
@@ -103,6 +104,7 @@ router.post('/register_admin', function(req, res){
     type: req.body.type,
     lastname: req.body.lastname,
     firstname: req.body.firstname,
+    password: req.body.password,
     birthdate: req.body.birthdate
   });
 

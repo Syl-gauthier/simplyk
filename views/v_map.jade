@@ -12,56 +12,47 @@ block content
             ul.list-group.list-opportunity
               if error
                 p.alert.alert-danger #{error}
-              each opp, index in opps
-                li.list-group-item
-                  div.media-left.media-middle
-                    a(href='/volunteer/profile')
-                      img.media-object(src='/images/clouds.jpg')
-                  div.media-body
-                    h4.media-heading= opp.orgName
-                    a.firstColor= opp.intitule
-                    p= 'Pour ' + opp.nbBenevoles + ' bénévoles'
-                    #identifiant(style="display:none")
-                      p= opp._id
-                  div.media-right.media-middle
-                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+opp._id) Informations
-                    #myModal(tabindex='-1', role='dialog', class='modal fade ' + opp._id)
-                      .modal-dialog
-                          .modal-content
-                            .modal-header
-                              button.close(type='button', data-dismiss='modal', aria-label='Close')
-                                span(aria-hidden='true') &times;
-                              #myModalLabel.h4.modal-title= opp.orgName + ' - ' + opp.intitule
-                            .modal-body.my-modal-body
-                              p= 'Date: '+ opp.date
-                              p= 'Pour ' + opp.nbBenevoles + ' bénévoles'
-                              p= 'Adresse: '+ opp.address
-                            .modal-footer
-                              button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                              #subscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+opp._id aria-expanded="false" aria-controls="collapseExample") S'inscrire
-                              button.btn.btn-primary.pinkow(type='button')
-                                a(href='mailto:'+opp.mail+'?subject=Participation%20à%20:%20'+opp.intitule, target='_blank') Contactez
-                              div.collapse.tp-15(id = "collapse" + opp._id)
-                                div.well Es-tu sûr de vouloir t'inscrire ? <br> Ton aide sera très appréciée ! L'organisme va en être informé et confirmera ta participation. Tu peux aussi le contacter directement grâce au bouton 'S'inscrire' ci-dessus !<br> <br>
-                                  button.subscribe-button.btn.btn-primary.pinkow Oui
-                                  button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
+              each act, index in activities
+                  li.list-group-item
+                    div.media-left.media-middle
+                      a(href='/volunteer/profile')
+                        img.media-object(src='/images/clouds.jpg')
+                    div.media-body
+                      h4.media-heading= act.org_name + ' - ' +act.event_intitule
+                      a.firstColor= act.intitule
+                      each day, nb in act.days
+                        p= 'Pour ' + day.vol_nb + ' bénévoles le' + day.day
+                        #identifiant(style="display:none")
+                        p= 'act.id : ' + act.id
+                    div.media-right.media-middle
+                      button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act.id) Plus d'infos
+                      div(tabindex='-1', role='dialog', class='modal fade ' + act.id, id=act.id)
+                        .modal-dialog(role='document')
+                            .modal-content
+                              .modal-header
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                  span(aria-hidden='true') &times;        
+                                #myModalLabel.h4.modal-title=  act.org_name + ' - ' +act.event_intitule
+                              .modal-body.my-modal-body
+                                each day, nb in act.days
+                                  p= 'Pour ' + day.vol_nb + ' bénévoles le' + day.day
+                                  #identifiant(style="display:none")
+                                    p= act.id
+                                p= 'Adresse: '+ act.event_address
+                              .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+                                #subscribe.subscribe-button.button.btn.btn-default.pinkow(type='button' aria-expanded="false" aria-controls="collapseExample") S'inscrire
+                                .button.btn.btn-default.pinkow(type='button' aria-expanded="false" aria-controls="collapseExample") Plus d'infos
 
 
 block footscript
   script.
     $(function() {
       $('.subscribe-button').click(function(){
-        var identifiant = $(this).parents().parents().children('.media-body').children('#identifiant').children('p').html();
-        console.log('id : ' + identifiant);
-        //On utilise l'identifiant de l'opp dans mongoDB pour traiter l'ajout de ce favori dans /addfavopp
-        $.post('/volunteer/subscribe', {opp_id: identifiant}).done(function(data, status){
-          if(data.error){
-            alert("Remarque: " + data.error);
-          }
-          else if (data.redirect){
-            window.location.replace("/volunteer/profile");
-          };
-        });
+        console.log('Clic sur le bouton  de subscription');
+        var act_id = $(this).parents().parents().children('.modal').attr('id');
+        console.log('act_id : ' + act_id);
+        $.redirect('/activity/'+act_id, {}, 'GET');
       });
     });
     function initMap(){
@@ -87,10 +78,10 @@ block footscript
         mapTypeId: google.maps.MapTypeId.ROADMAP
       });
       //Generate markers
-      var opports = !{JSON.stringify(opps)};
+      var acts = !{JSON.stringify(activities)};
       var infowindows = [];
       var markers = [];
-      function attachInfoWindow(marker, infoWindow, opp, i){
+      function attachInfoWindow(marker, infoWindow, act, i){
         marker.addListener('click', function(){
           openListInfos(i);
         });
@@ -103,24 +94,26 @@ block footscript
           listUnstar(i);
         });
       };
-      for(i=0; i<opports.length; i++){
-        console.log(opports[i].intitule + " marker generated");
-        var opp = opports[i];
+      for(i=0; i<acts.length; i++){
+        console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].event_lat + acts[i].event_lon);
+        var act = acts[i];
         infowindows[i] = new google.maps.InfoWindow({
-          content: opp.intitule
+          content: act.intitule
         });
         markers[i] = new google.maps.Marker({
-          position: {lat: opp.lat, lng: opp.lon},
+          position: {lat: act.event_lat, lng: act.event_lon},
           map: map,
           clickable: true
         });
-        attachInfoWindow(markers[i], infowindows[i], opp, i);
+        attachInfoWindow(markers[i], infowindows[i], act, i);
       }
     }
   script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&callback=initMap"
          async defer)
   // jQuery (necessary for Bootstrap's JavaScript plugins)
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+  // jQuery redirection plugin
+  script(src="/bower_components/jquery.redirect/jquery.redirect.js", type="text/javascript")
   // jQuery
   script(src='/javascripts/my-jquery.js')
   // Include all compiled plugins (below), or include individual files as needed

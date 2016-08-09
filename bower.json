@@ -21,6 +21,8 @@
     "font-awesome": "fontawesome#^4.6.3",
     "bootstrap3-dialog": "bootstrap-dialog#^1.35.2",
     "form.validation": "*",
-    "angular": "^1.5.7"
+    "angular": "^1.5.7",
+    "pickadate": "^3.5.6",
+    "jquery.redirect": "*"
   }
 }
