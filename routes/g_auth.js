@@ -6,6 +6,10 @@ var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
 var Admin = require('../models/admin_model.js');
 
+var emailer = require('../email/emailer.js')
+
+var emailCredentials = process.env.EMAIL_CREDENTIALS;
+
 router.get('/login', function(req, res, next){
   if(req.query.login_error){
     res.render('g_login.jade', {error: 1});
@@ -77,9 +81,12 @@ router.post('/register_volunteer', function(req, res){
 
 /* Handle Registration POST for organism*/
 router.post('/register_organism', function(req, res){
+  var email = req.body.email;
+  var org_name = req.body.name;
+
   newOrganism = new Organism({
-    email: req.body.email,
-    org_name: req.body.name,
+    email: email,
+    org_name: org_name,
     lastname: req.body.lastname,
     firstname: req.body.firstname,
     password: req.body.password,
@@ -92,6 +99,15 @@ router.post('/register_organism', function(req, res){
   newOrganism.password = newOrganism.generateHash(req.body.password);
 
   newOrganism.save({});
+
+  if(emailCredentials) {
+    emailer.sendWelcomeEmail({
+      recipient: email,
+      name: org_name,
+      customMessage: 'Congratulation, create an event to get volunteers!'
+    });
+  }
+
   res.redirect('/');
 });
 
