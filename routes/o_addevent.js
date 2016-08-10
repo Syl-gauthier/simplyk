@@ -5,6 +5,7 @@ var gmaps = require('../middlewares/gmaps.js');
 
 var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
+var Activity = require('../models/activity_model.js');
 
 router.get('/organism/addevent', permissions.requireGroup('organism'), function(req, res){
   res.render('o_addevent.jade', {organism: req.isAuthenticated()});
@@ -20,6 +21,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
 
   gmaps.codeAddress(req.body.address, function(lat, lon){
     Organism.findById(req.session.organism._id, function(err, organism){
+      console.log('****************************');
       console.log('Organism : ' + organism);
       var keysList = Object.keys(req.body);
       var event = {
@@ -28,7 +30,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
         address: req.body.address,
         language: req.body.language,
         description: req.body.event_description,
-        status: "to_come",
+        status: "",
         activities: [],
         lat: lat,
         lon: lon
@@ -69,6 +71,13 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
       var activitiesList = [];
       for (var i = 1; i<nb_activities+1; i++){
         var activity = {
+          lat: lat,
+          lon: lon,
+          org_id: req.session.organism._id,
+          org_name: req.session.organism.org_name,
+          event_intitule: req.body.intitule_event,
+          address: req.body.address,
+          language: req.body.language,
           intitule: req.body['activity'+i+'_intitule_activity'],
           description: req.body['activity'+i+'_activity_description'],
           min_hours: req.body['activity'+i+'_min_hours'],
@@ -84,26 +93,40 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
               applications: []
             };
             activity.days.push(day);
-            console.log('day : ' + j + JSON.stringify(day));
+            console.log('3 +++++++  day : ' + j + JSON.stringify(day));
           };
         };
-        event.activities.push(activity);
-        console.log('activity : ' + i + JSON.stringify(activity));
+        //Create activity in Mongo
+        newActivity = new Activity(activity);
+        newActivity.save(function(err, act){
+          if(err){
+            console.log(err);
+          }
+          else{
+            console.log('++++++++++++++++++++++++++++++');
+            console.log('ACT._ID'+act._id);
+            event.activities.push(act._id);
+            console.log('EVENT.ACTIVITIES : ' + event.activities);
+            console.log('++++++++++++++++++++++++++++++');
+            console.log('2 ++++++++++ activity : ' + i + JSON.stringify(activity));
+            console.log('1 ++++++++ event : ' + JSON.stringify(event));
+            organism.events.push(event);
+            organism.save(function(err, org){
+              if(err){
+                var error = 'Something bad happened! Try again!';
+                res.render('o_addevent.jade', {error: err, organism: req.isAuthenticated()})
+              }
+              else{
+                req.session.organism = org;
+                res.redirect('/organism/dashboard');
+              }
+            });
+          }
+        });
       };
-      console.log('event : ' + JSON.stringify(event));
-      organism.events.push(event);
-      organism.save(function(err){
-        if(err){
-          var error = 'Something bad happened! Try again!';
-          res.render('o_addevent.jade', {error: err, organism: req.isAuthenticated()})
-        }
-        else{
-          req.session.organism.events.push(event);
-          res.redirect('/organism/dashboard');
-        }
-      });
     });
   });
 });
 
 module.exports = router;
+//+++++++++++++++++++++++++++++++++++++++++++++++

@@ -14,6 +14,7 @@ var ObjectId = Schema.ObjectId;
 var permissions = require('../middlewares/permissions.js');
 var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
+var Activity = require('../models/activity_model.js');
 
 var app = express();
 
@@ -21,7 +22,7 @@ var opp_management = require('../middlewares/opp_management.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  Organism.find({}, 'events id org_name', function(err, organisms){
+  Activity.find({}, function(err, activities){
     if(err){
       console.log(err);
       res.render('g_accueil.jade', {
@@ -33,36 +34,24 @@ router.get('/', function(req, res, next) {
     else {
       console.log(req.isAuthenticated());
       console.log('**************');
-      var activitiesList = [];
-      //Add org_name and event details in the activities and create the list of all the activities
-      for (var orgI = organisms.length - 1; orgI >= 0; orgI--) {
-        for (var eventI = organisms[orgI].events.length - 1; eventI >= 0; eventI--) {
-          for (var activityI = organisms[orgI].events[eventI].activities.length - 1; activityI >= 0; activityI--) {
-            var activity = {
-              intitule: organisms[orgI].events[eventI].activities[activityI].intitule,
-              description: organisms[orgI].events[eventI].activities[activityI].description,
-              min_hours: organisms[orgI].events[eventI].activities[activityI].min_hours,
-              days: organisms[orgI].events[eventI].activities[activityI].days,
-              org_id: organisms[orgI]._id,
-              event_intitule: organisms[orgI].events[eventI].intitule,
-              event_lat: organisms[orgI].events[eventI].lat,
-              event_lon: organisms[orgI].events[eventI].lon,
-              event_address: organisms[orgI].events[eventI].address,
-              org_name: organisms[orgI].org_name,
-              id: organisms[orgI].events[eventI].activities[activityI]._id
-            };
-            activitiesList.push(activity);
-          }
-        }
-      }
-      res.render('g_accueil.jade', {activities: activitiesList, session: req.session});
+      res.render('g_accueil.jade', {activities: activities, session: req.session});
     }
   });
 });
 
-
 router.get('/organism/dashboard', permissions.requireGroup('organism'), function(req, res){
-  res.render('o_dashboard.jade', {events: req.session.organism.events, organism: req.isAuthenticated()});
+  Activity.find({"org_id": req.session.organism.org_id}, function(err, activities){
+    if (err){
+      console.log(err);
+      res.render('g_accueil.jade', {
+        session: req.session,
+        error: err
+      });
+    }
+    else {
+      res.render('o_dashboard.jade', {events: req.session.organism.events, activities: activities, organism: req.isAuthenticated()});
+    }
+  })
 });
 
 //for ajax call only (for now)
@@ -91,3 +80,4 @@ router.post('/organism/logout', function(req, res) {
 });
 
 module.exports = router;
+//++++++++++++++++++++++++++++++++++++++++

@@ -21,7 +21,7 @@ block content
                   div.media-body
                     h4.media-heading= event.intitule
                     p= 'Adresse : '+ event.address
-                    each act, act_i in event.activities
+                    each act, act_i in activities
                       p= 'Activité : '+ act.intitule
                       each day, day_i in act.days
                         p= 'Date : ' + day.day
@@ -39,14 +39,9 @@ block content
                                   p= 'Adresse: '+ event.address
                                   each day, day_i in act.days
                                     p= 'Date : ' + day.day
-                                    p= day.applications.length+' bénévoles se sont inscrits'
+                                    p= day.applicants.length+' bénévoles se sont inscrits'
                                     p= 'Pour ' + day.vol_nb + ' bénévoles recherchés'
                                   p= 'Inscrits :'
-                                  if event.applications
-                                    each value, i in event.applications
-                                      p= value.applicant.firstname
-                                      p DATAS :
-                                      p.applicants
                                 .modal-footer
                                   button.btn.btn-default(type='button', data-dismiss='modal') Close
                                   button.btn.btn-primary.pinkow(type='button')
@@ -58,78 +53,3 @@ block content
 block footscript
   // jQuery (necessary for Bootstrap's JavaScript plugins)
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
-
-  //ajax call to get users data of a specific Opp
-  script.
-    //Each info-button has a click event listener
-    $(".btn").mouseup(function(){
-    $(this).blur();
-    });
-
-    /*
-    $(".info-button").click(function(){
-      parent_li = $(this).closest("li");
-      console.log("======= parent li");
-      console.log(parent_li);
-      console.log('id attribute from parent_li :  ' + parent_li.attr('id'));
-
-      $.post('/organism/getOppUsers', {opp_id: parent_li.attr('id')}, function(data){
-        console.log('data from post : ');
-        console.log('data from post : ' + data);
-        //Add data to the pop up .modal-body.my-modal-body
-        console.log(parent_li.find(".my-modal-body").children(".applicants"));
-        parent_li.find(".my-modal-body").children(".applicants").replaceWith("<p>"+data+"<p>");
-      });
-
-    });
-    */
-
-    $('.validate').click(function(){
-      // validate volunteer participation
-      // get applicant id
-      var applicant_id = $(this).prev().html();
-      console.log('applicant id :  ' + applicant_id);
-
-      // dinamically display the status (pending, accepted, or rejected) on front page. Better done with angular ?
-      var applicant_name = $(this).prev().prev().html();
-      $(this).prev().prev().prev().html(applicant_name+", statut : ACCEPTÉ");
-
-      // get opp id
-      var opp_id = $(this).closest("li").attr('id')
-      console.log('opp id :  ' + opp_id);
-
-      $.post('/organism/validate', {opp_id: opp_id, applicant_id:applicant_id}).done(function(data, status){
-        if(data.error){
-          alert("Remarque: " + data.error);
-        }
-        else if (data.redirect){
-          window.location.replace("/organism/dashboard");
-        };
-      });
-    });
-
-    $('.reject').click(function(){
-      // reject volunteer participation
-      // get applicant id
-      var applicant_id = $(this).prev().prev().html();
-      console.log('applicant id :  ' + applicant_id);
-
-      // dinamically display the status (pending, accepted, or rejected) on front page. Better done with angular ?
-      var applicant_name = $(this).prev().prev().prev().html();
-      $(this).prev().prev().prev().prev().html(applicant_name+", statut : REJETÉ");
-
-      // get opp id
-      var opp_id = $(this).closest("li").attr('id')
-      console.log('opp id :  ' + opp_id);
-
-      $.post('/organism/reject', {opp_id: opp_id, applicant_id:applicant_id}).done(function(data, status){
-        if(data.error){
-          alert("Remarque: " + data.error);
-        }
-        else if (data.redirect){
-          window.location.replace("/organism/dashboard");
-        };
-      });
-
-    });
-

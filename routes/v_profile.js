@@ -1,11 +1,10 @@
-/*jslint node: true */
-
 var express = require('express');
 var router = express.Router();
 
 
 var permissions = require('../middlewares/permissions.js');
 var Volunteer = require('../models/volunteer_model.js');
+var Organism = require('../models/organism_model.js');
 
 
 
@@ -37,7 +36,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       console.log(error);
     }
   }
-	res.render('v_profile.jade', {events_subscribed: events_subscribed, events_confirmed: events_confirmed, events_pending: events_pending, events_past: events_past, volunteer: req.session.volunteer, error: error});
+  res.render('v_profile.jade', {events_subscribed: events_subscribed, events_confirmed: events_confirmed, events_pending: events_pending, events_past: events_past, volunteer: req.session.volunteer, error: error});
 });
 
 router.post('/volunteer/editPassword', function(req, res) {
@@ -60,6 +59,7 @@ router.post('/volunteer/editPassword', function(req, res) {
   }
 });
 
+//Add hours_pending to an activity
 router.post('/volunteer/hours_pending/:act_id-:day', function(req, res){
   var status = "pending";
   Volunteer.findOneAndUpdate({
@@ -85,10 +85,59 @@ router.post('/volunteer/hours_pending/:act_id-:day', function(req, res){
     }
     else {
       req.session.volunteer = newVolunteer;
+      Organism.update({
+        "$and": [{
+          "events":{
+            "$elemMatch": {
+              "activities": {
+                "$elemMatch": {
+                  "_id": req.params.act_id
+                }
+              }
+            }
+          }
+        },{
+          "events":{
+            "$elemMatch": {
+              "activities": {
+                "$elemMatch": {
+                  "days": {
+                    "$elemMatch": {
+                      "day": req.params.day
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },{
+          "events":{
+            "$elemMatch": {
+              "activities": {
+                "$elemMatch": {
+                  "days": {
+                    "$elemMatch": {
+                      "applications": {
+                        "$elemMatch": {
+                          "applicant_id": req.session.volunteer._id
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }]
+      },
+      {
+
+      }
+      );
       //res.json({volunteer: newVolunteer, hours_pending: req.body.hours_pending});
       res.redirect('/volunteer/map')
     }
   });
 });
 
-  module.exports = router;
+module.exports = router;
