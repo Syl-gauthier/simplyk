@@ -1,0 +1,20 @@
+extends ./g_layout.jade
+block vars
+	- var page = 'event'
+
+
+block content
+	.container-fluid
+		.row.fill
+			.col-md-8.col-md-offset-2.no-side-padding
+				h1= event.intitule
+				p Adresse: #{event.address}
+				p Description: #{event.description}
+				each act, act_i in event.acts
+					h2= act.intitule
+					each day, day_i in act.days
+						h4= day.day
+						p= 'De ' + day.start_time + ' à ' + day.end_time
+						p= 'Pour ' + day.vol_nb + ' bénévoles'
+						p= day.applicants.length + ' trouvés'
+

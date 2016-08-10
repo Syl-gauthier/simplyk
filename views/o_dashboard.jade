@@ -29,9 +29,9 @@ block content
                         p= 'Date : ' + day.day
                         p= day.applicants.length+' bénévoles se sont inscrits'
                       div.media-right.media-middle
-                        button.btn.btn-default.infos-button(id= act._id) Informations
+                        button.btn.btn-default.infos-button(id= event._id) Informations
                         //button.info-button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Informations
-                        div(tabindex='-1', role='dialog', class= 'modal fade '+event._id)
+                        div(tabindex='-1', role='dialog', class= 'modal fade '+act._id)
                           .modal-dialog
                               .modal-content
                                 .modal-header

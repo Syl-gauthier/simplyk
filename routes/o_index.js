@@ -88,24 +88,66 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
 
 router.get('/organism/event/:event_id', function(req,res){
   function isEvent(event){
+    console.log(event._id);
     return event._id === req.params.event_id;
   };
   var event = req.session.organism.events.find(isEvent);
   var acts_id = event.activities;
-  console.log('event.activities.length : ' + event.activities.length);
-  Activity.find({"id": {'$in': acts_id}}, function(err, activities){
+  Activity.find({"_id": {'$in': acts_id}}, function(err, activities){
     if (err){
       console.log(err);
       res.redirect('/organism/dashboard?error='+err);
     }
     else{
-      function inThisEvent(activity){
-        return (events[eventI].activities.indexOf(activity._id.toString()) >= 0);
-      };
-      var event = req.session.organism.events.filter(isTheEvent);
-      event.acts = activities;
-      res.json(event);
-      //res.render('o_event.jade', {event: event});
+      Volunteer.find({
+        "events":{
+          '$elemMatch': {
+            'activity_id': {'$in': acts_id}
+          }
+        }
+      }, function(err, volunteers){
+        if (err){
+          console.log(err);
+          res.redirect('/organism/dashboard?error='+err);
+        }
+        else {
+          console.log('ALL ACTIVITIES : ' + activities);
+          console.log('****************************');
+          console.log('ALL VOLUNTEERS : ' + volunteers);
+          console.log('****************************');
+          event.acts =[];
+          for (var actI = activities.length - 1; actI >= 0; actI--) {
+            var vols = [];
+            //activities[actI]['vols'] = new Array();
+            function goodEvent(event){
+              console.log('blop');
+              console.log('event.activity_id : ' + event.activity_id.toString());
+              console.log('activities[actI]._id : ' + activities[actI]._id.toString());
+              console.log('event.activity_id === activities[actI]._id : ' + (event.activity_id.toString() === activities[actI]._id.toString()));
+              return (event.activity_id.toString() === activities[actI]._id.toString());
+            };
+            function isParticipating(volunteer){
+              console.log('volunteer.events : ' + volunteer.events);
+              var result = volunteer.events.find(goodEvent);
+              console.log('result : ' + result);
+              return typeof result !== 'undefined';
+            };
+            var these_volunteers = volunteers.filter(isParticipating);
+            console.log('these_volunteers : ' + typeof these_volunteers);
+            Array.prototype.push.apply(vols, these_volunteers);
+            activities[actI].vols = [];
+            activities[actI].vols[0] = vols;
+            activities[actI].blop = 'blop';
+            console.log('activities[actI].vols : ' + JSON.stringify(activities[actI].vols));
+            console.log('activities[actI] : ' + JSON.stringify(activities[actI]));
+            console.log('activities[actI] : ' + 'vols' in activities[actI]);
+          };
+          event.acts.push(activities);
+          console.log('activities : ' + activities);
+          res.json(event);
+          //res.render('o_event.jade', {event: event});
+        }
+      });
     }
   });
 });
