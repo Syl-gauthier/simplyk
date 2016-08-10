@@ -31,7 +31,7 @@ var Organism = require('./models/organism_model.js');
 var Volunteer = require('./models/volunteer_model.js');
 var Admin = require('./models/admin_model.js');
 
-require('dotenv').config();
+//require('dotenv').config();
 
 var app = express();
 
@@ -41,7 +41,7 @@ app.set('view engine', 'jade');
 
 //connect to mongo
 var db_credentials = process.env.MONGO_DB_CREDENTIALS;
-if(typeof db_credentials === "undefined"){
+if(typeof db_credentials === 'undefined'){
   console.log("DB credentials not defined, use test DB localhost/test");
   db_credentials = 'localhost/test';
 }
