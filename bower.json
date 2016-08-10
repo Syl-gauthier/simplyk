@@ -23,6 +23,7 @@
     "form.validation": "*",
     "angular": "^1.5.7",
     "pickadate": "^3.5.6",
-    "jquery.redirect": "*"
+    "jquery.redirect": "*",
+    "bootstrap-material-design": "^4.0.2"
   }
 }
