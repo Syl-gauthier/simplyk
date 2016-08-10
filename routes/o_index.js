@@ -20,6 +20,7 @@ var app = express();
 
 var opp_management = require('../middlewares/opp_management.js');
 
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   Activity.find({}, function(err, activities){
@@ -40,7 +41,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/organism/dashboard', permissions.requireGroup('organism'), function(req, res){
-  Activity.find({"org_id": req.session.organism.org_id}, function(err, activities){
+  Activity.find({"org_id": req.session.organism._id}, function(err, activities){
     if (err){
       console.log(err);
       res.render('g_accueil.jade', {
@@ -49,9 +50,64 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
       });
     }
     else {
-      res.render('o_dashboard.jade', {events: req.session.organism.events, activities: activities, organism: req.isAuthenticated()});
+      var events = req.session.organism.events;
+      var ev_past = [];
+      var ev_to_come = [];
+      var error;
+      for (var eventI = events.length - 1; eventI >= 0; eventI--) {
+        events[eventI].acts = [];
+        console.log('******************');
+        function inThisEvent(activity){
+          return (events[eventI].activities.indexOf(activity._id.toString()) >= 0);
+        };
+        var these_activities = activities.filter(inThisEvent);
+        console.log('In the event ' + events[eventI]._id + 'where activitieslist is :' + events[eventI].activities + ' , the activities are : ' + these_activities)
+        Array.prototype.push.apply(events[eventI].acts, these_activities);
+        var lastDay = events[eventI].dates[0];
+        for (var dateI = events[eventI].dates.length - 1; dateI >= 0; dateI--) {
+          if (Date.parse(events[eventI].dates[dateI])>Date.parse(lastDay)){
+            lastDay = events[eventI].dates[dateI];
+          };
+        };
+        console.log('LastDay of the event : ' + lastDay);
+        if (Date.parse(lastDay)>Date.now()){
+          ev_to_come.push(events[eventI]);
+        }
+        else if(Date.parse(lastDay)<Date.now()){
+          ev_past.push(events[eventI]);
+        }
+      };
+      console.log('Activity days : ' + ev_to_come[0].acts[0].lat);
+      console.log('Activity days : ' + ev_to_come[0].acts[0].lon);
+      console.log('Activity days : ' + ev_to_come[0].acts[0].intitule);
+      console.log('ev_past : ' + ev_past +' ev_to_come :'+ JSON.stringify(ev_to_come));
+      res.render('o_dashboard.jade', {ev_past: ev_past, ev_to_come: ev_to_come, organism: req.isAuthenticated()});
     }
   })
+});
+
+router.get('/organism/event/:event_id', function(req,res){
+  function isEvent(event){
+    return event._id === req.params.event_id;
+  };
+  var event = req.session.organism.events.find(isEvent);
+  var acts_id = event.activities;
+  console.log('event.activities.length : ' + event.activities.length);
+  Activity.find({"id": {'$in': acts_id}}, function(err, activities){
+    if (err){
+      console.log(err);
+      res.redirect('/organism/dashboard?error='+err);
+    }
+    else{
+      function inThisEvent(activity){
+        return (events[eventI].activities.indexOf(activity._id.toString()) >= 0);
+      };
+      var event = req.session.organism.events.filter(isTheEvent);
+      event.acts = activities;
+      res.json(event);
+      //res.render('o_event.jade', {event: event});
+    }
+  });
 });
 
 //for ajax call only (for now)
@@ -80,4 +136,3 @@ router.post('/organism/logout', function(req, res) {
 });
 
 module.exports = router;
-//++++++++++++++++++++++++++++++++++++++++

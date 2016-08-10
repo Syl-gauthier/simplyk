@@ -13,7 +13,9 @@ block content
             button.btn.btn-success-outline.pinkow(onclick="location.href='/organism/addevent';") Ajouter un évènement !
             h3
             ul.list-group.list-opportunity
-              each event, event_i in events
+              if ev_to_come.length
+                h3 À venir
+              each event, event_i in ev_to_come
                 li.list-group-item(id= event._id)
                   div.media-left.media-middle
                     a(href='profile')
@@ -21,11 +23,46 @@ block content
                   div.media-body
                     h4.media-heading= event.intitule
                     p= 'Adresse : '+ event.address
-                    each act, act_i in activities
-                      p= 'Activité : '+ act.intitule
+                    each act, act_i in event.acts
+                      h4= 'Activité : '+ act.intitule
                       each day, day_i in act.days
                         p= 'Date : ' + day.day
-                        p= day.applications.length+' bénévoles se sont inscrits'
+                        p= day.applicants.length+' bénévoles se sont inscrits'
+                      div.media-right.media-middle
+                        button.btn.btn-default.infos-button(id= act._id) Informations
+                        //button.info-button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Informations
+                        div(tabindex='-1', role='dialog', class= 'modal fade '+event._id)
+                          .modal-dialog
+                              .modal-content
+                                .modal-header
+                                  button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') &times;
+                                  #myModalLabel.h4.modal-title= event.intitule + ' - ' + act.intitule
+                                .modal-body.my-modal-body
+                                  p= 'Adresse: '+ event.address
+                                  each day, day_i in act.days
+                                    p= 'Date : ' + day.day
+                                    p= day.applicants.length+' bénévoles se sont inscrits'
+                                    p= 'Pour ' + day.vol_nb + ' bénévoles recherchés'
+                                .modal-footer
+                                  button.btn.btn-default(type='button', data-dismiss='modal') Close
+                                  button.btn.btn-primary.pinkow(type='button')
+                                    a(href='#') Détails
+              if ev_past.length
+                h3 Terminés
+              each event, event_i in ev_past
+                li.list-group-item(id= event._id)
+                  div.media-left.media-middle
+                    a(href='profile')
+                      img.media-object(src='/images/clouds.jpg')
+                  div.media-body
+                    h4.media-heading= event.intitule
+                    p= 'Adresse : '+ event.address
+                    each act, act_i in event.acts
+                      h4= 'Activité : '+ act.intitule
+                      each day, day_i in act.days
+                        p= 'Date : ' + day.day
+                        p= day.applicants.length+' bénévoles se sont inscrits'
                       div.media-right.media-middle
                         button.info-button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Informations
                         div(tabindex='-1', role='dialog', class= 'modal fade '+act._id)
@@ -41,7 +78,6 @@ block content
                                     p= 'Date : ' + day.day
                                     p= day.applicants.length+' bénévoles se sont inscrits'
                                     p= 'Pour ' + day.vol_nb + ' bénévoles recherchés'
-                                  p= 'Inscrits :'
                                 .modal-footer
                                   button.btn.btn-default(type='button', data-dismiss='modal') Close
                                   button.btn.btn-primary.pinkow(type='button')
@@ -53,3 +89,14 @@ block content
 block footscript
   // jQuery (necessary for Bootstrap's JavaScript plugins)
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+  // jQuery redirection plugin
+  script(src="/bower_components/jquery.redirect/jquery.redirect.js", type="text/javascript")
+  script.
+    $(function() {
+      $('.infos-button').click(function(){
+        console.log('Clic sur le bouton  de subscription');
+        var event_id = $(this).attr('id');
+        console.log('event_id : ' + event_id);
+        $.redirect('/organism/event/'+event_id, {}, 'GET');
+      });
+    });

@@ -92,6 +92,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
               day: req.body['day'+j+'_submit'],
               applications: []
             };
+            event.dates.push(day.day);
             activity.days.push(day);
             console.log('3 +++++++  day : ' + j + JSON.stringify(day));
           };
@@ -129,4 +130,3 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
 });
 
 module.exports = router;
-//+++++++++++++++++++++++++++++++++++++++++++++++
