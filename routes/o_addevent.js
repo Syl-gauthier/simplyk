@@ -115,11 +115,13 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
             organism.save(function(err, org){
               if(err){
                 var error = 'Something bad happened! Try again!';
-                res.render('o_addevent.jade', {error: err, organism: req.isAuthenticated()})
+                res.render('o_addevent.jade', {error: err, organism: req.isAuthenticated()});
+                res.end();
               }
               else{
                 req.session.organism = org;
                 res.redirect('/organism/dashboard');
+                res.end();
               }
             });
           }

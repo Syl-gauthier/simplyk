@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var mongoose = require('mongoose');
+var emailer = require('../email/emailer.js')
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -134,6 +135,14 @@ router.post('/volunteer/subscribe/:act_id-:activity_day', permissions.requireGro
             //UPDATING REQ.SESSION.VOLUNTEER
             req.session.volunteer = newVolunteer;
             var success =  encodeURIComponent('Vous avez été inscrit à l\'activité avec succès !');
+            Organism.findById(newActivity.org_id, function(err, organism){
+              var content = {
+                recipient: organism.email,
+                name: organism.firstname + ' ' + organism.lastname,
+                customMessage: req.session.volunteer.firstname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !'
+              };
+              emailer.sendSubscriptionEmail(content);
+            });
             res.redirect('/volunteer/map?success='+success);
             res.end();
           }

@@ -77,9 +77,6 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
           ev_past.push(events[eventI]);
         }
       };
-      console.log('Activity days : ' + ev_to_come[0].acts[0].lat);
-      console.log('Activity days : ' + ev_to_come[0].acts[0].lon);
-      console.log('Activity days : ' + ev_to_come[0].acts[0].intitule);
       console.log('ev_past : ' + ev_past +' ev_to_come :'+ JSON.stringify(ev_to_come));
       res.render('o_dashboard.jade', {ev_past: ev_past, ev_to_come: ev_to_come, organism: req.isAuthenticated()});
     }
@@ -111,20 +108,25 @@ router.get('/organism/event/:event_id', function(req,res){
           res.redirect('/organism/dashboard?error='+err);
         }
         else {
-          console.log('ALL ACTIVITIES : ' + activities);
+          var activities_list = activities;
+          console.log('ALL ACTIVITIES : ' + activities_list);
           console.log('****************************');
           console.log('ALL VOLUNTEERS : ' + volunteers);
           console.log('****************************');
           event.acts =[];
-          for (var actI = activities.length - 1; actI >= 0; actI--) {
+          for (var actI = activities_list.length - 1; actI >= 0; actI--) {
             var vols = [];
-            //activities[actI]['vols'] = new Array();
+
+            console.log('activities_list[actI] : ' + activities_list[actI]);
+            activities_list[actI].vols = [];
+            console.log('**************');
+
             function goodEvent(event){
               console.log('blop');
               console.log('event.activity_id : ' + event.activity_id.toString());
-              console.log('activities[actI]._id : ' + activities[actI]._id.toString());
-              console.log('event.activity_id === activities[actI]._id : ' + (event.activity_id.toString() === activities[actI]._id.toString()));
-              return (event.activity_id.toString() === activities[actI]._id.toString());
+              console.log('activities_list[actI]._id : ' + activities_list[actI]._id.toString());
+              console.log('event.activity_id === activities_list[actI]._id : ' + (event.activity_id.toString() === activities_list[actI]._id.toString()));
+              return (event.activity_id.toString() === activities_list[actI]._id.toString());
             };
             function isParticipating(volunteer){
               console.log('volunteer.events : ' + volunteer.events);
@@ -133,19 +135,28 @@ router.get('/organism/event/:event_id', function(req,res){
               return typeof result !== 'undefined';
             };
             var these_volunteers = volunteers.filter(isParticipating);
-            console.log('these_volunteers : ' + typeof these_volunteers);
-            Array.prototype.push.apply(vols, these_volunteers);
-            activities[actI].vols = [];
-            activities[actI].vols[0] = vols;
-            activities[actI].blop = 'blop';
-            console.log('activities[actI].vols : ' + JSON.stringify(activities[actI].vols));
-            console.log('activities[actI] : ' + JSON.stringify(activities[actI]));
-            console.log('activities[actI] : ' + 'vols' in activities[actI]);
+            console.log('these_volunteers : ' + these_volunteers);
+
+
+            Array.prototype.push.apply(activities_list[actI].vols, these_volunteers);
+            console.log('activities_list[actI] avec vols : ' + activities_list[actI]);
+            console.log('activities_list[actI].vols : ' + activities_list[actI].vols);
+            //Array.prototype.push.apply(vols, these_volunteers);
+            //activities_list[actI].vols = [];
+            //activities_list[actI].vols[0] = vols;
+            //activities_list[actI].blop = 'blop';
+            //onsole.log('activities_list[actI].vols : ' + JSON.stringify(activities_list[actI].vols));
+            //console.log('activities_list[actI] : ' + JSON.stringify(activities_list[actI]));
+            //console.log('activities_list[actI] : ' + 'vols' in activities_list[actI]);
           };
-          event.acts.push(activities);
-          console.log('activities : ' + activities);
-          res.json(event);
-          //res.render('o_event.jade', {event: event});
+          Array.prototype.push.apply(event.acts, activities_list);
+          console.log('activities_list : ' + event.acts[0]);
+          console.log('activities_list : ' + event.acts[0].lat);
+          console.log('activities_list : ' + event.acts[0].min_hours);
+          console.log('activities_list : ' + event.acts[0].days);
+          console.log('activities_list : ' + event.acts[0].vols);
+          //res.json(event);
+          res.render('o_event.jade', {event: event});
         }
       });
     }

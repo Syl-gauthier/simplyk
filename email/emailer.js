@@ -39,8 +39,25 @@ function sendWelcomeEmail(content) {
   };
 
   callSendMail(mailOptions);
+};
+
+function sendSubscriptionEmail(content) {
+  var body = '<p>Good news ' + content.name + ' !'
+    + '. ' + content.customMessage
+    + ' <a href="simplyk.org">Simplyk</a></p>';
+
+  var mailOptions = {
+    from: '"Simplyk admin <test@robotfactory.me>', // sender address
+    to: content.recipient, 
+    subject: 'Welcome to Simplyk', // Subject line
+    text: '', // plaintext body
+    html: body
+  };
+
+  callSendMail(mailOptions);
 }
 
 module.exports = {
-  sendWelcomeEmail: sendWelcomeEmail
+  sendWelcomeEmail: sendWelcomeEmail,
+  sendSubscriptionEmail: sendSubscriptionEmail
 };
