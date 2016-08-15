@@ -36,7 +36,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       console.log(error);
     }
   }
-  res.render('v_profile.jade', {events_subscribed: events_subscribed, events_confirmed: events_confirmed, events_pending: events_pending, events_past: events_past, volunteer: req.session.volunteer, error: error});
+  res.render('v_profile.jade', {events_subscribed: events_subscribed, events_confirmed: events_confirmed, events_pending: events_pending, events_past: events_past, volunteer: req.isAuthenticated(), error: error});
 });
 
 router.post('/volunteer/editPassword', function(req, res) {

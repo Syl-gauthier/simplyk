@@ -22,7 +22,8 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       console.log(err);
       res.render('v_map.jade', {
         session: req.session,
-        error: err
+        error: err,
+        volunteer: req.isAuthenticated()
       });
     }
     //Create opps list
@@ -63,7 +64,7 @@ router.get('/activity/:act_id', permissions.requireGroup('volunteer'), function(
         console.log('Event find in organism corresponding to act : ' + event_filtered)
         console.log('+++++++++++++++++++++');
         console.log('Activity : ' + activity);
-        res.render('g_activity_page.jade', {act_id: req.params.act_id, event: event_filtered, organism: organism[0], activity: activity, volunteer: req.session.volunteer});
+        res.render('g_activity_page.jade', {act_id: req.params.act_id, event: event_filtered, organism: organism[0], activity: activity, volunteer: req.isAuthenticated()});
         res.end();
       }
     });

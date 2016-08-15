@@ -119,16 +119,20 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
                 res.end();
               }
               else{
-                req.session.organism = org;
-                res.redirect('/organism/dashboard');
-                res.end();
+                function refreshSession(callback){
+                  req.session.organism = org;
+                  callback();
+                };
+                refreshSession(function(){
+                  res.redirect('/organism/dashboard');
+                });
               }
             });
           }
         });
       };
     });
-  });
+});
 });
 
 module.exports = router;
