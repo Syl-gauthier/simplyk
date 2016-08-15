@@ -8,7 +8,7 @@ block content
       .col-md-6.col-md-offset-1
         .page-header
           h1 Évènement
-          h2= event.intitule
+          h2= activity.event_intitule
           p= 'Description : ' + event.description
           a(href='#')= event.address
           h3= activity.intitule
@@ -17,7 +17,7 @@ block content
             h4= 'Date : ' + day.day
             p= 'De ' + day.start_time + ' à ' + day.end_time
             p= 'Encore ' + day.vol_nb + ' places'
-            form(action='/volunteer/subscribe/'+activity._id+'-'+index+'-'+activity_index+'-'+day.day, method='post')
+            form(action='/volunteer/subscribe/'+activity._id+'-'+day.day, method='post')
               button.btn.btn-success-outline.pinkow(role='button' name='day' value=day.day) S'inscrire
       .col-md-4.col-md-offset-1
         .page-header

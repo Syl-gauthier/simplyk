@@ -32,10 +32,10 @@ block content
                       each day, nb in act.days
                         p= 'Pour ' + day.vol_nb + ' bénévoles le' + day.day
                         #identifiant(style="display:none")
-                        p= 'act.id : ' + act.id
+                        p= 'act._id : ' + act._id
                     div.media-right.media-middle
-                      button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act.id) Plus d'infos
-                      #myModal(tabindex='-1', role='dialog', class='modal fade ' + act.id)
+                      button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
+                      #myModal(tabindex='-1', role='dialog', class='modal fade ' + act._id)
                         .modal-dialog(role='document')
                             .modal-content
                               .modal-header
@@ -46,7 +46,7 @@ block content
                                 each day, nb in act.days
                                   p= 'Pour ' + day.vol_nb + ' bénévoles le' + day.day
                                   #identifiant(style="display:none")
-                                    p= act.id
+                                    p= act._id
                                 p= 'Adresse: '+ act.event_address
                               .modal-footer
                                 button.btn.btn-default(type='button', data-dismiss='modal') Fermer
@@ -123,13 +123,13 @@ block footscript
         });
       };
       for(i=0; i<acts.length; i++){
-        console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].event_lat + acts[i].event_lon);
+        console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].lat + acts[i].lon);
         var act = acts[i];
         infowindows[i] = new google.maps.InfoWindow({
           content: act.intitule
         });
         markers[i] = new google.maps.Marker({
-          position: {lat: act.event_lat, lng: act.event_lon},
+          position: {lat: act.lat, lng: act.lon},
           map: map,
           clickable: true
         });
@@ -138,12 +138,6 @@ block footscript
     }
   script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&callback=initMap"
          async defer)
-  // jQuery (necessary for Bootstrap's JavaScript plugins)
-  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
-  // jQuery
-  script(src='/javascripts/my-jquery.js')
-  // Include all compiled plugins (below), or include individual files as needed
-  script(src='/javascripts/bootstrap.min.js')
   //Modal bootstrap
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {

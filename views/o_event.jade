@@ -1,0 +1,81 @@
+extends ./g_layout.jade
+block vars
+	- var page = 'event'
+
+
+block content
+	.container-fluid
+		.row.fill
+			.col-md-8.col-md-offset-2.no-side-padding
+				h1= event.intitule
+				p Adresse: #{event.address}
+				p Description: #{event.description}
+				each act, act_i in event.acts
+					li.list-group-item
+						div.media
+							div.media-left.media-middle
+								h2= '*' + act.intitule
+								each day, day_i in act.days
+									h4= '**' + day.day
+									p= '**' + 'De ' + day.start_time + ' à ' + day.end_time
+									p= '**' + 'Pour ' + day.vol_nb + ' bénévoles'
+									p= '**' + day.applicants.length + ' bénévoles trouvés: '
+									each vol, vol_i in day.vols
+										div.media
+											div.media-left.media-middle
+											a(href='/volunteer/profile')
+											div.media-body
+												h4.media-heading= '***' + vol.firstname + ' ' +vol.lastname
+											each event, event_i in vol.events
+												if ((Date.parse(event.day) == Date.parse(day.day)) && (act._id.toString() == event.activity_id.toString()))
+													if event.hours_pending != event.hours_done
+														div.media-right(id=act._id day=event.day)
+															p= '***** Participation de ' + event.hours_pending + ' h ?'
+															button.btn.btn-default(class='confirmHoursButton' id=vol._id) Confirmer
+															button.btn.btn-warning(id='correctionModalButton' type= 'button' data-toggle='modal' data-target='#correctionModal') Non
+															#correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
+																div.modal-dialog(role='document')
+																	form.modal-content(action='correcthours' method='post' id='correctHoursForm')
+																		.modal-header
+																			button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+																				span(aria-hidden='true')
+																			h4.modal-title Correction d'horaires
+																			div.modal-body
+																				p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
+																				div.form-group
+																					label(for='correctionHoursInput') Heures réellement réalisées 
+																					input.form-control(type='Number' id='correctionHoursInput')
+																			div.modal-footer
+																				button.btn.btn-default(data-dismiss='modal') Annuler
+																				button.btn.btn-warning(type='submit' form='correctHoursForm') Envoyer
+													if (event.hours_done == event.hours_pending) && event.hours_done != 0
+														div.media-right
+														p= '***** Participation de ' + event.hours_done + ' h'
+													if (event.hours_done == event.hours_pending) && event.hours_done == 0
+														div.media-right
+														p= '***** Participation non-confirmée'
+										p= '***' + vol
+
+block footscript
+	script(type='text/javascript').
+		$(document).ready(function(){
+			$('#correctionModal').on('shown.bs.modal', function () {
+				$('#correctionModalButton').focus()
+			});
+			$('.confirmHoursButton').click(function(){
+				var vol_id = $(this).attr('id');
+				var act_id = $(this).parent().attr('id');
+				var day = $(this).parent().attr('day');
+				var input = $(this);
+				$.post('/organism/confirmhours', {vol_id: vol_id, act_id: act_id, day: day}).done(function(data, status){
+					if(data.error){
+						console.log("Remarque: " + data.error);
+						input.replaceWith('<p>Il y a une erreur</p>');
+					}
+					else {
+						console.log("Post request done.");
+						input.replaceWith('<p>Heures confirmées</p>');
+					}
+				});
+			});
+		});

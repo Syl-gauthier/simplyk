@@ -10,7 +10,7 @@ var OrganismSchema = new Schema({
 	org_name: String,
 	neq: Number,
 	website: String,
-    password: String,
+	password: String,
 	firstname: String, //Contact info
 	lastname: String,
 	phone: String,
@@ -27,22 +27,7 @@ var OrganismSchema = new Schema({
 		lon: Number,
 		description: String,
 		status: String,
-		activities: [{
-			id: ObjectId,
-			intitule: String,
-			description: String,
-			min_hours: Number,
-			days: [{
-				start_time: String,
-				end_time: String,
-				day: Date,
-				vol_nb: Number,
-				applications: [{
-					applicant_id: {type: Schema.Types.ObjectId, ref: 'Volunteer'},
-					applicant_name: String
-				}]
-			}]
-		}]
+		activities: [{type: Schema.Types.ObjectId, ref:'Activity'}]
 	}],
 	long_terms: [{
 		intitule: String,
@@ -58,12 +43,7 @@ var OrganismSchema = new Schema({
 		min_age: Number,
 		antecedents: Boolean,
 		tags: String,
-		applications: [{
-			applicant_id: {type: Schema.Types.ObjectId, ref: 'Volunteer'},
-			applicant_name: String,
-			hours_done: Number,
-			hours_pending: Number
-		}]
+		applicants: [{type: Schema.Types.ObjectId, ref:'Volunteer'}]
 	}]
 });
 

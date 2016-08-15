@@ -25,7 +25,7 @@ var VolunteerSchema = new Schema({
     lon: Number,
     day: Date,
     description_event: String,
-    description_activity: String,
+    intitule_activity: String,
     org_id: {type: Schema.Types.ObjectId, ref:'Organism'},
     org_name: String,
     start_time: String,
@@ -42,7 +42,8 @@ var VolunteerSchema = new Schema({
     lon: Number,
     slot: String,
     hours_pending: Number,
-    hours_done: Number
+    hours_done: Number,
+    status: String
   }],
   student: Boolean, //if has a school or not
   admin: {

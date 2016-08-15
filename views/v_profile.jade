@@ -43,43 +43,165 @@ block content
                 button.btn.btn-default#edit-password-button.display Edit
                 button.btn.btn-default#cancel-password-button.editing.hidden Cancel
                 button.btn.btn-default#save-password-button.editing.hidden Save
-      .col-md-4.col-md-offset-2
+      .col-md-5.col-md-offset-1
         .page-header
           h1 Mes inscriptions
         #offers-list.no-side-padding
             ul.list-group.list-opportunity
-              if opps.length == 0
-                p Pas d'opportunités
-              each opp, index in opps
+              unless (events_past || events_confirmed || events_pending || events_subscribed)
+                p Pas d'inscriptions
+
+
+              //IF EVENT_PAST
+              if events_past.length
+                h3 Confirmer votre venue
+              each event, index in events_past
                 li.list-group-item
                   div.media-left.media-middle
                     a(href='profile')
                       img.media-object(src='/images/clouds.jpg')
                   div.media-body
-                    h4.media-heading= opp.orgName
-                    a.firstColor= opp.intitule
-                    p= 'Pour ' + opp.nbBenevoles + ' bénévoles'
+                    h4.media-heading= event.org_name
+                    a.firstColor= event.intitule
+                    p= event.address
                     #identifiant(style='display:none')
-                      p= opp._id
+                      p= event._id
                   div.media-right.media-middle
-                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target="."+opp._id) Informations
-                    #myModal.modal.fade(tabindex='-1', role='dialog', class='modal fade ' + opp._id)
+                    form(method='post' action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day)
+                      div.form-group
+                        //label(for='input'+event._id) Heures
+                        input.form-control(id='input'+event._id type='number' placeholder='Heures de participation' name='hours_pending')
+                        button.btn.btn-default.pinkow.media-object(type='submit') Confirmer
+                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target="."+event.activity_id) Informations
+                    #myModal.modal.fade(tabindex='-1', role='dialog', class='modal fade ' + event._id)
                       .modal-dialog
                           .modal-content
                             .modal-header
                               button.close(type='button', data-dismiss='modal', aria-label='Close')
                                 span(aria-hidden='true') &times;
-                              #myModalLabel.h4.modal-title= opp.orgName + ' - ' + opp.intitule
+                              #myModalLabel.h4.modal-title= event.org_name + ' - ' + event.intitule
                             .modal-body.my-modal-body
-                              p= 'Date: '+ opp.date
-                              p= 'Pour ' + opp.nbBenevoles + ' bénévoles'
-                              p= 'Adresse: '+ opp.address
+                              p= 'Date: '+ event.day
+                              p= 'Pour ' + event.nbBenevoles + ' bénévoles'
+                              p= 'Adresse: '+ event.address
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                              #unsubscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+opp._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
+                              #unsubscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+event._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
                               button.btn.btn-primary.pinkow(type='button')
-                                a(href='mailto:'+opp.mail+'?subject=Participation%20à%20:%20'+opp.intitule, target='_blank') Contactez
-                              div.collapse.tp-15(id = "collapse" + opp._id)
+                                a(href='mailto:'+event.mail+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
+                              div.collapse.tp-15(id = "collapse" + event._id)
+                                div.well Es-tu sûr de vouloir te désinscrire ? <br> <br>
+                                  button.unsubscribe-button.btn.btn-primary.pinkow Oui
+                                  button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
+
+              // IF EVENT_PENDING
+              if events_pending.length
+                h3 En attente de confirmation
+              each event, index in events_pending
+                li.list-group-item
+                  div.media-left.media-middle
+                    a(href='profile')
+                      img.media-object(src='/images/clouds.jpg')
+                  div.media-body
+                    h4.media-heading= event.org_name
+                    a.firstColor= event.intitule
+                    p= 'Heures particpées: ' + event.hours_pending
+                    #identifiant(style='display:none')
+                      p= event._id
+                  div.media-right.media-middle
+                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target="."+event._id) Informations
+                    #myModal.modal.fade(tabindex='-1', role='dialog', class='modal fade ' + event._id)
+                      .modal-dialog
+                          .modal-content
+                            .modal-header
+                              button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                span(aria-hidden='true') &times;
+                              #myModalLabel.h4.modal-title= event.org_name + ' - ' + event.intitule
+                            .modal-body.my-modal-body
+                              p= 'Date: '+ event.day
+                              p= 'Pour ' + event.nbBenevoles + ' bénévoles'
+                              p= 'Adresse: '+ event.address
+                            .modal-footer
+                              button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+                              #unsubscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+event._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
+                              button.btn.btn-primary.pinkow(type='button')
+                                a(href='mailto:'+event.mail+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
+                              div.collapse.tp-15(id = "collapse" + event._id)
+                                div.well Es-tu sûr de vouloir te désinscrire ? <br> <br>
+                                  button.unsubscribe-button.btn.btn-primary.pinkow Oui
+                                  button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
+
+              // IF EVENT_SUBSCRIBED
+              if events_subscribed.length
+                h3 À venir
+              each event, index in events_subscribed
+                li.list-group-item
+                  div.media-left.media-middle
+                    a(href='profile')
+                      img.media-object(src='/images/clouds.jpg')
+                  div.media-body
+                    h4.media-heading= event.org_name
+                    a.firstColor= event.intitule
+                    p= event.address
+                    #identifiant(style='display:none')
+                      p= event._id
+                  div.media-right.media-middle
+                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target="."+event._id) Informations
+                    #myModal.modal.fade(tabindex='-1', role='dialog', class='modal fade ' + event._id)
+                      .modal-dialog
+                          .modal-content
+                            .modal-header
+                              button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                span(aria-hidden='true') &times;
+                              #myModalLabel.h4.modal-title= event.org_name + ' - ' + event.intitule
+                            .modal-body.my-modal-body
+                              p= 'Date: '+ event.day
+                              p= 'Pour ' + event.nbBenevoles + ' bénévoles'
+                              p= 'Adresse: '+ event.address
+                            .modal-footer
+                              button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+                              #unsubscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+event._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
+                              button.btn.btn-primary.pinkow(type='button')
+                                a(href='mailto:'+event.mail+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
+                              div.collapse.tp-15(id = "collapse" + event._id)
+                                div.well Es-tu sûr de vouloir te désinscrire ? <br> <br>
+                                  button.unsubscribe-button.btn.btn-primary.pinkow Oui
+                                  button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
+
+
+              // IF EVENT_CONFIRMED
+              if events_confirmed.length
+                h3 Évènements passés
+              each event, index in events_confirmed
+                li.list-group-item
+                  div.media-left.media-middle
+                    a(href='profile')
+                      img.media-object(src='/images/clouds.jpg')
+                  div.media-body
+                    h4.media-heading= event.org_name
+                    a.firstColor= event.intitule
+                    p= event.address
+                    #identifiant(style='display:none')
+                      p= event._id
+                  div.media-right.media-middle
+                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target="."+event._id) Informations
+                    #myModal.modal.fade(tabindex='-1', role='dialog', class='modal fade ' + event._id)
+                      .modal-dialog
+                          .modal-content
+                            .modal-header
+                              button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                span(aria-hidden='true') &times;
+                              #myModalLabel.h4.modal-title= event.org_name + ' - ' + event.intitule
+                            .modal-body.my-modal-body
+                              p= 'Date: '+ event.day
+                              p= 'Pour ' + event.nbBenevoles + ' bénévoles'
+                              p= 'Adresse: '+ event.address
+                            .modal-footer
+                              button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+                              #unsubscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+event._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
+                              button.btn.btn-primary.pinkow(type='button')
+                                a(href='mailto:'+event.mail+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
+                              div.collapse.tp-15(id = "collapse" + event._id)
                                 div.well Es-tu sûr de vouloir te désinscrire ? <br> <br>
                                   button.unsubscribe-button.btn.btn-primary.pinkow Oui
                                   button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
@@ -109,4 +231,4 @@ block footscript
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
       $('#myInput').focus();
-  });
+    });

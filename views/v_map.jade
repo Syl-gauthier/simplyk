@@ -12,6 +12,8 @@ block content
             ul.list-group.list-opportunity
               if error
                 p.alert.alert-danger #{error}
+              if success
+                p.alert.alert-success #{success}
               each act, index in activities
                   li.list-group-item
                     div.media-left.media-middle
@@ -23,10 +25,10 @@ block content
                       each day, nb in act.days
                         p= 'Pour ' + day.vol_nb + ' bénévoles le' + day.day
                         #identifiant(style="display:none")
-                        p= 'act.id : ' + act.id
+                        p= 'act.id : ' + act._id
                     div.media-right.media-middle
-                      button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act.id) Plus d'infos
-                      div(tabindex='-1', role='dialog', class='modal fade ' + act.id, id=act.id)
+                      button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
+                      div(tabindex='-1', role='dialog', class='modal fade ' + act._id, id=act._id)
                         .modal-dialog(role='document')
                             .modal-content
                               .modal-header
@@ -37,8 +39,7 @@ block content
                                 each day, nb in act.days
                                   p= 'Pour ' + day.vol_nb + ' bénévoles le' + day.day
                                   #identifiant(style="display:none")
-                                    p= act.id
-                                p= 'Adresse: '+ act.event_address
+                                    p= act._id
                               .modal-footer
                                 button.btn.btn-default(type='button', data-dismiss='modal') Fermer
                                 #subscribe.subscribe-button.button.btn.btn-default.pinkow(type='button' aria-expanded="false" aria-controls="collapseExample") S'inscrire
@@ -95,13 +96,13 @@ block footscript
         });
       };
       for(i=0; i<acts.length; i++){
-        console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].event_lat + acts[i].event_lon);
+        console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].lat + acts[i].lon);
         var act = acts[i];
         infowindows[i] = new google.maps.InfoWindow({
           content: act.intitule
         });
         markers[i] = new google.maps.Marker({
-          position: {lat: act.event_lat, lng: act.event_lon},
+          position: {lat: act.lat, lng: act.lon},
           map: map,
           clickable: true
         });
