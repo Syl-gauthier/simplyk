@@ -56,7 +56,7 @@ block footscript
         $.redirect('/activity/'+act_id, {}, 'GET');
       });
     });
-    function initMap(){
+    function initMap(){ 
       function listStar(i){
         listElement = document.getElementById("offers-list").childNodes[0].childNodes[i];
         $(listElement).addClass('starring');
@@ -76,12 +76,34 @@ block footscript
       var map = new google.maps.Map(mapDiv, {
         center: {lat: 45.503, lng: -73.613},
         zoom: 12,
+        scrollwheel: false,
         mapTypeId: google.maps.MapTypeId.ROADMAP
       });
       //Generate markers
+      var imageTest = '/images/Perso/blue-icon-marker.svg';
+      //- la variable cause sert en attendant l'accès au json
+      var cause = 'cul'
+      var imageSol = {
+      url: '/images/Perso/blue-icon-marker.svg', // image is 512 x 512
+      scaledSize : new google.maps.Size(30, 36)
+      };
+      var imageEnv = {
+      url: '/images/Perso/green-icon-marker.svg', // image is 512 x 512
+      scaledSize : new google.maps.Size(30, 36)
+      };
+      var imageCul = {
+      url: '/images/Perso/yellow-icon-marker.svg', // image is 512 x 512
+      scaledSize : new google.maps.Size(30, 36)
+      };
       var acts = !{JSON.stringify(activities)};
       var infowindows = [];
       var markers = [];
+      var optionsMS = {
+            gridSize: 50,
+            maxZoom: 13,
+            minimumClusterSize: 8,
+            imagePath: '/images/m'
+        };
       function attachInfoWindow(marker, infoWindow, act, i){
         marker.addListener('click', function(){
           openListInfos(i);
@@ -95,19 +117,50 @@ block footscript
           listUnstar(i);
         });
       };
+        var legend = document.createElement('div');
+        legend.id = 'legend';
+        var content = [];
+        content.push('<i class="fa fa-envira" id="leaf">Environnement</i><br>');
+        content.push('<i class="fa fa-envira" id="leaf">Culture</i><br>');
+        content.push('<i class="fa fa-envira" id="leaf">Solidarité</i><br>');
+        legend.innerHTML = content.join('');
+        legend.index = 1;
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
       for(i=0; i<acts.length; i++){
         console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].lat + acts[i].lon);
         var act = acts[i];
+        
         infowindows[i] = new google.maps.InfoWindow({
           content: act.intitule
         });
+        //choix du marqueur en fonction de la cause, changer avec le json
+        if (cause=='env'){
         markers[i] = new google.maps.Marker({
           position: {lat: act.lat, lng: act.lon},
           map: map,
+          icon: imageEnv,
           clickable: true
         });
+        }
+        if (cause=='sol'){
+        markers[i] = new google.maps.Marker({
+          position: {lat: act.lat, lng: act.lon},
+          map: map,
+          icon: imageSol,
+          clickable: true
+        });
+        }
+        if (cause=='cul'){
+        markers[i] = new google.maps.Marker({
+          position: {lat: act.lat, lng: act.lon},
+          map: map,
+          icon: imageCul,
+          clickable: true
+        });
+        }
         attachInfoWindow(markers[i], infowindows[i], act, i);
       }
+      var markerCluster = new MarkerClusterer(map, markers, optionsMS);
     }
   script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&callback=initMap"
          async defer)

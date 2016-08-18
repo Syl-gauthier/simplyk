@@ -13,8 +13,16 @@ body{
 	min-height: 100%;
 }
 
+
+
 .fill-parent{
 	height: inherit;
+}
+
+/*icon fontawesome*/
+.fa-phone { 
+	padding-left:00px;
+    padding-right:30px;
 }
 
 .page{
@@ -42,8 +50,28 @@ body{
 	height: 85vh;
 }
 
+/*icones de fontwesome*/
+#leaf {
+    color: #5BCF8F
+}
+
+#cultu {
+    color: #E8E52C
+}
+
+#solid {
+    color: #5BCF8F
+}
+
 #map-section{
 	height: 90%;
+}
+#legend {
+        background: #FFF;
+        padding: 10px;
+        margin: 5px;
+        font-size: 12px;
+        font-family: Arial, sans-serif;
 }
 
 #offers-list{
