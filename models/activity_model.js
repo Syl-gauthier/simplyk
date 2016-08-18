@@ -14,6 +14,7 @@ var ActivitySchema = new Schema({
 	min_hours: Number,
 	lat: Number,
 	lon: Number,
+	cause: String,
 	days: [{
 		start_time: String,
 		end_time: String,

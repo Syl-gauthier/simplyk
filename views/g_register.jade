@@ -11,7 +11,7 @@ block content
               if error
                 p.alert.alert-danger #{error}
                   .input-group.conn-input
-                span#basic-addon1.input-group-addon Adresse mail
+                label.control-label Adresse mail
                 input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='email', aria-describedby='basic-addon1', required)
         .row
           .col-md-6.col-md-offset-3
@@ -19,33 +19,33 @@ block content
               if group == 'volunteer'
                 .col-md-6
                   .form-group.conn-input
-                    span#basic-addon1.input-group-addon Adresse courriel
+                    label.control-label Adresse courriel
                     input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='email', aria-describedby='basic-addon1', required)
                   .form-group.conn-input
-                    span#basic-addon1.control-label Nom
+                    label.control-label Nom
                     input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', required)
                 .col-md-6
                   .form-group.conn-input
-                    span#basic-addon1.input-group-addon Prénom
+                    label.control-label Prénom
                     input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', required)
                   .form-group.conn-input
-                    span#basic-addon1.input-group-addon Date de naissance
+                    label.control-label Date de naissance
                     input#birthdate.form-control(type='date', placeholder='', name='birthdate', aria-describedby='basic-addon1')
               if group == 'organism'
                 .form-group.conn-input
-                  span#basic-addon1.input-group-addon Nom de l'organisme
+                  label.control-label Nom de l'organisme
                   input#mail.form-control(type='text', placeholder='Ex: Simplyk', name='name', aria-describedby='basic-addon1', required)
                 .form-group.conn-input
-                  span#basic-addon1.control-label Description courte de l'organisme
-                  input.form-control(type='text', name='DescriptionOrga', aria-describedby='basic-addon1',rows="3",maxlength="60",required) 
+                  label.control-label Description courte de l'organisme
+                  input.form-control(type='text', name='description', aria-describedby='basic-addon1',rows="3",maxlength="60",required) 
                 .form-group.conn-input
-                  span#basic-addon1.input-group-addon Numéro de téléphone
+                  label.control-label Numéro de téléphone
                   input#mail.form-control(type='text', placeholder='Ex: 514 314 1592', name='phone', aria-describedby='basic-addon1', required)
                 .form-group.conn-input
-                  span#basic-addon1.input-group-addon Site web
+                  label.control-label Site web
                   input#mail.form-control(type='url', placeholder='Ex: contact@simplyk.org', name='website', aria-describedby='basic-addon1', required)
                 .form-group.conn-input
-                  span#basic-addon1.input-group-addon Cause
+                  label.control-label Cause
                   select#cause.form-control(placeholder='', name='cause', aria-describedby='basic-addon1')
                     option Environnement
                     option Solidarité
@@ -53,37 +53,53 @@ block content
                 h2 Informations du responsable des bénévoles
                 .col-md-6
                   .form-group.conn-input
-                    span#basic-addon1.control-label Nom
+                    label.control-label Nom
                     input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', required)
                 .col-md-6
                   .form-group.conn-input
-                    span#basic-addon1.input-group-addon Prénom
+                    label.control-label Prénom
                     input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', required)
                 .form-group.conn-input
-                    span#basic-addon1.input-group-addon Adresse courriel
+                    label.control-label Adresse courriel
                     input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='email', aria-describedby='basic-addon1', required)
               if group == 'admin'
                 .form-group.conn-input
-                  span#basic-addon1.input-group-addon Nom de l'organisation
+                  label.control-label Nom de l'organisation
                   input#name.form-control(type='text', name='name', aria-describedby='basic-addon1', required)
                 .form-group.conn-input
-                  span#basic-addon1.input-group-addon Nom
+                  label.control-label Nom
                   input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', required)
                 .form-group.conn-input
-                  span#basic-addon1.input-group-addon Prénom
+                  label.control-label Prénom
                   input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', required)
                 .form-group.conn-input
-                  span#basic-addon1.input-group-addon Type d'organisation
+                  label.control-label Type d'organisation
                   select#type.form-control(placeholder='', name='type', aria-describedby='basic-addon1')
                     option Entreprise
                     option École
               .col-md-6
                 .form-group.conn-input
-                  span#basic-addon1.input-group-addon Mot de passe
+                  label.control-label Mot de passe
                   input#password.form-control(type='password', placeholder='', name='password', aria-describedby='basic-addon1', required)
-              //- .col-md-6
-              //-   .form-group.conn-input
-              //-     span#basic-addon1.input-group-addon Confirmation de mot de passe
-              //-     input#password.form-control(type='password', placeholder='', name='password', aria-describedby='basic-addon1', required)
+              .col-md-6
+                .form-group.conn-input
+                  label.control-label Confirmation de mot de passe
+                  input#confirmPassword.form-control(type='password', placeholder='', name='password_confirm', aria-describedby='basic-addon1', required)
               input(type='submit', style='position: absolute; left: -9999px; width: 1px; height: 1px;', tabindex='-1', form='registerform')
+        .row
+          .col-md-6.col-md-offset-3
             button.btn.btn-default.mbot(type='submit', form='registerform') S'inscrire
+
+block footscript
+  script.
+    var password = document.getElementById('password'),
+    confirm_password = document.getElementById('confirmPassword');
+    function validatePassword(){
+      if(password.value != confirm_password.value) {
+        confirm_password.setCustomValidity("Les mots de passe sont différents");
+      } else {
+        confirm_password.setCustomValidity('');
+      }
+    }
+      password.onchange = validatePassword;
+      confirm_password.onkeyup = validatePassword;

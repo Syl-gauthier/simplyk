@@ -22,8 +22,6 @@ block content
               p.alert.alert-danger ERROR : #{error}
       .container-fluid
         .row.fill
-          .col-md-7.no-side-padding
-            #map
           #offers-list.col-md-5.no-side-padding.scrollable
             ul.list-group.list-opportunity
               if error
@@ -61,6 +59,8 @@ block content
                                   a(href='register_volunteer') S'inscrire
                                 button.btn.btn-primary.pinkow(type='button')
                                   a(href='register_volunteer') Plus d'infos
+          .col-md-7.no-side-padding
+            #map
       .container-fluid.footer
         .row
           .col-md-8.col-md-offset-2

@@ -29,19 +29,37 @@ router.get('/', function(req, res, next) {
       res.render('g_accueil.jade', {
         session: req.session,
         error: err,
-        organism: req.isAuthenticated()
+        organism: req.session.organism
       });
     }
     //Create events list
     else {
       console.log(req.isAuthenticated());
       console.log('**************');
-      res.render('g_accueil.jade', {activities: activities, session: req.session, organism: req.isAuthenticated()});
-    }
+      if(req.session){
+        if(req.session.organism){
+          res.redirect('/organism/dashboard');
+        }
+        else if (req.session.volunteer){
+          res.redirect('/volunteer/map');
+        }
+        else {
+          res.render('g_accueil.jade', {activities: activities, session: req.session});
+        };
+      }
+      else {
+        res.render('g_accueil.jade', {activities: activities, session: req.session});
+      }
+    };
   });
 });
 
 router.get('/organism/dashboard', permissions.requireGroup('organism'), function(req, res){
+  console.log('req.body : ' + req.body);
+  if(req.body.org){
+    req.session.organism = req.body.org;
+    console.log('organism refreshed !');
+  };
   Activity.find({"org_id": req.session.organism._id}, function(err, activities){
     if (err){
       console.log(err);
@@ -80,7 +98,7 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
         }
       };
       console.log('ev_past : ' + ev_past +' ev_to_come :'+ JSON.stringify(ev_to_come));
-      res.render('o_dashboard.jade', {ev_past: ev_past, ev_to_come: ev_to_come, organism: req.isAuthenticated()});
+      res.render('o_dashboard.jade', {ev_past: ev_past, ev_to_come: ev_to_come, organism: req.session.organism});
     }
   })
 });
@@ -225,6 +243,10 @@ router.post('/organism/confirmhours', function(req,res){
       }
     });
   });
+});
+
+router.get(/dashboard/, function(req,res){
+  res.redirect('/dashboard');
 });
 
 router.post(/logout/, function(req, res) {

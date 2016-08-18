@@ -93,7 +93,8 @@ router.post('/register_organism', function(req, res){
     phone: req.body.phone,
     website: req.body.website,
     neq: req.body.neq,
-    cause: req.body.cause
+    cause: req.body.cause,
+    description: req.body.description
   });
 
   newOrganism.password = newOrganism.generateHash(req.body.password);

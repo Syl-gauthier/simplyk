@@ -174,6 +174,4 @@ router.post('/volunteer/logout', function(req, res) {
   res.redirect('/');
 });
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
-
 module.exports = router;
