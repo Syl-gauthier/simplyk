@@ -5,9 +5,28 @@ block vars
 
 block content
       .container-fluid
+        .row 
+          .col-md-6.col-md-offset-1
+            h2.pull-left Profil
+          .col-md-6.col-md-offset-1
+            .pull-left
+              img.media-object(src='/images/clouds.jpg',width="240", height="180",hspace="20")
+            .pull-left
+                  h4 Chromatic
+                  h4 www.thibestcon.ca 
+                  h4 
+                    i.fa.fa-phone 514 570 6926 
+                  h4   
+                    i.fa.fa-envelope(padding-right="20") chromatic@yahoonet.ca 
+                  br
+        .row
+          .col-xs-6.col-xs-offset-1
+            br
+            p.
+                  Chromatic, ils font des activités qui sont vraiment cools, ils gérent bien.
         .row.fill
           #offers-list.col-md-4.col-md-offset-1.no-side-padding
-            h1.page-header Mes évènements
+            h2.page-header Mes évènements
             if error
               p.alert.alert-danger #{error}
             button.btn.btn-success-outline.pinkow(onclick="location.href='/organism/addevent';") Ajouter un évènement !
@@ -83,7 +102,7 @@ block content
                                   button.btn.btn-primary.pinkow(type='button')
                                     a(href='#') Détails
           .col-md-5.col-md-offset-2.no-side-padding
-            h1.page-header Mes engagements
+            h2.page-header Mes engagements
 
 
 block footscript
