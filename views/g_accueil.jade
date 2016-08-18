@@ -153,8 +153,8 @@ block footscript
         legend.id = 'legend';
         var content = [];
         content.push('<i class="fa fa-envira" id="leaf">Environnement</i><br>');
-        content.push('<i class="fa fa-envira" id="leaf">Culture</i><br>');
-        content.push('<i class="fa fa-envira" id="leaf">Solidarité</i><br>');
+        content.push('<i class="fa fa-heart" id="soli">Solidarité</i><br>');
+        content.push('<i class="fa fa-institution" id="cult">Culture</i><br>');
         legend.innerHTML = content.join('');
         legend.index = 1;
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
@@ -164,7 +164,7 @@ block footscript
         infowindows[i] = new google.maps.InfoWindow({
           content: act.intitule
         });
-         if (cause=='env'){
+        if (acts[i].cause=='Environnement'){
         markers[i] = new google.maps.Marker({
           position: {lat: act.lat, lng: act.lon},
           map: map,
@@ -172,7 +172,7 @@ block footscript
           clickable: true
         });
         }
-        if (cause=='sol'){
+        if (acts[i].cause=='Solidarité'){
         markers[i] = new google.maps.Marker({
           position: {lat: act.lat, lng: act.lon},
           map: map,
@@ -180,7 +180,7 @@ block footscript
           clickable: true
         });
         }
-        if (cause=='cul'){
+        if (acts[i].cause=='Culture'){
         markers[i] = new google.maps.Marker({
           position: {lat: act.lat, lng: act.lon},
           map: map,
