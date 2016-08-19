@@ -22,20 +22,20 @@ nav#nav-me.navbar.navbar-default
       if volunteer
         unless page=='profile'
           li.navbar-link(role='presentation')
-            a(href='profile') Mon profil
+            a(href='/volunteer/profile') Mon profil
         unless page=='map'
           li.navbar-link(role='presentation')
-            a(href='map') Carte
+            a(href='/volunteer/map') Carte
         li(role='presentation')
           form.navbar-form( method='post', action='./logout')
             button.btn.btn-success-outline.pinkow(type='submit') Déconnexion
       else if organism
         unless page == 'profile'
           li.navbar-link(role='presentation')
-            a(href='profile') Mon profil
+            a(href='/organism/profile') Mon profil
         unless page == 'dashboard'
           li.navbar-link(role='presentation')
-            a(href='dashboard') Tableau de bord
+            a(href='/organism/dashboard') Tableau de bord
         li(role='presentation')
           form.navbar-form( method='post', action='./logout')
             button.btn.btn-success-outline.pinkow(type='submit') Déconnexion
