@@ -27,38 +27,47 @@ block content
               if error
                 p.alert.alert-danger #{error}
               each act, index in activities
-                  li.list-group-item
-                    div.media-left.media-middle
-                      a(href='/volunteer/profile')
-                        img.media-object(src='/images/clouds.jpg')
-                    div.media-body
-                      h4.media-heading= act.org_name + ' - ' +act.event_intitule
-                      a.firstColor= act.intitule
-                      each day, nb in act.days
-                        p= 'Pour ' + day.vol_nb + ' bénévoles le' + day.day
-                        #identifiant(style="display:none")
-                        p= 'act._id : ' + act._id
-                    div.media-right.media-middle
-                      button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
-                      #myModal(tabindex='-1', role='dialog', class='modal fade ' + act._id)
-                        .modal-dialog(role='document')
-                            .modal-content
-                              .modal-header
-                                button.close(type='button', data-dismiss='modal', aria-label='Close')
-                                  span(aria-hidden='true') &times;        
-                                #myModalLabel.h4.modal-title=  act.org_name + ' - ' +act.event_intitule
-                              .modal-body.my-modal-body
-                                each day, nb in act.days
-                                  p= 'Pour ' + day.vol_nb + ' bénévoles le' + day.day
-                                  #identifiant(style="display:none")
-                                    p= act._id
-                                p= 'Adresse: '+ act.event_address
-                              .modal-footer
-                                button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                                button.btn.btn-primary.pinkow(type='button')
-                                  a(href='register_volunteer') S'inscrire
-                                button.btn.btn-primary.pinkow(type='button')
-                                  a(href='register_volunteer') Plus d'infos
+                  li.list-group-item(id= act._id)
+                    .panel.panel-default
+                      .panel-heading
+                        div.media-left.media-top
+                          a(href='#')
+                            img.media-object(src='/images/clouds.jpg')
+                        div.media-body
+                          h4.media-heading <b>#{act.intitule}</b>
+                          h6
+                            i.fa.fa-map-marker
+                            p.inline Adresse : #{act.address}
+                      .panel-body
+                          h4 Dans le cadre de : <b>#{act.event_intitule}</b>
+                          each day, day_i in act.days
+                            h4
+                              h5.inline <b>#{day.day.toLocaleDateString()} : </b>
+                              h6.inline
+                                i.fa.fa-user
+                                p.inline= day.applicants.length+' bénévoles se sont inscrits'
+                      div.media-right.media-middle
+                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
+                        #myModal(tabindex='-1', role='dialog', class='modal fade ' + act._id)
+                          .modal-dialog(role='document')
+                              .modal-content
+                                .modal-header
+                                  button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') &times;        
+                                  #myModalLabel.h4.modal-title=  act.org_name + ' - ' +act.event_intitule
+                                .modal-body.my-modal-body
+                                  h4 <b>#{act.intitule}</b>
+                                  each day, nb in act.days
+                                    p= 'Pour ' + day.vol_nb + ' bénévoles le ' + day.day.toLocaleDateString()
+                                    #identifiant(style="display:none")
+                                      p= act._id
+                                  p= 'Adresse: '+ act.address
+                                .modal-footer
+                                  button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+                                  button.btn.btn-primary.pinkow(type='button')
+                                    a(href='register_volunteer') S'inscrire
+                                  button.btn.btn-primary.pinkow(type='button')
+                                    a(href='register_volunteer') Plus d'infos
           .col-md-7.no-side-padding
             #map
       .container-fluid.footer

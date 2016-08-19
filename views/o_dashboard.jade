@@ -82,17 +82,25 @@ block content
                 h3 Terminés
               each event, event_i in ev_past
                 li.list-group-item(id= event._id)
-                  div.media-left.media-middle
-                    a(href='profile')
-                      img.media-object(src='/images/clouds.jpg')
-                  div.media-body
-                    h4.media-heading= event.intitule
-                    p= 'Adresse : '+ event.address
-                    each act, act_i in event.acts
-                      h4= 'Activité : '+ act.intitule
-                      each day, day_i in act.days
-                        p= 'Date : ' + day.day
-                        p= day.applicants.length+' bénévoles se sont inscrits'
+                  .panel.panel-default
+                    .panel-heading
+                      div.media-left.media-top
+                        a(href='profile')
+                          img.media-object(src='/images/clouds.jpg')
+                      div.media-body
+                        h4.media-heading <b>#{event.intitule}</b>
+                        h6
+                          i.fa.fa-map-marker
+                          p.inline Adresse : #{event.address}
+                    .panel-body
+                      each act, act_i in event.acts
+                        h4 <b>#{act.intitule}</b>
+                        each day, day_i in act.days
+                          h4
+                            h5.inline <b>#{day.day.toLocaleDateString()} : </b>
+                            h6.inline
+                              i.fa.fa-user
+                              p.inline= day.applicants.length+' bénévoles se sont inscrits'
                       div.media-right.media-middle
                         button.info-button.btn.btn-default.infos-button(id= event._id) Informations
                         div(tabindex='-1', role='dialog', class= 'modal fade '+act._id)
