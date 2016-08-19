@@ -1,0 +1,65 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'profile'
+
+
+block content
+      .container-fluid
+        .row
+          .col-md-offset-1
+            h2.pull-left Profil de l'organisme
+        .row
+          .col-md-6.col-md-offset-1
+            .media
+              .media-left.media-middle
+                img.media-object.img-profile(src='/images/rocket.png')
+              .media-body.media-middle
+                  h4.media-heading= organism.org_name
+                  a(href=organism.website)= organism.website
+                  h4
+                    i.fa.fa-phone
+                    p.inline #{organism.phone}
+                  h4
+                    i.fa.fa-envelope
+                    p.inline #{organism.email}
+                  br
+        .row
+          .col-md-6.col-md-offset-1
+            ul.list-group
+              li.list-group-item
+                | <b>Description:</b> #{organism.description}
+                small
+              li.list-group-item
+                | <b>Prénom du contact:</b> #{organism.firstname}
+                small
+              li.list-group-item
+                | <b>Nom du contact:</b> #{organism.lastname}
+                small
+              li.list-group-item
+                | <b>Cause:</b> #{organism.cause}
+                small
+              li.list-group-item
+                | <b>Adresse mail:</b> #{organism.email}
+                small
+              li.list-group-item
+                | <b>Site web:</b> #{organism.website}
+                small
+              li.list-group-item#password-group
+                p <b>Mot de passe:</b> #[span.display ******]
+                form#edit-password-form.form-horizontal.hidden.editing
+                  .input-group.conn-input
+                    p#password-error.alert.alert-danger.hidden Wrong password
+                    .input-group.conn-input
+                      input.form-control(name="current-password", type="password", placeholder="Mot de passe actuel")
+                    .input-group.conn-input
+                      input.form-control(name="new-password", type="password", placeholder="Nouveau mot de passe")
+                    .input-group.conn-input
+                      input.form-control(name="confirm-password", type="password", placeholder="Confirmer le nouveau mot de passe")
+                div.btn-toolbar
+                    button.btn.btn-default#edit-password-button.display Edit
+                    button.btn.btn-default#cancel-password-button.editing.hidden Cancel
+                    button.btn.btn-default#save-password-button.editing.hidden Save
+
+block footscript
+  script(src='../edit-password.js')
+  script(src='/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.js')
