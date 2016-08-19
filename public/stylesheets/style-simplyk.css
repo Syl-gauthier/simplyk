@@ -125,6 +125,11 @@ a:hover{
 	text-decoration: none;
 }
 
+.btn-landing{
+	border-radius: 0px;
+}
+
+
 .firstColor{
 	color:#25A191;
 }
