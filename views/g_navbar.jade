@@ -7,10 +7,10 @@ nav#nav-me.navbar.navbar-default
   .container-fluid
     .navbar-header
       if volunteer
-        a.navbar-brand(href='map')
+        a.navbar-brand(href='/volunteer/map')
           img(alt='Brand', src='/images/simplyk-text-egg-hor.png')
       else if organism || admin
-        a.navbar-brand(href='dashboard')
+        a.navbar-brand(href='/organism/dashboard')
           img(alt='Brand', src='/images/simplyk-text-egg-hor.png')
       else
         a.navbar-brand(href='/')
