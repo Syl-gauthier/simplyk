@@ -15,40 +15,54 @@ block content
               if success
                 p.alert.alert-success #{success}
               each act, index in activities
-                  li.list-group-item
-                    div.media-left.media-middle
-                      a(href='/volunteer/profile')
-                        img.media-object(src='/images/clouds.jpg')
-                    div.media-body
-                      h4.media-heading= act.org_name + ' - ' +act.event_intitule
-                      a.firstColor= act.intitule
-                      each day, nb in act.days
-                        p= 'Pour ' + day.vol_nb + ' bénévoles le' + day.day
-                        #identifiant(style="display:none")
-                        p= 'act.id : ' + act._id
-                    div.media-right.media-middle
-                      button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
-                      div(tabindex='-1', role='dialog', class='modal fade ' + act._id, id=act._id)
-                        .modal-dialog(role='document')
-                            .modal-content
-                              .modal-header
-                                button.close(type='button', data-dismiss='modal', aria-label='Close')
-                                  span(aria-hidden='true') &times;        
-                                #myModalLabel.h4.modal-title=  act.org_name + ' - ' +act.event_intitule
-                              .modal-body.my-modal-body
-                                each day, nb in act.days
-                                  p= 'Pour ' + day.vol_nb + ' bénévoles le' + day.day
-                                  #identifiant(style="display:none")
-                                    p= act._id
-                              .modal-footer
-                                button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                                #subscribe.subscribe-button.button.btn.btn-default.pinkow(type='button' aria-expanded="false" aria-controls="collapseExample") S'inscrire
-                                .button.btn.btn-default.pinkow(type='button' aria-expanded="false" aria-controls="collapseExample") Plus d'infos
+                  li.list-group-item(id= act._id)
+                    .panel.panel-default
+                      .panel-heading
+                        div.media-left.media-top
+                          a(href='#')
+                            img.media-object.little-img(src='/images/clouds.jpg')
+                        div.media-body
+                          h4.media-heading <b>#{act.intitule}</b>
+                          h6
+                            i.fa.fa-map-marker
+                            p.inline Adresse : #{act.address}
+                        div.media-right.media-middle
+                          button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
+                          div(tabindex='-1', role='dialog', class='modal fade ' + act._id, id=act._id)
+                            .modal-dialog(role='document')
+                                .modal-content
+                                  .modal-header
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                      span(aria-hidden='true') &times;        
+                                    #myModalLabel.h4.modal-title=  act.org_name + ' - ' +act.event_intitule
+                                  .modal-body.my-modal-body
+                                    each day, nb in act.days
+                                      p= 'Pour ' + day.vol_nb + ' bénévoles le' + day.day
+                                      #identifiant(style="display:none")
+                                        p= act._id
+                                  .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+                                    #subscribe.subscribe-button.button.btn.btn-default.pinkow(type='button' aria-expanded="false" aria-controls="collapseExample") S'inscrire
+                                    .subscribe-button.button.btn.btn-default.pinkow(type='button' aria-expanded="false" aria-controls="collapseExample") Plus d'infos
+                      .panel-body
+                          h4 Dans le cadre de : <b>#{act.event_intitule}</b>
+                          each day, day_i in act.days
+                            h4
+                              h5.inline <b>#{day.day.toLocaleDateString()} : </b>
+                              h6.inline
+                                i.fa.fa-user
+                                p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
 
 
 block footscript
   script.
     $(function() {
+      $('.subscribe-button').click(function(){
+        console.log('Clic sur le bouton  de subscription');
+        var act_id = $(this).parents().parents().children('.modal').attr('id');
+        console.log('act_id : ' + act_id);
+        $.redirect('/activity/'+act_id, {}, 'GET');
+      });
       $('.subscribe-button').click(function(){
         console.log('Clic sur le bouton  de subscription');
         var act_id = $(this).parents().parents().children('.modal').attr('id');

@@ -11,50 +11,66 @@ block content
 				p Adresse: #{event.address}
 				p Description: #{event.description}
 				each act, act_i in event.acts
-					li.list-group-item
-						div.media
-							div.media-left.media-middle
-								h2= '*' + act.intitule
+					li.list-group-item(id= event._id)
+						.panel.panel-default
+							.panel-heading
+								div.media-left.media-top
+									a(href='profile')
+										img.media-object.little-img(src='/images/clouds.jpg')
+								div.media-body
+									h4.media-heading <b>#{act.intitule}</b>
+									h6
+										i.fa.fa-map-marker
+										p.inline Adresse : #{event.address}
+							.panel-body
 								each day, day_i in act.days
-									h4= '**' + day.day
-									p= '**' + 'De ' + day.start_time + ' à ' + day.end_time
-									p= '**' + 'Pour ' + day.vol_nb + ' bénévoles'
-									p= '**' + day.applicants.length + ' bénévoles trouvés: '
-									each vol, vol_i in day.vols
-										div.media
-											div.media-left.media-middle
-											a(href='/volunteer/profile')
-											div.media-body
-												h4.media-heading= '***' + vol.firstname + ' ' +vol.lastname
-											each event, event_i in vol.events
-												if ((Date.parse(event.day) == Date.parse(day.day)) && (act._id.toString() == event.activity_id.toString()))
-													if event.hours_pending != event.hours_done
-														div.media-right(id=act._id day=event.day)
-															p= '***** Participation de ' + event.hours_pending + ' h ?'
-															button.btn.btn-default(class='confirmHoursButton' id=vol._id) Confirmer
-															button.btn.btn-warning(id='correctionModalButton' type= 'button' data-toggle='modal' data-target='#correctionModal') Non
-															#correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
-																div.modal-dialog(role='document')
-																	form.modal-content(action='correcthours' method='post' id='correctHoursForm')
-																		.modal-header
-																			button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-																				span(aria-hidden='true')
-																			h4.modal-title Correction d'horaires
-																			div.modal-body
-																				p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
-																				div.form-group
-																					label(for='correctionHoursInput') Heures réellement réalisées 
-																					input.form-control(type='Number' id='correctionHoursInput')
-																			div.modal-footer
-																				button.btn.btn-default(data-dismiss='modal') Annuler
-																				button.btn.btn-warning(type='submit' form='correctHoursForm') Envoyer
-													if (event.hours_done == event.hours_pending) && event.hours_done != 0
-														div.media-right
-														p= '***** Participation de ' + event.hours_done + ' h'
-													if (event.hours_done == event.hours_pending) && event.hours_done == 0
-														div.media-right
-														p= '***** Participation non-confirmée'
-										p= '***' + vol
+									h4
+										h5.inline <b>#{day.day.toLocaleDateString()} : </b>
+										h6.inline
+											i.fa.fa-user
+											p.inline= day.applicants.length+' bénévoles se sont inscrits'
+										h6 De #{day.start_time} à #{day.end_time}
+									if day.vols.length
+										h5 <b> Liste des bénévoles </b>
+										ul.list-group
+											each vol, vol_i in day.vols
+												li.list-group-item
+													div.media
+														div.media-left.media-middle
+															a(href='/volunteer/profile')
+															div.media-body
+																h4.media-heading <b>#{vol.firstname} #{vol.lastname}</b>
+																h6
+																	i.fa.fa-at
+																	p.inline #{vol.email}
+															each event, event_i in vol.events
+																if ((Date.parse(event.day) == Date.parse(day.day)) && (act._id.toString() == event.activity_id.toString()))
+																		if event.hours_pending != event.hours_done
+																			div.media-right(id=act._id day=event.day)
+																				p= '***** Participation de ' + event.hours_pending + ' h ?'
+																				button.btn.btn-default(class='confirmHoursButton' id=vol._id) Confirmer
+																				button.btn.btn-warning(id='correctionModalButton' type= 'button' data-toggle='modal' data-target='#correctionModal') Non
+																				#correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
+																					div.modal-dialog(role='document')
+																						form.modal-content(action='correcthours' method='post' id='correctHoursForm')
+																							.modal-header
+																								button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+																									span(aria-hidden='true')
+																									h4.modal-title Correction d'horaires
+																								div.modal-body
+																									p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
+																									div.form-group
+																										label(for='correctionHoursInput') Heures réellement réalisées 
+																										input.form-control(type='Number' id='correctionHoursInput')
+																								div.modal-footer
+																									button.btn.btn-default(data-dismiss='modal') Annuler
+																									button.btn.btn-warning(type='submit' form='correctHoursForm') Envoyer
+																		if (event.hours_done == event.hours_pending) && event.hours_done != 0
+																			div.media-right
+																				p= ' Participation de ' + event.hours_done + ' h'
+																		if (event.hours_done == event.hours_pending) && event.hours_done == 0
+																			div.media-right
+																				p= 'Participation non-confirmée'
 
 block footscript
 	script(type='text/javascript').
