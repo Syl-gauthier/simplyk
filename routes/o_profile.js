@@ -10,7 +10,7 @@ router.get('/organism/profile', permissions.requireGroup('organism'), function(r
   res.render('o_profile.jade', {organism: req.session.organism, session: req.session});
 });
 
-router.post('/volunteer/editPassword', function(req, res) {
+router.post('/organism/editPassword', function(req, res) {
   //Contains current, new and confirm password
   var passwords = req.body;
 
