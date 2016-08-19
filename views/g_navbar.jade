@@ -30,8 +30,12 @@ nav#nav-me.navbar.navbar-default
           form.navbar-form( method='post', action='./logout')
             button.btn.btn-success-outline.pinkow(type='submit') Déconnexion
       else if organism
-        li.navbar-link(role='presentation')
-          a(href='profile') Mon profil
+        unless page == 'profile'
+          li.navbar-link(role='presentation')
+            a(href='profile') Mon profil
+        unless page == 'dashboard'
+          li.navbar-link(role='presentation')
+            a(href='dashboard') Tableau de bord
         li(role='presentation')
           form.navbar-form( method='post', action='./logout')
             button.btn.btn-success-outline.pinkow(type='submit') Déconnexion
