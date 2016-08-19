@@ -48,8 +48,10 @@ block content
 								label.radio-inline
 									input(type='radio', name='language', value='fr')
 									p Seulement Français
+								h3 {{form.errorMessage}}
 							div(ng-repeat='activity in form.activitiesList')
-								h2 {{activity.activityTitle}}
+								h2.inline {{activity.activityTitle}}
+								a.inline.cursor(ng-click='form.delete(activity.activityName)') Supprimer l'activité
 								.input-group.conn-input(ng-repeat='field in activity.activityRequiredFields')
 									span#basic-addon1.input-group-addon {{field.title}}
 									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1', required)
