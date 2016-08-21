@@ -34,13 +34,18 @@ body{
 	display: inline;
 }
 #nav-me{
-	background-color: #FFFFff;
+    background-color: #5BCF8F;
 	opacity: 100%;
 	margin-bottom: 0px;
 }
 
+#refbar{
+	    background-color: #5BCF8F;
+	color: #F5F5F5;
+}
+
 #nav-me a{
-	color: #4E4E4E;
+	color: #F5F5F5;
 }
 
 .navbar-brand img{
@@ -117,12 +122,15 @@ body{
 }
 
 a{
-	text-decoration: none;
-	color:#E8E52C;
+	/*text-decoration: none;*/
+}
+#link-btn-ref{
+	color: #F5F5F5;
 }
 
-a:hover{
-	text-decoration: none;
+#link-btn-ref:hover{
+	color: #5BCF8F;
+
 }
 
 .btn-landing{
@@ -143,7 +151,7 @@ a:hover{
 }
 
 .list-opportunity li:hover{
-    background-color: #E8E52C;
+    background-color: #8BE78F;
 }
 
 .starring{
@@ -165,14 +173,37 @@ a:hover{
 	color: #FF1CB5;
 }
 
-.btn-default {
-	background-color: #25A191;
-	color: #FFC629;
+.btn-default{
+    background-color: #5BCF8F;
+	border-color:#5BCF8F;
+	color: #F5F5F5;
 }
+
+.btn-landing{
+    background-color: #5BCF8F;
+	border-color:#5BCF8F;
+	color: #F5F5F5;
+}
+
+.btn-landing-2{
+    background-color: #8BE78F;
+	border-color:#5BCF8F;
+	color: #F5F5F5;
+}
+
+background-color={
+	color: #8BE78F;
+}
+
 
 .label-danger {
 	color: #FF1CB5;
-    background-color: #E8E52C;
+    background-color: #F5F5F5;
+}
+
+.label-beta{
+	color: #F5F5F5;
+    background-color: #8BE78F;
 }
 
 #logo_entrance{

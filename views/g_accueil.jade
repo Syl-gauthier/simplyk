@@ -10,11 +10,11 @@ block content
             .logo
               img#logo_entrance(src='images/simplyk_log_text_v2.png', align='middle')
               h2.text-center Trouve-toi une opportunité de bénévolat ! <br><br>
-                .btn-group(role='group')
-                  button.btn.btn-default.btn-landing(type='button') 
+                .btn-group-lgP(role='group')
+                  button.btn.btn-default.btn-landing(type='button',style="width: 40%;") 
                     h3 Besoins de bénévoles
                     h4 Je suis un organisme
-                  button.btn.btn-default.btn-landing(type='button')
+                  button.btn.btn-default.btn-landing-2(type='button',style="width: 40%;")
                     h3 Je veux aider 
                     h4 Je suis un citoyen
                 //- i.fa.fa-arrow-circle-down.fa-2x.text-center.firstColor(aria-hidden='true')
@@ -56,10 +56,10 @@ block content
                                     p= 'Adresse: '+ act.address
                                   .modal-footer
                                     button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                                    button.btn.btn-primary.pinkow(type='button')
-                                      a(href='register_volunteer') S'inscrire
-                                    button.btn.btn-primary.pinkow(type='button')
-                                      a(href='register_volunteer') Plus d'infos
+                                    button.btn.btn-default(type='button')
+                                      a#link-btn-ref(href='register_volunteer') S'inscrire
+                                    button.btn.btn-default(type='button')
+                                      a#link-btn-ref(href='register_volunteer') Plus d'infos
                       .panel-body
                           h4 Dans le cadre de : <b>#{act.event_intitule}</b>
                           each day, day_i in act.days
