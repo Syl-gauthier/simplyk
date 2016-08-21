@@ -158,7 +158,7 @@ block footscript
         }
         if (acts[i].cause=='Solidarité'){
         markers[i] = new google.maps.Marker({
-          position: {lat: act.lat, lng: act.lon},
+          position: {lat: act.lat+0.01, lng: act.lon},
           map: map,
           icon: imageSol,
           clickable: true
