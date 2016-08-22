@@ -34,6 +34,7 @@ block content
                           a(href='#')
                             img.media-object.little-img(src='/images/clouds.jpg')
                         div.media-body
+                          h5.media-heading <b>#{act.org_name}</b>
                           h4.media-heading <b>#{act.intitule}</b>
                           h6
                             i.fa.fa-map-marker
@@ -147,7 +148,7 @@ block footscript
         };
       function attachInfoWindow(marker, infoWindow, act, i){
         marker.addListener('click', function(){
-          openListInfos(i);
+          $("."+act._id).modal();
         });
         marker.addListener('mouseover', function(){
           infoWindow.open(map, marker);
@@ -166,7 +167,7 @@ block footscript
         content.push('<i class="fa fa-institution" id="cult">Culture</i><br>');
         legend.innerHTML = content.join('');
         legend.index = 1;
-        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+        map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
       for(i=0; i<acts.length; i++){
         console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].lat + acts[i].lon);
         var act = acts[i];
@@ -210,4 +211,9 @@ block footscript
     $('#myModal').on('shown.bs.modal', function () {
       $('#myInput').focus();
     });
+  script(type='text/javascript').
+    $('#myModal').on('shown.bs.modal', function () {
+    $('#myInput').focus();
+    });
+
 

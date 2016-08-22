@@ -20,6 +20,7 @@ block content
                           a(href='#')
                             img.media-object.little-img(src='/images/clouds.jpg')
                         div.media-body
+                          h5.media-heading <b>#{act.org_name}</b>
                           h4.media-heading <b>#{act.intitule}</b>
                           h6
                             i.fa.fa-map-marker
@@ -121,7 +122,7 @@ block footscript
         };
       function attachInfoWindow(marker, infoWindow, act, i){
         marker.addListener('click', function(){
-          openListInfos(i);
+          $("#myModal").modal();
         });
         marker.addListener('mouseover', function(){
           infoWindow.open(map, marker);
