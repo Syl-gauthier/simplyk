@@ -74,10 +74,11 @@ block content
 block footscript
 	script.
 		var input;
+		var options = {types: ['address']};
 		function initAutocomplete(){
 			input = (document.getElementById('address'));
 			console.log(input);
-			var autocomplete = new google.maps.places.Autocomplete(input);
+			var autocomplete = new google.maps.places.Autocomplete(input,options);
 		};
 	script.
 		$( document ).ready(function() {
