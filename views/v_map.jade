@@ -144,14 +144,15 @@ block footscript
       for(i=0; i<acts.length; i++){
         console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].lat + acts[i].lon);
         var act = acts[i];
-        
+        var lati = act.lat+0.0005*(Math.random()-0.5);
+        var longi = act.lon+0.0005*(Math.random()-0.5);
         infowindows[i] = new google.maps.InfoWindow({
           content: act.org_name + ' - ' + act.intitule
         });
         //choix du marqueur en fonction de la cause, changer avec le json
         if (acts[i].cause=='Environnement'){
         markers[i] = new google.maps.Marker({
-          position: {lat: act.lat, lng: act.lon},
+          position: {lat: lati, lng: longi},
           map: map,
           icon: imageEnv,
           clickable: true
@@ -159,7 +160,7 @@ block footscript
         }
         if (acts[i].cause=='Solidarité'){
         markers[i] = new google.maps.Marker({
-          position: {lat: act.lat+0.01, lng: act.lon},
+          position: {lat: lati, lng: longi},
           map: map,
           icon: imageSol,
           clickable: true
@@ -167,7 +168,7 @@ block footscript
         }
         if (acts[i].cause=='Culture'){
         markers[i] = new google.maps.Marker({
-          position: {lat: act.lat, lng: act.lon},
+          position: {lat: lati, lng: longi},
           map: map,
           icon: imageCul,
           clickable: true

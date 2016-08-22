@@ -51,7 +51,7 @@ block content
 								h3 {{form.errorMessage}}
 							div(ng-repeat='activity in form.activitiesList')
 								h2.inline {{activity.activityTitle}}
-								a.inline.cursor(ng-click='form.delete(activity.activityName)') Supprimer l'activité
+								a.inline.cursor(ng-click='form.delete(activity.activityName)') Supprimer la tâche
 								.input-group.conn-input(ng-repeat='field in activity.activityRequiredFields')
 									span#basic-addon1.input-group-addon {{field.title}}
 									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1', required)
@@ -69,7 +69,7 @@ block content
 								.input-group.conn-input(ng-repeat='field in activity.activityUnnecessaryFields')
 									span#basic-addon1.input-group-addon {{field.title}}
 									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1')
-						button.btn.btn-default(ng-click='form.addActivity()') Ajouter une activité
+						button.btn.btn-default(ng-click='form.addActivity()') Ajouter une tâche
 						button.btn.btn-default(type='submit', form='creationeventform') Terminer
 block footscript
 	script.

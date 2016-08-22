@@ -30,7 +30,7 @@
 			var nActivity = form.activitiesList.length + 1;
 			console.log('On est dans addActivity et nActivity = ' + nActivity);
 			form.activitiesList.push({
-				'activityTitle': 'Activité ' + nActivity,
+				'activityTitle': 'Tâche ' + nActivity,
 				'activityName': 'activity' + nActivity,
 				'activityRequiredFields': requiredActivityFields,
 				'activityUnnecessaryFields': unnecessaryActivityFields
@@ -65,7 +65,7 @@
 				console.log('** 2 ** list : ' + JSON.stringify(list));
 				console.log('** 2 ** activitiesList : ' + JSON.stringify(form.activitiesList));
 				for (var actI = form.activitiesList.length - 1; actI >= 0; actI--) {
-					form.activitiesList[actI].activityTitle = 'Activité ' + (actI+1);
+					form.activitiesList[actI].activityTitle = 'Tâche ' + (actI+1);
 					form.activitiesList[actI].activityName = 'activity' + (actI+1);
 				}
 				console.log('** 3 ** activitiesList : ' + JSON.stringify(form.activitiesList));
@@ -99,12 +99,12 @@
 		}*/];
 		var unnecessaryEventFields= [];
 		var requiredActivityFields= [{
-			'title': 'Titre de l\'Activité',
+			'title': 'Titre de la tâche',
 			'type': 'text',
 			'id': 'intitule_activity'
 		},
 		{
-			'title': 'Description de l\'activité',
+			'title': 'Description de la tâche',
 			'type': 'text',
 			'id': 'activity_description'
 		}];
@@ -116,7 +116,7 @@
 
 
 		var activitiesList = [{
-			'activityTitle': 'Activité 1',
+			'activityTitle': 'Tâche 1',
 			'activityName': 'activity1',
 			'activityRequiredFields': requiredActivityFields,
 			'activityUnnecessaryFields': unnecessaryActivityFields
