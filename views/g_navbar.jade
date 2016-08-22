@@ -65,11 +65,11 @@ nav#nav-me.navbar.navbar-default
                 span.caret
               ul.dropdown-menu
                 li
-                  a(href='register_organism') Organismes
+                  a#toggle-but(href='register_organism') Organismes
                 li
-                  a(href='register_volunteer') Bénévoles
-                //- li
-                //-   a(href='register_admin') Administrateurs
+                  a#toggle-but(href='register_volunteer') Bénévoles
+                li
+                  a#toggle-but(href='register_admin') Administrateurs
         li(role='presentation')
           form.navbar-form( method='get', action='login')
             button.btn.btn-default(type='submit') Connexion
