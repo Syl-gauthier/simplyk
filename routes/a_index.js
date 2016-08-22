@@ -20,6 +20,10 @@ router.get('/admin/dashboard', permissions.requireGroup('admin'), function(req, 
   res.render('a_dashboard.jade', {session: req.session, admin: req.isAuthenticated()});
 });
 
+router.get('/admin/dashboard2', permissions.requireGroup('admin'), function(req, res, next) {
+  res.render('a_dashboard2.jade', {session: req.session, admin: req.isAuthenticated()});
+});
+
 router.get('/admin/feedback', permissions.requireGroup('admin'), function(req, res, next) {
   res.render('a_feedback.jade', {session: req.session, admin: req.isAuthenticated()});
 });

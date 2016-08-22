@@ -68,7 +68,7 @@ block content
                       div.form-group
                         //label(for='input'+event._id) Heures
                         input.form-control(id='input'+event._id type='number' placeholder='Heures de participation' name='hours_pending')
-                        button.btn.btn-default.pinkow.media-object(type='submit') Confirmer
+                        button.btn.btn-default.media-object(type='submit') Confirmer
                     button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target="."+event.activity_id) Informations
                     #myModal.modal.fade(tabindex='-1', role='dialog', class='modal fade ' + event._id)
                       .modal-dialog
@@ -83,13 +83,13 @@ block content
                               p= 'Adresse: '+ event.address
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                              #unsubscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+event._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
-                              button.btn.btn-primary.pinkow(type='button')
+                              #unsubscribe.button.btn.btn-default(type='button', data-toggle="collapse" data-target="#collapse"+event._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
+                              button.btn.btn-default(type='button')
                                 a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
                               div.collapse.tp-15(id = "collapse" + event._id)
                                 div.well Es-tu sûr de vouloir te désinscrire ? <br> <br>
-                                  button.unsubscribe-button.btn.btn-primary.pinkow Oui
-                                  button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
+                                  button.unsubscribe-button.btn.btn-default Oui
+                                  button.btn.btn-default(type='button', data-dismiss='modal') Non
 
               // IF EVENT_PENDING
               if events_pending.length
@@ -120,13 +120,13 @@ block content
                               p= 'Adresse: '+ event.address
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                              #unsubscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+event._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
-                              button.btn.btn-primary.pinkow(type='button')
+                              #unsubscribe.button.btn.btn-default(type='button', data-toggle="collapse" data-target="#collapse"+event._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
+                              button.btn.btn-default(type='button')
                                 a(href='mailto:'+event.mail+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
                               div.collapse.tp-15(id = "collapse" + event._id)
                                 div.well Es-tu sûr de vouloir te désinscrire ? <br> <br>
-                                  button.unsubscribe-button.btn.btn-primary.pinkow Oui
-                                  button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
+                                  button.unsubscribe-button.btn.btn-default Oui
+                                  button.btn.btn-default(type='button', data-dismiss='modal') Non
 
               // IF EVENT_SUBSCRIBED
               if events_subscribed.length
@@ -157,13 +157,13 @@ block content
                               p= 'Adresse: '+ event.address
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                              #unsubscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+event._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
-                              button.btn.btn-primary.pinkow(type='button')
+                              #unsubscribe.button.btn.btn-default(type='button', data-toggle="collapse" data-target="#collapse"+event._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
+                              button.btn.btn-default(type='button')
                                 a(href='mailto:'+event.mail+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
                               div.collapse.tp-15(id = "collapse" + event._id)
                                 div.well Es-tu sûr de vouloir te désinscrire ? <br> <br>
-                                  button.unsubscribe-button.btn.btn-primary.pinkow Oui
-                                  button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
+                                  button.unsubscribe-button.btn.btn-default Oui
+                                  button.btn.btn-default(type='button', data-dismiss='modal') Non
 
 
               // IF EVENT_CONFIRMED
@@ -196,12 +196,12 @@ block content
                             .modal-footer
                               button.btn.btn-default(type='button', data-dismiss='modal') Fermer
                               #unsubscribe.button.btn.btn-default.pinkow(type='button', data-toggle="collapse" data-target="#collapse"+event._id aria-expanded="false" aria-controls="collapseExample") Se désinscrire
-                              button.btn.btn-primary.pinkow(type='button')
+                              button.btn.btn-default.pinkow(type='button')
                                 a(href='mailto:'+event.mail+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
                               div.collapse.tp-15(id = "collapse" + event._id)
                                 div.well Es-tu sûr de vouloir te désinscrire ? <br> <br>
-                                  button.unsubscribe-button.btn.btn-primary.pinkow Oui
-                                  button.btn.btn-primary.pinkow(type='button', data-dismiss='modal') Non
+                                  button.unsubscribe-button.btn.btn-default.pinkow Oui
+                                  button.btn.btn-default.pinkow(type='button', data-dismiss='modal') Non
 
 block footscript
   script.

@@ -9,14 +9,14 @@ block content
           .col-md-8.col-md-offset-2
             .logo
               img#logo_entrance(src='images/simplyk_log_text_v2.png', align='middle')
-              h2.text-center Trouve-toi une opportunité de bénévolat ! <br><br>
-                .btn-group-lgP(role='group')
-                  button.btn.btn-default.btn-landing(type='button',style="width: 40%;") 
-                    h3 Besoins de bénévoles
-                    h4 Je suis un organisme
-                  button.btn.btn-default.btn-landing-2(type='button',style="width: 40%;")
-                    h3 Je veux aider 
-                    h4 Je suis un citoyen
+              h1.text-center La plateforme de mise en relation entre organismes et bénévoles! <br><br>
+                //- .btn-group-lgP(role='group')
+                //-   button.btn.btn-default.btn-landing(type='button',style="width: 40%;") 
+                //-     h3 Besoins de bénévoles
+                //-     h4 Je suis un organisme
+                //-   button.btn.btn-default.btn-landing-2(type='button',style="width: 40%;")
+                //-     h3 Je veux aider 
+                //-     h4 Je suis un citoyen
                 //- i.fa.fa-arrow-circle-down.fa-2x.text-center.firstColor(aria-hidden='true')
             if error
               p.alert.alert-danger ERROR : #{error}
@@ -142,7 +142,7 @@ block footscript
       var options = {
             gridSize: 50,
             maxZoom: 13,
-            minimumClusterSize: 8,
+            minimumClusterSize: 15,
             imagePath: 'images/m'
         };
       function attachInfoWindow(marker, infoWindow, act, i){
