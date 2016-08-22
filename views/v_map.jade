@@ -6,8 +6,6 @@ block vars
 block content
       .container-fluid
         .row.fill
-          .col-md-7.no-side-padding
-            #map
           #offers-list.col-md-5.no-side-padding.scrollable
             ul.list-group.list-opportunity
               if error
@@ -36,14 +34,16 @@ block content
                                       span(aria-hidden='true') &times;        
                                     #myModalLabel.h4.modal-title=  act.org_name + ' - ' +act.event_intitule
                                   .modal-body.my-modal-body
+                                    h4 <b>#{act.intitule}</b>
                                     each day, nb in act.days
-                                      p= 'Pour ' + day.vol_nb + ' bénévoles le' + day.day
+                                      p= 'Pour ' + day.vol_nb + ' bénévoles le ' + day.day.toLocaleDateString()
                                       #identifiant(style="display:none")
                                         p= act._id
+                                    p= 'Adresse: '+ act.address
                                   .modal-footer
                                     button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                                    #subscribe.subscribe-button.button.btn.btn-default.pinkow(type='button' aria-expanded="false" aria-controls="collapseExample") S'inscrire
-                                    .subscribe-button.button.btn.btn-default.pinkow(type='button' aria-expanded="false" aria-controls="collapseExample") Plus d'infos
+                                    #subscribe.subscribe-button.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample") S'inscrire
+                                    .subscribe-button.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample") Plus d'infos
                       .panel-body
                           h4 Dans le cadre de : <b>#{act.event_intitule}</b>
                           each day, day_i in act.days
@@ -52,7 +52,8 @@ block content
                               h6.inline
                                 i.fa.fa-user
                                 p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-
+          .col-md-7.no-side-padding
+           #map
 
 block footscript
   script.
@@ -115,7 +116,7 @@ block footscript
       var optionsMS = {
             gridSize: 50,
             maxZoom: 13,
-            minimumClusterSize: 8,
+            minimumClusterSize: 15,
             imagePath: '/images/m'
         };
       function attachInfoWindow(marker, infoWindow, act, i){
@@ -158,7 +159,7 @@ block footscript
         }
         if (acts[i].cause=='Solidarité'){
         markers[i] = new google.maps.Marker({
-          position: {lat: act.lat, lng: act.lon},
+          position: {lat: act.lat+0.01, lng: act.lon},
           map: map,
           icon: imageSol,
           clickable: true

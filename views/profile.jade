@@ -21,7 +21,7 @@ block content
             | Nom du contact: #{user.lastname}
             small
           li.list-group-item
-            | Adresse mail: #{user.email}
+            | Adresse courriel: #{user.email}
             small
       .col-md-4.col-md-offset-2
         .page-header
@@ -56,7 +56,7 @@ block content
                                       p= 'Longitude: '+ val
                                     .modal-footer
                                       button.btn.btn-default(type='button', data-dismiss='modal') Close
-                                      button.btn.btn-primary.pinkow(type='button')
+                                      button.btn.btn-default(type='button')
                                           a(href='mailto:'+val+'?subject=Participation%20à%20:%20'+val) Contactez
 
 block footscript
