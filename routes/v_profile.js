@@ -60,7 +60,7 @@ router.post('/volunteer/editPassword', function(req, res) {
 });
 
 //Add hours_pending to an activity
-router.post('/volunteer/hours_pending/:act_id-:day', function(req, res){
+router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res){
   var status = "pending";
   Volunteer.findOneAndUpdate({
     "$and": [{

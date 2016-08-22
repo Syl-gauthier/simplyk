@@ -103,7 +103,7 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
   })
 });
 
-router.get('/organism/event/:event_id', function(req,res){
+router.get('/organism/event/:event_id', permissions.requireGroup('organism'), function(req,res){
   function isEvent(event){
     console.log('Test : ' + event._id + ' = ' + req.params.event_id + ' ?');
     return event._id === req.params.event_id;
@@ -172,7 +172,7 @@ router.get('/organism/event/:event_id', function(req,res){
           console.log('activities_list : ' + event.acts[0].days);
           console.log('activities_list : ' + event.acts[0].days[0].vols);
           //res.json(event);
-          res.render('o_event.jade', {event: event, organism: req.isAuthenticated()});
+          res.render('o_event.jade', {event: event, organism: req.session.organism});
         }
       });
     }
@@ -245,7 +245,7 @@ router.post('/organism/confirmhours', function(req,res){
   });
 });
 
-router.get(/dashboard/, function(req,res){
+router.get(/dashboard/, permissions.requireGroup('organism'), function(req,res){
   res.redirect('/dashboard');
 });
 

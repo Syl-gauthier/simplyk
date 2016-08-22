@@ -135,9 +135,9 @@ block footscript
         var legend = document.createElement('div');
         legend.id = 'legend';
         var content = [];
-        content.push('<i class="fa fa-envira" id="leaf">Environnement</i><br>');
-        content.push('<i class="fa fa-heart" id="soli">Solidarité</i><br>');
-        content.push('<i class="fa fa-institution" id="cult">Culture</i><br>');
+        content.push('<i class="fa fa-envira" id="leaf"> Environnement</i><br>');
+        content.push('<i class="fa fa-heart" id="soli"> Solidarité</i><br>');
+        content.push('<i class="fa fa-institution" id="cult"> Culture</i><br>');
         legend.innerHTML = content.join('');
         legend.index = 1;
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
@@ -146,7 +146,7 @@ block footscript
         var act = acts[i];
         
         infowindows[i] = new google.maps.InfoWindow({
-          content: act.intitule
+          content: act.org_name + ' - ' + act.intitule
         });
         //choix du marqueur en fonction de la cause, changer avec le json
         if (acts[i].cause=='Environnement'){

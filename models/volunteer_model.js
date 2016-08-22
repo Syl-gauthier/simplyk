@@ -24,6 +24,7 @@ var VolunteerSchema = new Schema({
     lat: Number,
     lon: Number,
     day: Date,
+    email: String,
     description_event: String,
     intitule_activity: String,
     org_id: {type: Schema.Types.ObjectId, ref:'Organism'},

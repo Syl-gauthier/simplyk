@@ -23,7 +23,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       res.render('v_map.jade', {
         session: req.session,
         error: err,
-        volunteer: req.isAuthenticated()
+        volunteer: req.session.volunteer
       });
     }
     //Create opps list
@@ -34,7 +34,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       console.log('**************');
       res.render('v_map.jade', {
         activities: activities,
-        volunteer: req.isAuthenticated(), error: req.query.error, success: req.query.success
+        volunteer: req.session.volunteer, error: req.query.error, success: req.query.success
       });
     }
   });
@@ -64,7 +64,7 @@ router.get('/activity/:act_id', permissions.requireGroup('volunteer'), function(
         console.log('Event find in organism corresponding to act : ' + event_filtered)
         console.log('+++++++++++++++++++++');
         console.log('Activity : ' + activity);
-        res.render('g_activity_page.jade', {act_id: req.params.act_id, event: event_filtered, organism: organism[0], activity: activity, volunteer: req.isAuthenticated()});
+        res.render('v_activity.jade', {act_id: req.params.act_id, event: event_filtered, organism: organism[0], activity: activity, volunteer: req.session.volunteer});
         res.end();
       }
     });
@@ -120,6 +120,7 @@ router.post('/volunteer/subscribe/:act_id-:activity_day', permissions.requireGro
               "org_name": newActivity.org_name,
               "start_time": newActivity.days.find(isGoodDay).start_time,
               "end_time": newActivity.days.find(isGoodDay).end_time,
+              "email": newActivity.email,
               "hours_done": 0,
               "status": 'subscribed',
               "hours_pending": 0

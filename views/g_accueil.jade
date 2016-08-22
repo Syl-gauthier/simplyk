@@ -173,7 +173,7 @@ block footscript
         var lati = act.lat+0.0015*(Math.random()-0.5);
         var longi = act.lon+0.0015*(Math.random()-0.5);
         infowindows[i] = new google.maps.InfoWindow({
-          content: act.intitule
+          content: act.org_name + ' - ' + act.intitule
         });
         if (acts[i].cause=='Environnement'){
         markers[i] = new google.maps.Marker({

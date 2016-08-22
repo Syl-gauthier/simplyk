@@ -45,6 +45,7 @@ block content
 																	p.inline #{vol.email}
 															each event, event_i in vol.events
 																if ((Date.parse(event.day) == Date.parse(day.day)) && (act._id.toString() == event.activity_id.toString()))
+																	if Date.parse(day.day)<Date.now()
 																		if event.hours_pending != event.hours_done
 																			div.media-right(id=act._id day=event.day)
 																				p= '***** Participation de ' + event.hours_pending + ' h ?'
@@ -71,6 +72,11 @@ block content
 																		if (event.hours_done == event.hours_pending) && event.hours_done == 0
 																			div.media-right
 																				p= 'Participation non-confirmée'
+																	else
+																		div.media-right
+																			button.btn.btn-default(type='button')
+																				a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
+
 
 block footscript
 	script(type='text/javascript').

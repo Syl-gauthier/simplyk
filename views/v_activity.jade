@@ -1,0 +1,33 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'activity'
+
+block content
+  .container-fluid
+    .row
+      .col-md-6.col-md-offset-1
+        .page-header
+          h1= activity.event_intitule
+          p= 'Description : ' + event[0].description
+          p= 'Adresse : ' + event[0].address
+          h3= activity.intitule
+          p= 'Description : ' + activity.description
+          each day, index in activity.days
+            li.list-group-item
+              div.media-left.media-middle
+                i.fa.fa-calendar
+              div.media-body
+                h4= 'Date : ' + day.day.toLocaleDateString()
+                p= 'De ' + day.start_time + ' à ' + day.end_time
+                p= 'Encore ' + day.vol_nb + ' places'
+                #identifiant(style='display:none')
+                  p= event._id
+              div.media-right.media-middle
+                form(action='/volunteer/subscribe/'+activity._id+'-'+day.day, method='post')
+                  button.btn.btn-success-outline.pinkow(role='button' name='day' value=day.day) S'inscrire
+      .col-md-4.col-md-offset-1
+        .page-header
+          h4 Profil de l'organisme :
+          h2= organism.org_name
+          p= 'Email: ' + organism.email
+          p= 'Téléphone: ' + organism.phone

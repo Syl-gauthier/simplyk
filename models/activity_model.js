@@ -9,6 +9,7 @@ var ActivitySchema = new Schema({
 	event_intitule: String,
 	intitule: String,
 	address: String,
+	email: String,
 	language: String,
 	description: String,
 	min_hours: Number,
