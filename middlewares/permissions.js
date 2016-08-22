@@ -7,7 +7,15 @@ function requireGroup(group){
       next();
     }
     else{
-      res.sendStatus(403);
+      if(req.session.group=='organism'){
+        res.redirect('/organism/dashboard');
+      }
+      else if (req.session.group=='volunteer'){
+        res.redirect('/volunteer/map');
+      }
+      else {
+        res.redirect('/');
+      }
     }
   }
 }
