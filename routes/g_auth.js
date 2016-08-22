@@ -76,7 +76,7 @@ router.post('/register_volunteer', function(req, res){
   newVolunteer.password = newVolunteer.generateHash(req.body.password);
 
   newVolunteer.save({});
-  res.redirect('/');
+  res.redirect('/login');
 });
 
 /* Handle Registration POST for organism*/
@@ -109,7 +109,7 @@ router.post('/register_organism', function(req, res){
     });
   }
 
-  res.redirect('/');
+  res.redirect('/login');
 });
 
 /* Handle Registration POST for admin*/
