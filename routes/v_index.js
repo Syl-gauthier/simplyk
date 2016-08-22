@@ -83,6 +83,7 @@ router.post('/volunteer/subscribe/:act_id-:activity_day', permissions.requireGro
   console.log('alreadyExists : ' + alreadyExists + typeof alreadyExists);
   if(typeof alreadyExists === 'undefined'){
     console.log('Act_id which is searched : ' + req.params.act_id);
+    console.log('req.params.activity_day : ' + req.params.activity_day);
     console.log('MODIFYING ACTIVITY');
     Activity.findOneAndUpdate({
       "$and": [{
@@ -111,7 +112,7 @@ router.post('/volunteer/subscribe/:act_id-:activity_day', permissions.requireGro
             "events": {
               "activity_id": req.params.act_id,
               "intitule": newActivity.event_intitule,
-              "address": newActivity.activity,
+              "address": newActivity.address,
               "lat": newActivity.lat,
               "lon": newActivity.lon,
               "day": req.params.activity_day,
@@ -134,6 +135,9 @@ router.post('/volunteer/subscribe/:act_id-:activity_day', permissions.requireGro
             console.log('**********************************');
             console.log('New Volunteer modified : ' + JSON.stringify(newVolunteer));
             console.log('**********************************');
+            const dayString = new Date(req.params.activity_day).toLocaleDateString();
+            console.log('day String ' + dayString);
+            console.log('**********************************');
             //UPDATING REQ.SESSION.VOLUNTEER
             req.session.volunteer = newVolunteer;
             var success =  encodeURIComponent('Vous avez été inscrit à l\'activité avec succès !');
@@ -145,7 +149,7 @@ router.post('/volunteer/subscribe/:act_id-:activity_day', permissions.requireGro
               };
               emailer.sendSubscriptionEmail(content);
             });
-            res.redirect('/volunteer/map?success='+success);
+            res.render('v_postsubscription.jade', {org_name: newActivity.org_name, day: dayString, start_time: newActivity.days.find(isGoodDay).start_time, end_time: newActivity.days.find(isGoodDay).end_time, address: newActivity.address, volunteer: req.session.volunteer});
             res.end();
           }
         })
@@ -168,7 +172,6 @@ router.post('/volunteer/unsubscribe', permissions.requireGroup('volunteer'), fun
 router.get('/user', function(req, res){
   res.json(req.session.volunteer);
 });
-
 
 router.post('/volunteer/logout', function(req, res) {
   req.session.destroy();

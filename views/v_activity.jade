@@ -19,7 +19,7 @@ block content
               div.media-body
                 h4= 'Date : ' + day.day.toLocaleDateString()
                 p= 'De ' + day.start_time + ' à ' + day.end_time
-                p= 'Encore ' + day.vol_nb + ' places'
+                p= 'Encore ' + (day.vol_nb-day.applicants.length) + ' places'
                 #identifiant(style='display:none')
                   p= event._id
               div.media-right.media-middle
