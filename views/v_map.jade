@@ -21,8 +21,8 @@ block content
                                     p= 'Adresse: '+ act.address
                                   .modal-footer
                                     button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                                    #subscribe.subscribe-button.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample") S'inscrire
-                                    .subscribe-button.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample") Plus d'infos
+                                    .subscribe-button.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id) S'inscrire
+                                    .subscribe-button.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id) Plus d'infos
       .container-fluid
         .row.fill
           #offers-list.col-sm-5.hidden-xs.no-side-padding.scrollable
@@ -62,13 +62,7 @@ block footscript
     $(function() {
       $('.subscribe-button').click(function(){
         console.log('Clic sur le bouton  de subscription');
-        var act_id = $(this).parents().parents().children('.modal').attr('id');
-        console.log('act_id : ' + act_id);
-        $.redirect('/activity/'+act_id, {}, 'GET');
-      });
-      $('.subscribe-button').click(function(){
-        console.log('Clic sur le bouton  de subscription');
-        var act_id = $(this).parents().parents().children('.modal').attr('id');
+        var act_id = $(this).attr('activité');
         console.log('act_id : ' + act_id);
         $.redirect('/activity/'+act_id, {}, 'GET');
       });
@@ -142,14 +136,14 @@ block footscript
         content.push('<i class="fa fa-institution" id="cult"> Culture</i><br>');
         legend.innerHTML = content.join('');
         legend.index = 1;
-        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+        map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
       for(i=0; i<acts.length; i++){
         console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].lat + acts[i].lon);
         var act = acts[i];
-        var lati = act.lat+0.0005*(Math.random()-0.5);
-        var longi = act.lon+0.0005*(Math.random()-0.5);
+        var lati = act.lat+0.0008*(Math.random()-0.5);
+        var longi = act.lon+0.0008*(Math.random()-0.5);
         infowindows[i] = new google.maps.InfoWindow({
-          content: act.org_name + ' - ' + act.intitule
+          content: act.org_name + '<br>' + act.intitule
         });
         //choix du marqueur en fonction de la cause, changer avec le json
         if (acts[i].cause=='Environnement'){
