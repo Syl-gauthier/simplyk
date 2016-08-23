@@ -172,10 +172,10 @@ block footscript
       for(i=0; i<acts.length; i++){
         console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].lat + acts[i].lon);
         var act = acts[i];
-        var lati = act.lat+0.0005*(Math.random()-0.5);
-        var longi = act.lon+0.0005*(Math.random()-0.5);
+        var lati = act.lat+0.0008*(Math.random()-0.5);
+        var longi = act.lon+0.00108*(Math.random()-0.5);
         infowindows[i] = new google.maps.InfoWindow({
-          content: act.org_name + ' - ' + act.intitule
+          content: act.org_name + '<br>' + act.intitule
         });
         if (acts[i].cause=='Environnement'){
         markers[i] = new google.maps.Marker({
