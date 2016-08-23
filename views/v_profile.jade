@@ -70,7 +70,7 @@ block content
                         input.form-control(id='input'+event._id type='number' placeholder='Heures de participation' name='hours_pending')
                         button.btn.btn-default.media-object(type='submit') Confirmer
                     button.btn.btn-default(type='button')
-                      a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
+                      a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
 
               // IF EVENT_PENDING
               if events_pending.length
@@ -87,8 +87,8 @@ block content
                     #identifiant(style='display:none')
                       p= event._id
                   div.media-right.media-middle
-                    button.btn.btn-default(type='button')
-                      a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
+                    button.btn.btn-default.unsubscribe-button(type='button')
+                      a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
 
               // IF EVENT_SUBSCRIBED
               if events_subscribed.length
@@ -105,9 +105,11 @@ block content
                     #identifiant(style='display:none')
                       p= event._id
                   div.media-right.media-middle
-                    button.btn.btn-default(type='button')
-                      a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
-
+                    form(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post')
+                      div.btn-group-vertical(role='group')
+                        button.btn.btn-default.block-center(type='button')
+                          a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter 
+                        button.btn.btn-warning.block-center(role='submit' name='day' value=event.day) Se désinscrire
 
               // IF EVENT_CONFIRMED
               if events_confirmed.length
@@ -125,7 +127,7 @@ block content
                       p= event._id
                   div.media-right.media-middle
                     button.btn.btn-default(type='button')
-                      a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
+                      a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
 
 block footscript
   script.
@@ -134,7 +136,7 @@ block footscript
         // get opp id
         var opp_id = $(this).parents().parents().children('.media-body').children('#identifiant').children('p').html();
         console.log('opp_id : ' + opp_id);
-        $.post('/volunteer/unsubscribe', {opp_id: opp_id}).done(function(data, status){
+        $.post('/volunteer/unsubscribe/'+activity_id+'/'+activity_day).done(function(data, status){
           if(data.error){
             alert("Remarque: " + data.error);
           }

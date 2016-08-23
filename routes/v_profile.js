@@ -5,6 +5,8 @@ var router = express.Router();
 var permissions = require('../middlewares/permissions.js');
 var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
+var Activity = require('../models/activity_model.js');
+
 
 
 
@@ -57,6 +59,12 @@ router.post('/volunteer/editPassword', function(req, res) {
       });
     });
   }
+});
+
+//Unsubscribe from an event
+router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res) {
+  const activity_id = req.params.act_id, day = req.params.day;
+  res.json(req.params);
 });
 
 //Add hours_pending to an activity
