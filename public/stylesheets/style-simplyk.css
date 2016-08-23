@@ -48,8 +48,15 @@ body{
 	color: #F5F5F5;
 }
 
-#nav-me a#toggle-but{
-	color: #5BCF8F;
+
+.dropdown-menu{
+	background-color: #5BCF8F;
+	color: #F5F5F5;
+}
+
+#toggle-but:hover{
+	background-color: #8BE78F;
+	color: #F5F5F5;
 }
 
 .navbar-brand img{
