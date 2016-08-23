@@ -4,6 +4,27 @@ block vars
 
 
 block content
+      each act, index in activities
+          #myModal(tabindex='-1', role='dialog', class='modal fade ' + act._id)
+                            .modal-dialog(role='document')
+                                .modal-content
+                                  .modal-header
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                      span(aria-hidden='true') &times;        
+                                    #myModalLabel.h4.modal-title=  act.org_name + ' - ' +act.event_intitule
+                                  .modal-body.my-modal-body
+                                    h4 <b>#{act.intitule}</b>
+                                    each day, nb in act.days
+                                      p= 'Pour ' + day.vol_nb + ' bénévoles le ' + day.day.toLocaleDateString() + ' de ' + day.start_time + ' à ' + day.end_time
+                                      #identifiant(style="display:none")
+                                        p= act._id
+                                    p= 'Adresse: '+ act.address
+                                  .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+                                    button.btn.btn-default(type='button')
+                                      a#link-btn-ref(href='register_volunteer') S'inscrire
+                                    button.btn.btn-default(type='button')
+                                      a#link-btn-ref(href='register_volunteer') Plus d'infos
       .container-fluid.degrade
         #first_section_entrance.row
           .col-md-8.col-md-offset-2
@@ -22,7 +43,7 @@ block content
               p.alert.alert-danger ERROR : #{error}
       .container-fluid
         .row.fill
-          #offers-list.col-md-5.no-side-padding.scrollable
+          #offers-list.col-sm-5.hidden-xs.no-side-padding.scrollable
             ul.list-group.list-opportunity
               if error
                 p.alert.alert-danger #{error}
@@ -41,26 +62,6 @@ block content
                             p.inline Adresse : #{act.address}
                         div.media-right.media-middle
                           button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
-                          #myModal(tabindex='-1', role='dialog', class='modal fade ' + act._id)
-                            .modal-dialog(role='document')
-                                .modal-content
-                                  .modal-header
-                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
-                                      span(aria-hidden='true') &times;        
-                                    #myModalLabel.h4.modal-title=  act.org_name + ' - ' +act.event_intitule
-                                  .modal-body.my-modal-body
-                                    h4 <b>#{act.intitule}</b>
-                                    each day, nb in act.days
-                                      p= 'Pour ' + day.vol_nb + ' bénévoles le ' + day.day.toLocaleDateString()
-                                      #identifiant(style="display:none")
-                                        p= act._id
-                                    p= 'Adresse: '+ act.address
-                                  .modal-footer
-                                    button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                                    button.btn.btn-default(type='button')
-                                      a#link-btn-ref(href='register_volunteer') S'inscrire
-                                    button.btn.btn-default(type='button')
-                                      a#link-btn-ref(href='register_volunteer') Plus d'infos
                       .panel-body
                           h4 Dans le cadre de : <b>#{act.event_intitule}</b>
                           each day, day_i in act.days
@@ -69,7 +70,7 @@ block content
                               h6.inline
                                 i.fa.fa-user
                                 p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-          .col-md-7.no-side-padding
+          .col-md-sm.no-side-padding
             #map
       .container-fluid.footer
         .row
