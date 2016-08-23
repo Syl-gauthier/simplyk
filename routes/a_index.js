@@ -8,15 +8,15 @@ var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
 
 
-router.get('/admin/classes', permissions.requireGroup('admin'), function(req, res, next) {
+router.get('/admin/classes', permissions.requireGroup('volunteer'), function(req, res, next) {
   res.render('a_classes.jade', {session: req.session, admin: req.isAuthenticated()});
 });
 
-router.get('/admin/classexample', permissions.requireGroup('admin'), function(req, res, next) {
+router.get('/admin/classexample', permissions.requireGroup('volunteer'), function(req, res, next) {
   res.render('a_classexample.jade', {session: req.session, admin: req.isAuthenticated()});
 });
 
-router.get('/admin/dashboard', permissions.requireGroup('admin'), function(req, res, next) {
+router.get('/admin/dashboard', permissions.requireGroup('volunteer'), function(req, res, next) {
   res.render('a_dashboard.jade', {session: req.session, admin: req.isAuthenticated()});
 });
 
@@ -24,19 +24,19 @@ router.get('/admin/dashboard2', permissions.requireGroup('volunteer'), function(
   res.render('a_dashboard2.jade', {session: req.session, admin: req.isAuthenticated()});
 });
 
-router.get('/admin/feedback', permissions.requireGroup('admin'), function(req, res, next) {
+router.get('/admin/feedback', permissions.requireGroup('volunteer'), function(req, res, next) {
   res.render('a_feedback.jade', {session: req.session, admin: req.isAuthenticated()});
 });
 
-router.get('/admin/internopps', permissions.requireGroup('admin'), function(req, res, next) {
+router.get('/admin/internopps', permissions.requireGroup('volunteer'), function(req, res, next) {
   res.render('a_internopps.jade', {session: req.session, admin: req.isAuthenticated()});
 });
 
-router.get('/admin/studentexample', permissions.requireGroup('admin'), function(req, res, next) {
+router.get('/admin/studentexample', permissions.requireGroup('volunteer'), function(req, res, next) {
   res.render('a_studentexample.jade', {session: req.session, admin: req.isAuthenticated()});
 });
 
-router.get('/admin/listorganisms', permissions.requireGroup('admin'), function(req, res, next) {
+router.get('/admin/listorganisms', permissions.requireGroup('volunteer'), function(req, res, next) {
 	Organism.find(function(err, organisms){
 		if(err){
 			console.log('There is an error to access /listorganisms and get all the oragnisms, the error is : ' + err);
@@ -48,7 +48,7 @@ router.get('/admin/listorganisms', permissions.requireGroup('admin'), function(r
 	})
 });
 
-router.get('/admin/profile', permissions.requireGroup('admin'), function(req,res){
+router.get('/admin/profile', permissions.requireGroup('volunteer'), function(req,res){
   console.log('Begin get /profile')
   res.json(req.session.admin);
 });
