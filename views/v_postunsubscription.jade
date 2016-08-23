@@ -1,0 +1,25 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'postunsubscription'
+
+block content
+  .container-fluid
+    .row
+      .col-md-6.col-md-offset-3
+        .page-header.jumbotron
+          h1.text-center Dommage !
+          div.icon-center
+            i.fa.fa-hand-peace-o.fa-5x
+          h2.text-center Ce n'est remis qu'à plus tard !
+          h4.text-center <br>L'organisme <b>#{org_name}</b>  va être mis au courant de ta désinscription.<br> Tu peux les contacter grâce à leur adresse courriel si besoin.
+          button.btn.btn-default.icon-center Suivant
+
+block footscript
+  script(src="/bower_components/jquery.redirect/jquery.redirect.js")
+  script.
+    $(document).ready(function(){
+      const btn = $('.btn');
+      btn.on('click', function(){
+        $.redirect('/volunteer/map', {}, 'GET');
+      })
+    })

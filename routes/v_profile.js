@@ -64,7 +64,60 @@ router.post('/volunteer/editPassword', function(req, res) {
 //Unsubscribe from an event
 router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res) {
   const activity_id = req.params.act_id, day = req.params.day;
-  res.json(req.params);
+  console.log('Unsubscribe process starts');
+  Activity.findOneAndUpdate({
+    "$and": [{
+      "_id": activity_id
+    },{
+      "days": {
+        "$elemMatch": {
+          "day": req.params.day/*,
+          "applicants": {
+            "$elemMatch": {
+              "$eq": req.session.volunteer._id
+            }
+          }*/
+        }
+      }
+    }]
+  },{
+    "$pull": {
+      "days.$.applicants": req.session.volunteer._id
+    }
+  }, {returnNewDocument: true}, function(err, newActivity){
+    if (err) {
+      console.log('Error in unsubscription process : ' + err);
+    }
+    else {
+      console.log('newActivity after unsubscription process : ' + newActivity);
+      Volunteer.findOneAndUpdate({
+        "_id": req.session.volunteer._id
+      },{
+        "$pull": {
+          "events": {
+            "activity_id": req.params.act_id,
+            "day": req.params.day
+          }
+        }
+      }, {returnNewDocument: true, multi: true, new: true}, function(err, newVolunteer){
+        if (err) {
+          console.log('Error in unsubscription process : ' + err);
+        }
+        else{
+          function isNotActivity(activity){
+            return activity.activity_id != req.params.activity_id;
+          };
+          console.log(JSON.stringify(req.session.volunteer));
+          req.session.volunteer = newVolunteer;
+          //req.session.volunteer.events = req.session.volunter.events.filter(isNotActivity);
+          //req.session.save();
+          const dayString = new Date(req.params.day).toLocaleDateString();
+          console.log('newVolunteer after unsubscription process : ' + newVolunteer);
+          res.render('v_postunsubscription.jade', {org_name: newActivity.org_name, day: dayString, volunteer: req.session.volunteer});
+        }
+      })
+    }
+  });
 });
 
 //Add hours_pending to an activity
