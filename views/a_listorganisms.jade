@@ -24,14 +24,13 @@ block content
                         i.icon.icon-2x.icon-puzzle-piece(style= "color:#{val.color}") 
                     div.media-body
                       if val.validation
-                        h4.media-heading= val.name 
+                        h4.media-heading= val.org_name 
                           i.icon.icon-check.firstColor.icon-fw(href="#" data-toggle="tooltip" data-placement="top" title="Organisme vérifié par Simplyk")
                       else
-                        h4.media-heading= val.name
-                      a.firstColor(href="#" data-toggle="tooltip" data-placement="top" title="Organisme vérifié par Simplyk")= val.cause
+                        h4.media-heading= val.org_name
+                      a.firstColor(href="#" data-toggle="tooltip" data-placement="top" title="Organisme non vérifé par Simplyk")= val.cause
                     div.media-right.media-middle
-                      button.btn.btn-primary Opportunités 
-                        span.badge= val.neq
+                      button.btn.btn-primary Opportunités
 
 block footscript
   script.

@@ -1,6 +1,7 @@
 extends ./g_layout.jade
 block vars
   - var page = 'students'
+  - var hours_done = function(previousValue, currentValue, currentIndex, array) {return previousValue + currentValue; };
 
 
 block content
@@ -23,6 +24,16 @@ block content
                   td
                   td
                   td
+                each vol, vol_i in volunteers
+                  tr.success
+                    td= vol.lastname
+                    td= vol.firstname
+                    if vol.events.length
+                      td= vol.events.map(el => el.hours_done).reduce(hours_done, 0) + ' h'
+                    else
+                      td 0 h
+                    td
+                      button.btn-link(onclick="location.href='/admin/studentexample';") Accéder
                 tr.success
                   td Beaudet
                   td Martin

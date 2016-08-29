@@ -6,10 +6,19 @@ var ObjectId = Schema.ObjectId;
 
 var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
+var Volunteer = require('../models/volunteer_model.js');
 
 
 router.get('/admin/classes', permissions.requireGroup('volunteer'), function(req, res, next) {
-  res.render('a_classes.jade', {session: req.session, admin: req.isAuthenticated()});
+  Volunteer.find(function(err, volunteers){
+    if(err){
+      console.log('There is an error to access /listorganisms and get all the volunteers, the error is : ' + err);
+      res.render('a_classes.jade', {error: err, session: req.session, admin: req.isAuthenticated()});
+    }
+    else{
+      res.render('a_classes.jade', {volunteers: volunteers, session: req.session, admin: req.isAuthenticated()});
+    }
+  })
 });
 
 router.get('/admin/classexample', permissions.requireGroup('volunteer'), function(req, res, next) {
