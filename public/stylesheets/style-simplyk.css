@@ -249,7 +249,7 @@ body{
 }
 
 .white {
-	color: #FF83CC;
+	color: #5BCF8F;
 }
 
 .scrollable {
@@ -259,7 +259,7 @@ body{
 .footer {
 	padding-top: 40px;
 	height: 140px;
-	background-color: black;
+	background-color: BLACK;
 }
 
 .footer a{
@@ -275,4 +275,8 @@ body{
 
 .cursor {
 	cursor: pointer;
+}
+
+#social {
+	color: #5BCF8F
 }
