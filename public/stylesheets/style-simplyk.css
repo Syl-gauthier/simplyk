@@ -273,3 +273,7 @@ body{
 .cursor {
 	cursor: pointer;
 }
+
+textarea {
+	width: 100%;
+}

@@ -26,7 +26,7 @@ router.post('/login',
     failureFlash: true
   }),
   function(req, res){
-    console.log(JSON.stringify(req.user));
+    console.log('req.user' + JSON.stringify(req.user));
     if(req.user.group == "organism"){
       req.session.organism = req.user;
       req.session.group = "organism";

@@ -196,7 +196,12 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
       }
       );
       //res.json({volunteer: newVolunteer, hours_pending: req.body.hours_pending});
-      res.redirect('/volunteer/map')
+      if (req.session.volunteer.student){
+        res.redirect('/volunteer/student_questions/'+req.params.act_id+'-'+req.params.day);
+      }
+      else{
+        res.redirect('/volunteer/map');
+      }
     }
   });
 });

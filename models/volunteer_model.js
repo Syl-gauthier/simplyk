@@ -33,7 +33,11 @@ var VolunteerSchema = new Schema({
     end_time: String,
     hours_done: Number,
     status: String,
-    hours_pending: Number
+    hours_pending: Number,
+    student_questions: [String],
+    student_answers: [String],
+    organism_questions: [String],
+    organism_answers: [String]
   }],
   longTerms: [{
     intitule: String,
