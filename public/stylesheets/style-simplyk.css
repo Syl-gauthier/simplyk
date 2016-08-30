@@ -6,6 +6,7 @@ body{
 	font-family: 'Open Sans', 'Slabo 27px', serif, georgia, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	height: 100vh;
 	min-height: 100vh;
+	padding-top: 50px;
 }
 
 .fill{
@@ -218,6 +219,8 @@ body{
 .label-beta{
 	color: #F5F5F5;
     background-color: #8BE78F;
+    padding-right: 0px;
+	padding-left: 0px;
 }
 
 #logo_entrance{
