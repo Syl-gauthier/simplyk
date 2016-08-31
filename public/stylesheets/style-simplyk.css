@@ -280,3 +280,7 @@ body{
 #social {
 	color: #5BCF8F
 }
+
+.navbar-collapse.in {
+  overflow-y: visible;
+}
