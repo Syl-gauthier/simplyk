@@ -7,6 +7,8 @@ var crypt = require('../auth/crypt');
 var VolunteerSchema = new Schema({
   id: ObjectId,
   email: String,
+  email_verified: Boolean, //is the volunteer account verified
+  email_verify_string: String, //verify string for verify url
   password: String,
   firstname: String,
   lastname: String,

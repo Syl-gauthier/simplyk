@@ -7,6 +7,7 @@ var Organism = require('../models/organism_model.js');
 var Admin = require('../models/admin_model.js');
 
 var emailer = require('../email/emailer.js')
+var randomstring = require('randomstring');
 
 var emailCredentials = process.env.EMAIL_CREDENTIALS;
 
@@ -64,9 +65,13 @@ router.get('/register_admin', function(req, res){
 
 /* Handle Registration POST for volunteer*/
 router.post('/register_volunteer', function(req, res){
+  var randomString = randomstring.generate();
+
   //Add volunteer
   newVolunteer = new Volunteer({
     email: req.body.email,
+    email_verified: false,
+    email_verify_string: randomString,
     lastname: req.body.lastname,
     firstname: req.body.firstname,
     birthdate: req.body.birthdate,
@@ -76,6 +81,19 @@ router.post('/register_volunteer', function(req, res){
   newVolunteer.password = newVolunteer.generateHash(req.body.password);
 
   newVolunteer.save({});
+
+  if(emailCredentials) {
+    var hostname = req.headers.host; 
+    var verifyUrl = hostname + '/verify/' + randomString;
+
+    console.log('Verify url sent: ' + verifyUrl);
+
+    emailer.sendVerifyEmail({
+      recipient: req.body.email,
+      verify_url: verifyUrl
+    });
+  }
+
   res.redirect('/login');
 });
 
@@ -108,7 +126,7 @@ router.post('/register_organism', function(req, res){
       customMessage: 'Congratulation, create an event to get volunteers!'
     });
   }
-
+  
   res.redirect('/login');
 });
 
@@ -128,7 +146,32 @@ router.post('/register_admin', function(req, res){
   newAdmin.password = newAdmin.generateHash(req.body.password);
 
   newAdmin.save({});
+
   res.redirect('/');
+});
+
+//Verify email address by random generated string
+router.get('/verify/:verifyString', function(req, res) {
+  console.log('String entered: ' + req.params.verifyString); 
+
+  //Look for the string entered in the database
+  //Can do a string length check too
+  Volunteer.findOne({email_verify_string: req.params.verifyString}, function (err, volunteer) {
+    console.log(err);
+    if (err) { return; }
+
+    if(volunteer) {
+      //If we found a volunteer with the corresponding verify string we verify the volunteer email
+      volunteer.email_verified = true;
+      volunteer.save({});
+
+      return res.status(200).send('Your account ' + volunteer.email + ' is now verified');
+    } else {
+      res.status(404).send('This page is not valid');
+    }
+  });
+
+  return res.status(404).send('This page is not valid');
 });
 
 module.exports = router;
