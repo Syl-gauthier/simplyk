@@ -42,8 +42,10 @@ function sendWelcomeEmail(content) {
 
 //Send email with verify url
 function sendVerifyEmail(content) {
-  var body = '<p>Please verify your email ' + content.recipient
-    + '<br /><a href="' + content.verify_url + '">Verify now</a></p>';
+  var body = '<div><p>Please verify your email ' + content.recipient + '</p></div>'
+    + '<div><a href="'+ content.verify_url + '">Verify now</a></div>';
+
+  console.log(body);
 
   var mailOptions = {
     from: '"Simplyk admin <test@robotfactory.me>', // sender address
@@ -75,4 +77,5 @@ function sendSubscriptionEmail(content) {
 module.exports = {
   sendWelcomeEmail: sendWelcomeEmail,
   sendSubscriptionEmail: sendSubscriptionEmail,
+  sendVerifyEmail: sendVerifyEmail
 };

@@ -84,7 +84,7 @@ router.post('/register_volunteer', function(req, res){
 
   if(emailCredentials) {
     var hostname = req.headers.host; 
-    var verifyUrl = hostname + '/verify/' + randomString;
+    var verifyUrl = 'http://' +hostname + '/verify/' + randomString;
 
     console.log('Verify url sent: ' + verifyUrl);
 
@@ -158,20 +158,25 @@ router.get('/verify/:verifyString', function(req, res) {
   //Can do a string length check too
   Volunteer.findOne({email_verify_string: req.params.verifyString}, function (err, volunteer) {
     console.log(err);
-    if (err) { return; }
+    if (err) { res.send(err); }
 
     if(volunteer) {
       //If we found a volunteer with the corresponding verify string we verify the volunteer email
+      if(volunteer.email_verified != true) {
       volunteer.email_verified = true;
       volunteer.save({});
 
-      return res.status(200).send('Your account ' + volunteer.email + ' is now verified');
+        res.render('verify.jade', {email: volunteer.email});
+      }
+      else {
+        res.render('message.jade', {message: 'This account email address has already been verified'});
+      }
     } else {
-      res.status(404).send('This page is not valid');
+      res.render('404.jade');
     }
   });
 
-  return res.status(404).send('This page is not valid');
+  //return res.status(404).send('This page is not valid');
 });
 
 module.exports = router;

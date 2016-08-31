@@ -44,7 +44,7 @@ if(typeof db_credentials === 'undefined'){
   db_credentials = 'localhost/test';
 }
 
-//mongoose.connect('mongodb://'+db_credentials);
+mongoose.connect('mongodb://'+db_credentials);
 
 passport.use('local-volunteer', new LocalStrategy({
     usernameField: 'email',

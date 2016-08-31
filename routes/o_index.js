@@ -23,7 +23,9 @@ var opp_management = require('../middlewares/opp_management.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  console.log('Organism index');
   Activity.find({}, function(err, activities){
+    console.log(activities);
     if(err){
       console.log(err);
       res.render('g_accueil.jade', {
