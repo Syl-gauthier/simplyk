@@ -206,13 +206,49 @@ router.get('/volunteer/student_questions/:act_id-:act_day', permissions.requireG
   else{
     var event = req.session.volunteer.events.find(goodEvent);
     Activity.findById(req.params.act_id, function(err, activity){
-      res.render('v_questions.jade', {volunteer: req.session.volunteer, org_name: activity.org_name, event_intitule: activity.event_intitule, activity_intitule: activity.intitule, description: event.description_event, questions: event.student_questions});
+      res.render('v_questions.jade', {volunteer: req.session.volunteer, act_id: req.params.act_id, act_day: req.params.act_day, org_name: activity.org_name, event_intitule: activity.event_intitule, activity_intitule: activity.intitule, description: event.description_event, questions: event.student_questions});
     });
   };
 });
 
 router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'), function(req, res){
-  res.json(req.query);
+  function isAKeyAnswer(key){
+    return key.search('answer') != -1;
+  };
+  const student_answers_keys = Object.keys(req.body).filter(isAKeyAnswer);
+  var student_answers = [];
+  for (var key_i = student_answers_keys.length - 1; key_i >= 0; key_i--) {
+    student_answers.push(req.body[student_answers_keys[key_i]]);
+  };
+  console.log('student_answers : ' + student_answers);
+  Volunteer.findOneAndUpdate({
+    "$and": [{
+      "_id":req.session.volunteer._id
+    },{
+      "events":{
+        '$elemMatch': {
+          'activity_id': req.body.act_id,
+          'day': req.body.act_day
+        }
+      }
+    }]
+  },
+  {
+    "$set": {
+      "events.$.student_answers": student_answers
+    }
+  }, {returnNewDocument : true, new: true}, function(err, newVolunteer){
+    if(err){
+      console.log(err);
+    }
+    else{
+      req.session.volunteer = newVolunteer;
+      console.log('newVolunteer : ' +newVolunteer);
+      console.log('newVolunteer === req.session.volunteer : ' + (req.session.volunteer ===newVolunteer));
+      const message = 'Tes réponses ont bien été prises en compte'
+      res.redirect('/volunteer/map?success='+message);
+    }
+  });
 });
 
 router.post('/volunteer/logout', function(req, res) {
