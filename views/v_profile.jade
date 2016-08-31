@@ -19,8 +19,7 @@ block content
           li.list-group-item
             | Nom: #{volunteer.lastname}
             small
-          li.list-group-item
-            | Date de naissance: #{volunteer.birthdate}
+          li.list-group-item= 'Date de naissance: ' + moment(volunteer.birthdate).format("DD/MM/YYYY")
             small
           li.list-group-item
             | Adresse mail: #{volunteer.email}
