@@ -6,6 +6,7 @@ body{
 	font-family: 'Open Sans', 'Slabo 27px', serif, georgia, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	height: 100vh;
 	min-height: 100vh;
+	padding-top: 50px;
 }
 
 .fill{
@@ -218,6 +219,8 @@ body{
 .label-beta{
 	color: #F5F5F5;
     background-color: #8BE78F;
+    padding-right: 0px;
+	padding-left: 0px;
 }
 
 #logo_entrance{
@@ -246,7 +249,7 @@ body{
 }
 
 .white {
-	color: #FF83CC;
+	color: #5BCF8F;
 }
 
 .scrollable {
@@ -256,7 +259,7 @@ body{
 .footer {
 	padding-top: 40px;
 	height: 140px;
-	background-color: black;
+	background-color: BLACK;
 }
 
 .footer a{
@@ -274,6 +277,15 @@ body{
 	cursor: pointer;
 }
 
+
 textarea {
 	width: 100%;
+}
+
+#social {
+	color: #5BCF8F
+}
+
+.navbar-collapse.in {
+  overflow-y: visible;
 }

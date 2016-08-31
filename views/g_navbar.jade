@@ -3,73 +3,80 @@ block vars
   - var session
   - var page
 
-nav#nav-me.navbar.navbar-default
+nav#nav-me.navbar.navbar-default.navbar-fixed-top
   .container-fluid
     .navbar-header
-      if volunteer
-        a.navbar-brand(href='/volunteer/map')
-          img(alt='Brand', src='/images/simplyk-text-egg-hor.png')
-      else if organism || admin
-        a.navbar-brand(href='/organism/dashboard')
-          img(alt='Brand', src='/images/simplyk-text-egg-hor.png')
-      else
-        a.navbar-brand(href='/')
-          img(alt='Brand', src='/images/simplyk-text-egg-hor.png', style= 'color: #F5F5F5')
-    ul.nav.navbar-nav.navbar-left
-      li.navbar-brand(role='presentation')
-        span.label.label-beta VERSION BETA
-    ul.nav.navbar-nav.navbar-right
-      if volunteer
-        unless page=='profile'
+      button.navbar-toggle(type='button', data-toggle='collapse', data-target='#myNavbar')
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      a.navbar-brand(href='/volunteer/map')
+        if volunteer
+          a.navbar-brand(href='/volunteer/map')
+            img(alt='Brand', src='/images/simplyk-text-egg-hor.png')
+        else if organism || admin
+          a.navbar-brand(href='/organism/dashboard')
+            img(alt='Brand', src='/images/simplyk-text-egg-hor.png')
+        else
+          a.navbar-brand(href='/')
+            img(alt='Brand', src='/images/simplyk-text-egg-hor.png', style= 'color: #F5F5F5')
+      ul.nav.navbar-nav.navbar-left
+        li.navbar-brand(role='presentation')
+          span.label.label-beta BETA
+    #myNavbar.collapse.navbar-collapse
+      .navbar-header
+      ul.nav.navbar-nav.navbar-right
+        if volunteer
+          unless page=='profile'
+            li.navbar-link(role='presentation')
+              a(href='/volunteer/profile') Mon profil
+          unless page=='map'
+            li.navbar-link(role='presentation')
+              a(href='/volunteer/map') Carte
+          li(role='presentation')
+            form.navbar-form( method='post', action='./logout')
+              button.btn.btn-default(type='submit') Déconnexion
+        else if organism
+          unless page == 'profile'
+            li.navbar-link(role='presentation')
+              a(href='/organism/profile') Mon profil
+          unless page == 'dashboard'
+            li.navbar-link(role='presentation')
+              a(href='/organism/dashboard') Tableau de bord
+          li(role='presentation')
+            form.navbar-form( method='post', action='./logout')
+              button.btn.btn-default(type='submit') Déconnexion
+        else if admin
+          li.navbar-link(role='presentation', class= page === 'profile' ? 'active':'')
+            a(href='/admin/profile') Mon profil
+          li.navbar-link(role='presentation', class= page === 'students' ? 'active':'')
+            a(href='/admin/classes') Mes étudiants
+          li.navbar-link(role='presentation', class= page === 'internopps' ? 'active':'')
+            a(href='/admin/internopps') Mes opportunités internes
+          li.dropdown
+            a.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore
+              span.caret
+            ul.dropdown-menu
+              li
+                a(href='/admin/listorganisms') Organismes
+          li(role='presentation')
+            form.navbar-form( method='post', action='/logout')
+              button.btn.btn-default(type='submit') Déconnexion
+        else
           li.navbar-link(role='presentation')
-            a(href='/volunteer/profile') Mon profil
-        unless page=='map'
-          li.navbar-link(role='presentation')
-            a(href='/volunteer/map') Carte
-        li(role='presentation')
-          form.navbar-form( method='post', action='./logout')
-            button.btn.btn-default(type='submit') Déconnexion
-      else if organism
-        unless page == 'profile'
-          li.navbar-link(role='presentation')
-            a(href='/organism/profile') Mon profil
-        unless page == 'dashboard'
-          li.navbar-link(role='presentation')
-            a(href='/organism/dashboard') Tableau de bord
-        li(role='presentation')
-          form.navbar-form( method='post', action='./logout')
-            button.btn.btn-default(type='submit') Déconnexion
-      else if admin
-        li.navbar-link(role='presentation', class= page === 'profile' ? 'active':'')
-          a(href='/admin/profile') Mon profil
-        li.navbar-link(role='presentation', class= page === 'students' ? 'active':'')
-          a(href='/admin/classes') Mes étudiants
-        li.navbar-link(role='presentation', class= page === 'internopps' ? 'active':'')
-          a(href='/admin/internopps') Mes opportunités internes
-        li.dropdown
-          a.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore
-            span.caret
-          ul.dropdown-menu
-            li
-              a(href='/admin/listorganisms') Organismes
-        li(role='presentation')
-          form.navbar-form( method='post', action='/logout')
-            button.btn.btn-default(type='submit') Déconnexion
-      else
-        li.navbar-link(role='presentation')
-          a(href='register_organism') Je cherche des bénévoles !
-        li(role='presentation')
-          form.navbar-form
-            li.dropdown
-              button.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Inscris-toi ! 
-                span.caret
-              ul.dropdown-menu#drop-down-but
-                li
-                  a#toggle-but(href='register_organism') Organismes
-                li
-                  a#toggle-but(href='register_volunteer') Bénévoles
-                //- li
-                //-   a#toggle-but(href='register_admin') Administrateurs
-        li(role='presentation')
-          form.navbar-form( method='get', action='login')
-            button.btn.btn-default(type='submit') Connexion
+            a(href='register_organism') Je cherche des bénévoles !
+          li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                button.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Inscris-toi ! 
+                  span.caret
+                ul.dropdown-menu#drop-down-but
+                  li
+                    a#toggle-but(href='register_organism') Organismes
+                  li
+                    a#toggle-but(href='register_volunteer') Bénévoles
+                  //- li
+                  //-   a#toggle-but(href='register_admin') Administrateurs
+          li(role='presentation')
+            form.navbar-form( method='get', action='login')
+              button.btn.btn-default(type='submit') Connexion
