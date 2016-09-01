@@ -3,7 +3,6 @@
  * */
 var nodemailer = require('nodemailer');
 
-
 var emailCredentials = process.env.EMAIL_CREDENTIALS;
 if(emailCredentials === 'undefined') {
   throw Error('Email credentials are not present');
@@ -41,6 +40,24 @@ function sendWelcomeEmail(content) {
   callSendMail(mailOptions);
 };
 
+//Send email with verify url
+function sendVerifyEmail(content) {
+  var body = '<div><p>Please verify your email ' + content.recipient + '</p></div>'
+    + '<div><a href="'+ content.verify_url + '">Verify now</a></div>';
+
+  console.log(body);
+
+  var mailOptions = {
+    from: '"Simplyk admin <test@robotfactory.me>', // sender address
+    to: content.recipient, 
+    subject: 'Verify your email address', // Subject line
+    text: '', // plaintext body
+    html: body
+  };
+
+  callSendMail(mailOptions);
+};
+
 function sendSubscriptionEmail(content) {
   var body = '<p>Good news ' + content.name + ' !'
     + '. ' + content.customMessage
@@ -59,5 +76,6 @@ function sendSubscriptionEmail(content) {
 
 module.exports = {
   sendWelcomeEmail: sendWelcomeEmail,
-  sendSubscriptionEmail: sendSubscriptionEmail
+  sendSubscriptionEmail: sendSubscriptionEmail,
+  sendVerifyEmail: sendVerifyEmail
 };

@@ -7,42 +7,61 @@ var Organism = require('../models/organism_model.js');
 var Admin = require('../models/admin_model.js');
 
 var emailer = require('../email/emailer.js')
+var randomstring = require('randomstring');
 
 var emailCredentials = process.env.EMAIL_CREDENTIALS;
 
 router.get('/login', function(req, res, next){
   if(req.query.login_error){
-    res.render('g_login.jade', {error: 1});
+    res.render('g_login.jade', {error: req.query.login_error});
   }
   else{
     res.render('g_login.jade');
   }
 });
 
-router.post('/login', 
-  passport.authenticate(['local-volunteer', 'local-organism', 'local-admin'], 
-  {
-    failureRedirect: '/login?login_error=1',
-    failureFlash: true
-  }),
-  function(req, res){
-    console.log('req.user' + JSON.stringify(req.user));
-    if(req.user.group == "organism"){
-      req.session.organism = req.user;
+router.post('/login', function(req, res, next) {
+  passport.authenticate(['local-volunteer', 'local-organism', 'local-admin'], function(err, user, info) {
+    console.log(info);
+    if(err) { return next(err); };
+
+    if(!user) { 
+      //If the user exists in the database but an other error happened
+      var loginError = info.filter(function(item) {
+        if(item.exists) {
+          return true;
+        }
+      });
+      
+      console.log(loginError);
+
+      //If the login Error is present we use the error code
+      if(loginError.length === 1) {
+        return res.redirect('login?login_error=' + loginError[0].code);
+      }
+      else {
+        return res.redirect('login?login_error=1')
+      }
+    };
+
+    console.log(JSON.stringify(user));
+    if(user.group == "organism"){
+      req.session.organism = user;
       req.session.group = "organism";
       res.redirect('/organism/dashboard'); 
     }
-    else if(req.user.group == "volunteer"){
-      req.session.volunteer = req.user;
+    else if(user.group == "volunteer"){
+      req.session.volunteer = user;
       req.session.group = "volunteer";
       res.redirect('/volunteer/map');
     }
-    else if(req.user.group == "admin"){
-      req.session.admin = req.user;
+    else if(user.group == "admin"){
+      req.session.admin = user;
       req.session.group = "admin";
       res.redirect('/admin/dashboard');
     }
-  });
+  })(req, res, next);
+});
 
 router.post('/logout', function(req, res){
   req.session.destroy();
@@ -62,64 +81,38 @@ router.get('/register_admin', function(req, res){
   res.render('g_register.jade', {group: 'admin'});
 });
 
-function userExists(email, handler) {
-  //Look for email in volunteer, organism and admin
-  Volunteer.findOne({email: email}, function(err, volunteer) {
-    console.log(JSON.stringify(volunteer));
-    if(volunteer) {
-      handler(true);
-    }
-    else {
-      Organism.findOne({email: email}, function(err, organism) {
-        if(organism) {
-          handler(true);
-        }
-        else {
-          handler(false);
-        }
-      });
-    }
-  });
-}
-
-//Allow front end to check if email exists before submitting form
-router.post('/register_check', function(req, res) {
-  console.log(req.body);    
-
-  function handleCheck(exists) {
-    res.json({success: true, exists: exists});
-  }
-
-  userExists(req.body.email, handleCheck);
-});
-
 /* Handle Registration POST for volunteer*/
 router.post('/register_volunteer', function(req, res){
-  var email = req.body.email;
+  var randomString = randomstring.generate();
 
-  function handleVolunteerCreation(exists) {
-    if(exists) {
-      res.redirect('register_volunteer');
-    }
-    else {
-      //Add volunteer
-      newVolunteer = new Volunteer({
-        email: req.body.email,
-        lastname: req.body.lastname,
-        firstname: req.body.firstname,
-        birthdate: req.body.birthdate,
-        password: req.body.password
-      });
+  //Add volunteer
+  newVolunteer = new Volunteer({
+    email: req.body.email,
+    email_verified: false,
+    email_verify_string: randomString,
+    lastname: req.body.lastname,
+    firstname: req.body.firstname,
+    birthdate: req.body.birthdate,
+    password: req.body.password
+  });
 
-      newVolunteer.password = newVolunteer
-        .generateHash(req.body.password);
+  newVolunteer.password = newVolunteer.generateHash(req.body.password);
 
-      newVolunteer.save({});
-      res.redirect('/login');
-    }
+  newVolunteer.save({});
+
+  if(emailCredentials) {
+    var hostname = req.headers.host; 
+    var verifyUrl = 'http://' +hostname + '/verify/' + randomString;
+
+    console.log('Verify url sent: ' + verifyUrl);
+
+    emailer.sendVerifyEmail({
+      recipient: req.body.email,
+      verify_url: verifyUrl
+    });
   }
-  
-  userExists(email, handleVolunteerCreation);
+
+  res.redirect('/login');
 });
 
 /* Handle Registration POST for organism*/
@@ -151,7 +144,7 @@ router.post('/register_organism', function(req, res){
       customMessage: 'Congratulation, create an event to get volunteers!'
     });
   }
-
+  
   res.redirect('/login');
 });
 
@@ -171,7 +164,37 @@ router.post('/register_admin', function(req, res){
   newAdmin.password = newAdmin.generateHash(req.body.password);
 
   newAdmin.save({});
+
   res.redirect('/');
+});
+
+//Verify email address by random generated string
+router.get('/verify/:verifyString', function(req, res) {
+  console.log('String entered: ' + req.params.verifyString); 
+
+  //Look for the string entered in the database
+  //Can do a string length check too
+  Volunteer.findOne({email_verify_string: req.params.verifyString}, function (err, volunteer) {
+    console.log(err);
+    if (err) { res.send(err); }
+
+    if(volunteer) {
+      //If we found a volunteer with the corresponding verify string we verify the volunteer email
+      if(volunteer.email_verified != true) {
+        volunteer.email_verified = true;
+        volunteer.save({});
+
+        res.render('verify.jade', {email: volunteer.email});
+      }
+      else {
+        res.render('message.jade', {message: 'This account email address has already been verified'});
+      }
+    } else {
+      res.render('404.jade');
+    }
+  });
+
+  //return res.status(404).send('This page is not valid');
 });
 
 module.exports = router;

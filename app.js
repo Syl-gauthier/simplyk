@@ -53,16 +53,25 @@ passport.use('local-volunteer', new LocalStrategy({
   },
   function(email, password, done) {
     Volunteer.findOne({email: email}, function (err, volunteer) {
-      if (err) { return done(err); }
-      if (!volunteer) {
+      if(err) { 
+        return done(err); 
+      }
+      else if(!volunteer) {
         return done(null, false, { message: 'Incorrect mail.' });
       }
-      if (!volunteer.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
+      else if(!volunteer.validPassword(password)) {
+        return done(null, false, { exists: true, message: 'Incorrect password.', code: 1});
       }
-      volunteer = volunteer.toJSON();
-      volunteer.group = "volunteer";
-      return done(null, volunteer);
+      else if(volunteer.email_verified == false) {
+        console.log('User not verified');
+        return done(null, false, { exists: true, message: 'email not verified', code: 2});
+      }
+      else{
+        //Login info correct
+        volunteer = volunteer.toJSON();
+        volunteer.group = "volunteer";
+        return done(null, volunteer);
+      }
     });
   }
 ));
