@@ -13,37 +13,55 @@ var emailCredentials = process.env.EMAIL_CREDENTIALS;
 
 router.get('/login', function(req, res, next){
   if(req.query.login_error){
-    res.render('g_login.jade', {error: 1});
+    res.render('g_login.jade', {error: req.query.login_error});
   }
   else{
     res.render('g_login.jade');
   }
 });
 
-router.post('/login', 
-  passport.authenticate(['local-volunteer', 'local-organism', 'local-admin'], 
-  {
-    failureRedirect: '/login?login_error=1',
-    failureFlash: true
-  }),
-  function(req, res){
-    console.log(JSON.stringify(req.user));
-    if(req.user.group == "organism"){
-      req.session.organism = req.user;
+router.post('/login', function(req, res, next) {
+  passport.authenticate(['local-volunteer', 'local-organism', 'local-admin'], function(err, user, info) {
+    console.log(info);
+    if(err) { return next(err); };
+
+    if(!user) { 
+      //If the user exists in the database but an other error happened
+      var loginError = info.filter(function(item) {
+        if(item.exists) {
+          return true;
+        }
+      });
+      
+      console.log(loginError);
+
+      //If the login Error is present we use the error code
+      if(loginError.length === 1) {
+        return res.redirect('login?login_error=' + loginError[0].code);
+      }
+      else {
+        return res.redirect('login?login_error=1')
+      }
+    };
+
+    console.log(JSON.stringify(user));
+    if(user.group == "organism"){
+      req.session.organism = user;
       req.session.group = "organism";
       res.redirect('/organism/dashboard'); 
     }
-    else if(req.user.group == "volunteer"){
-      req.session.volunteer = req.user;
+    else if(user.group == "volunteer"){
+      req.session.volunteer = user;
       req.session.group = "volunteer";
       res.redirect('/volunteer/map');
     }
-    else if(req.user.group == "admin"){
-      req.session.admin = req.user;
+    else if(user.group == "admin"){
+      req.session.admin = user;
       req.session.group = "admin";
       res.redirect('/admin/dashboard');
     }
-  });
+  })(req, res, next);
+});
 
 router.post('/logout', function(req, res){
   req.session.destroy();
