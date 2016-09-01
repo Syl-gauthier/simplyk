@@ -181,8 +181,8 @@ router.get('/verify/:verifyString', function(req, res) {
     if(volunteer) {
       //If we found a volunteer with the corresponding verify string we verify the volunteer email
       if(volunteer.email_verified != true) {
-      volunteer.email_verified = true;
-      volunteer.save({});
+        volunteer.email_verified = true;
+        volunteer.save({});
 
         res.render('verify.jade', {email: volunteer.email});
       }
