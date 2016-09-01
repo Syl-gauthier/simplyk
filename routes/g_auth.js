@@ -62,21 +62,64 @@ router.get('/register_admin', function(req, res){
   res.render('g_register.jade', {group: 'admin'});
 });
 
+function userExists(email, handler) {
+  //Look for email in volunteer, organism and admin
+  Volunteer.findOne({email: email}, function(err, volunteer) {
+    console.log(JSON.stringify(volunteer));
+    if(volunteer) {
+      handler(true);
+    }
+    else {
+      Organism.findOne({email: email}, function(err, organism) {
+        if(organism) {
+          handler(true);
+        }
+        else {
+          handler(false);
+        }
+      });
+    }
+  });
+}
+
+//Allow front end to check if email exists before submitting form
+router.post('/register_check', function(req, res) {
+  console.log(req.body);    
+
+  function handleCheck(exists) {
+    res.json({success: true, exists: exists});
+  }
+
+  userExists(req.body.email, handleCheck);
+});
+
 /* Handle Registration POST for volunteer*/
 router.post('/register_volunteer', function(req, res){
-  //Add volunteer
-  newVolunteer = new Volunteer({
-    email: req.body.email,
-    lastname: req.body.lastname,
-    firstname: req.body.firstname,
-    birthdate: req.body.birthdate,
-    password: req.body.password
-  });
+  var email = req.body.email;
 
-  newVolunteer.password = newVolunteer.generateHash(req.body.password);
+  function handleVolunteerCreation(exists) {
+    if(exists) {
+      res.redirect('register_volunteer');
+    }
+    else {
+      //Add volunteer
+      newVolunteer = new Volunteer({
+        email: req.body.email,
+        lastname: req.body.lastname,
+        firstname: req.body.firstname,
+        birthdate: req.body.birthdate,
+        password: req.body.password
+      });
 
-  newVolunteer.save({});
-  res.redirect('/login');
+      newVolunteer.password = newVolunteer
+        .generateHash(req.body.password);
+
+      newVolunteer.save({});
+      res.redirect('/login');
+    }
+  }
+  
+  userExists(email, handleVolunteerCreation);
 });
 
 /* Handle Registration POST for organism*/
