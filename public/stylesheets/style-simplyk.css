@@ -277,6 +277,15 @@ body{
 	cursor: pointer;
 }
 
+
+textarea {
+	width: 100%;
+}
+
 #social {
 	color: #5BCF8F
+}
+
+.navbar-collapse.in {
+  overflow-y: visible;
 }

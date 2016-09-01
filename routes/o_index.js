@@ -231,6 +231,7 @@ router.post('/organism/confirmhours', function(req,res){
     }, {
       '$set': {
         'events.$.hours_done' : hours_pending,
+        'events.$.hours_pending' : 0,
         'events.$.status': 'confirmed'
       }
     }, function(err){

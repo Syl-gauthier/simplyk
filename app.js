@@ -32,6 +32,7 @@ var Volunteer = require('./models/volunteer_model.js');
 var Admin = require('./models/admin_model.js');
 
 var app = express();
+app.locals.moment = require('moment');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

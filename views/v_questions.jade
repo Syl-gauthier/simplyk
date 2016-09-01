@@ -1,0 +1,42 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'v_questions'
+
+
+block content
+      .container-fluid
+        .row.fill
+          .col-md-6.col-md-offset-3
+            h1.page-header.text-center.firstColor= volunteer.firstname + ' ' + volunteer.lastname +' - ' + org_name
+            h3 L'opportunité
+            li.list-group-item
+                  div.media-heading
+                    h4.media-heading= org_name
+                    a.firstColor= event_intitule
+                    p= activity_intitule
+                  div.media-body
+                    p= description
+        .row
+          .col-md-10.col-md-offset-1
+            div.panel.panel-default
+              div.panel-heading
+                h3 Retour de l’élève sur lui-même 
+              div.panel-body
+                form(action='/volunteer/student_questions' id='questions_form' method='post')
+                  input(name='act_id' value=act_id, hidden)
+                  input(name='act_day' value=act_day, hidden)
+                  each question, q_I in questions
+                    div.panel.panel-warning
+                      div.panel-heading
+                        h4= question
+                      div.panel-body
+                        textarea(name='answer'+q_I, form='questions_form' minlength='20' required)
+                button.btn.btn-default(type='submit' form='questions_form') Soumettre
+
+block footscript
+  // jQuery (necessary for Bootstrap's JavaScript plugins)
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+  // jQuery
+  script(src='javascripts/my-jquery.js')
+  // Include all compiled plugins (below), or include individual files as needed
+  script(src='javascripts/bootstrap.min.js')
