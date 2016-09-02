@@ -33,7 +33,9 @@
     "serve-favicon": "~2.3.0"
   },
   "main": "app.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "^3.0.2"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ThibautJ/simplyk.git"

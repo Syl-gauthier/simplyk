@@ -16,7 +16,7 @@ var codeAddress = function(address, done) {
 	gmAPI.geocode( {'address': address}, function(err, result) {
 		if (err) {
 			console.log('geocode error: ');
-			console.log(err);
+			console.log(err);	
 			return done(err);
 		} else {
 			console.log('result : ' + JSON.stringify(result));
