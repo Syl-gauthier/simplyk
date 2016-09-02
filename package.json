@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "postinstall": "./node_modules/bower/bin/bower install",
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "./node_modules/mocha/bin/mocha"
   },
   "dependencies": {
     "bcrypt": "^0.8.7",
