@@ -2,7 +2,7 @@ ui: "bdd"
 language: node_js
 node_js:
   - "stable"
-script: node test/test.js
+script: mocha
 addons:
   apt:
     sources:
