@@ -2,10 +2,6 @@ var Mocha = require('mocha');
 var expect = require('chai').expect;
 var gmaps = require('../middlewares/gmaps.js');
 
-var mocha = new Mocha({
-    ui: "tdd",
-    reporter: "spec"
-});
 
 describe('Array', function(){
 	describe('#indexOf()', function(){
