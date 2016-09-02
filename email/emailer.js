@@ -38,6 +38,7 @@ function sendWelcomeEmail(content) {
   };
 
   callSendMail(mailOptions);
+  console.log('callSendMail call');
 };
 
 //Send email with verify url

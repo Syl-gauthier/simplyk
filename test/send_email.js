@@ -7,3 +7,4 @@ var content = {
 };
 
 emailer.sendWelcomeEmail(content);
+console.log(content);
