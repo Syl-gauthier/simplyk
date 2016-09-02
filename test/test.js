@@ -1,4 +1,3 @@
-var Mocha = require('mocha');
 var expect = require('chai').expect;
 var gmaps = require('../middlewares/gmaps.js');
 
