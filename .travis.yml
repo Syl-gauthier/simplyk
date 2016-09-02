@@ -2,8 +2,8 @@ ui: "bdd"
 language: node_js
 node_js:
   - "stable"
-script: mocha
 addons:
+  firefox: latest
   apt:
     sources:
     - ubuntu-toolchain-r-test
@@ -16,8 +16,10 @@ addons:
 env:
   - CXX=g++-4.8
 before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
-  - rackup  # start a Web server
-  - sleep 3 # give Web server some time to bind to sockets, etc
+- npm install -g bower polylint web-component-tester
+- bower install
+- polylint
+script:
+- xvfb-run wct
+- if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct -s 'default'; fi
+- mocha
