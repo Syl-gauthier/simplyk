@@ -1,7 +1,7 @@
 language: node_js
 node_js:
   - "stable"
-script: npm ci
+script: node test/test.js
 addons:
   apt:
     sources:
