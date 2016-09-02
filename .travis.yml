@@ -1,7 +1,7 @@
 language: node_js
 node_js:
   - "stable"
-script: npm run ci
+script: npm ci
 addons:
   apt:
     sources:
@@ -9,8 +9,5 @@ addons:
     packages:
     - gcc-4.8
     - g++-4.8
-  sauce_connect:
-    - username: "ThibautJ"
-    - access_key: "3b82a5fa-8007-457d-a707-8ab33bf16450"
 env:
   - CXX=g++-4.8
