@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+/*var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
@@ -20,3 +20,4 @@ Opp.findById("57416043bc4b9bd932aa1449").populate("applications.applicant")
     console.log(opp.toString());
     console.log(opp.applications[0].toString());
   });
+*/

@@ -17,6 +17,7 @@ var codeAddress = function(address, done) {
 		if (err) {
 			console.log('geocode error: ');
 			console.log(err);
+			return done(err);
 		} else {
 			console.log('result : ' + JSON.stringify(result));
 			console.log('result.results[0] : ' + result.results[0]);
