@@ -7,9 +7,11 @@ addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
+    - google-chrome
     packages:
     - gcc-4.8
     - g++-4.8
+    - google-chrome-stable
   sauce_connect:
     username: "ThibautJ"
     access_key: "3b82a5fa-8007-457d-a707-8ab33bf16450"
@@ -20,6 +22,6 @@ before_script:
 - bower install
 - polylint
 script:
-- xvfb-run wct
-- if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct -s 'default'; fi
+- xvfb-run wct --skip-plugin
+- if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct -s 'default' --skip-plugin; fi
 - mocha
