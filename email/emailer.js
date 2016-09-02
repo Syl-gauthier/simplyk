@@ -3,7 +3,7 @@
  * */
 var nodemailer = require('nodemailer');
 
-var emailCredentials = process.env.EMAIL_CREDENTIALS;
+var emailCredentials = "smtps://test@simplyk.org:Ocg15schOeuf2poule@mail.simplyk.com";
 if(emailCredentials === 'undefined') {
   throw Error('Email credentials are not present');
 }
