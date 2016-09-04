@@ -1,0 +1,15 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'verify'
+
+block content
+  .container-fluid
+    .row
+      .col-md-6.col-md-offset-3
+        .page-header.jumbotron
+          h1.text-center Félicitations !
+          div.icon-center
+            i.fa.fa-key.fa-5x
+          h2.text-center Ton adresse courriel a été vérifié !
+          p.text-center= email
+          a.btn.btn-default.icon-center(href='/login') C'est parti !

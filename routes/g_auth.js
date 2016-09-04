@@ -184,7 +184,7 @@ router.get('/verify/:verifyString', function(req, res) {
         volunteer.email_verified = true;
         volunteer.save({});
 
-        res.render('verify.jade', {email: volunteer.email});
+        res.render('g_verify.jade', {email: volunteer.email});
       }
       else {
         res.render('message.jade', {message: 'This account email address has already been verified'});
