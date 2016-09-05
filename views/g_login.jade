@@ -13,9 +13,19 @@ block content
 						p.alert.alert-danger Wrong mail or password
 					if error == 2
 						p.alert.alert-danger Email address not verified, please verify the email address
-                        
+			.col-md-2.col-md-offset-1
+				.page-header
+					h4 Ou si vous n'avez pas encore de compte
+				button.btn.btn-default.dropdown-toggle(href='/register' data-toggle="dropdown") S'inscrire 
+					span.caret
+				ul.dropdown-menu#drop-down-but
+					li
+						a#toggle-but(href='register_organism') Organismes
+					li
+						a#toggle-but(href='register_volunteer') Bénévoles
+
 		.row
-			.col-md-6.col-md-offset-3
+			.col-md-5.col-md-offset-3
 				form#loginform(action="/login", method="post", role='form')
 					.input-group.conn-input
 						span#basic-addon1.input-group-addon Adresse courriel
