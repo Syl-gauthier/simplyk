@@ -1,5 +1,1 @@
-const EventEmitter = require('events');
-
-
-var emitter = new EventEmitter.MyEmitter();
-emitter.setMaxListeners(100);
+require('events').EventEmitter.prototype._maxListeners = 100;
