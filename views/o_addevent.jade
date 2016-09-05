@@ -69,8 +69,8 @@ block content
 								.input-group.conn-input(ng-repeat='field in activity.activityUnnecessaryFields')
 									span#basic-addon1.input-group-addon {{field.title}}
 									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1')
-						button.btn.btn-default(ng-click='form.addActivity()') Ajouter une tâche
-						button.btn.btn-default(type='submit', form='creationeventform') Terminer
+							button.btn.btn-default(ng-click='form.addActivity()') Ajouter une tâche
+							input.btn.btn-default(type='submit', form='creationeventform', value='Terminer')
 block footscript
 	script.
 		var input;

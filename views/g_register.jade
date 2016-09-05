@@ -89,11 +89,11 @@ block content
                 .form-group.conn-input
                   label.control-label Confirmation de mot de passe
                   input#confirmPassword.form-control(type='password', placeholder='', name='password_confirm', aria-describedby='basic-addon1', required)
-        .row
-          .col-md-6.col-md-offset-3
-            input.btn.btn-default#submit-button(type='submit', form='loginform', value='S\'inscrire')
-            .alert.alert-danger.hidden#email-exists
-                | The email address you entered is already in use
+              .row
+                .col-md-6
+                  input.btn.btn-default#submit-button(type='submit', form='registerform', value='S\'inscrire')
+                  .alert.alert-danger.hidden#email-exists
+                      | The email address you entered is already in use
 block footscript
   script.
     var password = document.getElementById('password'),
