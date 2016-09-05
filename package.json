@@ -6,7 +6,7 @@
     "postinstall": "./node_modules/bower/bin/bower install",
     "start": "node ./bin/www",
     "test": "mocha && zuul --ui bdd --local 8080 --test/test.js",
-    "ci": "node test/test.js"
+    "ci": "mocha && zuul --test/test.js"
   },
   "dependencies": {
     "bcrypt": "^0.8.7",
