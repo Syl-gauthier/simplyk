@@ -8,7 +8,7 @@ var Organism = require('../models/organism_model.js');
 var Activity = require('../models/activity_model.js');
 
 router.get('/organism/addevent', permissions.requireGroup('organism'), function(req, res){
-  res.render('o_addevent.jade', {organism: req.isAuthenticated()});
+  res.render('o_addevent.jade', {organism: req.session.organism});
 });
 
 router.post('/organism/addevent/json', permissions.requireGroup('organism'), function(req, res){
