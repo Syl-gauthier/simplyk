@@ -1,4 +1,5 @@
 var expect = require('chai').expect;
+require('events').EventEmitter.prototype._maxListeners = 100;
 
 
 describe('Array', function(){

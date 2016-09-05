@@ -8,4 +8,5 @@ browsers:
     version: 6.1
 concurrency: 2
 tunnel:
+  type: ngrok
   bind_tls: true
