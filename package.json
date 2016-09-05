@@ -5,7 +5,8 @@
   "scripts": {
     "postinstall": "./node_modules/bower/bin/bower install",
     "start": "node ./bin/www",
-    "test": "mocha"
+    "test": "mocha && zuul --ui bdd --local 8080 --test/test.js",
+    "ci": "node test/test.js"
   },
   "dependencies": {
     "bcrypt": "^0.8.7",
@@ -30,7 +31,8 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "randomstring": "~1.1.5",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "zuul": "^3.11.0"
   },
   "main": "app.js",
   "devDependencies": {
