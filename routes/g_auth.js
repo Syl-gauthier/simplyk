@@ -112,7 +112,7 @@ router.post('/register_volunteer', function(req, res){
     });
   }
 
-  res.redirect('/login');
+  res.redirect('/waitforverifying');
 });
 
 /* Handle Registration POST for organism*/
@@ -145,7 +145,7 @@ router.post('/register_organism', function(req, res){
     });
   }
   
-  res.redirect('/login');
+  res.redirect('/waitforverifying');
 });
 
 /* Handle Registration POST for admin*/
@@ -168,6 +168,10 @@ router.post('/register_admin', function(req, res){
   res.redirect('/');
 });
 
+router.get('/waitforverifying', function(req, res){
+  res.render('g_message.jade', {message: 'Vous allez recevoir un courriel de vérification. Dans ce courriel, cliquer sur le lien pour vérifier votre compte. Et l\'aventure pourra commencer !', redirection: 'login'})
+})
+
 //Verify email address by random generated string
 router.get('/verify/:verifyString', function(req, res) {
   console.log('String entered: ' + req.params.verifyString); 
@@ -184,10 +188,10 @@ router.get('/verify/:verifyString', function(req, res) {
         volunteer.email_verified = true;
         volunteer.save({});
 
-        res.render('verify.jade', {email: volunteer.email});
+        res.render('g_verify.jade', {email: volunteer.email});
       }
       else {
-        res.render('message.jade', {message: 'This account email address has already been verified'});
+        res.render('g_message.jade', {message: 'This account email address has already been verified', redirection: 'login'});
       }
     } else {
       res.render('404.jade');
