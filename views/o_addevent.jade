@@ -25,7 +25,7 @@ block content
 				.row
 					.col-md-6.col-md-offset-3(ng-controller='FormController as form')
 						h2 Mon évènement
-						form#creationeventform.form-horizontal(action='addevent', method='post')
+						form#creationeventform.form-horizontal(action='addevent', method='post', ng-submit="creationeventform.$valid && submit()", name='creationeventform')
 							.input-group.conn-input(ng-repeat='field in form.requiredEventFields')
 								span#basic-addon1.input-group-addon {{field.title}}
 								input.form-control(id='{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{field.id}}', aria-describedby='basic-addon1', required)
@@ -35,8 +35,8 @@ block content
 							h4 Dates de l'évènement
 							div.pickadatediv.input-group.conn-input(ng-repeat='day in form.daysList' on-last-repeat)
 								span#basic-addon1.input-group-addon {{day.title}}
-								input.datepicker.form-control(id='day{{day.nb}}', type='text', name='day{{day.nb}}', placeholder='Choisis un jour')
-							button.btn.btn-default(ng-click='form.addDay()', type='button') Ajouter un jour
+								input.datepicker.form-control(id='day{{day.nb}}', type='text', name='day{{day.nb}}', placeholder='Choisis un jour', required)
+							button.btn.btn-default(ng-click='form.addDay()', type='button', id='addADay') Ajouter un jour
 							.input-group.conn-input.form-group
 								span.col-md-2 Langage
 								label.radio-inline
@@ -57,15 +57,15 @@ block content
 									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1', required)
 								.row.form-group(ng-repeat = 'day in form.daysList' on-last-repeat)
 									label.col-md-1
-										input(type='checkbox', name='{{activity.activityName}}_{{day.name}}') 
+										input(type='checkbox', name='{{activity.activityName}}_{{day.name}}', ng-click='form.checkRequired(day, activity)', ng-required='activity.dayRequired', class='day-checkbox', ng-model='checkybox', oninvalid="setCustomValidity('Veuillez choisir au moins un jour par activité, en vous assurant de choisir une date pour chaque jour ajouté')", onchange="try{setCustomValidity('')}catch(e){}") 
 									div.col-md-2
 										p Jour {{day.nb}}
 									div.col-md-2
-										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_startTime', placeholder='Début')
+										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_startTime', placeholder='Début', ng-required='checkybox')
 									div.col-md-2
-										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_endTime', placeholder='Fin')
+										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_endTime', placeholder='Fin', ng-required='checkybox')
 									div.col-md-2
-										input(type='number', name='{{activity.activityName}}_{{day.name}}_vol_nb', placeholder='Nombre de bénévoles')
+										input(type='number', name='{{activity.activityName}}_{{day.name}}_vol_nb', placeholder='Nombre de bénévoles', ng-required='checkybox', oninvalid="setCustomValidity('Veuillez remplir les champs: heure de début, heure de fin et nombre de bénévoles souhaités')", onchange="try{setCustomValidity('')}catch(e){}")
 								.input-group.conn-input(ng-repeat='field in activity.activityUnnecessaryFields')
 									span#basic-addon1.input-group-addon {{field.title}}
 									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1')
@@ -88,7 +88,16 @@ block footscript
 				formatSubmit: 'yyyy-mm-dd'
 			});
 			var input = $('.timepicker');
-			input.pickatime({
+				input.pickatime({
+			});
+			$('#creationeventform').submit(function(){
+				console.log('Before submitting');
+				console.log($('.datepicker').attr('aria-readonly'));
+				$('.datepicker').attr('aria-readonly', false);
+				console.log($('.datepicker').attr('aria-readonly'));
+				console.log($('.datepicker').attr('readonly'));
+				$('.datepicker').attr('readonly', false);
+				console.log($('.datepicker').attr('readonly'));
 			});
 		});
 
