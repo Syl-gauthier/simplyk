@@ -116,7 +116,8 @@
 	{
 		'title': 'Description de l\'évènement',
 		'type': 'text',
-		'id': 'event_description'
+		'id': 'event_description',
+		'class': 'bigtext'
 	},
 	{
 		'title': 'Adresse de l\'évènement',
