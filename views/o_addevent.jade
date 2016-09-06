@@ -57,15 +57,15 @@ block content
 									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1', required)
 								.row.form-group(ng-repeat = 'day in form.daysList' on-last-repeat)
 									label.col-md-1
-										input(type='checkbox', name='{{activity.activityName}}_{{day.name}}', ng-click='form.checkRequired(day, activity)', ng-required='activity.dayRequired', class='day-checkbox') 
+										input(type='checkbox', name='{{activity.activityName}}_{{day.name}}', ng-click='form.checkRequired(day, activity)', ng-required='activity.dayRequired', class='day-checkbox', ng-model='checkybox') 
 									div.col-md-2
 										p Jour {{day.nb}}
 									div.col-md-2
-										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_startTime', placeholder='Début')
+										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_startTime', placeholder='Début', ng-required='checkybox')
 									div.col-md-2
-										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_endTime', placeholder='Fin')
+										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_endTime', placeholder='Fin', ng-required='checkybox')
 									div.col-md-2
-										input(type='number', name='{{activity.activityName}}_{{day.name}}_vol_nb', placeholder='Nombre de bénévoles')
+										input(type='number', name='{{activity.activityName}}_{{day.name}}_vol_nb', placeholder='Nombre de bénévoles', ng-required='checkybox')
 								.input-group.conn-input(ng-repeat='field in activity.activityUnnecessaryFields')
 									span#basic-addon1.input-group-addon {{field.title}}
 									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1')
