@@ -74,7 +74,14 @@ block content
 block footscript
 	script.
 		var input;
-		var options = {types: ['address']};
+		//- var defaultbounds = new google.maps.LatLngBounds(
+		//- new google.maps.LatLng(45.69,-73.26),
+		//- new google.maps.LatLng(45.25,-74.26));
+
+		var options = {
+		types: ['address'],
+		componentRestrictions: {country: 'ca'}
+		};
 		function initAutocomplete(){
 			input = (document.getElementById('address'));
 			console.log(input);

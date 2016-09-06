@@ -20,6 +20,10 @@ router.get('/login', function(req, res, next){
   }
 });
 
+router.get('/legal', function(req, res){
+    res.render('g_legal.jade');
+});
+
 router.post('/login', function(req, res, next) {
   passport.authenticate(['local-volunteer', 'local-organism', 'local-admin'], function(err, user, info) {
     console.log(info);
