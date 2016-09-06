@@ -1,0 +1,9 @@
+extends ./g_layout.jade
+block vars
+	- var page = 'message'
+
+block content
+	.col-md-10.col-md-offset-1
+		div.alert.alert-info
+			p #{message}
+		a.btn.btn-default(href='/'+redirection) Suivant

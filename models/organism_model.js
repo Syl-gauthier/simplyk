@@ -11,6 +11,8 @@ var OrganismSchema = new Schema({
 	neq: Number,
 	website: String,
 	password: String,
+	email_verified: Boolean, //is the volunteer account verified
+	email_verify_string: String, //verify string for verify url
 	firstname: String, //Contact info
 	lastname: String,
 	phone: String,

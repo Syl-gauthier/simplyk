@@ -87,7 +87,7 @@ router.get('/register_admin', function(req, res){
 
 /* Handle Registration POST for volunteer*/
 router.post('/register_volunteer', function(req, res){
-  var randomString = randomstring.generate();
+  const randomString = randomstring.generate();
 
   //Add volunteer
   newVolunteer = new Volunteer({
@@ -106,7 +106,7 @@ router.post('/register_volunteer', function(req, res){
 
   if(emailCredentials) {
     var hostname = req.headers.host; 
-    var verifyUrl = 'http://' +hostname + '/verify/' + randomString;
+    var verifyUrl = 'http://' +hostname + '/verifyV/' + randomString;
 
     console.log('Verify url sent: ' + verifyUrl);
 
@@ -116,12 +116,13 @@ router.post('/register_volunteer', function(req, res){
     });
   }
 
-  res.redirect('/login');
+  res.redirect('/waitforverifying');
 });
 
 /* Handle Registration POST for organism*/
 router.post('/register_organism', function(req, res){
-  var email = req.body.email;
+  const randomString = randomstring.generate();
+  const email = req.body.email;
   var org_name = req.body.name;
 
   newOrganism = new Organism({
@@ -129,6 +130,8 @@ router.post('/register_organism', function(req, res){
     org_name: org_name,
     lastname: req.body.lastname,
     firstname: req.body.firstname,
+    email_verified: false,
+    email_verify_string: randomString,
     password: req.body.password,
     phone: req.body.phone,
     website: req.body.website,
@@ -142,14 +145,19 @@ router.post('/register_organism', function(req, res){
   newOrganism.save({});
 
   if(emailCredentials) {
-    emailer.sendWelcomeEmail({
+    var hostname = req.headers.host; 
+    var verifyUrl = 'http://' +hostname + '/verifyO/' + randomString;
+
+    console.log('Verify url sent: ' + verifyUrl);
+    emailer.sendVerifyEmail({
       recipient: email,
       name: org_name,
-      customMessage: 'Congratulation, create an event to get volunteers!'
+      verify_url: verifyUrl,
+      //customMessage: 'Congratulations, create an event to get volunteers!'
     });
   }
   
-  res.redirect('/login');
+  res.redirect('/waitforverifying');
 });
 
 /* Handle Registration POST for admin*/
@@ -172,8 +180,12 @@ router.post('/register_admin', function(req, res){
   res.redirect('/');
 });
 
-//Verify email address by random generated string
-router.get('/verify/:verifyString', function(req, res) {
+router.get('/waitforverifying', function(req, res){
+  res.render('g_message.jade', {message: 'Vous allez recevoir un courriel de vérification. Dans ce courriel, cliquez sur le lien pour vérifier votre compte. Et l\'aventure pourra commencer !', redirection: 'login'})
+})
+
+//Verify volunteer email address by random generated string
+router.get('/verifyV/:verifyString', function(req, res) {
   console.log('String entered: ' + req.params.verifyString); 
 
   //Look for the string entered in the database
@@ -188,16 +200,43 @@ router.get('/verify/:verifyString', function(req, res) {
         volunteer.email_verified = true;
         volunteer.save({});
 
-        res.render('verify.jade', {email: volunteer.email});
+        res.render('g_verify.jade', {email: volunteer.email});
       }
       else {
-        res.render('message.jade', {message: 'This account email address has already been verified'});
+        res.render('g_message.jade', {message: 'This account email address has already been verified', redirection: 'login'});
       }
     } else {
       res.render('404.jade');
     }
   });
+  //return res.status(404).send('This page is not valid');
+});
 
+//Verify organism email address by random generated string
+router.get('/verifyO/:verifyString', function(req, res) {
+  console.log('String entered: ' + req.params.verifyString); 
+
+  //Look for the string entered in the database
+  //Can do a string length check too
+  Organism.findOne({email_verify_string: req.params.verifyString}, function (err, organism) {
+    console.log(err);
+    if (err) { res.send(err); }
+
+    if(organism) {
+      //If we found a organism with the corresponding verify string we verify the organism email
+      if(organism.email_verified != true) {
+        organism.email_verified = true;
+        organism.save({});
+
+        res.render('g_verify.jade', {email: organism.email});
+      }
+      else {
+        res.render('g_message.jade', {message: 'This account email address has already been verified', redirection: 'login'});
+      }
+    } else {
+      res.render('404.jade');
+    }
+  });
   //return res.status(404).send('This page is not valid');
 });
 

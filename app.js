@@ -48,73 +48,81 @@ if(typeof db_credentials === 'undefined'){
 mongoose.connect('mongodb://'+db_credentials);
 
 passport.use('local-volunteer', new LocalStrategy({
-    usernameField: 'email',
-    passwordField: 'password'
-  },
-  function(email, password, done) {
-    Volunteer.findOne({email: email}, function (err, volunteer) {
-      if(err) { 
-        return done(err); 
-      }
-      else if(!volunteer) {
-        return done(null, false, { message: 'Incorrect mail.' });
-      }
-      else if(!volunteer.validPassword(password)) {
-        return done(null, false, { exists: true, message: 'Incorrect password.', code: 1});
-      }
-      else if(volunteer.email_verified == false) {
-        console.log('User not verified');
-        return done(null, false, { exists: true, message: 'email not verified', code: 2});
-      }
-      else{
-        //Login info correct
-        volunteer = volunteer.toJSON();
-        volunteer.group = "volunteer";
-        return done(null, volunteer);
-      }
-    });
-  }
+  usernameField: 'email',
+  passwordField: 'password'
+},
+function(email, password, done) {
+  Volunteer.findOne({email: email}, function (err, volunteer) {
+    if(err) { 
+      return done(err); 
+    }
+    else if(!volunteer) {
+      return done(null, false, { message: 'Incorrect mail.' });
+    }
+    else if(!volunteer.validPassword(password)) {
+      return done(null, false, { exists: true, message: 'Incorrect password.', code: 1});
+    }
+    else if(volunteer.email_verified == false) {
+      console.log('User not verified');
+      return done(null, false, { exists: true, message: 'email not verified', code: 2});
+    }
+    else{
+      //Login info correct
+      volunteer = volunteer.toJSON();
+      volunteer.group = "volunteer";
+      return done(null, volunteer);
+    }
+  });
+}
 ));
 
 passport.use('local-organism', new LocalStrategy({
-    usernameField: 'email',
-    passwordField: 'password'
-  },
-  function(email, password, done) {
-    Organism.findOne({email: email}, function (err, org) {
-      if (err) { return done(err); }
-      if (!org) {
-        return done(null, false, { message: 'Incorrect mail.' });
-      }
-      if (!org.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-
+  usernameField: 'email',
+  passwordField: 'password'
+},
+function(email, password, done) {
+  Organism.findOne({email: email}, function (err, org) {
+    if(err) { 
+      return done(err);
+    }
+    else if(!org) {
+      return done(null, false, { message: 'Incorrect mail.' });
+    }
+    else if(!org.validPassword(password)) {
+      return done(null, false, { exists: true, message: 'Incorrect password.', code: 1});
+    }
+    else if(org.email_verified == false) {
+      console.log('User not verified');
+      return done(null, false, { exists: true, message: 'email not verified', code: 2});
+    }
+    else{
+      //Login info correct
       org = org.toJSON();
       org.group = "organism";
-      return done(null, org, 'ok');
-    });
-  }
+      return done(null, org);
+    }
+  });
+}
 ));
 
 passport.use('local-admin', new LocalStrategy({
-    usernameField: 'email',
-    passwordField: 'password'
-  },
-  function(email, password, done) {
-    Admin.findOne({email: email}, function (err, admin) {
-      if (err) { return done(err); }
-      if (!admin) {
-        return done(null, false, { message: 'Incorrect mail.' });
-      }
-      if (!admin.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      admin = admin.toJSON();
-      admin.group = "admin";
-      return done(null, admin);
-    });
-  }
+  usernameField: 'email',
+  passwordField: 'password'
+},
+function(email, password, done) {
+  Admin.findOne({email: email}, function (err, admin) {
+    if (err) { return done(err); }
+    if (!admin) {
+      return done(null, false, { message: 'Incorrect mail.' });
+    }
+    if (!admin.validPassword(password)) {
+      return done(null, false, { message: 'Incorrect password.' });
+    }
+    admin = admin.toJSON();
+    admin.group = "admin";
+    return done(null, admin);
+  });
+}
 ));
 
 passport.serializeUser(function(user, done) {
@@ -132,12 +140,12 @@ passport.deserializeUser(function(req, id, done) {
   }
   else if(req.session.group == "organism"){
     Organism.findById(id, function(err, org){
-        done(err, org);
+      done(err, org);
     });
   }
   else if(req.session.group == "admin"){
     Admin.findById(id, function(err, admin){
-        done(err, admin);
+      done(err, admin);
     });
   }
   else{

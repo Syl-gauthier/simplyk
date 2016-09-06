@@ -13,8 +13,10 @@
 		form.unnecessaryEventFields = unnecessaryEventFields;
 		form.activitiesList = activitiesList;
 		form.daysList = daysList;
+		form.dayRequired = true;
 		form.errorMessage = null;
 		console.log('On débute');
+		console.log('required : ' + form.dayRequired);
 		$scope.$on('onRepeatLast', function(){
 			var input = $('.datepicker');
 			input.pickadate({
@@ -33,7 +35,8 @@
 				'activityTitle': 'Tâche ' + nActivity,
 				'activityName': 'activity' + nActivity,
 				'activityRequiredFields': requiredActivityFields,
-				'activityUnnecessaryFields': unnecessaryActivityFields
+				'activityUnnecessaryFields': unnecessaryActivityFields,
+				'dayRequired': true
 			});
 		};
 		this.addDay = function(){
@@ -43,8 +46,36 @@
 				'title': 'Jour ' + nDay,
 				'name': 'day' + nDay,
 				'nb': nDay,
-				'value': '0'
+				'value': 0
 			});
+		};
+		this.checkRequired = function(day, activity){
+			const day_index = form.daysList.map(function(el){return el.name}).indexOf(day.name);
+			console.log('index day clicked : ' + day_index);
+			console.log('daysList : ' + daysList);
+			console.log('daysList[day_index] : ' + JSON.stringify(daysList[day_index]));
+			console.log('daysList[day_index].value : ' + daysList[day_index].value);
+			if (daysList[day_index].value == 1){
+				console.log('unchecked');
+				daysList[day_index].value = 0;
+			}
+			else {
+				console.log('checked');
+				daysList[day_index].value = 1;
+			}
+			function isValue1(day){
+				console.log('day : ' +day);
+				return day.value == 1;
+			}
+			var listValues1 = daysList.filter(isValue1);
+			console.log('there is ' +listValues1.length+ ' days selected');
+			if (listValues1.length > 0){
+				activity.dayRequired = false;
+			}
+			else{
+				activity.dayRequired = true;
+			}
+			console.log('required : ' + activity.dayRequired);
 		};
 		this.error = function(){
 			return form.errorMessage;
@@ -119,14 +150,15 @@
 			'activityTitle': 'Tâche 1',
 			'activityName': 'activity1',
 			'activityRequiredFields': requiredActivityFields,
-			'activityUnnecessaryFields': unnecessaryActivityFields
+			'activityUnnecessaryFields': unnecessaryActivityFields,
+			'dayRequired': true
 		}];
 
 		var daysList = [{
 			'title': 'Jour 1',
 			'name': 'day1',
 			'nb': 1,
-			'value': '0'
+			'value': 0
 		}];
 
 	/*var addDay = function(){
