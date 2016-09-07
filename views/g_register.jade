@@ -92,12 +92,20 @@ block content
         .row
           .col-md-6.col-md-offset-3
             p.
-              En cliquant sur le bouton "s'inscrire", j'accepte les <a href="\legal">conditions générales d'utilisation </em>
+              En cliquant sur le bouton "s'inscrire", j'accepte les <a href="\legal">conditions générales d'utilisation </a>
+        .row
+          .col-md-6.col-md-offset-3
             button.btn.btn-default#submit-button(type='submit', form='registerform') S'inscrire
             .alert.alert-danger.hidden#email-exists
                 | The email address you entered is already in use
 block footscript
+  script(src="/bower_components/jquery-ui/ui/widgets/datepicker.js")
   script.
+    $(document).ready(function(){
+      if ( $('#birthdate').prop('type') != 'date' ) {
+        $('#birthdate').datepicker();
+      }
+    })
     var password = document.getElementById('password'),
     confirm_password = document.getElementById('confirmPassword');
     function validatePassword(){
