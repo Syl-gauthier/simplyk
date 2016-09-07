@@ -206,4 +206,131 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
   });
 });
 
+router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), function(req,res){
+
+  //Pour trouver l'event dasn le volunteer
+  function isEvent(event){
+    console.log('indexOf : ' + event.activities.indexOf(req.params.act_id) + ' in ' + JSON.stringify(event.activites));
+    return event.activities.indexOf(req.params.act_id) > -1;
+  };
+
+  Organism.findOne({
+    'events':{
+      '$elemMatch': {
+        'activities' : {
+          '$in': [req.params.act_id]
+        }
+      }
+    }
+  }, function(err, organism){
+    if (err){
+      console.log(err);
+      res.redirect('/volunteer/map?error='+err);
+    }
+    else{
+      const org = organism;
+      const event = organism.events.find(isEvent);
+      const activities_in_event_ids = event.activities;
+      console.log('activities_in_event_ids' + typeof activities_in_event_ids);
+      Activity.find({
+        '_id': {
+          '$in': activities_in_event_ids
+        }
+      },function(err, activities){
+        if (err){
+          console.log(err);
+          res.redirect('/volunteer/map?error='+err);
+        }
+        else{
+          const acts = activities;
+          var isActivity = function(activity){
+            return activity._id == req.params.act_id;
+          };
+          const activity = acts.find(isActivity);
+          var isNotActivity = function(activity){
+            return activity._id != req.params.act_id;
+          };
+          const other_activities = acts.filter(isNotActivity);
+          /*var isSubscribed = function(activity){
+            var subscribelist = req.session.volunteer.events.find(function(event){
+              return event.activity_id == activity._id;
+            });
+            if(subscribelist){
+              return true;
+            }
+            else{
+              return false;
+            }
+          }
+          const acts_subscribed = acts.filter(isSubscribed)*/
+          res.render('v_event.jade', {other_activities: other_activities, event: event, organism: org, activity: activity, volunteer: req.session.volunteer});
+        };
+      })
+    };
+  });
+});
+  /*
+  Volunteer.find({
+    "events":{
+      '$elemMatch': {
+        'activity_id': {'$in': acts_id}
+      }
+    }
+  }, function(err, volunteers){
+    if (err){
+      console.log(err);
+      res.redirect('/organism/dashboard?error='+err);
+    }
+    else {
+      var activities_list = activities;
+      console.log('ALL ACTIVITIES : ' + activities_list);
+      console.log('****************************');
+      console.log('ALL VOLUNTEERS : ' + volunteers);
+      console.log('****************************');
+      event.acts =[];
+      for (var actI = activities_list.length - 1; actI >= 0; actI--) {
+        for (var daysI = activities_list[actI].days.length - 1; daysI >= 0; daysI--) {
+          activities_list[actI].days[daysI].vols = [];
+          var vols = [];
+          console.log('activities_list[actI] : ' + activities_list[actI].days[daysI]);
+          console.log('**************');
+
+          function goodEvent(event){
+            console.log('blop');
+            console.log('event.activity_id : ' + event.activity_id.toString());
+            console.log('activities_list[actI]._id : ' + activities_list[actI]._id.toString());
+            console.log('event.activity_id === activities_list[actI]._id : ' + (event.activity_id.toString() === activities_list[actI]._id.toString()));
+            return ((event.activity_id.toString() === activities_list[actI]._id.toString()) && (Date.parse(event.day) === Date.parse(activities_list[actI].days[daysI].day)));
+          };
+          function isParticipating(volunteer){
+            console.log('volunteer.events : ' + volunteer.events);
+            var result = volunteer.events.find(goodEvent);
+            console.log('result : ' + result);
+            return typeof result !== 'undefined';
+          };
+          var these_volunteers = volunteers.filter(isParticipating);
+          console.log('these_volunteers : ' + these_volunteers);
+
+
+          Array.prototype.push.apply(activities_list[actI].days[daysI].vols, these_volunteers);
+          console.log('activities_list[actI] avec vols : ' + activities_list[actI]);
+          console.log('activities_list[actI].vols : ' + activities_list[actI].days[daysI].vols);
+        }
+      };
+
+
+      Array.prototype.push.apply(event.acts, activities_list);
+      console.log('activities_list : ' + event.acts[0]);
+      console.log('activities_list : ' + event.acts[0].lat);
+      console.log('activities_list : ' + event.acts[0].min_hours);
+      console.log('activities_list : ' + event.acts[0].days);
+      console.log('activities_list : ' + event.acts[0].days[0].vols);
+          //res.json(event);
+          res.render('o_event.jade', {event: event, organism: req.session.organism});
+        }
+      });
+}
+});
+});*/
+
 module.exports = router;

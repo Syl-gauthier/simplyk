@@ -1,0 +1,84 @@
+extends ./g_layout.jade
+block vars
+	- var page = 'event'
+
+
+block content
+	.container-fluid
+		.row.fill
+			.col-md-7.col-md-offset-1.no-side-padding
+				h1= event.intitule + ' par ' + organism.org_name
+				p <b>Adresse:</b> #{event.address}
+				p <b>Description:</b> #{event.description}
+				li.list-group-item
+						.panel.panel-default
+							.panel-heading
+								div.media-left.media-top
+									a(href='profile')
+										img.media-object.little-img(src='/images/clouds.jpg')
+								div.media-body
+									h4.media-heading <b>#{activity.intitule}</b>
+									h6
+										i.fa.fa-map-marker
+										p.inline Adresse : #{event.address}
+							.panel-body
+								h5 <b>Description : </b> #{activity.description}
+								each day, day_i in activity.days
+									div.media
+										div.media-left.media-middle
+											i.fa.fa-calendar
+										div.media-body
+											h4
+												h5.inline <b>#{day.day.toLocaleDateString()} : </b>
+												h6.inline
+													i.fa.fa-user
+													p.inline= (day.vol_nb - day.applicants.length)+' places restantes'
+												h6 De #{day.start_time} à #{day.end_time}
+										if day.applicants.find(function(applicant){return applicant==volunteer._id})
+											div.media-right.media-middle
+												h4 <b>Inscrit</b>
+										else
+											div.media-right.media-middle
+												form(action='/volunteer/subscribe/'+activity._id+'-'+day.day, method='post')
+													button.btn.btn-default(role='button' name='day' value=day.day) S'inscrire
+				h3 Autres activités de l'évènement
+				each act, act_i in other_activities
+					li.list-group-item
+						.panel.panel-default
+							.panel-heading
+								div.media-left.media-top
+									a(href='profile')
+										img.media-object.little-img(src='/images/clouds.jpg')
+								div.media-body
+									h4.media-heading <b>#{act.intitule}</b>
+									h6
+										i.fa.fa-map-marker
+										p.inline Adresse : #{event.address}
+							.panel-body
+								h5 <b>Description : </b> #{act.description}
+								each day, day_i in act.days
+									div.media
+										div.media-left.media-middle
+											i.fa.fa-calendar
+										div.media-body
+											h4
+												h5.inline <b>#{day.day.toLocaleDateString()} : </b>
+												h6.inline
+													i.fa.fa-user
+													p.inline= (day.vol_nb - day.applicants.length)+' places restantes'
+												h6 De #{day.start_time} à #{day.end_time}
+										if day.applicants.find(function(applicant){return applicant==volunteer._id})
+											div.media-right.media-middle
+												h4 <b>Inscrit</b>
+										else
+											div.media-right.media-middle
+												form(action='/volunteer/subscribe/'+act._id+'-'+day.day, method='post')
+													button.btn.btn-default(role='button' name='day' value=day.day) S'inscrire
+			.col-md-3.col-md-offset-1.no-side-padding
+				h4 L'organisme <b> #{organism.org_name} </b>
+				h5 <b>Description : </b> #{organism.description}
+				a(href='http://'+organism.website) Site web
+				h5
+					i.fa.fa-at
+					p.inline #{organism.email}
+
