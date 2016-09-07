@@ -21,7 +21,7 @@ router.get('/login', function(req, res, next){
 });
 
 router.get('/legal', function(req, res){
-    res.render('g_legal.jade');
+  res.render('g_legal.jade');
 });
 
 router.post('/login', function(req, res, next) {
@@ -88,35 +88,50 @@ router.get('/register_admin', function(req, res){
 /* Handle Registration POST for volunteer*/
 router.post('/register_volunteer', function(req, res){
   const randomString = randomstring.generate();
+  var email = req.body.email;
 
-  //Add volunteer
-  newVolunteer = new Volunteer({
-    email: req.body.email,
-    email_verified: false,
-    email_verify_string: randomString,
-    lastname: req.body.lastname,
-    firstname: req.body.firstname,
-    birthdate: req.body.birthdate,
-    password: req.body.password
-  });
+  function handleVolunteerCreation(exists) {
+    if(exists) {
+      res.redirect('register_volunteer');
+    }
+    else {
+      //Add volunteer
+      newVolunteer = new Volunteer({
+        email: req.body.email,
+        email_verified: false,
+        email_verify_string: randomString,
+        lastname: req.body.lastname,
+        firstname: req.body.firstname,
+        birthdate: req.body.birthdate,
+        password: req.body.password
+      });
 
-  newVolunteer.password = newVolunteer.generateHash(req.body.password);
+      newVolunteer.password = newVolunteer.generateHash(req.body.password);
 
-  newVolunteer.save({});
+      newVolunteer.save(function(err, vol){
+        if(err){
+          res.redirect('/?error='+err);
+        }
+        else{
+          if(emailCredentials) {
+            var hostname = req.headers.host; 
+            var verifyUrl = 'http://' +hostname + '/verifyV/' + randomString;
 
-  if(emailCredentials) {
-    var hostname = req.headers.host; 
-    var verifyUrl = 'http://' +hostname + '/verifyV/' + randomString;
+            console.log('Verify url sent: ' + verifyUrl);
 
-    console.log('Verify url sent: ' + verifyUrl);
+            emailer.sendVerifyEmail({
+              recipient: req.body.email,
+              verify_url: verifyUrl
+            });
+          }
 
-    emailer.sendVerifyEmail({
-      recipient: req.body.email,
-      verify_url: verifyUrl
-    });
+          res.redirect('/waitforverifying');
+
+        }
+      });
+    }
   }
-
-  res.redirect('/waitforverifying');
+  userExists(email, handleVolunteerCreation);
 });
 
 /* Handle Registration POST for organism*/
@@ -180,6 +195,18 @@ router.post('/register_admin', function(req, res){
   res.redirect('/');
 });
 
+router.post('/register_check', function(req, res) {
+  console.log(req.body);    
+
+  function handleCheck(exists) {
+    res.json({success: true, exists: exists});
+  }
+
+  userExists(req.body.email, handleCheck);
+});
+
+
+
 router.get('/waitforverifying', function(req, res){
   res.render('g_message.jade', {message: 'Vous allez recevoir un courriel de vérification. Dans ce courriel, cliquez sur le lien pour vérifier votre compte. Et l\'aventure pourra commencer !', redirection: 'login'})
 })
@@ -239,5 +266,27 @@ router.get('/verifyO/:verifyString', function(req, res) {
   });
   //return res.status(404).send('This page is not valid');
 });
+
+
+function userExists(email, handler) {
+  //Look for email in volunteer, organism and admin
+  Volunteer.findOne({email: email}, function(err, volunteer) {
+    console.log(JSON.stringify(volunteer));
+    if(volunteer) {
+      handler(true);
+    }
+    else {
+      Organism.findOne({email: email}, function(err, organism) {
+        if(organism) {
+          handler(true);
+        }
+        else {
+          handler(false);
+        }
+      });
+    }
+  });
+};
+
 
 module.exports = router;

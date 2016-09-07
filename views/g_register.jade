@@ -8,6 +8,8 @@ block content
           .col-md-6.col-md-offset-3
             .page-header
               h1 Inscription
+              .alert.alert-danger.hidden#email-exists
+                | The email address you entered is already in use
               if error
                 p.alert.alert-danger #{error}
                   .input-group.conn-input
@@ -96,8 +98,6 @@ block content
         .row
           .col-md-6.col-md-offset-3
             button.btn.btn-default#submit-button(type='submit', form='registerform') S'inscrire
-            .alert.alert-danger.hidden#email-exists
-                | The email address you entered is already in use
 block footscript
   script(src="/bower_components/jquery-ui/ui/widgets/datepicker.js")
   script.
@@ -117,3 +117,27 @@ block footscript
     }
       password.onchange = validatePassword;
       confirm_password.onkeyup = validatePassword;
+  script.
+    $('form#registerform').submit(function(e) {
+        e.preventDefault(); // Prevent default post
+        var form = $(this);
+
+        function onSuccess(response) {
+            if(response.exists) {
+                console.log('Email already exists'); 
+                $('#email-exists').removeClass('hidden')
+            }
+            else{
+                //Remove the current event handler and submit
+                $('form#registerform').unbind('submit'); 
+                $('form#registerform').submit();
+            }
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: 'register_check', 
+            data: form.serialize(),
+            success: onSuccess
+        });
+    });

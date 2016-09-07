@@ -46,11 +46,11 @@ router.get('/', function(req, res, next) {
           res.redirect('/volunteer/map');
         }
         else {
-          res.render('g_accueil.jade', {activities: activities, session: req.session});
+          res.render('g_accueil.jade', {activities: activities, session: req.session, error: req.query.error});
         };
       }
       else {
-        res.render('g_accueil.jade', {activities: activities, session: req.session});
+        res.render('g_accueil.jade', {activities: activities, session: req.session, error: req.query.error});
       }
     };
   });

@@ -45,6 +45,8 @@ block content
             ul.list-group.list-opportunity
               if error
                 p.alert.alert-danger #{error}
+              if success
+                p.alert.alert-success #{success}
               each act, index in activities
                   li.list-group-item(id= act._id)
                     .panel.panel-default
