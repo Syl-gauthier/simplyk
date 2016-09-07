@@ -140,39 +140,52 @@ router.post('/register_organism', function(req, res){
   const email = req.body.email;
   var org_name = req.body.name;
 
-  newOrganism = new Organism({
-    email: email,
-    org_name: org_name,
-    lastname: req.body.lastname,
-    firstname: req.body.firstname,
-    email_verified: false,
-    email_verify_string: randomString,
-    password: req.body.password,
-    phone: req.body.phone,
-    website: req.body.website,
-    neq: req.body.neq,
-    cause: req.body.cause,
-    description: req.body.description
-  });
+  function handleVolunteerCreation(exists) {
+    if(exists) {
+      res.redirect('register_volunteer');
+    }
+    else {
 
-  newOrganism.password = newOrganism.generateHash(req.body.password);
+      newOrganism = new Organism({
+        email: email,
+        org_name: org_name,
+        lastname: req.body.lastname,
+        firstname: req.body.firstname,
+        email_verified: false,
+        email_verify_string: randomString,
+        password: req.body.password,
+        phone: req.body.phone,
+        website: req.body.website,
+        neq: req.body.neq,
+        cause: req.body.cause,
+        description: req.body.description
+      });
 
-  newOrganism.save({});
+      newOrganism.password = newOrganism.generateHash(req.body.password);
 
-  if(emailCredentials) {
-    var hostname = req.headers.host; 
-    var verifyUrl = 'http://' +hostname + '/verifyO/' + randomString;
+      newOrganism.save(function(err, org){
+        if(err){
+          res.redirect('/?error='+err);
+        }
+        else{
+          if(emailCredentials) {
+            var hostname = req.headers.host; 
+            var verifyUrl = 'http://' +hostname + '/verifyO/' + randomString;
 
-    console.log('Verify url sent: ' + verifyUrl);
-    emailer.sendVerifyEmail({
-      recipient: email,
-      name: org_name,
-      verify_url: verifyUrl,
-      //customMessage: 'Congratulations, create an event to get volunteers!'
-    });
+            console.log('Verify url sent: ' + verifyUrl);
+            emailer.sendVerifyEmail({
+              recipient: email,
+              name: org_name,
+              verify_url: verifyUrl,
+              //customMessage: 'Congratulations, create an event to get volunteers!'
+            });
+          }
+          res.redirect('/waitforverifying');
+        }
+      });
+    }
   }
-  
-  res.redirect('/waitforverifying');
+  userExists(email, handleVolunteerCreation);
 });
 
 /* Handle Registration POST for admin*/

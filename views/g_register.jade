@@ -125,7 +125,8 @@ block footscript
         function onSuccess(response) {
             if(response.exists) {
                 console.log('Email already exists'); 
-                $('#email-exists').removeClass('hidden')
+                $('#email-exists').removeClass('hidden');
+                window.scrollTo(0,0);
             }
             else{
                 //Remove the current event handler and submit
