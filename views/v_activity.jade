@@ -25,7 +25,7 @@ block content
                 #identifiant(style='display:none')
                   p= event._id
               div.media-right.media-middle
-                if day.day < Date.now()
+                if day.day > Date.now()
                   form(action='/volunteer/subscribe/'+activity._id+'-'+day.day, method='post')
                     button.btn.btn-default(role='button' name='day' value=day.day) S'inscrire
                 else
