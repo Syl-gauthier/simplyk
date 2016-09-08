@@ -28,14 +28,23 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
     }
     //Create opps list
     else {
-      console.log(req.isAuthenticated());
+      const age = getAge(req.session.volunteer.birthdate);
+      console.log('Volunteer age : ' + age);
+      var isTooYoung = function(activity){
+        if (activity.min_age){
+          return activity.min_age < age;
+        }
+        else{
+          return true;
+        }
+      };
       var isNotPassed = function(activity){
         var days_length = activity.days.filter(function(day){
           return day.day > Date.now();
         });
         return days_length.length > 0;
       };
-      const acts = activities.filter(isNotPassed);
+      const acts = activities.filter(isNotPassed).filter(isTooYoung);
       res.render('v_map.jade', {
         activities: acts,
         volunteer: req.session.volunteer, error: req.query.error, success: req.query.success
@@ -262,5 +271,17 @@ router.post('/volunteer/logout', function(req, res) {
   req.session.destroy();
   res.redirect('/');
 });
+
+
+function getAge(dateString) {
+    var today = new Date();
+    var birthDate = new Date(dateString);
+    var age = today.getFullYear() - birthDate.getFullYear();
+    var m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+};
 
 module.exports = router;
