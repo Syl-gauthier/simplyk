@@ -1,28 +1,40 @@
 extends ./g_layout.jade
 block vars
   - var page = 'accueil'
+  - var days_name = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+  - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
 
 
 block content
       each act, index in activities
           #myModal(tabindex='-1', role='dialog', class='modal fade ' + act._id)
-                            .modal-dialog(role='document')
-                                .modal-content
-                                  .modal-header
-                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
-                                      span(aria-hidden='true') &times;        
-                                    #myModalLabel.h4.modal-title=  act.org_name + ' - ' +act.event_intitule
-                                  .modal-body.my-modal-body
-                                    h4 <b>#{act.intitule}</b>
-                                    each day, nb in act.days
-                                      p= 'Pour ' + day.vol_nb + ' bénévoles le ' + day.day.toLocaleDateString() + ' de ' + day.start_time + ' à ' + day.end_time
-                                      #identifiant(style="display:none")
-                                        p= act._id
-                                    p= 'Adresse: '+ act.address
-                                  .modal-footer
-                                    button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                                    a#link-btn-ref.btn.btn-default(href='register_volunteer') S'inscrire
-                                    a#link-btn-ref.btn.btn-default(href='register_volunteer') Plus d'infos
+            .modal-dialog(role='document')
+                .modal-content
+                  .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                      span(aria-hidden='true') &times;        
+                    #myModalLabel.h4.modal-title=  act.org_name + ' - ' +act.event_intitule
+                  .modal-body.my-modal-body
+                    h4 <b>#{act.intitule}</b>
+                    p= 'Adresse: '+ act.address
+                    table.table
+                      tr
+                        th.text-center Nombre de bénévoles
+                        th.text-center Date
+                        th.text-center Heure de début
+                        th.text-center Heure de fin
+                      each day, nb in act.days
+                        tr
+                          td.text-center= day.vol_nb
+                          td.text-center= days_name[day.day.getDay()]  + ' ' + day.day.getDate() + ' ' + months_name[day.day.getMonth()]  + ' ' + day.day.getFullYear()
+                          td.text-center= day.start_time
+                          td.text-center= day.end_time
+                        #identifiant(style="display:none")
+                          p= act._id
+                  .modal-footer
+                    button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+                    a#link-btn-ref.btn.btn-default(href='register_volunteer') S'inscrire
+                    a#link-btn-ref.btn.btn-default(href='register_volunteer') Plus d'infos
       .container-fluid.degrade
         #first_section_entrance.row
           .col-md-8.col-md-offset-2
@@ -66,7 +78,7 @@ block content
                           h4 Dans le cadre de : <b>#{act.event_intitule}</b>
                           each day, day_i in act.days
                             h4
-                              h5.inline <b>#{day.day.toLocaleDateString()} : </b>
+                              h5.inline <b>#{days_name[day.day.getDay()]  + ' ' + day.day.getDate() + ' ' + months_name[day.day.getMonth()]  + ' ' + day.day.getFullYear()} : </b>
                               h6.inline
                                 i.fa.fa-user
                                 p.inline= (day.vol_nb-day.applicants.length)+' places restantes'

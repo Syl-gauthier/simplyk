@@ -32,7 +32,7 @@ function sendWelcomeEmail(content) {
   var mailOptions = {
     from: '"Simplyk admin <test@robotfactory.me>', // sender address
     to: content.recipient, 
-    subject: 'Welcome to Simplyk', // Subject line
+    subject: 'Bienvenue sur Simplyk', // Subject line
     text: '', // plaintext body
     html: body
   };
