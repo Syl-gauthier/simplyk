@@ -13,7 +13,7 @@ block content
               if error
                 p.alert.alert-danger #{error}
                   .input-group.conn-input
-                label.control-label Adresse mail
+                label.control-label Adresse courriel
                 input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='email', aria-describedby='basic-addon1', required)
           .col-md-2.col-md-offset-1
             .page-header
@@ -42,7 +42,7 @@ block content
                   label.control-label Nom de l'organisme
                   input#mail.form-control(type='text', placeholder='Ex: Simplyk', name='name', aria-describedby='basic-addon1', required)
                 .form-group.conn-input
-                  label.control-label Description courte de l'organisme
+                  label.control-label Mission de l'organisme
                   input.form-control(type='text', name='description', aria-describedby='basic-addon1',rows="3",maxlength="100",required) 
                 .form-group.conn-input
                   label.control-label Numéro de téléphone
@@ -94,7 +94,7 @@ block content
         .row
           .col-md-6.col-md-offset-3
             p.
-              En cliquant sur le bouton "s'inscrire", j'accepte les <a href="\legal">conditions générales d'utilisation </a>
+              En cliquant sur le bouton "s'inscrire", j'accepte les <a href="\legal">conditions générales d'utilisation </a>. Si je suis mineur je dois prévenir un responsable avant de me rendre à une activité.
         .row
           .col-md-6.col-md-offset-3
             button.btn.btn-default#submit-button(type='submit', form='registerform') S'inscrire
