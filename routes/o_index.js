@@ -46,11 +46,25 @@ router.get('/', function(req, res, next) {
           res.redirect('/volunteer/map');
         }
         else {
-          res.render('g_accueil.jade', {activities: activities, session: req.session, error: req.query.error});
+          var isNotPassed = function(activity){
+          var days_length = activity.days.filter(function(day){
+            return day.day > Date.now();
+          });
+          return days_length.length > 0;
+        };
+        const acts = activities.filter(isNotPassed);
+          res.render('g_accueil.jade', {activities: acts, session: req.session, error: req.query.error});
         };
       }
       else {
-        res.render('g_accueil.jade', {activities: activities, session: req.session, error: req.query.error});
+        var isNotPassed = function(activity){
+          var days_length = activity.days.filter(function(day){
+            return day.day > Date.now();
+          });
+          return days_length.length > 0;
+        };
+        const actis = activities.filter(isNotPassed);
+        res.render('g_accueil.jade', {activities: actis, session: req.session, error: req.query.error});
       }
     };
   });
@@ -177,8 +191,8 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism'), fu
           res.render('o_event.jade', {event: event, organism: req.session.organism});
         }
       });
-    }
-  });
+}
+});
 });
 
 //for ajax call only (for now)
