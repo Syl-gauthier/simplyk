@@ -29,8 +29,15 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
     //Create opps list
     else {
       console.log(req.isAuthenticated());
+      var isNotPassed = function(activity){
+        var days_length = activity.days.filter(function(day){
+          return day.day > Date.now();
+        });
+        return days_length.length > 0;
+      };
+      const acts = activities.filter(isNotPassed);
       res.render('v_map.jade', {
-        activities: activities,
+        activities: acts,
         volunteer: req.session.volunteer, error: req.query.error, success: req.query.success
       });
     }
