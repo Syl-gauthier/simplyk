@@ -82,3 +82,14 @@ block content
                                     h6= question
                                   div.panel-body
                                     h6= event.student_answers[q_I]
+                      if event.organism_answers.length > 0
+                        div.panel.panel-default
+                          div.panel-heading
+                            h3 Retour de l'organisme sur l'élève
+                          div.panel-body
+                              each question, q_I in event.organism_questions
+                                div.panel.panel-success
+                                  div.panel-heading
+                                    h6= question
+                                  div.panel-body
+                                    h6= event.organism_answers[q_I]
