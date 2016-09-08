@@ -121,7 +121,8 @@ router.post('/register_volunteer', function(req, res){
 
             emailer.sendVerifyEmail({
               recipient: req.body.email,
-              verify_url: verifyUrl
+              verify_url: verifyUrl,
+              firstname: req.body.firstname
             });
           }
 
@@ -177,6 +178,7 @@ router.post('/register_organism', function(req, res){
               recipient: email,
               name: org_name,
               verify_url: verifyUrl,
+              firstname: req.body.firstname
               //customMessage: 'Congratulations, create an event to get volunteers!'
             });
           }
@@ -208,8 +210,7 @@ router.post('/register_admin', function(req, res){
   res.redirect('/');
 });
 
-router.post('/register_check', function(req, res) {
-  console.log(req.body);    
+router.post('/register_check', function(req, res) {  
 
   function handleCheck(exists) {
     res.json({success: true, exists: exists});

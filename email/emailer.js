@@ -30,7 +30,7 @@ function sendWelcomeEmail(content) {
     + ' <a href="simplyk.org">Simplyk</a></p>';
 
   var mailOptions = {
-    from: '"Simplyk admin <test@robotfactory.me>', // sender address
+    from: '"Simplyk', // sender address
     to: content.recipient, 
     subject: 'Bienvenue sur Simplyk', // Subject line
     text: '', // plaintext body
@@ -43,15 +43,15 @@ function sendWelcomeEmail(content) {
 
 //Send email with verify url
 function sendVerifyEmail(content) {
-  var body = '<div><p>Please verify your email ' + content.recipient + '</p></div>'
-    + '<div><a href="'+ content.verify_url + '">Verify now</a></div>';
+  var body = '<div><p>Vérifie ton adresse courriel : ' + content.recipient + '</p></div>'
+    + '<div><a href="'+ content.verify_url + '">Clique ici</a></div>';
 
   console.log(body);
 
   var mailOptions = {
-    from: '"Simplyk admin <test@robotfactory.me>', // sender address
+    from: '"Alex @ Simplyk', // sender address
     to: content.recipient, 
-    subject: 'Verify your email address', // Subject line
+    subject: content.firstname + ', vérifie ton courriel', // Subject line
     text: '', // plaintext body
     html: body
   };
@@ -65,7 +65,7 @@ function sendSubscriptionEmail(content) {
     + ' <a href="simplyk.org">Simplyk</a></p>';
 
   var mailOptions = {
-    from: '"Simplyk admin <test@robotfactory.me>', // sender address
+    from: '"Simplyk', // sender address
     to: content.recipient, 
     subject: 'Welcome to Simplyk', // Subject line
     text: '', // plaintext body
