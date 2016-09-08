@@ -29,16 +29,20 @@ block content
 							.input-group.conn-input(ng-repeat='field in form.requiredEventFields')
 								span#basic-addon1.input-group-addon {{field.title}}
 								input.form-control(id='{{field.id}}',type='{{field.type}}',class="{{field.class}}", placeholder='{{field.placeholder}}', name='{{field.id}}', aria-describedby='basic-addon1', required)
+							.input-group
+								.input-group-addon
+									p Description l'évènement
+								textarea.form-control(name="event_description" id="event_description" rows="6" required)
 							.input-group.conn-input(ng-repeat='field in form.unnecessaryEventFields')
 								span#basic-addon1.input-group-addon {{field.title}}
 								input.form-control(id='{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{field.id}}', aria-describedby='basic-addon1')
+
 							h4 Dates de l'évènement
 							div.pickadatediv.input-group.conn-input(ng-repeat='day in form.daysList' on-last-repeat)
 								span#basic-addon1.input-group-addon {{day.title}}
 								input.datepicker.form-control(id='day{{day.nb}}', type='text', name='day{{day.nb}}', placeholder='Choisis un jour', required)
 							button.btn.btn-default(ng-click='form.addDay()', type='button', id='addADay') Ajouter un jour
 							.input-group.conn-input.form-group
-								span.col-md-2 Langage
 								label.radio-inline
 									input(type='radio', name='language', value='enfr', checked)
 									p  Français/English
@@ -48,7 +52,13 @@ block content
 								label.radio-inline
 									input(type='radio', name='language', value='fr')
 									p Seulement Français
-								h3 {{form.errorMessage}}
+							.checkbox
+								.col-md-1
+									input#min_age_check(type='checkbox')
+								label.col-md-5
+									p Ajouter un âge minimal
+								input#min_age.form-control(type='number', name='min_age', placeholder='Âge minimal', style="display:none;")
+							h3 {{form.errorMessage}}
 							div(ng-repeat='activity in form.activitiesList')
 								h2.inline {{activity.activityTitle}}
 								a.inline.cursor(ng-click='form.delete(activity.activityName)') Supprimer la tâche
@@ -96,6 +106,9 @@ block footscript
 			});
 			var input = $('.timepicker');
 				input.pickatime({
+			});
+			$('#min_age_check').click(function(){
+				$('#min_age').toggle(this.checked);
 			});
 			$('#creationeventform').submit(function(){
 				console.log('Before submitting');

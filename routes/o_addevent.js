@@ -32,6 +32,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
         var event = {
           intitule: req.body.intitule_event,
           dates: [],
+          min_age: req.body.min_age,
           address: req.body.address,
           language: req.body.language,
           description: req.body.event_description,
@@ -83,6 +84,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
             org_name: req.session.organism.org_name,
             event_intitule: req.body.intitule_event,
             address: req.body.address,
+            min_age: req.body.min_age,
             language: req.body.language,
             cause: req.session.organism.cause,
             email: req.session.organism.email,
@@ -125,11 +127,18 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
                 organism.save(function(err, org){
                   if(err){
                     var error = 'Something bad happened! Try again!';
-                    res.render('o_addevent.jade', {error: err, organism: req.isAuthenticated()});
+                    res.render('o_addevent.jade', {error: err, organism: req.session.organism});
                   }
                   else{
                     req.session.organism = org;
-                    res.redirect('/organism/dashboard');
+                    req.session.organism.save(function(err, orga){
+                      if(err){
+                        res.render('o_addevent.jade', {error: err, organism: req.session.organism});
+                      }
+                      else{
+                        res.redirect('/organism/dashboard');
+                      };
+                    });
                   }
                 });
               }

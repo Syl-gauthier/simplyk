@@ -114,12 +114,6 @@
 		'id': 'intitule_event'
 	},
 	{
-		'title': 'Description de l\'évènement',
-		'type': 'text',
-		'id': 'event_description',
-		'class': 'bigtext'
-	},
-	{
 		'title': 'Adresse de l\'évènement',
 		'type': 'address',
 		'id': 'address'
