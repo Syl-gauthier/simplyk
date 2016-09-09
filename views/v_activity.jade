@@ -1,8 +1,9 @@
 extends ./g_layout.jade
 block vars
   - var page = 'activity'
-  - var days_name = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+  - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+  - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
 
 block content
   .container-fluid
@@ -19,7 +20,7 @@ block content
               div.media-left.media-middle
                 i.fa.fa-calendar
               div.media-body
-                h4= days_name[day.day.getDay()]  + ' ' + day.day.getDate() + ' ' + months_name[day.day.getMonth()]  + ' ' + day.day.getFullYear()
+                h4= days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
                 p= 'De ' + day.start_time + ' à ' + day.end_time
                 p= 'Encore ' + (day.vol_nb-day.applicants.length) + ' places'
                 #identifiant(style='display:none')
