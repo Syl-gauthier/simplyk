@@ -3,7 +3,30 @@ block vars
 	- var page = 'message'
 
 block content
-	.col-md-10.col-md-offset-1
-		div.alert.alert-info
-			p #{message}
-		a.btn.btn-default(href='/'+redirection) Suivant
+	.container-fluid
+		.row
+			.col-md-6.col-md-offset-3
+				.page-header.jumbotron
+					h1.text-center= header
+					div.icon-center
+						i.fa.fa-5x(class='fa-'+'key')
+					p.text-center= message
+					a.btn.btn-default.icon-center(href='/'+redirection) Suivant
+					if (page='waitforverifying')
+						h6 Si vous ne recevez pas votre courriel de vérification (jetez un oeil à votre boîte spam), appuyez sur le bouton suivant pour en renvoyer un nouveau ou contactez-nous à contact@simplyk.org
+						a#sendEmail.btn.btn-warning.icon-center(recipient= recipient, verify_url=verify_url, firstname= firstname) Renvoyer courriel
+
+block footscript
+	script.
+		$(document).ready(function(){
+			$('#sendEmail').click(function(){
+				var recipient = $(this).attr('recipient');
+				var verify_url = $(this).attr('verify_url');
+				var firstname = $(this).attr('firstname');
+				console.log('Datas : ' + recipient + verify_url + firstname);
+				$.post('/sendVerificationEmail/', {recipient: recipient, verify_url: verify_url, firstname: firstname}, function(){
+					console.log('Email sent');
+					alert('Un nouveau courriel a été envoyé');
+				})
+			});
+		})
