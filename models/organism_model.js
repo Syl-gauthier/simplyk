@@ -27,6 +27,7 @@ var OrganismSchema = new Schema({
 		language: String,
 		lat: Number,
 		lon: Number,
+		min_age: Number,
 		description: String,
 		status: String,
 		activities: [{type: Schema.Types.ObjectId, ref:'Activity'}]
