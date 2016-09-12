@@ -41,26 +41,6 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   res.render('v_profile.jade', {events_subscribed: events_subscribed, events_confirmed: events_confirmed, events_pending: events_pending, events_past: events_past, volunteer: req.session.volunteer, error: error});
 });
 
-router.post('/editPassword', function(req, res) {
-  //Contains current, new and confirm password
-  var passwords = req.body;
-
-  //Check for validity of password and coherence between new and confirm
-  if (!req.user.validPassword(passwords.current) || passwords.new != passwords.confirm) {
-    res.send({
-      success: false,
-      err: "blabla"
-    });
-  } else {
-    req.user.password = req.user.generateHash(passwords.new);
-    req.user.save(function(err) {
-      res.send({
-        success: true
-      });
-    });
-  }
-});
-
 //Unsubscribe from an event
 router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res) {
   const activity_id = req.params.act_id, day = req.params.day;
