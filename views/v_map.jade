@@ -14,27 +14,26 @@ block content
                   .modal-header
                     button.close(type='button', data-dismiss='modal', aria-label='Close')
                       span(aria-hidden='true') &times;        
-                    #myModalLabel.h4.modal-title=  act.org_name + ' - ' +act.event_intitule
+                    #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
                   .modal-body.my-modal-body
                     h4 <b>#{act.intitule}</b>
                     table.table
                       tr
-                        th.text-center Nombre de bénévoles
+                        th.text-center Places restantes
                         th.text-center Date
                         th.text-center Heure de début
                         th.text-center Heure de fin
                       each day, nb in act.days
                         tr
-                          td.text-center= day.vol_nb
+                          td.text-center= (day.vol_nb-day.applicants.length)
                           td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
                           td.text-center= day.start_time
                           td.text-center= day.end_time
                         #identifiant(style="display:none")
                           p= act._id
-                      p= 'Adresse: '+ act.address
+                      p <b>Adresse : </b> #{act.address}
                   .modal-footer
                     button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                    .subscribe-button.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id) S'inscrire
                     .subscribe-button.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id) Plus d'infos
       .container-fluid
         .row.fill
@@ -52,8 +51,8 @@ block content
                           a(href='#')
                             img.media-object.little-img(src='/images/clouds.jpg')
                         div.media-body
-                          h5.media-heading <b>#{act.org_name}</b>
-                          h4.media-heading <b>#{act.intitule}</b>
+                          h4.media-heading <b>#{act.org_name}</b>
+                          h5.media-heading <b>#{act.intitule}</b>
                           h6
                             i.fa.fa-map-marker
                             p.inline Adresse : #{act.address}

@@ -13,10 +13,10 @@ block content
                   .modal-header
                     button.close(type='button', data-dismiss='modal', aria-label='Close')
                       span(aria-hidden='true') &times;        
-                    #myModalLabel.h4.modal-title=  act.org_name + ' - ' +act.event_intitule
+                    #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
                   .modal-body.my-modal-body
                     h4 <b>#{act.intitule}</b>
-                    p= 'Adresse: '+ act.address
+                    p <b>Adresse : </b> #{act.address}
                     table.table
                       tr
                         th.text-center Nombre de bénévoles
@@ -41,14 +41,6 @@ block content
             .logo
               img#logo_entrance(src='images/simplyk_log_text_v2.png', align='middle')
               h1.text-center La plateforme de mise en relation entre organismes et bénévoles! <br><br>
-                //- .btn-group-lgP(role='group')
-                //-   button.btn.btn-default.btn-landing(type='button',style="width: 40%;") 
-                //-     h3 Besoins de bénévoles
-                //-     h4 Je suis un organisme
-                //-   button.btn.btn-default.btn-landing-2(type='button',style="width: 40%;")
-                //-     h3 Je veux aider 
-                //-     h4 Je suis un citoyen
-                //- i.fa.fa-arrow-circle-down.fa-2x.text-center.firstColor(aria-hidden='true')
             if error
               p.alert.alert-danger ERROR : #{error}
       .container-fluid
@@ -65,10 +57,16 @@ block content
                       .panel-heading
                         div.media-left.media-top
                           a(href='#')
-                            img.media-object.little-img(src='/images/clouds.jpg')
+                            //img.media-object.little-img(src='/images/clouds.jpg')
+                            if act.cause == 'Solidarité'
+                              i.fa.fa-heart
+                            else if act.cause == 'Environnement'
+                              i.fa.fa-envira(style='color: #5BCF8F')
+                            else if act.cause == 'Culture'
+                              i.fa.fa-institution(style='color: #FFC858')
                         div.media-body
-                          h5.media-heading <b>#{act.org_name}</b>
-                          h4.media-heading <b>#{act.intitule}</b>
+                          h4.media-heading <b>#{act.org_name}</b>
+                          h5.media-heading <b>#{act.intitule}</b>
                           h6
                             i.fa.fa-map-marker
                             p.inline Adresse : #{act.address}

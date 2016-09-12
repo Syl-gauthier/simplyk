@@ -11,10 +11,10 @@ block content
       .col-md-6.col-md-offset-1
         .page-header
           h1= activity.event_intitule
-          p= 'Description : ' + event[0].description
-          p= 'Adresse : ' + event[0].address
+          p= event[0].description
+          p <b>Adresse : </b> #{event[0].address} 
           h3= activity.intitule
-          p= 'Description : ' + activity.description
+          p <b>Description de l'activité :</b> #{activity.description}
           each day, index in activity.days
             li.list-group-item
               div.media-left.media-middle
@@ -33,9 +33,9 @@ block content
                   h4 Passé
       .col-md-4.col-md-offset-1
         .page-header
-          h4 Profil de l'organisme :
+          h4 L'organisme :
           h2= organism.org_name
-          p='Description: ' + organism.description
+          p='Mission: ' + organism.description
           p= 'Courriel: ' + organism.email
           p= 'Téléphone: ' + organism.phone
 
