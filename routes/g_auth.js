@@ -125,9 +125,7 @@ router.post('/register_volunteer', function(req, res){
               firstname: req.body.firstname
             });
           }
-
-          res.redirect('/waitforverifying');
-
+          res.redirect('/waitforverifying?recipient='+req.body.email+'&verify_url='+verifyUrl+'&firstname='+req.body.firstname);
         }
       });
     }
@@ -143,7 +141,7 @@ router.post('/register_organism', function(req, res){
 
   function handleVolunteerCreation(exists) {
     if(exists) {
-      res.redirect('register_volunteer');
+      res.redirect('register_organism');
     }
     else {
 
@@ -181,8 +179,12 @@ router.post('/register_organism', function(req, res){
               firstname: req.body.firstname
               //customMessage: 'Congratulations, create an event to get volunteers!'
             });
+            res.locals.recipient = email;
+            res.locals.name = org_name;
+            res.locals.verify_url = verifyUrl;
+            res.locals.firstname = req.body.firstname;
           }
-          res.redirect('/waitforverifying');
+          res.redirect('/waitforverifying?recipient='+email+'&verify_url='+verifyUrl+'&firstname='+req.body.firstname);
         }
       });
     }
@@ -219,10 +221,17 @@ router.post('/register_check', function(req, res) {
   userExists(req.body.email, handleCheck);
 });
 
+router.post('/sendVerificationEmail', function(req,res){
+  emailer.sendVerifyEmail({
+    recipient: req.body.recipient,
+    verify_url: req.body.verify_url,
+    firstname: req.body.firstname
+  });
+})
 
 
 router.get('/waitforverifying', function(req, res){
-  res.render('g_message.jade', {message: 'Vous allez recevoir un courriel de vérification. Dans ce courriel, cliquez sur le lien pour vérifier votre compte. Et l\'aventure pourra commencer !', redirection: 'login'})
+  res.render('g_message.jade', {page: 'waitforverifying', message: 'Vous allez recevoir un courriel de vérification. Dans ce courriel, cliquez sur le lien pour vérifier votre compte. Et l\'aventure pourra commencer !', header: 'Courriel de vérification' , redirection: 'login', recipient: req.query.recipient, verify_url: req.query.verify_url, firstname: req.query.firstname})
 })
 
 //Verify volunteer email address by random generated string

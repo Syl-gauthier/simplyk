@@ -1,6 +1,9 @@
 extends ./g_layout.jade
 block vars
 	- var page = 'event'
+	- var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+	- var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+	- function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
 
 
 block content
@@ -25,7 +28,7 @@ block content
 							.panel-body
 								each day, day_i in act.days
 									h4
-										h5.inline <b>#{day.day.toLocaleDateString()} : </b>
+										h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
 										h6.inline
 											i.fa.fa-user
 											p.inline= day.applicants.length+' bénévoles se sont inscrits'
@@ -62,7 +65,7 @@ block content
 																									p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
 																									div.form-group
 																										label(for='correctionHoursInput') Heures réellement réalisées 
-																										input.form-control(type='Number' id='correctionHoursInput')
+																										input.form-control(type='Number' id='correctionHoursInput' required)
 																								div.modal-footer
 																									button.btn.btn-default(data-dismiss='modal') Annuler
 																									button.btn.btn-warning(type='submit' form='correctHoursForm') Envoyer
