@@ -49,7 +49,7 @@ function sendVerifyEmail(content) {
   console.log(body);
 
   var mailOptions = {
-    from: '"Alex @ Simplyk', // sender address
+    from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
     to: content.recipient, 
     subject: content.firstname + ', vérifie ton courriel', // Subject line
     text: '', // plaintext body

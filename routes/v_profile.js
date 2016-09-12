@@ -41,7 +41,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   res.render('v_profile.jade', {events_subscribed: events_subscribed, events_confirmed: events_confirmed, events_pending: events_pending, events_past: events_past, volunteer: req.session.volunteer, error: error});
 });
 
-router.post('/volunteer/editPassword', function(req, res) {
+router.post('/editPassword', function(req, res) {
   //Contains current, new and confirm password
   var passwords = req.body;
 

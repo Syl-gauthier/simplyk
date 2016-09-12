@@ -23,6 +23,7 @@ var o_profile = require('./routes/o_profile');
 var g_auth = require('./routes/g_auth');
 var v_routes = require('./routes/v_index');
 var v_profile = require('./routes/v_profile');
+var g_profile = require('./routes/g_profile');
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
@@ -178,6 +179,7 @@ app.use('/', g_auth);
 app.use('/', o_profile);
 app.use('/', o_addevent);
 app.use('/', v_routes);
+app.use('/', g_profile);
 app.use('/', v_profile);
 
 // catch 404 and forward to error handler
