@@ -9,9 +9,9 @@ block content
         .page-header.jumbotron
           h1.text-center Félicitations !
           div.icon-center
-            i.fa.fa-space-shuttle.fa-5x
+            div.icon-center(style="max-width: 300px;" id="_giphy_l3vRjj95cs0FCTVLO")
           h2.text-center Tu es prêt à changer le monde ?!
-          h4.text-center <br>L'organisme <b>#{org_name}</b>  va être mis au courant de ton inscription.<br> Tu peux les contacter grâce à leur adresse courriel si tu as besoin d'infos supplémentaire. <br> En tout cas, on t'attend le <b>#{day}</b> de <b>#{start_time}</b>  à <b>#{end_time}</b> . Rendez-vous à : <b>#{address}</b>
+          h4.text-center <br><b>#{org_name}</b> est mis au courant de ton inscription.<br> Tu peux les contacter grâce à leur adresse courriel si tu as besoin d'infos supplémentaires. <br> RDV le <b>#{day}</b> de <b>#{start_time}</b>  à <b>#{end_time}</b> à : <b>#{address}</b>
           button.btn.btn-default.icon-center C'est parti !
 
 block footscript
@@ -23,3 +23,13 @@ block footscript
         $.redirect('/volunteer/map', {}, 'GET');
       })
     })
+  script.
+    _gif_artist = "rafaelvarona";
+    _gif_artist_avatar = "https://media2.giphy.com/avatars/default3.gif";
+    var _giphy = _giphy || [];
+    _giphy.push({id: "l3vRjj95cs0FCTVLO",w: 800, h: 600, clickthrough_url: "http://giphy.com/gifs/bear-forrest-cymbal-l3vRjj95cs0FCTVLO"});
+    var g = document.createElement("script");
+    g.type = "text/javascript";
+    g.async = true;
+    g.src = ("https:" == document.location.protocol ? "https://" : "http://") + "giphy.com/static/js/widgets/embed.js";var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(g, s);
