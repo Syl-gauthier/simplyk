@@ -60,14 +60,30 @@ function sendVerifyEmail(content) {
 };
 
 function sendSubscriptionEmail(content) {
-  var body = '<p>Good news ' + content.name + ' !'
-    + '. ' + content.customMessage
-    + ' <a href="simplyk.org">Simplyk</a></p>';
+  var body = '<p>Bonne nouvelle ' + content.name + ' !'
+    + '<br> ' + content.customMessage
+    + '<br> <a href="platform.simplyk.org">Simplyk</a></p>';
 
   var mailOptions = {
-    from: '"Simplyk', // sender address
+    from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
     to: content.recipient, 
-    subject: 'Welcome to Simplyk', // Subject line
+    subject: 'Nouvelle inscription !', // Subject line
+    text: '', // plaintext body
+    html: body
+  };
+
+  callSendMail(mailOptions);
+}
+
+function sendUnsubscriptionEmail(content) {
+  var body = '<p>Malheureusement, '
+    + '<br> ' + content.customMessage
+    + '<br> <a href="platform.simplyk.org">Simplyk</a></p>';
+
+  var mailOptions = {
+    from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+    to: content.recipient, 
+    subject: 'Désinscription :(', // Subject line
     text: '', // plaintext body
     html: body
   };
@@ -78,5 +94,6 @@ function sendSubscriptionEmail(content) {
 module.exports = {
   sendWelcomeEmail: sendWelcomeEmail,
   sendSubscriptionEmail: sendSubscriptionEmail,
+  sendUnsubscriptionEmail: sendUnsubscriptionEmail,
   sendVerifyEmail: sendVerifyEmail
 };

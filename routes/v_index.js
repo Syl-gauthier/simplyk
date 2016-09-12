@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var mongoose = require('mongoose');
-var emailer = require('../email/emailer.js')
+var emailer = require('../email/emailer.js');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;

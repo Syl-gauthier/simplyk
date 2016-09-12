@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var emailer = require('../email/emailer.js');
 
 
 var permissions = require('../middlewares/permissions.js');
@@ -91,6 +92,12 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
           req.session.volunteer = newVolunteer;
           //req.session.volunteer.events = req.session.volunter.events.filter(isNotActivity);
           //req.session.save();
+          var content = {
+            recipient: newActivity.email,
+            name: newActivity.org_name,
+            customMessage: req.session.volunteer.firstname + ' s\'est désinscrit de votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !'
+          };
+          emailer.sendUnsubscriptionEmail(content);
           const dayString = new Date(req.params.day).toLocaleDateString();
           console.log('newVolunteer after unsubscription process : ' + newVolunteer);
           res.render('v_postunsubscription.jade', {org_name: newActivity.org_name, day: dayString, volunteer: req.session.volunteer});

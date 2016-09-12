@@ -25,8 +25,6 @@ block content
                         th.text-center Heure de fin
                       each day, nb in act.days
                         tr
-                          td= (new Date()).getTimezoneOffset() * 60 * 1000
-                          td= day.day.getTime()
                           td.text-center= day.vol_nb
                           td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
                           td.text-center= day.start_time
