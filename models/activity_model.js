@@ -12,6 +12,7 @@ var ActivitySchema = new Schema({
 	address: String,
 	email: String,
 	language: String,
+	validation: Boolean,
 	description: String,
 	min_hours: Number,
 	lat: Number,
