@@ -88,6 +88,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
             language: req.body.language,
             cause: req.session.organism.cause,
             email: req.session.organism.email,
+            validation: req.session.organism.validation,
             intitule: req.body['activity'+i+'_intitule_activity'],
             description: req.body['activity'+i+'_activity_description'],
             min_hours: req.body['activity'+i+'_min_hours'],
