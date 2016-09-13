@@ -47,9 +47,15 @@ block content
                   li.list-group-item(id= act._id)
                     .panel.panel-default
                       .panel-heading
-                        div.media-left.media-top
+                        div.media-left.media-middle
                           a(href='#')
-                            img.media-object.little-img(src='/images/clouds.jpg')
+                            //img.media-object.little-img(src='/images/clouds.jpg')
+                            if act.cause == 'Solidarité'
+                              i.fa.fa-heart
+                            else if act.cause == 'Environnement'
+                              i.fa.fa-envira(style='color: #5BCF8F')
+                            else if act.cause == 'Culture'
+                              i.fa.fa-institution(style='color: #FFC858')
                         div.media-body
                           h4.media-heading <b>#{act.org_name}</b>
                           h5.media-heading <b>#{act.intitule}</b>
