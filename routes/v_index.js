@@ -30,7 +30,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       console.log('Volunteer age : ' + age);
       var isTooYoung = function(activity) {
         if (activity.min_age) {
-          return activity.min_age < age;
+          return (activity.min_age <= age);
         } else {
           return true;
         }
