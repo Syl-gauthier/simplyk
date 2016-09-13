@@ -62,7 +62,7 @@ router.post('/login', function(req, res, next) {
     else if(user.group == "admin"){
       req.session.admin = user;
       req.session.group = "admin";
-      res.redirect('/admin/dashboard');
+      res.redirect('/admin/classes');
     }
   })(req, res, next);
 });
