@@ -7,6 +7,7 @@ var permissions = require('../middlewares/permissions.js');
 var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
 var Activity = require('../models/activity_model.js');
+var OrgTodo = require('../models/o_todo_model.js');
 
 
 
@@ -146,53 +147,7 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
       console.log(err);
     } else {
       req.session.volunteer = newVolunteer;
-      Organism.update({
-        "$and": [{
-          "events": {
-            "$elemMatch": {
-              "activities": {
-                "$elemMatch": {
-                  "_id": req.params.act_id
-                }
-              }
-            }
-          }
-        }, {
-          "events": {
-            "$elemMatch": {
-              "activities": {
-                "$elemMatch": {
-                  "days": {
-                    "$elemMatch": {
-                      "day": req.params.day
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }, {
-          "events": {
-            "$elemMatch": {
-              "activities": {
-                "$elemMatch": {
-                  "days": {
-                    "$elemMatch": {
-                      "applications": {
-                        "$elemMatch": {
-                          "applicant_id": req.session.volunteer._id
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }]
-      }, {
-
-      });
+      
       //res.json({volunteer: newVolunteer, hours_pending: req.body.hours_pending});
       if (req.session.volunteer.student) {
         res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
