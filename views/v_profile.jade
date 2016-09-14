@@ -25,20 +25,20 @@ block content
             | Adresse mail: #{volunteer.email}
             small
           li.list-group-item#password-group
-            p Password: #[span.display ******]
+            p Mot de passe: #[span.display ******]
             form#edit-password-form.form-horizontal.hidden.editing
               .input-group.conn-input
-                p#password-error.alert.alert-danger.hidden Wrong password
+                p#password-error.alert.alert-danger.hidden Mot de passe incorrect
                 .input-group.conn-input
-                  input.form-control(name="current-password", type="password", placeholder="Current password")
+                  input.form-control(name="current-password", type="password", placeholder="Mot de passe actuel")
                 .input-group.conn-input
-                  input.form-control(name="new-password", type="password", placeholder="New password")
+                  input.form-control(name="new-password", type="password", placeholder="Nouveau mot de passe")
                 .input-group.conn-input
-                  input.form-control(name="confirm-password", type="password", placeholder="Confirm password")
+                  input.form-control(name="confirm-password", type="password", placeholder="Confirmer mot de passe")
             div.btn-toolbar
-                button.btn.btn-default#edit-password-button.display Edit
-                button.btn.btn-default#cancel-password-button.editing.hidden Cancel
-                button.btn.btn-default#save-password-button.editing.hidden Save
+                button.btn.btn-default#edit-password-button.display Éditer
+                button.btn.btn-default#cancel-password-button.editing.hidden Annuler
+                button.btn.btn-default#save-password-button.editing.hidden Enregistrer
       .col-md-5.col-md-offset-1
         .page-header
           h3 Mes activités en cours
