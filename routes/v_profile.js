@@ -144,16 +144,45 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
     new: true
   }, function(err, newVolunteer) {
     if (err) {
-      console.log(err);
+      console.log('error : ' + err);
     } else {
       req.session.volunteer = newVolunteer;
-      
-      //res.json({volunteer: newVolunteer, hours_pending: req.body.hours_pending});
-      if (req.session.volunteer.student) {
-        res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
-      } else {
-        res.redirect('/volunteer/map');
-      }
+      console.log('newVolunteer '+newVolunteer);
+      function isActivity(event) {
+        console.log('isActivity : ' + (event.activity_id == req.params.act_id));
+        return event.activity_id == req.params.act_id;
+      };
+
+      function isDay(event) {
+        console.log('isDay ' + (event.day == req.params.day));
+        console.log('Date.parse(event.day) ' + Date.parse(event.day));
+        console.log('Date.parse(req.params.day) ' + Date.parse(req.params.day));
+        return Date.parse(event.day) == Date.parse(req.params.day);
+      };
+      const event = newVolunteer.events.filter(isActivity).find(isDay);
+      console.log(event);
+      //TODO creation
+      var newTodo = new OrgTodo({
+        type: 'hours_pending',
+        org_id: event.org_id,
+        lastname: newVolunteer.lastname,
+        firstname: newVolunteer.firstname,
+        vol_id: newVolunteer._id,
+        activity_id: req.params.act_id,
+        day: Date.parse(req.params.day),
+        activity_intitule: event.intitule_activity
+      });
+      newTodo.save(function(err, todo) {
+        if (err) {
+          console.log(err);
+        } else {
+          if (req.session.volunteer.student) {
+            res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
+          } else {
+            res.redirect('/volunteer/map');
+          }
+        }
+      })
     }
   });
 });
