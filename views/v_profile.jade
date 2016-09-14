@@ -66,10 +66,9 @@ block content
                     form(method='post' action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day)
                       div.form-group
                         //label(for='input'+event._id) Heures
-                        input.form-control(id='input'+event._id type='number' placeholder='Heures de participation' name='hours_pending')
+                        input.form-control(id='input'+event._id type='number' placeholder='Heures de participation' name='hours_pending' required)
                         button.btn.btn-default.media-object(type='submit') Confirmer
-                    button.btn.btn-default(type='button')
-                      a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
+                    a.btn.btn-default.block-center(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
 
               // IF EVENT_PENDING
               if events_pending.length
@@ -86,8 +85,7 @@ block content
                     #identifiant(style='display:none')
                       p= event._id
                   div.media-right.media-middle
-                    button.btn.btn-default.unsubscribe-button(type='button')
-                      a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
+                    a.btn.btn-default.block-center(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
 
               // IF EVENT_SUBSCRIBED
               if events_subscribed.length
@@ -106,10 +104,8 @@ block content
                   div.media-right.media-middle
                     form(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post')
                       div.btn-group-vertical(role='group')
-                        button.btn.btn-default.block-center(type='button')
-                          a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
-                        button.btn.btn-default.block-center(type='button')
-                          a(href='/volunteer/event/'+event.activity_id) Détails
+                        a.btn.btn-default.block-center(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
+                        a.btn.btn-default.block-center(href='/volunteer/event/'+event.activity_id) Détails
                         button.btn.btn-warning.block-center(role='submit' name='day' value=event.day) Se désinscrire
 
               // IF EVENT_CONFIRMED
@@ -127,8 +123,7 @@ block content
                     #identifiant(style='display:none')
                       p= event._id
                   div.media-right.media-middle
-                    button.btn.btn-default(type='button')
-                      a(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
+                    a.btn.btn-default.block-center(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
 
 block footscript
   script.
