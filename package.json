@@ -31,7 +31,9 @@
     "randomstring": "~1.1.5"
   },
   "main": "app.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ThibautJ/simplyk.git"
