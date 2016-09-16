@@ -10,9 +10,10 @@ var OrgTodoSchema = new Schema({
 	lastname: String, //Contact info
 	firstname: String,
     vol_id: { type: Schema.Types.ObjectId, ref: 'Volunteer' },
-    activity: {type: Schema.Types.ObjectId, ref:'Activity'},
+    activity_id: {type: Schema.Types.ObjectId, ref:'Activity'},
     activity_intitule: String,
-    day: Date
+    day: Date,
+    hours: Number
 });
 
 var OrgTodo = mongoose.model('OrgTodo', OrgTodoSchema);

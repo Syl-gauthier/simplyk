@@ -142,7 +142,21 @@ block content
                   p.inline Section en développement...
             #todo.tab-pane.fade(role='tabpanel')
               .col-md-10.col-md-offset-1
-                h2.page-header On est dans les besoins
+                if todos.length
+                  each todo, todo_i in todos
+                    li.list-group-item
+                    if todo.type == 'hours_pending'
+                      .panel.panel-default
+                        .panel-heading
+                          div.media-left.media-middle
+                            i.fa.fa-user
+                          div.media-body
+                            h4.media-heading <b>#{todo.event_name}</b>
+                            h5 #{todo.firstname} #{todo.lastname} a t-il bien réalisé #{todo.hours}h durant cet évènement ?
+                        .panel-body
+                else
+                  h4.text-center Tout est à jour !
+
 
 
 block footscript

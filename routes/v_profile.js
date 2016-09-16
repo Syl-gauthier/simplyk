@@ -170,7 +170,8 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
         vol_id: newVolunteer._id,
         activity_id: req.params.act_id,
         day: Date.parse(req.params.day),
-        activity_intitule: event.intitule_activity
+        activity_intitule: event.intitule_activity,
+        hours: req.body.hours_pending
       });
       newTodo.save(function(err, todo) {
         if (err) {
