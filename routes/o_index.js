@@ -268,6 +268,58 @@ router.post('/organism/reject', function(req, res) {
 
 });
 
+router.post('/organism/correcthours', function(req, res) {
+  console.log('Correct Hours starts');
+  const correct_hours = req.body.correct_hours;
+  console.log('Correct_hours: ' + correct_hours);
+  OrgTodo.findOneAndRemove({
+    _id: req.body.todo
+  }, function(err, todoremoved) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('todoremoved : ' + todoremoved);
+    }
+  });
+  Volunteer.findOne({
+    _id: req.body.vol_id
+  }, function(err, myVolunteer) {
+    if (err) {
+      console.log(err);
+      res.sendStatus(404).end();
+    } else if (myVolunteer) {
+      console.log('myvolunteer exists');
+      console.log('MyVolunteer : ' + JSON.stringify(myVolunteer));
+    } else {
+      console.log('MyVolunteer doesnt exist');
+    };
+
+    Volunteer.findOneAndUpdate({
+      '_id': req.body.vol_id,
+      'events': {
+        '$elemMatch': {
+          'activity_id': req.body.act_id,
+          'day': req.body.day
+        }
+      }
+    }, {
+      '$set': {
+        'events.$.hours_done': req.body.correct_hours,
+        'events.$.hours_pending': 0,
+        'events.$.status': 'confirmed'
+      }
+    }, function(err) {
+      if (err) {
+        console.log(err);
+        res.sendStatus(404).end();
+      } else {
+        console.log('Hours_pending goes to hours_done with corrected_hours : ' + req.body.correct_hours);
+        res.end();
+      }
+    });
+  });
+});
+
 router.post('/organism/confirmhours', function(req, res) {
   console.log('Confirm Hours starts');
   OrgTodo.findOneAndRemove({

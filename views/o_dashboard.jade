@@ -161,24 +161,23 @@ block content
                               div.btn-group(style='width: 120px')
                                 button.btn.btn-default.validate_hours_pending(vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
                                   i.fa.fa-thumbs-up
-                                button.btn.btn-warning.decline_hours_pending(data-toggle='modal' data-target='#correctionModal')
+                                button.btn.btn-warning.decline_hours_pending(data-toggle='modal' data-target='#correctionModal', vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
                                   i.fa.fa-thumbs-down
                                 #correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
-                                          div.modal-dialog(role='document')
-                                            form.modal-content(action='correcthours' method='post' id='correctHoursForm')
-                                              .modal-header
-                                                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                                                  span(aria-hidden='true')
-                                                  h4.modal-title Correction d'horaires
-                                                div.modal-body
-                                                  p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
-                                                  div.form-group
-                                                    label(for='correctionHoursInput') Heures réellement réalisées 
-                                                    input.form-control(type='Number' id='correctionHoursInput' required)
-                                                div.modal-footer
-                                                  button.btn.btn-default(data-dismiss='modal') Annuler
-                                                  button.btn.btn-warning(type='submit' form='correctHoursForm') Envoyer
-
+                                  div.modal-dialog(role='document')
+                                    form.modal-content(id='correctHoursForm')
+                                      .modal-header
+                                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                          span(aria-hidden='true')
+                                          h4.modal-title Correction d'horaires
+                                        div.modal-body
+                                          p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
+                                          div.form-group
+                                            label(for='correctionHoursInput') Heures réellement réalisées 
+                                            input.form-control(type='Number' id='correctionHoursInput', name='correct_hours' required)
+                                        div.modal-footer
+                                          button.btn.btn-default(data-dismiss='modal') Annuler
+                                          button.btn.btn-warning(type='submit' form='correctHoursForm') Envoyer
                 else
                   h4.text-center Tout est à jour !
 
@@ -197,12 +196,31 @@ block footscript
         console.log('event_id : ' + event_id);
         $.redirect('/organism/event/'+event_id, {}, 'GET');
       });
+      $('#correctHoursForm').submit(function(){
+        let input = $('.decline_hours_pending');
+        let vol_id = input.attr('vol');
+        let act_id = input.attr('act');
+        let day = input.attr('day');
+        let todo_id = input.attr('todo');
+        let correct_hours = $('#correctionHoursInput').val();
+        let input_group = input.parent();
+        $.post('/organism/correcthours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, correct_hours: correct_hours}).done(function(data, status){
+          if(status == 404){
+            console.log("Remarque: " + data.error);
+            input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
+          }
+          else {
+            console.log("Post request done.");
+            input_group.replaceWith('<p><b>Heures corrigées</b></p>');
+          }
+        });
+      });
       $('.validate_hours_pending').click(function(){
-        var vol_id = $(this).attr('vol');
-        var act_id = $(this).attr('act');
-        var day = $(this).attr('day');
-        var todo_id = $(this).attr('todo');
-        var input_group = $(this).parent();
+        let vol_id = $(this).attr('vol');
+        let act_id = $(this).attr('act');
+        let day = $(this).attr('day');
+        let todo_id = $(this).attr('todo');
+        let input_group = $(this).parent();
         $.post('/organism/confirmhours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id}).done(function(data, status){
           if(data.error){
             console.log("Remarque: " + data.error);
