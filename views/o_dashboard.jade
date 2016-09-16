@@ -148,12 +148,22 @@ block content
                     if todo.type == 'hours_pending'
                       .panel.panel-default
                         .panel-heading
-                          div.media-left.media-middle
-                            i.fa.fa-user
-                          div.media-body
-                            h4.media-heading <b>#{todo.event_name}</b>
-                            h5 #{todo.firstname} #{todo.lastname} a t-il bien réalisé #{todo.hours}h durant cet évènement ?
+                          div.media
+                            div.media-left.media-middle
+                              i.fa.fa-user
+                            div.media-body
+                              h4.media-heading <b>#{todo.event_name}</b>
                         .panel-body
+                          div.media
+                            div.media-body
+                             h5 #{todo.firstname} #{todo.lastname} a t-il bien réalisé #{todo.hours}h durant cet évènement ?
+                            div.media-right.media-middle
+                              div.btn-group(style='width: 120px')
+                                button.btn.btn-default.validate_hours_pending(vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
+                                  i.fa.fa-thumbs-up
+                                button.btn.btn-warning.decline_hours_pending
+                                  i.fa.fa-thumbs-down
+
                 else
                   h4.text-center Tout est à jour !
 
@@ -165,11 +175,29 @@ block footscript
   // jQuery redirection plugin
   script(src="/bower_components/jquery.redirect/jquery.redirect.js", type="text/javascript")
   script.
-    $(function() {
+    $(document).ready(function(){
       $('.infos-button').click(function(){
         console.log('Clic sur le bouton  de subscription');
         var event_id = $(this).attr('id');
         console.log('event_id : ' + event_id);
         $.redirect('/organism/event/'+event_id, {}, 'GET');
       });
-    });
+      $('.validate_hours_pending').click(function(){
+        var vol_id = $(this).attr('vol');
+        var act_id = $(this).attr('act');
+        var day = $(this).attr('day');
+        var todo_id = $(this).attr('todo');
+        var input_group = $(this).parent();
+        $.post('/organism/confirmhours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id}).done(function(data, status){
+          if(data.error){
+            console.log("Remarque: " + data.error);
+            input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
+          }
+          else {
+            console.log("Post request done.");
+            input_group.replaceWith('<p><b>Heures confirmées</b></p>');
+          }
+        });
+      });
+    })
+    

@@ -138,7 +138,9 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
             todo.event_name = null;
 
             function containsActivity(event) {
-              var isIt = event.activities.find(function(act){return act.$oid == todo.activity_id;});
+              var isIt = event.activities.find(function(act) {
+                return act.$oid == todo.activity_id;
+              });
               if (isIt == -1) {
                 return false;
               } else {
@@ -268,6 +270,15 @@ router.post('/organism/reject', function(req, res) {
 
 router.post('/organism/confirmhours', function(req, res) {
   console.log('Confirm Hours starts');
+  OrgTodo.findOneAndRemove({
+    _id: req.body.todo
+  }, function(err, todoremoved) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('todoremoved : ' + todoremoved);
+    }
+  });
   Volunteer.findOne({
     _id: req.body.vol_id
   }, function(err, myVolunteer) {
@@ -279,13 +290,13 @@ router.post('/organism/confirmhours', function(req, res) {
       console.log('MyVolunteer : ' + JSON.stringify(myVolunteer));
     } else {
       console.log('MyVolunteer doesnt exist');
-    }
+    };
 
     function goodEvent(event) {
       return (event.activity_id == req.body.act_id) && (Date.parse(event.day) == Date.parse(req.body.day));
     };
     var hours_pending = myVolunteer.events.find(goodEvent).hours_pending;
-    console.log('hours_pending : ' + hours_pending)
+    console.log('hours_pending : ' + hours_pending);
     Volunteer.findOneAndUpdate({
       '_id': req.body.vol_id,
       'events': {
@@ -303,7 +314,7 @@ router.post('/organism/confirmhours', function(req, res) {
     }, function(err) {
       if (err) {
         console.log(err);
-        res.redirect('/organism/dashboard?error=' + err);
+        res.sendStatus(404).end();
       } else {
         console.log('Hours_pending goes to hours_done : ' + hours_pending);
         console.log(req.body);
