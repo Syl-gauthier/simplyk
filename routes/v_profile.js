@@ -20,8 +20,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   var events_confirmed = [];
   var error;
   for (var eventI = req.session.volunteer.events.length - 1; eventI >= 0; eventI--) {
-    if (Date.parse(req.session.volunteer.events[eventI].day) < Date.now() && req.session.volunteer.events[eventI].hours_pending === 0) {
-      req.session.volunteer.events[eventI].status = 'past';
+    if (Date.parse(req.session.volunteer.events[eventI].day) < Date.now() && req.session.volunteer.events[eventI].status === 'subscribed') {
       events_past.push(req.session.volunteer.events[eventI]);
     } else if (Date.parse(req.session.volunteer.events[eventI].day) > Date.now()) {
       req.session.volunteer.events[eventI].status = 'subscribed';
@@ -122,7 +121,6 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
 
 //Add hours_pending to an activity
 router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res) {
-  var status = "pending";
   Volunteer.findOneAndUpdate({
     "$and": [{
       "_id": req.session.volunteer._id
@@ -137,7 +135,7 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
   }, {
     "$set": {
       "events.$.hours_pending": req.body.hours_pending,
-      "events.$.status": status
+      "events.$.status": 'pending'
     }
   }, {
     returnNewDocument: true,

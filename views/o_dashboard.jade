@@ -161,8 +161,23 @@ block content
                               div.btn-group(style='width: 120px')
                                 button.btn.btn-default.validate_hours_pending(vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
                                   i.fa.fa-thumbs-up
-                                button.btn.btn-warning.decline_hours_pending
+                                button.btn.btn-warning.decline_hours_pending(data-toggle='modal' data-target='#correctionModal')
                                   i.fa.fa-thumbs-down
+                                #correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
+                                          div.modal-dialog(role='document')
+                                            form.modal-content(action='correcthours' method='post' id='correctHoursForm')
+                                              .modal-header
+                                                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                                  span(aria-hidden='true')
+                                                  h4.modal-title Correction d'horaires
+                                                div.modal-body
+                                                  p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
+                                                  div.form-group
+                                                    label(for='correctionHoursInput') Heures réellement réalisées 
+                                                    input.form-control(type='Number' id='correctionHoursInput' required)
+                                                div.modal-footer
+                                                  button.btn.btn-default(data-dismiss='modal') Annuler
+                                                  button.btn.btn-warning(type='submit' form='correctHoursForm') Envoyer
 
                 else
                   h4.text-center Tout est à jour !
