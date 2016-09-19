@@ -290,33 +290,55 @@ router.post('/organism/correcthours', function(req, res) {
     } else if (myVolunteer) {
       console.log('myvolunteer exists');
       console.log('MyVolunteer : ' + JSON.stringify(myVolunteer));
+      if (req.body["answers[0][value]"]) {
+        console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
+        //i starts from 1 to avoid to select the number answered as corrected hours
+        var i = 1;
+        var answers = [];
+        while (req.body["answers[" + i + "][value]"]) {
+          console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
+          answers.push(req.body["answers[" + i + "][value]"]);
+          i++;
+        };
+        console.log('Answers : ' + JSON.stringify(answers));
+        var update = {
+          '$set': {
+            'events.$.hours_done': req.body.correct_hours,
+            'events.$.hours_pending': 0,
+            'events.$.status': 'confirmed',
+            'events.$.organism_answers': answers
+          }
+        };
+      } else {
+        var update = {
+          '$set': {
+            'events.$.hours_done': req.body.correct_hours,
+            'events.$.hours_pending': 0,
+            'events.$.status': 'confirmed'
+          }
+        };
+      };
+      Volunteer.findOneAndUpdate({
+        '_id': req.body.vol_id,
+        'events': {
+          '$elemMatch': {
+            'activity_id': req.body.act_id,
+            'day': req.body.day
+          }
+        }
+      }, update, function(err) {
+        if (err) {
+          console.log(err);
+          res.sendStatus(404).end();
+        } else {
+          console.log('Hours_pending goes to hours_done with corrected_hours : ' + req.body.correct_hours);
+          res.end();
+        }
+      });
     } else {
       console.log('MyVolunteer doesnt exist');
+      res.end();
     };
-
-    Volunteer.findOneAndUpdate({
-      '_id': req.body.vol_id,
-      'events': {
-        '$elemMatch': {
-          'activity_id': req.body.act_id,
-          'day': req.body.day
-        }
-      }
-    }, {
-      '$set': {
-        'events.$.hours_done': req.body.correct_hours,
-        'events.$.hours_pending': 0,
-        'events.$.status': 'confirmed'
-      }
-    }, function(err) {
-      if (err) {
-        console.log(err);
-        res.sendStatus(404).end();
-      } else {
-        console.log('Hours_pending goes to hours_done with corrected_hours : ' + req.body.correct_hours);
-        res.end();
-      }
-    });
   });
 });
 
@@ -340,39 +362,64 @@ router.post('/organism/confirmhours', function(req, res) {
     } else if (myVolunteer) {
       console.log('myvolunteer exists');
       console.log('MyVolunteer : ' + JSON.stringify(myVolunteer));
+
+      function goodEvent(event) {
+        return (event.activity_id == req.body.act_id) && (Date.parse(event.day) == Date.parse(req.body.day));
+      };
+      var hours_pending = myVolunteer.events.find(goodEvent).hours_pending;
+      console.log('hours_pending : ' + hours_pending);
+      console.log('req.body : ' + JSON.stringify(req.body));
+      //If we deal with a student
+      if (req.body["answers[0][value]"]) {
+        console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
+        var i = 0;
+        var answers = [];
+        while (req.body["answers[" + i + "][value]"]) {
+          console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
+          answers.push(req.body["answers[" + i + "][value]"]);
+          i++;
+        };
+        console.log('Answers : ' + JSON.stringify(answers));
+        var update = {
+          '$set': {
+            'events.$.hours_done': hours_pending,
+            'events.$.hours_pending': 0,
+            'events.$.status': 'confirmed',
+            'events.$.organism_answers': answers
+          }
+        };
+      } else {
+        console.log("NO answers");
+        var update = {
+          '$set': {
+            'events.$.hours_done': hours_pending,
+            'events.$.hours_pending': 0,
+            'events.$.status': 'confirmed'
+          }
+        };
+      };
+      Volunteer.findOneAndUpdate({
+        '_id': req.body.vol_id,
+        'events': {
+          '$elemMatch': {
+            'activity_id': req.body.act_id,
+            'day': req.body.day
+          }
+        }
+      }, update, function(err) {
+        if (err) {
+          console.log(err);
+          res.sendStatus(404).end();
+        } else {
+          console.log('Hours_pending goes to hours_done : ' + hours_pending);
+          console.log(req.body);
+          res.end();
+        }
+      });
     } else {
       console.log('MyVolunteer doesnt exist');
+      res.end();
     };
-
-    function goodEvent(event) {
-      return (event.activity_id == req.body.act_id) && (Date.parse(event.day) == Date.parse(req.body.day));
-    };
-    var hours_pending = myVolunteer.events.find(goodEvent).hours_pending;
-    console.log('hours_pending : ' + hours_pending);
-    Volunteer.findOneAndUpdate({
-      '_id': req.body.vol_id,
-      'events': {
-        '$elemMatch': {
-          'activity_id': req.body.act_id,
-          'day': req.body.day
-        }
-      }
-    }, {
-      '$set': {
-        'events.$.hours_done': hours_pending,
-        'events.$.hours_pending': 0,
-        'events.$.status': 'confirmed'
-      }
-    }, function(err) {
-      if (err) {
-        console.log(err);
-        res.sendStatus(404).end();
-      } else {
-        console.log('Hours_pending goes to hours_done : ' + hours_pending);
-        console.log(req.body);
-        res.end();
-      }
-    });
   });
 });
 

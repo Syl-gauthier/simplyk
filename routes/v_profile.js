@@ -145,7 +145,8 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
       console.log('error : ' + err);
     } else {
       req.session.volunteer = newVolunteer;
-      console.log('newVolunteer '+newVolunteer);
+      console.log('newVolunteer ' + newVolunteer);
+
       function isActivity(event) {
         console.log('isActivity : ' + (event.activity_id == req.params.act_id));
         return event.activity_id == req.params.act_id;
@@ -159,18 +160,35 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
       };
       const event = newVolunteer.events.filter(isActivity).find(isDay);
       console.log(event);
+      if (newVolunteer.student) {
+        var newTodo = new OrgTodo({
+          type: 'hours_pending',
+          org_id: event.org_id,
+          lastname: newVolunteer.lastname,
+          firstname: newVolunteer.firstname,
+          vol_id: newVolunteer._id,
+          activity_id: req.params.act_id,
+          day: Date.parse(req.params.day),
+          activity_intitule: event.intitule_activity,
+          hours: req.body.hours_pending,
+          student: true,
+          organism_questions: event.organism_questions
+        });
+      } else {
+        var newTodo = new OrgTodo({
+          type: 'hours_pending',
+          org_id: event.org_id,
+          lastname: newVolunteer.lastname,
+          firstname: newVolunteer.firstname,
+          vol_id: newVolunteer._id,
+          activity_id: req.params.act_id,
+          day: Date.parse(req.params.day),
+          activity_intitule: event.intitule_activity,
+          hours: req.body.hours_pending
+        });
+      };
       //TODO creation
-      var newTodo = new OrgTodo({
-        type: 'hours_pending',
-        org_id: event.org_id,
-        lastname: newVolunteer.lastname,
-        firstname: newVolunteer.firstname,
-        vol_id: newVolunteer._id,
-        activity_id: req.params.act_id,
-        day: Date.parse(req.params.day),
-        activity_intitule: event.intitule_activity,
-        hours: req.body.hours_pending
-      });
+
       newTodo.save(function(err, todo) {
         if (err) {
           console.log(err);

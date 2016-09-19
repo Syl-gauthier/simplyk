@@ -13,7 +13,9 @@ var OrgTodoSchema = new Schema({
     activity_id: {type: Schema.Types.ObjectId, ref:'Activity'},
     activity_intitule: String,
     day: Date,
-    hours: Number
+    hours: Number,
+    student: Boolean,
+    organism_questions: [String]
 });
 
 var OrgTodo = mongoose.model('OrgTodo', OrgTodoSchema);
