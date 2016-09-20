@@ -332,12 +332,12 @@ router.post('/organism/correcthours', function(req, res) {
           res.sendStatus(404).end();
         } else {
           console.log('Hours_pending goes to hours_done with corrected_hours : ' + req.body.correct_hours);
-          res.end();
+          res.sendStatus(200).end();
         }
       });
     } else {
       console.log('MyVolunteer doesnt exist');
-      res.end();
+      res.sendStatus(404).end();
     };
   });
 });
@@ -413,12 +413,12 @@ router.post('/organism/confirmhours', function(req, res) {
         } else {
           console.log('Hours_pending goes to hours_done : ' + hours_pending);
           console.log(req.body);
-          res.end();
+          res.sendStatus(200).end();
         }
       });
     } else {
       console.log('MyVolunteer doesnt exist');
-      res.end();
+      res.sendStatus(404).end();
     };
   });
 });
