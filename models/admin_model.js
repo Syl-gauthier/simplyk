@@ -9,14 +9,16 @@ var AdminSchema = new Schema({
 	id: ObjectId,
 	name: String,
 	type: String, //School or company
-	lastName: String, //Contact info
-	firstName: String,
+	lastname: String, //Contact info
+	firstname: String,
     password: String,
+    class: String,
 	lat: Number,
 	lon: Number,
 	email: String,
+	admin_id: { type: Schema.Types.ObjectId, ref: 'Admins' },//ID of the school coordinator
 	students: [{
-		id: { type: Schema.Types.ObjectId, ref: 'Volunteer' },
+		id: { type: Schema.Types.ObjectId, ref: 'Volunteers' },
 		status: String
 	}]//mails des utilisateurs qui ont mis l'Adminortunité en favori
 });
