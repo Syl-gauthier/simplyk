@@ -37,7 +37,8 @@ block content
                   h4 Mes besoins
               li(role='presentation')
                 a(href='#todo' aria-controls='todo' role='tab' data-toggle='tab') 
-                  h4 À faire
+                  h4 À faire 
+                    span.badge= todos.length
         .row
           .tab-content
             #needs.tab-pane.fade.active.in(role='tabpanel')
