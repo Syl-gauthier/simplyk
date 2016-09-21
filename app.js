@@ -6,7 +6,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var session = require('client-sessions');
+var session = require('express-session');
 var flash = require('connect-flash');
 
 //Auth
@@ -154,9 +154,10 @@ passport.deserializeUser(function(req, id, done) {
 });
 
 app.use(session({
-  cookieName: 'session',
   secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
-  activeDuration: 1500 * 60 * 1000
+  maxAge: 1500 * 60 * 1000,
+  saveUninitialized: true,
+  resave: false
 }));
 
 
