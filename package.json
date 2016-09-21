@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "install": "npm install",
     "postinstall": "./node_modules/bower/bin/bower install",
     "start": "node ./bin/www",
     "ci": "node ./test/test.js"
