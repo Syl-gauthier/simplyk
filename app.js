@@ -179,7 +179,7 @@ app.use(session({
   cookie: {
     maxAge: 1500 * 60 * 1000
   },
-  saveUninitialized: true,
+  saveUninitialized: false,
   resave: true
 }));
 
