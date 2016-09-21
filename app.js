@@ -40,89 +40,113 @@ app.set('view engine', 'jade');
 
 //connect to mongo
 var db_credentials = process.env.MONGO_DB_CREDENTIALS;
-if(typeof db_credentials === 'undefined'){
+if (typeof db_credentials === 'undefined') {
   console.log("DB credentials not defined, use test DB localhost/test");
   db_credentials = 'localhost/test';
 }
 
-mongoose.connect('mongodb://'+db_credentials);
+mongoose.connect('mongodb://' + db_credentials);
 
 passport.use('local-volunteer', new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password'
-},
-function(email, password, done) {
-  Volunteer.findOne({email: email}, function (err, volunteer) {
-    if(err) { 
-      return done(err); 
-    }
-    else if(!volunteer) {
-      return done(null, false, { message: 'Incorrect mail.' });
-    }
-    else if(!volunteer.validPassword(password)) {
-      return done(null, false, { exists: true, message: 'Incorrect password.', code: 1});
-    }
-    else if(volunteer.email_verified == false) {
-      console.log('User not verified');
-      return done(null, false, { exists: true, message: 'email not verified', code: 2});
-    }
-    else{
-      //Login info correct
-      volunteer = volunteer.toJSON();
-      volunteer.group = "volunteer";
-      return done(null, volunteer);
-    }
-  });
-}
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  function(email, password, done) {
+    Volunteer.findOne({
+      email: email
+    }, function(err, volunteer) {
+      if (err) {
+        return done(err);
+      } else if (!volunteer) {
+        return done(null, false, {
+          message: 'Incorrect mail.'
+        });
+      } else if (!volunteer.validPassword(password)) {
+        return done(null, false, {
+          exists: true,
+          message: 'Incorrect password.',
+          code: 1
+        });
+      } else if (volunteer.email_verified == false) {
+        console.log('User not verified');
+        return done(null, false, {
+          exists: true,
+          message: 'email not verified',
+          code: 2
+        });
+      } else {
+        //Login info correct
+        volunteer = volunteer.toJSON();
+        volunteer.group = "volunteer";
+        return done(null, volunteer);
+      }
+    });
+  }
 ));
 
 passport.use('local-organism', new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password'
-},
-function(email, password, done) {
-  Organism.findOne({email: email}, function (err, org) {
-    if(err) { 
-      return done(err);
-    }
-    else if(!org) {
-      return done(null, false, { message: 'Incorrect mail.' });
-    }
-    else if(!org.validPassword(password)) {
-      return done(null, false, { exists: true, message: 'Incorrect password.', code: 1});
-    }
-    else if(org.email_verified == false) {
-      console.log('User not verified');
-      return done(null, false, { exists: true, message: 'email not verified', code: 2});
-    }
-    else{
-      //Login info correct
-      org = org.toJSON();
-      org.group = "organism";
-      return done(null, org);
-    }
-  });
-}
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  function(email, password, done) {
+    Organism.findOne({
+      email: email
+    }, function(err, org) {
+      if (err) {
+        return done(err);
+      } else if (!org) {
+        return done(null, false, {
+          message: 'Incorrect mail.'
+        });
+      } else if (!org.validPassword(password)) {
+        return done(null, false, {
+          exists: true,
+          message: 'Incorrect password.',
+          code: 1
+        });
+      } else if (org.email_verified == false) {
+        console.log('User not verified');
+        return done(null, false, {
+          exists: true,
+          message: 'email not verified',
+          code: 2
+        });
+      } else {
+        //Login info correct
+        org = org.toJSON();
+        org.group = "organism";
+        return done(null, org);
+      }
+    });
+  }
 ));
 
 passport.use('local-admin', new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password'
-},
-function(email, password, done) {
-  Admin.findOne({email: email}, function (err, admin) {
-    if (err) { return done(err); }
-    if (!admin) {
-      return done(null, false, { message: 'Incorrect mail.' });
-    }
-    if (!admin.validPassword(password)) {
-      return done(null, false, { message: 'Incorrect password.' });
-    }
-    admin = admin.toJSON();
-    admin.group = "admin";
-    return done(null, admin);
-  });
-}
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  function(email, password, done) {
+    Admin.findOne({
+      email: email
+    }, function(err, admin) {
+      if (err) {
+        return done(err);
+      }
+      if (!admin) {
+        return done(null, false, {
+          message: 'Incorrect mail.'
+        });
+      }
+      if (!admin.validPassword(password)) {
+        return done(null, false, {
+          message: 'Incorrect password.'
+        });
+      }
+      admin = admin.toJSON();
+      admin.group = "admin";
+      return done(null, admin);
+    });
+  }
 ));
 
 passport.serializeUser(function(user, done) {
@@ -132,30 +156,29 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(req, id, done) {
   console.log("Deserialize");
 
-  if(req.session.group == "volunteer"){
+  if (req.session.group == "volunteer") {
     Volunteer.findById(id, function(err, volunteer) {
       //console.log(volunteer.toJSON())
       done(err, volunteer);
     });
-  }
-  else if(req.session.group == "organism"){
-    Organism.findById(id, function(err, org){
+  } else if (req.session.group == "organism") {
+    Organism.findById(id, function(err, org) {
       done(err, org);
     });
-  }
-  else if(req.session.group == "admin"){
-    Admin.findById(id, function(err, admin){
+  } else if (req.session.group == "admin") {
+    Admin.findById(id, function(err, admin) {
       done(err, admin);
     });
-  }
-  else{
+  } else {
     done(null, false);
   }
 });
 
 app.use(session({
   secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
-  maxAge: 1500 * 60 * 1000,
+  cookie: {
+    maxAge: 1500 * 60 * 1000
+  },
   saveUninitialized: true,
   resave: true
 }));
@@ -165,7 +188,9 @@ app.use(session({
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
