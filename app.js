@@ -16,8 +16,8 @@ var LocalStrategy = require('passport-local').Strategy;
 //Routes files
 var a_routes = require('./routes/a_index');
 var o_routes = require('./routes/o_index');
-var users = require('./routes/users');
 var o_addevent = require('./routes/o_addevent');
+var o_addlongterm = require('./routes/o_addlongterm');
 var o_profile = require('./routes/o_profile');
 var g_auth = require('./routes/g_auth');
 var v_routes = require('./routes/v_index');
@@ -199,10 +199,10 @@ app.use(flash());
 
 app.use('/', a_routes);
 app.use('/', o_routes);
-//app.use('/', users);
 app.use('/', g_auth);
 app.use('/', o_profile);
 app.use('/', o_addevent);
+app.use('/', o_addlongterm);
 app.use('/', v_routes);
 app.use('/', g_profile);
 app.use('/', v_profile);
