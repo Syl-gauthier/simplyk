@@ -7,6 +7,7 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var flash = require('connect-flash');
+const MongoStore = require('connect-mongo')(session);
 
 //Auth
 var passport = require('passport');
@@ -180,7 +181,8 @@ app.use(session({
     maxAge: 1500 * 60 * 1000
   },
   saveUninitialized: false,
-  resave: true
+  resave: true,
+  store: new MongoStore({mongooseConnection: mongoose.connection})
 }));
 
 

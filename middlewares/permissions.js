@@ -1,7 +1,7 @@
 
 function requireGroup(group){
   return function(req, res, next){
-    console.log(req.session.group);
+    console.log('req.session.group : ' + req.session.group);
     if(req.session.group == group){
       console.log("group correct");
       next();
