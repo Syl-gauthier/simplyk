@@ -49,7 +49,7 @@ block content
 															each event, event_i in vol.events
 																if ((Date.parse(event.day) == Date.parse(day.day)) && (act._id.toString() == event.activity_id.toString()))
 																	if Date.parse(day.day)<Date.now()
-																		if event.hours_pending != event.hours_done
+																		if event.hours_pending > event.hours_done
 																			div.media-right(id=act._id day=event.day)
 																				p= '***** Participation de ' + event.hours_pending + ' h ?'
 																				button.btn.btn-default(class='confirmHoursButton' id=vol._id) Confirmer
@@ -69,7 +69,7 @@ block content
 																								div.modal-footer
 																									button.btn.btn-default(data-dismiss='modal') Annuler
 																									button.btn.btn-warning(type='submit' form='correctHoursForm') Envoyer
-																		if (event.hours_done == event.hours_pending) && event.hours_done != 0
+																		if (event.hours_done > event.hours_pending) && event.hours_done != 0
 																			div.media-right
 																				p= ' Participation de ' + event.hours_done + ' h'
 																		if (event.hours_done == event.hours_pending) && event.hours_done == 0
