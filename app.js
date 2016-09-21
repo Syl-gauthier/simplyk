@@ -174,6 +174,7 @@ passport.deserializeUser(function(req, id, done) {
   }
 });
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
   cookie: {
@@ -192,7 +193,6 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
