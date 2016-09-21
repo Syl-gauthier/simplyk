@@ -157,7 +157,7 @@ app.use(session({
   secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
   maxAge: 1500 * 60 * 1000,
   saveUninitialized: true,
-  resave: false
+  resave: true
 }));
 
 
