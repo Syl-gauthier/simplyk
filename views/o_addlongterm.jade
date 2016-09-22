@@ -21,7 +21,7 @@ block content
             p.alert.alert-danger #{error}
     .row
       .col-md-6.col-md-offset-3
-        .form(id='creationlongtermform')
+        form(id='creationlongtermform', name='creationlongtermform', action='addlongterm', method='post')
           .form-group.conn-input
             label(for='title') Titre de l'engagement
             input.form-control(id='title', type='text', placeholder='Ex: Mentor de littérature', name='title', required)
@@ -59,6 +59,68 @@ block content
                 label.radio-inline
                   input(type='radio', name='language', value='fr')
                   p Seulement Français
+          label(for='slot') Horaires disponibles
+          table.table(id='slot')
+            thead
+              tr
+                th #
+                th Lundi
+                th Mardi
+                th Mercredi
+                th Jeudi
+                th Vendredi
+                th Samedi
+                th Dimanche
+            tbody
+              tr
+                th(scope='row') AM
+                td
+                  input(type='checkbox', name='mondayAM')
+                td
+                  input(type='checkbox', name='tuesdayAM')
+                td
+                  input(type='checkbox', name='wednesdayAM')
+                td
+                  input(type='checkbox', name='thursdayAM')
+                td
+                  input(type='checkbox', name='fridayAM')
+                td
+                  input(type='checkbox', name='saturdayAM')
+                td
+                  input(type='checkbox', name='sundayAM')
+              tr
+                th(scope='row') PM
+                td
+                  input(type='checkbox', name='mondayPM')
+                td
+                  input(type='checkbox', name='tuesdayPM')
+                td
+                  input(type='checkbox', name='wednesdayPM')
+                td
+                  input(type='checkbox', name='thursdayPM')
+                td
+                  input(type='checkbox', name='fridayPM')
+                td
+                  input(type='checkbox', name='saturdayPM')
+                td
+                  input(type='checkbox', name='sundayPM')
+              tr
+                th(scope='row')= 'Soir (>16h)'
+                td
+                  input(type='checkbox', name='mondayEVE')
+                td
+                  input(type='checkbox', name='tuesdayEVE')
+                td
+                  input(type='checkbox', name='wednesdayEVE')
+                td
+                  input(type='checkbox', name='thursdayEVE')
+                td
+                  input(type='checkbox', name='fridayEVE')
+                td
+                  input(type='checkbox', name='saturdayEVE')
+                td
+                  input(type='checkbox', name='sundayEVE')
+
           .row
             input.btn.btn-default.form-control(type='submit', form='creationlongtermform', style="margin-bottom: 60px;")
 
