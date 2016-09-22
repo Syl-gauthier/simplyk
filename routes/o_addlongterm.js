@@ -59,7 +59,6 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism'), funct
 					});
 				} else {
 					req.session.organism = organism;
-					res.sendStatus(200);
 					res.redirect('/organism/dashboard');
 				}
 			});

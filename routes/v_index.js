@@ -13,6 +13,7 @@ var Activity = require('../models/activity_model.js');
 var permissions = require('../middlewares/permissions.js');
 var subscribe = require('../middlewares/subscribe.js');
 var finder = require('../middlewares/mongo_finder.js');
+var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 var app = express();
 
 /*GET map page*/
@@ -50,11 +51,37 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       } else {
         var acts = activities.filter(isNotPassed).filter(isTooYoung);
       }
-      res.render('v_map.jade', {
-        activities: acts,
-        volunteer: req.session.volunteer,
-        error: req.query.error,
-        success: req.query.success
+      Organism.find({
+        'long_terms': {
+          '$exists': true,
+          '$not': {
+            '$size': 0
+          }
+        }
+      }, {
+        'org_name': true,
+        '_id': true,
+        'cause': true,
+        'long_terms': true
+      }, function(err, organisms) {
+        if (err) {
+          console.log(err);
+          res.render('v_map.jade', {
+            session: req.session,
+            error: err,
+            organism: req.session.organism
+          });
+        } else {
+          var longterms = longtermsList(organisms);
+          console.log('LONG' + organisms);
+          res.render('v_map.jade', {
+            activities: acts,
+            volunteer: req.session.volunteer,
+            error: req.query.error,
+            longterms: longterms,
+            success: req.query.success
+          });
+        }
       });
     }
   });

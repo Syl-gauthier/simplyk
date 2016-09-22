@@ -65,22 +65,23 @@ router.get('/', function(req, res, next) {
             '_id': true,
             'long_terms': true
           }, function(err, organisms) {
-            var longterms = [];
-            organisms.map(function(org){
-              org.longterms.map(function(lt){
-                longterms.push({
-                  '_id': org._id,
-                  'org_name': org.org_name,
-                  'long_term': lt
-                });
+            if (err) {
+              console.log(err);
+              res.render('g_accueil.jade', {
+                session: req.session,
+                error: err,
+                organism: req.session.organism
               });
-            });
-            console.log('LONG'+organisms);
-            res.render('g_accueil.jade', {
-              activities: acts,
-              session: req.session,
-              error: req.query.error
-            });
+            } else {
+              var longterms = longtermsList(organisms);
+              console.log('LONG' + organisms);
+              res.render('g_accueil.jade', {
+                activities: acts,
+                session: req.session,
+                longterms: longterms,
+                error: req.query.error
+              });
+            }
           });
         };
       } else {
