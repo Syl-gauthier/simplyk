@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "./node_modules/bower/bin/bower install",
     "start": "node ./bin/www",
-    "ci": "node ./test/test.js"
+    "ci": "./node_modules/mocha/bin/mocha ./lib/__test__/*.js"
   },
   "dependencies": {
     "bcrypt": "^0.8.7",
@@ -32,7 +32,9 @@
     "serve-favicon": "~2.3.0"
   },
   "main": "app.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "^3.0.2"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ThibautJ/simplyk.git"
