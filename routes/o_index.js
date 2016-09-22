@@ -10,6 +10,7 @@ var GoogleMapsAPI = require('googlemaps');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
+var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 
 var permissions = require('../middlewares/permissions.js');
 var Volunteer = require('../models/volunteer_model.js');
@@ -52,10 +53,34 @@ router.get('/', function(req, res, next) {
             return days_length.length > 0;
           };
           const acts = activities.filter(isNotPassed);
-          res.render('g_accueil.jade', {
-            activities: acts,
-            session: req.session,
-            error: req.query.error
+          Organism.find({
+            'long_terms': {
+              '$exists': true,
+              '$not': {
+                '$size': 0
+              }
+            }
+          }, {
+            'org_name': true,
+            '_id': true,
+            'long_terms': true
+          }, function(err, organisms) {
+            var longterms = [];
+            organisms.map(function(org){
+              org.longterms.map(function(lt){
+                longterms.push({
+                  '_id': org._id,
+                  'org_name': org.org_name,
+                  'long_term': lt
+                });
+              });
+            });
+            console.log('LONG'+organisms);
+            res.render('g_accueil.jade', {
+              activities: acts,
+              session: req.session,
+              error: req.query.error
+            });
           });
         };
       } else {
