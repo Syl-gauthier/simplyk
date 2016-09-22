@@ -62,6 +62,7 @@ router.get('/', function(req, res, next) {
             }
           }, {
             'org_name': true,
+            'cause': true,
             '_id': true,
             'long_terms': true
           }, function(err, organisms) {
