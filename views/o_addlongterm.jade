@@ -1,0 +1,163 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'addlongterm'
+
+block head
+  script(src='/bower_components/pickadate/lib/picker.js', type='text/javascript')
+  script(src='/bower_components/pickadate/lib/picker.date.js', type='text/javascript')
+  script(src='/bower_components/pickadate/lib/picker.time.js', type='text/javascript')
+  script(src='/bower_components/pickadate/lib/legacy.js', type='text/javascript')
+  link(href='/bower_components/pickadate/lib/themes/classic.css', rel='stylesheet')
+  link(href='/bower_components/pickadate/lib/themes/classic.date.css', rel='stylesheet')
+  link(href='/bower_components/pickadate/lib/themes/classic.time.css', rel='stylesheet')
+
+block content
+  .container-fluid
+    .row
+      .col-md-6.col-md-offset-3
+        .page-header
+          h1 Ajoute un engagement
+          if error
+            p.alert.alert-danger #{error}
+    .row
+      .col-md-6.col-md-offset-3
+        form(id='creationlongtermform', name='creationlongtermform', action='addlongterm', method='post')
+          .form-group.conn-input
+            label(for='title') Titre de l'engagement
+            input.form-control(id='title', type='text', placeholder='Ex: Mentor de littérature', name='title', required)
+          .form-group.conn-input
+            label(for='description') Description de l'engagement
+            textarea.form-control(id='description', name='description', rows="6" required)
+          .form-group.conn-input
+            label(for='address') Adresse
+            input.form-control(id='address', type='text', name='address', required)
+          .row
+            .col-md-6
+              .form-group.conn-input
+                label(for='expiration_date') Date limite d'inscription
+                input.form-control.datepicker(id='expiration_date', type='text', name='expiration_date' required)
+            .col-md-6
+              .form-group.conn-input
+                label(for='min_hours') Heures hebdomadaires d'engagement
+                input.form-control(id='min_hours', type='number', name='min_hours' required)
+          .form-group.conn-input
+            label(for='vol_nb') Nombre de bénévoles recherchés
+            input.form-control(id='vol_nb', type='number', name='vol_nb' required)
+          .form-group.conn-input
+            label(for='min_age') Ajouter un âge minimal
+            .input-group.conn-input
+              span.input-group-addon
+                input#age-checkbox(type='checkbox')
+              input.form-control(type='number', id='min_age', name='min_age', placeholder='De nombreux jeunes bénévoles motivés sont sur notre plateforme', disabled=true)
+          .input-group.conn-input.form-group
+                label.radio-inline
+                  input(type='radio', name='language', value='enfr', checked)
+                  p  Français/English
+                label.radio-inline
+                  input(type='radio', name='language', value='en')
+                  p English only
+                label.radio-inline
+                  input(type='radio', name='language', value='fr')
+                  p Seulement Français
+          label(for='slot') Horaires disponibles
+          table.table(id='slot')
+            thead
+              tr
+                th #
+                th Lundi
+                th Mardi
+                th Mercredi
+                th Jeudi
+                th Vendredi
+                th Samedi
+                th Dimanche
+            tbody
+              tr
+                th(scope='row') AM
+                td
+                  input(type='checkbox', name='mondayAM')
+                td
+                  input(type='checkbox', name='tuesdayAM')
+                td
+                  input(type='checkbox', name='wednesdayAM')
+                td
+                  input(type='checkbox', name='thursdayAM')
+                td
+                  input(type='checkbox', name='fridayAM')
+                td
+                  input(type='checkbox', name='saturdayAM')
+                td
+                  input(type='checkbox', name='sundayAM')
+              tr
+                th(scope='row') PM
+                td
+                  input(type='checkbox', name='mondayPM')
+                td
+                  input(type='checkbox', name='tuesdayPM')
+                td
+                  input(type='checkbox', name='wednesdayPM')
+                td
+                  input(type='checkbox', name='thursdayPM')
+                td
+                  input(type='checkbox', name='fridayPM')
+                td
+                  input(type='checkbox', name='saturdayPM')
+                td
+                  input(type='checkbox', name='sundayPM')
+              tr
+                th(scope='row')= 'Soir (>16h)'
+                td
+                  input(type='checkbox', name='mondayEVE')
+                td
+                  input(type='checkbox', name='tuesdayEVE')
+                td
+                  input(type='checkbox', name='wednesdayEVE')
+                td
+                  input(type='checkbox', name='thursdayEVE')
+                td
+                  input(type='checkbox', name='fridayEVE')
+                td
+                  input(type='checkbox', name='saturdayEVE')
+                td
+                  input(type='checkbox', name='sundayEVE')
+
+          .row
+            input.btn.btn-default.form-control(type='submit', form='creationlongtermform', style="margin-bottom: 60px;")
+
+
+
+block footscript
+  script.
+    var input;
+    var options = {
+      types: ['address'],
+      componentRestrictions: {country: 'ca'}
+    };
+    function initAutocomplete(){
+      input = (document.getElementById('address'));
+      console.log(input);
+      var autocomplete = new google.maps.places.Autocomplete(input,options);
+    };
+  script.
+    $( document ).ready(function() {
+      var input = $('.datepicker');
+      input.pickadate({
+        firstDay: 1,
+        formatSubmit: 'yyyy-mm-dd'
+      });
+      var input = $('.timepicker');
+      input.pickatime({});
+      $('#age-checkbox').click(function(){
+        if($(':checked').length > 1){
+          console.log($(':checked').length);
+          console.log('checked !')
+          $('#min_age').prop('disabled', false);
+        } else {
+          console.log($(':checked').length);
+          console.log('Not checked!')
+          $('#min_age').prop('disabled', true);
+        };
+      });
+    });
+
+  script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&signed_in=true&libraries=places&callback=initAutocomplete" async defer)

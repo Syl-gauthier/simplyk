@@ -7,82 +7,103 @@ block vars
 
 
 block content
-      each act, index in activities
-          div(tabindex='-1', role='dialog', class='modal fade ' + act._id, id=act._id)
-            .modal-dialog(role='document')
-                .modal-content
-                  .modal-header
-                    button.close(type='button', data-dismiss='modal', aria-label='Close')
-                      span(aria-hidden='true') &times;        
-                    #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
-                  .modal-body.my-modal-body
-                    h4 <b>#{act.intitule}</b>
-                    table.table
-                      tr
-                        th.text-center Places restantes
-                        th.text-center Date
-                        th.text-center Heure de début
-                        th.text-center Heure de fin
-                      each day, nb in act.days
-                        tr
-                          td.text-center= (day.vol_nb-day.applicants.length)
-                          td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
-                          td.text-center= day.start_time
-                          td.text-center= day.end_time
-                        #identifiant(style="display:none")
-                          p= act._id
-                      p <b>Adresse : </b> #{act.address}
-                  .modal-footer
-                    button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-                    .subscribe-button.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id) Plus d'infos
-      .container-fluid
-        .row.fill
-          #offers-list.col-sm-5.hidden-xs.no-side-padding.scrollable
-            ul.list-group.list-opportunity
-              if error
-                p.alert.alert-danger #{error}
-              if success
-                p.alert.alert-success #{success}
-              each act, index in activities
-                  li.list-group-item(id= act._id)
-                    .panel.panel-default
-                      .panel-heading
-                        div.media-left.media-middle
-                          a(href='#')
-                            //img.media-object.little-img(src='/images/clouds.jpg')
-                            if act.cause == 'Solidarité'
-                              i.fa.fa-heart
-                            else if act.cause == 'Environnement'
-                              i.fa.fa-envira(style='color: #5BCF8F')
-                            else if act.cause == 'Culture'
-                              i.fa.fa-institution(style='color: #FFC858')
-                        div.media-body
-                          h4.media-heading <b>#{act.org_name}</b>
-                          h5.media-heading <b>#{act.intitule}</b>
-                          h6
-                            i.fa.fa-map-marker
-                            p.inline Adresse : #{act.address}
-                        div.media-right.media-middle
-                          button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
-                      .panel-body
-                          h4 Dans le cadre de : <b>#{act.event_intitule}</b>
-                          each day, day_i in act.days
-                            h4
-                              h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                              h6.inline
-                                i.fa.fa-user
-                                p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-          .col-sm-7.no-side-padding
-           #map
+  each act, index in activities
+    div(tabindex='-1', role='dialog', class='modal fade ' + act._id, id=act._id)
+      .modal-dialog(role='document')
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              span(aria-hidden='true') &times;        
+            #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
+          .modal-body.my-modal-body
+            h4 <b>#{act.intitule}</b>
+            table.table
+              tr
+                th.text-center Places restantes
+                th.text-center Date
+                th.text-center Heure de début
+                th.text-center Heure de fin
+              each day, nb in act.days
+                tr
+                  td.text-center= (day.vol_nb-day.applicants.length)
+                  td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
+                  td.text-center= day.start_time
+                  td.text-center= day.end_time
+                #identifiant(style="display:none")
+                  p= act._id
+              p <b>Adresse : </b> #{act.address}
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+            .subscribe-button-activity.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id) Plus d'infos
+  each lt, index in longterms
+    div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id, id=lt.long_term._id)
+      .modal-dialog(role='document')
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              span(aria-hidden='true') &times;        
+            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> <b>#{lt.org_name}</b>
+          .modal-body.my-modal-body
+            h4 <b>#{lt.long_term.intitule}</b>
+            p #{lt.long_term.description}
+            p <b>Adresse : </b> #{lt.long_term.address}
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+            .subscribe-button-longterm.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id) Plus d'infos
+  .container-fluid
+    .row.fill
+      #offers-list.col-sm-5.hidden-xs.no-side-padding.scrollable
+        ul.list-group.list-opportunity
+          if error
+            p.alert.alert-danger #{error}
+          if success
+            p.alert.alert-success #{success}
+          each act, index in activities
+              li.list-group-item(id= act._id)
+                .panel.panel-default
+                  .panel-heading
+                    div.media-left.media-middle
+                      a(href='#')
+                        //img.media-object.little-img(src='/images/clouds.jpg')
+                        if act.cause == 'Solidarité'
+                          i.fa.fa-heart
+                        else if act.cause == 'Environnement'
+                          i.fa.fa-envira(style='color: #5BCF8F')
+                        else if act.cause == 'Culture'
+                          i.fa.fa-institution(style='color: #FFC858')
+                    div.media-body
+                      h4.media-heading <b>#{act.org_name}</b>
+                      h5.media-heading <b>#{act.intitule}</b>
+                      h6
+                        i.fa.fa-map-marker
+                        p.inline Adresse : #{act.address}
+                    div.media-right.media-middle
+                      button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
+                  .panel-body
+                      h4 Dans le cadre de : <b>#{act.event_intitule}</b>
+                      each day, day_i in act.days
+                        h4
+                          h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                          h6.inline
+                            i.fa.fa-user
+                            p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+      .col-sm-7.no-side-padding
+       #map
 
 block footscript
   script.
     $(function() {
-      $('.subscribe-button').click(function(){
+      $('.subscribe-button-activity').click(function(){
         console.log('Clic sur le bouton  de subscription');
         var act_id = $(this).attr('activité');
         console.log('act_id : ' + act_id);
         $.redirect('/activity/'+act_id, {}, 'GET');
+      });
+      $('.subscribe-button-longterm').click(function(){
+        console.log('Clic sur le bouton  de subscription');
+        var lt_id = $(this).attr('longterm');
+        console.log('lt_id : ' + lt_id);
+        $.redirect('/longterm/'+lt_id, {}, 'GET');
       });
     });
     function initMap(){ 
@@ -109,9 +130,6 @@ block footscript
         mapTypeId: google.maps.MapTypeId.ROADMAP
       });
       //Generate markers
-      var imageTest = '/images/Perso/blue-icon-marker.svg';
-      //- la variable cause sert en attendant l'accès au json
-      var cause = 'cul'
       var imageSol = {
       url: '/images/Perso/blue-icon-marker.svg', // image is 512 x 512
       scaledSize : new google.maps.Size(30, 36)
@@ -125,6 +143,7 @@ block footscript
       scaledSize : new google.maps.Size(30, 36)
       };
       var acts = !{JSON.stringify(activities)};
+      var lts = !{JSON.stringify(longterms)};
       var infowindows = [];
       var markers = [];
       var optionsMS = {
@@ -189,7 +208,46 @@ block footscript
         });
         }
         attachInfoWindow(markers[i], infowindows[i], act, i);
-      }
+      };
+      //Attach marker to each longterms
+      for(j=0+acts.length; j<lts.length+acts.length; j++){
+        console.log(lts[j-acts.length].long_term.intitule + " marker generated with lat and lon : " + lts[j-acts.length].long_term.lat + lts[j-acts.length].long_term.lon);
+        var lt = lts[j-acts.length];
+        var latj = lt.long_term.lat+0.0008*(Math.random()-0.5);
+        var longj = lt.long_term.lon+0.0008*(Math.random()-0.5);
+        infowindows[j] = new google.maps.InfoWindow({
+          content: lt.org_name + '<br>' + lt.long_term.intitule
+        });
+        console.log('lts[j-acts.length] : '+ JSON.stringify(lts[j-acts.length]));
+        //choix du marqueur en fonction de la cause, changer avec le json
+        if (lts[j-acts.length].cause=='Environnement'){
+        markers[j] = new google.maps.Marker({
+          position: {lat: latj, lng: longj},
+          map: map,
+          icon: imageEnv,
+          clickable: true
+        });
+        }
+        else if (lts[j-acts.length].cause=='Solidarité'){
+        markers[j] = new google.maps.Marker({
+          position: {lat: latj, lng: longj},
+          map: map,
+          icon: imageSol,
+          clickable: true
+        });
+        }
+        else if (lts[j-acts.length].cause=='Culture'){
+        markers[j] = new google.maps.Marker({
+          position: {lat: latj, lng: longj},
+          map: map,
+          icon: imageCul,
+          clickable: true
+        });
+        } else {
+          markers[j] = null;
+        }
+        attachInfoWindow(markers[j], infowindows[j], lt.long_term, j);
+      };
       var markerCluster = new MarkerClusterer(map, markers, optionsMS);
     }
   script.

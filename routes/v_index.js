@@ -13,6 +13,8 @@ var Activity = require('../models/activity_model.js');
 var permissions = require('../middlewares/permissions.js');
 var subscribe = require('../middlewares/subscribe.js');
 var finder = require('../middlewares/mongo_finder.js');
+var longtermsList = require('../lib/longterms.js').listFromOrganisms;
+var rewindSlotString = require('../lib/slot.js').rewindSlotString;
 var app = express();
 
 /*GET map page*/
@@ -50,11 +52,37 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       } else {
         var acts = activities.filter(isNotPassed).filter(isTooYoung);
       }
-      res.render('v_map.jade', {
-        activities: acts,
-        volunteer: req.session.volunteer,
-        error: req.query.error,
-        success: req.query.success
+      Organism.find({
+        'long_terms': {
+          '$exists': true,
+          '$not': {
+            '$size': 0
+          }
+        }
+      }, {
+        'org_name': true,
+        '_id': true,
+        'cause': true,
+        'long_terms': true
+      }, function(err, organisms) {
+        if (err) {
+          console.log(err);
+          res.render('v_map.jade', {
+            session: req.session,
+            error: err,
+            organism: req.session.organism
+          });
+        } else {
+          var longterms = longtermsList(organisms);
+          console.log('LONG' + organisms);
+          res.render('v_map.jade', {
+            activities: acts,
+            volunteer: req.session.volunteer,
+            error: req.query.error,
+            longterms: longterms,
+            success: req.query.success
+          });
+        }
       });
     }
   });
@@ -94,6 +122,44 @@ router.get('/activity/:act_id', permissions.requireGroup('volunteer'), function(
         res.end();
       }
     });
+  });
+});
+
+
+router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+  console.log('In GET to an activity page with lt_id:' + req.params.lt_id);
+  //Find organism corresponding to the activity
+  Organism.findOne({
+    "long_terms": {
+      "$elemMatch": {
+        "_id": req.params.lt_id
+      }
+    }
+  }, function(err, organism) {
+    if (err) {
+      console.log(err);
+      res.redirect('/volunteer/map?error=' + err);
+    } else {
+      console.log('Organism from longterm : ' + organism);
+
+      function isRightLongterm(long) {
+        console.log('long._id == req.params.lt_id : ' + (long._id == req.params.lt_id) + long._id + '  ' + req.params.lt_id)
+        return long._id == req.params.lt_id;
+      };
+      var longterm = organism.long_terms.find(isRightLongterm);
+      console.log('+++++++++++++++++++++');
+      console.log('Longterm found in organism corresponding to lt_id : ' + longterm)
+      console.log('+++++++++++++++++++++');
+      var slotJSON = rewindSlotString(longterm.slot);
+      res.render('v_longterm.jade', {
+        lt_id: req.params.lt_id,
+        organism: organism,
+        longterm: longterm,
+        volunteer: req.session.volunteer,
+        slotJSON: slotJSON
+      });
+      res.end();
+    }
   });
 });
 

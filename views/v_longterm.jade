@@ -1,0 +1,154 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'longterm'
+  - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+  - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+  - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
+
+block content
+  .container-fluid
+    .row
+      .col-md-6.col-md-offset-1
+        .page-header
+          h1= longterm.intitule
+          p= longterm.description
+          p <b>Adresse : </b> #{longterm.address}
+            li.list-group-item
+              div.media-left.media-middle
+                i.fa.fa-calendar
+              div.media-body
+                h4 Horaires possibles :
+                table.table(id='slot')
+                  thead
+                    tr
+                      th #
+                      th Lundi
+                      th Mardi
+                      th Mercredi
+                      th Jeudi
+                      th Vendredi
+                      th Samedi
+                      th Dimanche
+                  tbody
+                    tr
+                      th(scope='row') AM
+                      td
+                        if slotJSON['mondayAM']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['tuesdayAM']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['wednesdayAM']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['thursdayAM']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['fridayAM']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['saturdayAM']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['sundayAM']
+                          i.fa.fa-check
+                        else
+                          p
+                    tr
+                      th(scope='row') PM
+                      td
+                        if slotJSON['mondayPM']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['tuesdayPM']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['wednesdayPM']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['thursdayPM']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['fridayPM']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['saturdayPM']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['sundayPM']
+                          i.fa.fa-check
+                        else
+                          p
+                    tr
+                      th(scope='row')= 'Soir (>16h)'
+                      td
+                        if slotJSON['mondayEVE']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['tuesdayEVE']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['wednesdayEVE']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['thursdayEVE']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['fridayEVE']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['saturdayEVE']
+                          i.fa.fa-check
+                        else
+                          p
+                      td
+                        if slotJSON['sundayEVE']
+                          i.fa.fa-check
+                        else
+                          p
+      .col-md-4.col-md-offset-1
+        .page-header
+          h4 L'organisme :
+          h2= organism.org_name
+          p='Mission: ' + organism.description
+          p= 'Courriel: ' + organism.email
+          p= 'Téléphone: ' + organism.phone
+    .row
+      .col-md-10.col-md-offset-1
+        //form(action='/volunteer/subscribe/'+activity._id+'-'+day.day, method='post')
+        button.btn.btn-default(role='button' data-toggle="tooltip" title='Fonctionnalité à venir' data-placement="top") S'inscrire (à venir)

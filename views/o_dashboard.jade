@@ -47,7 +47,7 @@ block content
                 if error
                   p.alert.alert-danger #{error}
                 h4 Besoin de bénévoles pour un évènement particulier ?
-                button.btn.btn-default(onclick="location.href='/organism/addevent';") Ajouter un évènement !
+                a.btn.btn-default(href='/organism/addevent') Ajouter un évènement !
                 h3
                 ul.list-group.list-opportunity
                   if ev_to_come.length
@@ -138,9 +138,10 @@ block content
                         button.btn.btn-default.infos-button(id= event._id) Informations
               .col-md-5.col-md-offset-2.no-side-padding
                 h2.page-header Mes engagements
-                h4.inline
-                  i.fa.fa-cubes
-                  p.inline Section en développement...
+                h4 Besoin de bénévoles sur du long terme ?
+                a.btn.btn-default(href='/organism/addlongterm') Ajouter un engagement !
+                h3
+                ul.list-group.list-opportunity
             #todo.tab-pane.fade(role='tabpanel')
               .col-md-10.col-md-offset-1
                 if todos.length
