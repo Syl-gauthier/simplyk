@@ -42,7 +42,7 @@ block content
 												h4 <b>Inscrit</b>
 										else
 											div.media-right.media-middle
-												form(action='/volunteer/subscribe/'+activity._id+'-'+day.day, method='post')
+												form(action='/volunteer/event/event/subscribe/'+activity._id+'-'+day.day, method='post')
 													button.btn.btn-default(role='button' name='day' value=day.day) S'inscrire
 				if other_activities.length > 0
 					h3 Autres activités de l'évènement
@@ -76,7 +76,7 @@ block content
 													h4 <b>Inscrit</b>
 											else
 												div.media-right.media-middle
-													form(action='/volunteer/subscribe/'+act._id+'-'+day.day, method='post')
+													form(action='/volunteer/event/subscribe/'+act._id+'-'+day.day, method='post')
 														button.btn.btn-default(role='button' name='day' value=day.day) S'inscrire
 			.col-md-3.col-md-offset-1.no-side-padding
 				h4 L'organisme <b> #{organism.org_name} </b>

@@ -10,7 +10,11 @@ block content
     .row
       .col-md-6.col-md-offset-1
         .page-header
-          h1= longterm.intitule
+          if (alreadySubscribed)
+            h1= longterm.intitule + ' '
+              span.badge Inscrit
+          else
+            h1= longterm.intitule
           p= longterm.description
           p <b>Adresse : </b> #{longterm.address}
             li.list-group-item
@@ -150,5 +154,9 @@ block content
           p= 'Téléphone: ' + organism.phone
     .row
       .col-md-10.col-md-offset-1
-        //form(action='/volunteer/subscribe/'+activity._id+'-'+day.day, method='post')
-        button.btn.btn-default(role='button' data-toggle="tooltip" title='Fonctionnalité à venir' data-placement="top") S'inscrire (à venir)
+        if (!alreadySubscribed)
+          form#subscribe(action='/volunteer/longterm/subscribe/'+longterm._id, method='post')
+            button.btn.btn-default(role='submit' form='subscribe' data-toggle="tooltip" title='Fonctionnalité à venir' data-placement="top") S'inscrire
+
+
+block footscript

@@ -15,6 +15,7 @@ var subscribe = require('../middlewares/subscribe.js');
 var finder = require('../middlewares/mongo_finder.js');
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
+var ltSubs = require('../lib/subscribe/longterm_subs.js');
 var app = express();
 
 /*GET map page*/
@@ -151,12 +152,16 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
       console.log('Longterm found in organism corresponding to lt_id : ' + longterm)
       console.log('+++++++++++++++++++++');
       var slotJSON = rewindSlotString(longterm.slot);
+      const alreadySubscribed = longterm.applicants.find(function(app){
+        return app == req.session.volunteer._id;
+      });
       res.render('v_longterm.jade', {
         lt_id: req.params.lt_id,
         organism: organism,
         longterm: longterm,
         volunteer: req.session.volunteer,
-        slotJSON: slotJSON
+        slotJSON: slotJSON,
+        alreadySubscribed: alreadySubscribed
       });
       res.end();
     }
@@ -164,7 +169,7 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
 });
 
 
-router.post('/volunteer/subscribe/:act_id-:activity_day', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requireGroup('volunteer'), function(req, res) {
   //Verify the volunteer is not already susbscribed to the activity
   function subscribeToActivity(student_q, organism_q) {
     function isActivity(activity) {
@@ -272,6 +277,23 @@ router.post('/volunteer/subscribe/:act_id-:activity_day', permissions.requireGro
   } else {
     subscribeToActivity(null, null);
   }
+});
+
+router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+  console.log('lt_id : ' + req.params.lt_id + typeof req.params.lt_id);
+  ltSubs.subscribe(req.session.volunteer, req.params.lt_id, function(err, results) {
+    if (err) {
+      console.log(err);
+      res.redirect('/volunteer/map?error=' + err);
+    } else {
+      req.session.volunteer = results.newVolunteer;
+      res.render('v_postsubscription.jade', {
+        org_name: results.newOrganism.org_name,
+        email: results.newOrganism.email,
+        volunteer: req.session.volunteer
+      });
+    }
+  });
 });
 
 router.get('/user', function(req, res) {

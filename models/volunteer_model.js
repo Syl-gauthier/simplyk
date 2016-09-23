@@ -41,10 +41,12 @@ var VolunteerSchema = new Schema({
     organism_questions: [String],
     organism_answers: [String]
   }],
-  longTerms: [{
+  long_terms: [{
     intitule: String,
     description: String,
     address: String,
+    org_id: {type: Schema.Types.ObjectId, ref:'Organism'},
+    org_name: String,
     lat: Number,
     lon: Number,
     slot: String,
