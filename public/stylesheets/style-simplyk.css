@@ -179,6 +179,10 @@ body{
     background-color: #8BE78F;
 }
 
+.list-longterm li:hover{
+    background-color: #E3DF2F;
+}
+
 .starring{
 	background-color: #8BE78F;
 }
@@ -201,6 +205,12 @@ body{
 .btn-default{
     background-color: #5BCF8F;
 	border-color:#5BCF8F;
+	color: #F5F5F5;
+}
+
+.longterm{
+    background-color: #E3DF2F;
+	border-color:#E3DF2F;
 	color: #F5F5F5;
 }
 

@@ -11,6 +11,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
+var rewindSlotString = require('../lib/slot.js').rewindSlotString;
 
 var permissions = require('../middlewares/permissions.js');
 var Volunteer = require('../models/volunteer_model.js');
@@ -273,6 +274,29 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism'), fu
       });
     }
   });
+});
+
+
+router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism'), function(req, res) {
+  console.log('In GET to a longterm page with lt_id:' + req.params.lt_id);
+  var organism = req.session.organism;
+
+  function isRightLongterm(long) {
+    console.log('long._id == req.params.lt_id : ' + (long._id == req.params.lt_id) + long._id + '  ' + req.params.lt_id)
+    return long._id == req.params.lt_id;
+  };
+  var longterm = organism.long_terms.find(isRightLongterm);
+  console.log('+++++++++++++++++++++');
+  console.log('Longterm corresponding to lt_id : ' + longterm)
+  console.log('+++++++++++++++++++++');
+  var slotJSON = rewindSlotString(longterm.slot);
+  res.render('o_longterm.jade', {
+    lt_id: req.params.lt_id,
+    organism: organism,
+    longterm: longterm,
+    slotJSON: slotJSON
+  });
+  res.end();
 });
 
 //for ajax call only (for now)
