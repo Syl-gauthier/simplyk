@@ -159,9 +159,23 @@ block content
                 div.media-left.media-top
                   h4 <strong>Mon engagement</strong>
                 div.media-top.media-right
-                  button.btn.longterm
+                  button.btn.longterm(data-toggle='modal' data-target='#addLTHoursModal')
                     i.fa.fa-plus
                     p.inline Ajouter des heures
+              #addLTHoursModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="addLTHoursModalLabel")
+                div.modal-dialog(role='document')
+                  form.modal-content.addLTHoursForm(id='addLTHoursForm'+longterm._id)
+                    .modal-header
+                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                        span(aria-hidden='true')
+                        h4.modal-title Ajout d'heures
+                      div.modal-body
+                        div.form-group
+                          label(for='addLTHoursInput') Combien d'heures as-tu effectué dernièrement ?
+                          input(name='hours_number', form='addLTHoursForm'+longterm._id, required)
+                      div.modal-footer
+                        a.btn.btn-default(data-dismiss='modal') Annuler
+                        input.btn.btn-warning(type='submit' form='addLTHoursForm'+longterm._id, value='Envoyer')
             .panel-body
               table.table(id='achievements')
                   thead
