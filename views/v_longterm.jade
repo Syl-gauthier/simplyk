@@ -164,7 +164,7 @@ block content
                     p.inline Ajouter des heures
               #addLTHoursModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="addLTHoursModalLabel")
                 div.modal-dialog(role='document')
-                  form.modal-content.addLTHoursForm(id='addLTHoursForm'+longterm._id)
+                  form.modal-content.addLTHoursForm(id='addLTHoursForm'+longterm._id, method='post', action='/volunteer/LThours_pending/'+longterm._id)
                     .modal-header
                       button(type='button' class="close" data-dismiss="modal" aria-label="Close")
                         span(aria-hidden='true')
@@ -172,7 +172,7 @@ block content
                       div.modal-body
                         div.form-group
                           label(for='addLTHoursInput') Combien d'heures as-tu effectué dernièrement ?
-                          input(name='hours_number', form='addLTHoursForm'+longterm._id, required)
+                          input(name='hours_pending', form='addLTHoursForm'+longterm._id, required)
                       div.modal-footer
                         a.btn.btn-default(data-dismiss='modal') Annuler
                         input.btn.btn-warning(type='submit' form='addLTHoursForm'+longterm._id, value='Envoyer')
@@ -185,13 +185,13 @@ block content
                   tbody
                     tr
                       td
-                        if longterm.hours_done
-                          p.text-center= longterm.hours_done + 'h'
+                        if (hours_done)
+                          p.text-center= hours_done + 'h'
                         else
                           p.text-center 0h
                       td
-                        if longterm.hours_pending
-                          p.text-center= longterm.hours_pending + 'h'
+                        if (hours_pending)
+                          p.text-center= hours_pending + 'h'
                         else
                           p.text-center 0h
     .row

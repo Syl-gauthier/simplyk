@@ -142,7 +142,8 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
     new: true
   }, function(err, newVolunteer) {
     if (err) {
-      console.log('error : ' + err);
+      console.log(err);
+      res.redirect('/volunteer/map?error=' + err);
     } else {
       req.session.volunteer = newVolunteer;
       console.log('newVolunteer ' + newVolunteer);
@@ -192,6 +193,7 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
       newTodo.save(function(err, todo) {
         if (err) {
           console.log(err);
+          res.redirect('/volunteer/map?error=' + err);
         } else {
           if (req.session.volunteer.student) {
             res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
@@ -203,6 +205,87 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
     }
   });
 });
+
+
+//Add hours_pending to an activity
+router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+  console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
+  console.log('JSON.stringify(req.params) : ' + JSON.stringify(req.params));
+  Volunteer.findOneAndUpdate({
+    "$and": [{
+      "_id": req.session.volunteer._id
+    }, {
+      "long_terms": {
+        '$elemMatch': {
+          '_id': req.params.lt_id
+        }
+      }
+    }]
+  }, {
+    "$set": {
+      "long_terms.$.hours_pending": req.body.hours_pending,
+      "long_terms.$.status": 'pending'
+    }
+  }, {
+    returnNewDocument: true,
+    new: true
+  }, function(err, newVolunteer) {
+    if (err) {
+      console.log(err);
+      res.redirect('/volunteer/map?error=' + err);
+    } else {
+      req.session.volunteer = newVolunteer;
+      console.log('newVolunteer ' + newVolunteer);
+
+      function isLongTerm(longterm) {
+        console.log('isLongTerm : ' + (longterm._id == req.params.lt_id));
+        return longterm.activity_id == req.params.lt_id;
+      };
+
+      const lt = newVolunteer.long_terms.filter(isLongTerm);
+      console.log(lt);
+      if (newVolunteer.student) {
+        var newTodo = new OrgTodo({
+          type: 'LThours_pending',
+          org_id: lt.org_id,
+          lastname: newVolunteer.lastname,
+          firstname: newVolunteer.firstname,
+          vol_id: newVolunteer._id,
+          lt_id: req.params.lt_id,
+          lt_intitule: lt.intitule,
+          hours: req.body.hours_pending,
+          student: true,
+          organism_questions: lt.organism_questions
+        });
+      } else {
+        var newTodo = new OrgTodo({
+          type: 'LThours_pending',
+          org_id: lt.org_id,
+          lastname: newVolunteer.lastname,
+          firstname: newVolunteer.firstname,
+          vol_id: newVolunteer._id,
+          lt_id: req.params.lt_id,
+          lt_intitule: lt.intitule,
+          hours: req.body.hours_pending
+        });
+      };
+      //TODO creation
+
+      newTodo.save(function(err, todo) {
+        if (err) {
+          console.log(err);
+        } else {
+          if (req.session.volunteer.student) {
+            res.redirect('/volunteer/student_questions/' + req.params.lt_id);
+          } else {
+            res.redirect('/volunteer/map');
+          }
+        }
+      })
+    }
+  });
+});
+
 
 router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), function(req, res) {
 

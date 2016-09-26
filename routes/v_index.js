@@ -128,7 +128,7 @@ router.get('/activity/:act_id', permissions.requireGroup('volunteer'), function(
 
 
 router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
-  console.log('In GET to an activity page with lt_id:' + req.params.lt_id);
+  console.log('In GET to a longterm page with lt_id:' + req.params.lt_id);
   //Find organism corresponding to the activity
   Organism.findOne({
     "long_terms": {
@@ -152,16 +152,33 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
       console.log('Longterm found in organism corresponding to lt_id : ' + longterm)
       console.log('+++++++++++++++++++++');
       var slotJSON = rewindSlotString(longterm.slot);
-      const alreadySubscribed = longterm.applicants.find(function(app){
+      const alreadySubscribed = longterm.applicants.find(function(app) {
         return app == req.session.volunteer._id;
       });
+      const longtTermInVolunteer = req.session.volunteer.long_terms.find(function(lt) {
+        console.log('longterm._id : ' + longterm._id);
+        console.log('lt._id : ' + lt._id);
+        return longterm._id == lt._id
+      });
+      console.log('longtTermInVolunteer : ' + longtTermInVolunteer);
+      if (longtTermInVolunteer) {
+        var hours_pending = longtTermInVolunteer.hours_pending;
+        var hours_done = longtTermInVolunteer.hours_done;
+        console.log('hours_done : ' + hours_done);
+        console.log('hours_pending : ' + hours_pending);
+      } else {
+        var hours_pending = null;
+        var hours_done = null;
+      };
       res.render('v_longterm.jade', {
         lt_id: req.params.lt_id,
         organism: organism,
         longterm: longterm,
         volunteer: req.session.volunteer,
         slotJSON: slotJSON,
-        alreadySubscribed: alreadySubscribed
+        alreadySubscribed: alreadySubscribed,
+        hours_done: hours_done,
+        hours_pending: hours_pending
       });
       res.end();
     }
