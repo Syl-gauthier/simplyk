@@ -25,17 +25,17 @@ block content
                 table.table(id='slot')
                   thead
                     tr
-                      th #
-                      th Lundi
-                      th Mardi
-                      th Mercredi
-                      th Jeudi
-                      th Vendredi
-                      th Samedi
-                      th Dimanche
+                      th.text-center #
+                      th.text-center Lundi
+                      th.text-center Mardi
+                      th.text-center Mercredi
+                      th.text-center Jeudi
+                      th.text-center Vendredi
+                      th.text-center Samedi
+                      th.text-center Dimanche
                   tbody
                     tr
-                      th(scope='row') AM
+                      th.text-center(scope='row') AM
                       td
                         if slotJSON['mondayAM']
                           i.fa.fa-check
@@ -52,7 +52,7 @@ block content
                         else
                           p
                       td
-                        if slotJSON['thursdayAM']
+                        if slotJSON['th.text-centerursdayAM']
                           i.fa.fa-check
                         else
                           p
@@ -72,7 +72,7 @@ block content
                         else
                           p
                     tr
-                      th(scope='row') PM
+                      th.text-center(scope='row') PM
                       td
                         if slotJSON['mondayPM']
                           i.fa.fa-check
@@ -89,7 +89,7 @@ block content
                         else
                           p
                       td
-                        if slotJSON['thursdayPM']
+                        if slotJSON['th.text-centerursdayPM']
                           i.fa.fa-check
                         else
                           p
@@ -109,7 +109,7 @@ block content
                         else
                           p
                     tr
-                      th(scope='row')= 'Soir (>16h)'
+                      th.text-center(scope='row')= 'Soir (>16h)'
                       td
                         if slotJSON['mondayEVE']
                           i.fa.fa-check
@@ -126,7 +126,7 @@ block content
                         else
                           p
                       td
-                        if slotJSON['thursdayEVE']
+                        if slotJSON['th.text-centerursdayEVE']
                           i.fa.fa-check
                         else
                           p
@@ -152,6 +152,34 @@ block content
           p='Mission: ' + organism.description
           p= 'Courriel: ' + organism.email
           p= 'Téléphone: ' + organism.phone
+        if (alreadySubscribed)
+          .panel.panel-default
+            .panel-heading
+              div.media
+                div.media-left.media-top
+                  h4 <strong>Mon engagement</strong>
+                div.media-top.media-right
+                  button.btn.longterm
+                    i.fa.fa-plus
+                    p.inline Ajouter des heures
+            .panel-body
+              table.table(id='achievements')
+                  thead
+                    tr
+                      th.text-center Heures réalisées
+                      th.text-center Heures à confirmer
+                  tbody
+                    tr
+                      td
+                        if longterm.hours_done
+                          p.text-center= longterm.hours_done + 'h'
+                        else
+                          p.text-center 0h
+                      td
+                        if longterm.hours_pending
+                          p.text-center= longterm.hours_pending + 'h'
+                        else
+                          p.text-center 0h
     .row
       .col-md-10.col-md-offset-1
         if (!alreadySubscribed)

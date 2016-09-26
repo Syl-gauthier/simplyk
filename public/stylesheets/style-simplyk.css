@@ -175,11 +175,11 @@ body{
 	color:#FF1CB5;
 }
 
-.list-opportunity li:hover{
+.list-group-item:hover{
     background-color: #8BE78F;
 }
 
-.list-longterm li:hover{
+.list-longterm-item:hover{
     background-color: #E3DF2F;
 }
 

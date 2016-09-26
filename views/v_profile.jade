@@ -112,7 +112,7 @@ block content
                   if volunteer.long_terms.length
                     h3 Confirmer votre venue
                   each lt, lt_i in volunteer.long_terms
-                    li.list-group-item(id= lt._id)
+                    li.list-group-item.list-longterm-item(id= lt._id)
                       .panel.panel-default
                         .panel-heading
                           div.media-left.media-top
@@ -131,7 +131,7 @@ block content
                         .panel-footer
                           ul.list-inline
                             li
-                              button.btn.infos-button-longterm.longterm(id= lt._id) Informations
+                              a.btn.infos-button-longterm.longterm(id= lt._id, href='/longterm/'+lt._id) Informations
                             li
                               h4.text-right
                                 if lt.hours_done
