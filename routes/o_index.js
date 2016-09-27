@@ -161,30 +161,35 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
             organism: req.isAuthenticated()
           });
         } else {
-          function addEventName(todo) {
-            console.log(JSON.stringify(todo));
-            todo.event_name = null;
+          function addEventName(td) {
+            if (td.type == 'hours_pending') {
+              var todo = JSON.parse(JSON.stringify(td));
+              todo.event_name = null;
 
-            function containsActivity(event) {
-              var isIt = event.activities.find(function(act) {
-                return act.$oid == todo.activity_id;
-              });
-              if (isIt == -1) {
-                return false;
-              } else {
-                return true;
-              }
-            };
-            const theEvent = req.session.organism.events.find(containsActivity);
-            console.log('theEvent : ' + theEvent);
-            todo.event_name = theEvent.intitule;
+              function containsActivity(event) {
+                var isIt = event.activities.find(function(act) {
+                  return act.$oid == todo.activity_id;
+                });
+                if (isIt == -1) {
+                  return false;
+                } else {
+                  return true;
+                }
+              };
+              const theEvent = req.session.organism.events.find(containsActivity);
+              console.log('theEvent : ' + theEvent);
+              todo.event_name = theEvent.intitule;
+              return todo;
+            } else {
+              return td;
+            }
           };
-          todos.map(addEventName);
+          var lastTodos = todos.map(addEventName);
           res.render('o_dashboard.jade', {
             ev_past: ev_past,
             ev_to_come: ev_to_come,
             organism: req.session.organism,
-            todos: todos
+            todos: lastTodos
           });
         }
       });
@@ -413,51 +418,92 @@ router.post('/organism/confirmhours', function(req, res) {
     } else if (myVolunteer) {
       console.log('myvolunteer exists');
       console.log('MyVolunteer : ' + JSON.stringify(myVolunteer));
+      var hours_pending = req.body.hours;
+      var update = {};
+      if (req.body.act_id) {
+        var query = {
+          '_id': req.body.vol_id,
+          'events': {
+            '$elemMatch': {
+              'activity_id': req.body.act_id,
+              'day': req.body.day
+            }
+          }
+        };
+        //If we deal with a student
+        if (req.body["answers[0][value]"]) {
+          console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
+          var i = 0;
+          var answers = [];
+          while (req.body["answers[" + i + "][value]"]) {
+            console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
+            answers.push(req.body["answers[" + i + "][value]"]);
+            i++;
+          };
+          console.log('Answers : ' + JSON.stringify(answers));
+          var update = {
+            '$set': {
+              'events.$.hours_done': hours_pending,
+              'events.$.hours_pending': 0,
+              'events.$.status': 'confirmed',
+              'events.$.organism_answers': answers
+            }
+          };
+        } else {
+          console.log("NO answers");
+          var update = {
+            '$set': {
+              'events.$.hours_done': hours_pending,
+              'events.$.hours_pending': 0,
+              'events.$.status': 'confirmed'
+            }
+          };
+        };
+      } else if (req.body.lt_id) {
+        var query = {
+          '_id': req.body.vol_id,
+          'long_terms': {
+            '$elemMatch': {
+              '_id': req.body.lt_id
+            }
+          }
+        };
+        //If we deal with a student
+        if (req.body["answers[0][value]"]) {
+          console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
+          var i = 0;
+          var answers = [];
+          while (req.body["answers[" + i + "][value]"]) {
+            console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
+            answers.push(req.body["answers[" + i + "][value]"]);
+            i++;
+          };
+          console.log('Answers : ' + JSON.stringify(answers));
+          var update = {
+            '$inc': {
+              'long_terms.$.hours_done': hours_pending,
+              'long_terms.$.hours_pending': -hours_pending
+            },
+            '$set': {
+              'long_terms.$.status': 'confirmed',
+              'long_terms.$.organism_answers': answers
+            }
+          };
+        } else {
+          console.log("NO answers");
+          var update = {
+            '$inc': {
+              'long_terms.$.hours_done': hours_pending,
+              'long_terms.$.hours_pending': -hours_pending
+            },
+            '$set': {
+              'long_terms.$.status': 'confirmed'
+            }
+          };
+        };
+      }
 
-      function goodEvent(event) {
-        return (event.activity_id == req.body.act_id) && (Date.parse(event.day) == Date.parse(req.body.day));
-      };
-      var hours_pending = myVolunteer.events.find(goodEvent).hours_pending;
-      console.log('hours_pending : ' + hours_pending);
-      console.log('req.body : ' + JSON.stringify(req.body));
-      //If we deal with a student
-      if (req.body["answers[0][value]"]) {
-        console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
-        var i = 0;
-        var answers = [];
-        while (req.body["answers[" + i + "][value]"]) {
-          console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
-          answers.push(req.body["answers[" + i + "][value]"]);
-          i++;
-        };
-        console.log('Answers : ' + JSON.stringify(answers));
-        var update = {
-          '$set': {
-            'events.$.hours_done': hours_pending,
-            'events.$.hours_pending': 0,
-            'events.$.status': 'confirmed',
-            'events.$.organism_answers': answers
-          }
-        };
-      } else {
-        console.log("NO answers");
-        var update = {
-          '$set': {
-            'events.$.hours_done': hours_pending,
-            'events.$.hours_pending': 0,
-            'events.$.status': 'confirmed'
-          }
-        };
-      };
-      Volunteer.findOneAndUpdate({
-        '_id': req.body.vol_id,
-        'events': {
-          '$elemMatch': {
-            'activity_id': req.body.act_id,
-            'day': req.body.day
-          }
-        }
-      }, update, function(err) {
+      Volunteer.findOneAndUpdate(query, update, function(err) {
         if (err) {
           console.log(err);
           res.sendStatus(404).end();

@@ -249,7 +249,7 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
   }, function(err, newVolunteer) {
     if (err) {
       console.log(err);
-      res.redirect(404, '/volunteer/map?error=' + err);
+      res.redirect('/volunteer/map?error=' + err);
     } else {
       req.session.volunteer = newVolunteer;
       console.log('newVolunteer ' + newVolunteer);
@@ -287,9 +287,9 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
           console.log(err);
         } else {
           if (req.session.volunteer.student) {
-            res.redirect(200, '/volunteer/student_questions/' + req.params.lt_id);
+            res.redirect('/volunteer/student_questions/' + req.params.lt_id);
           } else {
-            res.redirect(200, '/volunteer/map');
+            res.redirect('/volunteer/map');
           }
         }
       })

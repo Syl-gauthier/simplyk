@@ -38,7 +38,7 @@ block content
               li(role='presentation')
                 a(href='#todo' aria-controls='todo' role='tab' data-toggle='tab') 
                   h4 À faire 
-                    span.badge= todos.length
+                    span.badge(style='background-color: #C11')= todos.length
         .row
           .tab-content
             #needs.tab-pane.fade.active.in(role='tabpanel')
@@ -132,81 +132,159 @@ block content
                 if todos.length
                   each todo, todo_i in todos
                     li.list-group-item
-                    if todo.type == 'hours_pending'
-                      .panel.panel-default
-                        .panel-heading
-                          div.media
-                            div.media-left.media-middle
-                              i.fa.fa-user
-                            div.media-body
-                              h4.media-heading <b>#{todo.event_name}</b>
-                        .panel-body
-                          div.media
-                            div.media-body
-                             h5 #{todo.firstname} #{todo.lastname} a t-il bien réalisé #{todo.hours}h durant cet évènement ?
-                            div.media-right.media-middle
-                              if todo.student
-                                div.btn-group(style='width: 120px', todo=todo._id)
-                                  button.btn.btn-default.confirm_hours_student(data-toggle='modal' data-target='#confirmationModal')
-                                    i.fa.fa-thumbs-up
-                                  #confirmationModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="confirmationModalLabel")
-                                    div.modal-dialog(role='document')
-                                      form.modal-content.confirmStudentHoursForm(id='confirmStudentHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
-                                        .modal-header
-                                          button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                                            span(aria-hidden='true')
-                                            h4.modal-title Validation de participation
-                                          div.modal-body
-                                            h4 Questions sur l'élève
-                                            for question, q_i in todo.organism_questions
+                      if todo.type === 'hours_pending'
+                        .panel.panel-default
+                          .panel-heading
+                            div.media
+                              div.media-left.media-middle
+                                span.badge(style='background-color: #5bcf8f') PONCTUEL
+                              div.media-body
+                                h4.media-heading <b>#{todo.event_name}</b> - #{todo.firstname} #{todo.lastname}
+                              div.media-right
+                          .panel-body
+                            div.media
+                              div.media-body
+                               h5 #{todo.firstname} #{todo.lastname} a t-il bien réalisé #{todo.hours}h durant cet évènement (#{todo.activity_intitule}) ?
+                              div.media-right.media-middle
+                                if todo.student
+                                  div.btn-group(style='width: 120px', todo=todo._id)
+                                    button.btn.btn-default.confirm_hours_student(data-toggle='modal' data-target='#confirmationModal')
+                                      i.fa.fa-thumbs-up
+                                    #confirmationModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="confirmationModalLabel")
+                                      div.modal-dialog(role='document')
+                                        form.modal-content.confirmStudentHoursForm(id='confirmStudentHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
+                                          .modal-header
+                                            button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                              span(aria-hidden='true')
+                                              h4.modal-title Validation de participation
+                                            div.modal-body
+                                              h4 Questions sur l'élève
+                                              for question, q_i in todo.organism_questions
+                                                div.form-group
+                                                  label(for='confirmationHoursInput')= question
+                                                  textarea.confirmation_text(name='answer'+q_i, form='confirmStudentHoursForm'+todo._id, minlength='20' required)
+                                            div.modal-footer
+                                              a.btn.btn-default(data-dismiss='modal') Annuler
+                                              button.btn.btn-warning(type='submit' form='confirmStudentHoursForm'+todo._id) Envoyer
+                                    button.btn.btn-warning.correct_hours_student(data-toggle='modal' data-target='#correctionModal')
+                                      i.fa.fa-thumbs-down
+                                    #correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
+                                      div.modal-dialog(role='document')
+                                        form.modal-content.correctStudentHoursForm(id='correctStudentHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
+                                          .modal-header
+                                            button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                              span(aria-hidden='true')
+                                              h4.modal-title Correction d'horaires
+                                            div.modal-body
+                                              p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
                                               div.form-group
-                                                label(for='confirmationHoursInput')= question
-                                                textarea.confirmation_text(name='answer'+q_i, form='confirmStudentHoursForm'+todo._id, minlength='20' required)
-                                          div.modal-footer
-                                            a.btn.btn-default(data-dismiss='modal') Annuler
-                                            button.btn.btn-warning(type='submit' form='confirmStudentHoursForm'+todo._id) Envoyer
-                                  button.btn.btn-warning.correct_hours_student(data-toggle='modal' data-target='#correctionModal')
-                                    i.fa.fa-thumbs-down
-                                  #correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
-                                    div.modal-dialog(role='document')
-                                      form.modal-content.correctStudentHoursForm(id='correctStudentHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
-                                        .modal-header
-                                          button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                                            span(aria-hidden='true')
-                                            h4.modal-title Correction d'horaires
-                                          div.modal-body
-                                            p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
-                                            div.form-group
-                                              label(for='correctionStudentHoursInput') Heures réellement réalisées 
-                                              input.form-control(type='Number' class='correctionStudentHoursInput', name='correct_hours' required)
-                                            for question, q_i in todo.organism_questions
+                                                label(for='correctionStudentHoursInput') Heures réellement réalisées 
+                                                input.form-control(type='Number' class='correctionStudentHoursInput', name='correct_hours' required)
+                                              for question, q_i in todo.organism_questions
+                                                div.form-group
+                                                  label(for='answer'+q_i)= question
+                                                  textarea.correction_text(name='answer'+q_i, form='correctStudentHoursForm'+todo._id, minlength='20' required)
+                                            div.modal-footer
+                                              a.btn.btn-default(data-dismiss='modal') Annuler
+                                              button.btn.btn-warning(type='submit' form='correctStudentHoursForm'+todo._id) Envoyer
+                                else
+                                  div.btn-group(style='width: 120px', todo=todo._id)
+                                    button.btn.btn-default.validate_hours_pending(vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id, hours=todo.hours)
+                                      i.fa.fa-thumbs-up
+                                    button.btn.btn-warning.decline_hours_pending(data-toggle='modal' data-target='#correctionModal')
+                                      i.fa.fa-thumbs-down
+                                    #correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
+                                      div.modal-dialog(role='document')
+                                        form.modal-content.correctHoursForm(id='correctHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
+                                          .modal-header
+                                            button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                              span(aria-hidden='true')
+                                              h4.modal-title Correction d'horaires
+                                            div.modal-body
+                                              p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
                                               div.form-group
-                                                label(for='answer'+q_i)= question
-                                                textarea.correction_text(name='answer'+q_i, form='correctStudentHoursForm'+todo._id, minlength='20' required)
-                                          div.modal-footer
-                                            a.btn.btn-default(data-dismiss='modal') Annuler
-                                            button.btn.btn-warning(type='submit' form='correctStudentHoursForm'+todo._id) Envoyer
-                              else
-                                div.btn-group(style='width: 120px', todo=todo._id)
-                                  button.btn.btn-default.validate_hours_pending(vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
-                                    i.fa.fa-thumbs-up
-                                  button.btn.btn-warning.decline_hours_pending(data-toggle='modal' data-target='#correctionModal')
-                                    i.fa.fa-thumbs-down
-                                  #correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
-                                    div.modal-dialog(role='document')
-                                      form.modal-content.correctHoursForm(id='correctHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
-                                        .modal-header
-                                          button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                                            span(aria-hidden='true')
-                                            h4.modal-title Correction d'horaires
-                                          div.modal-body
-                                            p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
-                                            div.form-group
-                                              label(for='correctionHoursInput') Heures réellement réalisées
-                                              input.form-control.correction_input(type='Number' id='correctionHoursInput', name='correct_hours' required)
-                                          div.modal-footer
-                                            a.btn.btn-default(data-dismiss='modal') Annuler
-                                            button.btn.btn-warning(type='submit' form='correctHoursForm'+todo._id) Envoyer
+                                                label(for='correctionHoursInput') Heures réellement réalisées
+                                                input.form-control.correction_input(type='Number' id='correctionHoursInput', name='correct_hours' required)
+                                            div.modal-footer
+                                              a.btn.btn-default(data-dismiss='modal') Annuler
+                                              button.btn.btn-warning(type='submit' form='correctHoursForm'+todo._id) Envoyer
+                      else if todo.type === 'LThours_pending'
+                        .panel.panel-default
+                          .panel-heading
+                            div.media
+                              div.media-left.media-middle
+                                span.badge(style='background-color: #E3DF2F') LONG TERME
+                              div.media-body
+                                h4.media-heading <b>#{todo.lt_intitule}</b> - #{todo.firstname} #{todo.lastname}
+                              div.media-right
+                          .panel-body
+                            div.media
+                              div.media-body
+                               h5 #{todo.firstname} #{todo.lastname} a t-il bien réalisé #{todo.hours}h pour cet engagement ?
+                              div.media-right.media-middle
+                                if todo.student
+                                  div.btn-group(style='width: 120px', todo=todo._id)
+                                    button.btn.btn-default.confirm_hours_student(data-toggle='modal' data-target='#confirmationModal')
+                                      i.fa.fa-thumbs-up
+                                    #confirmationModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="confirmationModalLabel")
+                                      div.modal-dialog(role='document')
+                                        form.modal-content.confirmStudentHoursForm(id='confirmStudentHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
+                                          .modal-header
+                                            button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                              span(aria-hidden='true')
+                                              h4.modal-title Validation de participation
+                                            div.modal-body
+                                              h4 Questions sur l'élève
+                                              for question, q_i in todo.organism_questions
+                                                div.form-group
+                                                  label(for='confirmationHoursInput')= question
+                                                  textarea.confirmation_text(name='answer'+q_i, form='confirmStudentHoursForm'+todo._id, minlength='20' required)
+                                            div.modal-footer
+                                              a.btn.btn-default(data-dismiss='modal') Annuler
+                                              button.btn.btn-warning(type='submit' form='confirmStudentHoursForm'+todo._id) Envoyer
+                                    button.btn.btn-warning.correct_hours_student(data-toggle='modal' data-target='#correctionModal')
+                                      i.fa.fa-thumbs-down
+                                    #correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
+                                      div.modal-dialog(role='document')
+                                        form.modal-content.correctStudentHoursForm(id='correctStudentHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id)
+                                          .modal-header
+                                            button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                              span(aria-hidden='true')
+                                              h4.modal-title Correction d'horaires
+                                            div.modal-body
+                                              p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
+                                              div.form-group
+                                                label(for='correctionStudentHoursInput') Heures réellement réalisées 
+                                                input.form-control(type='Number' class='correctionStudentHoursInput', name='correct_hours' required)
+                                              for question, q_i in todo.organism_questions
+                                                div.form-group
+                                                  label(for='answer'+q_i)= question
+                                                  textarea.correction_text(name='answer'+q_i, form='correctStudentHoursForm'+todo._id, minlength='20' required)
+                                            div.modal-footer
+                                              a.btn.btn-default(data-dismiss='modal') Annuler
+                                              button.btn.btn-warning(type='submit' form='correctStudentHoursForm'+todo._id) Envoyer
+                                else
+                                  div.btn-group(style='width: 120px', todo=todo._id)
+                                    button.btn.btn-default.validate_hours_pending(vol=todo.vol_id, lt=todo.lt_id, todo=todo._id, hours=todo.hours)
+                                      i.fa.fa-thumbs-up
+                                    button.btn.btn-warning.decline_hours_pending(data-toggle='modal' data-target='#correctionModal'+todo._id)
+                                      i.fa.fa-thumbs-down
+                                    .modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel", id='correctionModal'+todo._id)
+                                      div.modal-dialog(role='document')
+                                        form.modal-content.correctHoursForm(id='correctHoursForm'+todo._id, vol=todo.vol_id, lt=todo.lt_id, todo=todo._id)
+                                          .modal-header
+                                            button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                              span(aria-hidden='true')
+                                              h4.modal-title Correction d'horaires
+                                            div.modal-body
+                                              p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
+                                              div.form-group
+                                                label(for='correctionHoursInput') Heures réellement réalisées
+                                                input.form-control.correction_input(type='Number' id='correctionHoursInput', name='correct_hours' required)
+                                            div.modal-footer
+                                              a.btn.btn-default(data-dismiss='modal') Annuler
+                                              button.btn.btn-warning(type='submit' form='correctHoursForm'+todo._id) Envoyer
+
 
                 else
                   h4.text-center Tout est à jour !
@@ -257,22 +335,46 @@ block footscript
           }
         });
       });
+
       $('.validate_hours_pending').click(function(){
-        let vol_id = $(this).attr('vol');
-        let act_id = $(this).attr('act');
-        let day = $(this).attr('day');
-        let todo_id = $(this).attr('todo');
-        let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
-        $.post('/organism/confirmhours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id}).done(function(data, status){
-          if(data.error){
-            console.log("Remarque: " + data.error);
-            input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
-          }
-          else {
-            console.log("Post request done.");
-            input_group.replaceWith('<p><b>Heures confirmées</b></p>');
-          }
-        });
+        //If activity
+        if($(this).attr('act')){
+          let vol_id = $(this).attr('vol');
+          let act_id = $(this).attr('act');
+          let day = $(this).attr('day');
+          let todo_id = $(this).attr('todo');
+          let hours = $(this).attr('hours');
+          let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
+          $.post('/organism/confirmhours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, hours: hours}).done(function(data, status){
+            if(data.error){
+              console.log("Remarque: " + data.error);
+              input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
+            }
+            else {
+              console.log("Post request done.");
+              input_group.replaceWith('<p><b>Heures confirmées</b></p>');
+            }
+          });
+        } else if ($(this).attr('lt')){
+          let vol_id = $(this).attr('vol');
+          let lt_id = $(this).attr('lt');
+          let todo_id = $(this).attr('todo');
+          let hours = $(this).attr('hours');
+          let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
+          $.post('/organism/confirmhours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, hours: hours}).done(function(data, status){
+            if(data.error){
+              console.log("Error: " + data.error);
+              input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
+            }
+            else {
+              console.log("Post request done.");
+              input_group.replaceWith('<p><b>Heures confirmées</b></p>');
+            }
+          });
+        } else {
+          console.log("Error: " + data.error);
+          input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
+        };
       });
       $('.confirmStudentHoursForm').submit(function(){
         let vol_id = $(this).attr('vol');
