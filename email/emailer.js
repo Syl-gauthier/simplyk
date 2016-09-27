@@ -4,7 +4,7 @@
 var nodemailer = require('nodemailer');
 
 var emailCredentials = process.env.EMAIL_CREDENTIALS;
-if(emailCredentials === 'undefined') {
+if (emailCredentials === 'undefined') {
   throw Error('Email credentials are not present');
 }
 
@@ -14,8 +14,8 @@ var transporter = nodemailer.createTransport(emailCredentials);
 //Wrap sendMail
 function callSendMail(mailOptions) {
   // send mail with defined transport object
-  transporter.sendMail(mailOptions, function(error, info){
-    if(error){
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
       return console.log(error);
     }
 
@@ -25,13 +25,11 @@ function callSendMail(mailOptions) {
 
 // content newUser
 function sendWelcomeEmail(content) {
-  var body = '<p>You created an account for ' + content.name 
-    + '. ' + content.customMessage
-    + ' <a href="simplyk.org">Simplyk</a></p>';
+  var body = '<p>You created an account for ' + content.name + '. ' + content.customMessage + ' <a href="simplyk.org">Simplyk</a></p>';
 
   var mailOptions = {
-    from: '"Simplyk', // sender address
-    to: content.recipient, 
+    from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+    to: content.recipient,
     subject: 'Bienvenue sur Simplyk', // Subject line
     text: '', // plaintext body
     html: body
@@ -43,14 +41,13 @@ function sendWelcomeEmail(content) {
 
 //Send email with verify url
 function sendVerifyEmail(content) {
-  var body = '<div><p>Vérifie ton adresse courriel : ' + content.recipient + '</p></div>'
-    + '<div><a href="'+ content.verify_url + '">Clique ici</a></div>';
+  var body = '<div><p>Merci ' + content.firstname + ' de t\'être inscrire à notre plateforme ! </p></div>' + '<div><p>Vérifie ton adresse courriel : ' + content.recipient + '</p></div>' + '<div><a href="' + content.verify_url + '">Clique ici</a></div>';
 
   console.log(body);
 
   var mailOptions = {
     from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
-    to: content.recipient, 
+    to: content.recipient,
     subject: content.firstname + ', vérifie ton courriel', // Subject line
     text: '', // plaintext body
     html: body
@@ -60,14 +57,12 @@ function sendVerifyEmail(content) {
 };
 
 function sendSubscriptionEmail(content) {
-  var body = '<p>Bonne nouvelle ' + content.name + ' !'
-    + '<br> ' + content.customMessage
-    + '<br> <a href="platform.simplyk.org">Simplyk</a></p>';
+  var body = '<p>Bonne nouvelle ' + content.name + ' !' + '<br> ' + content.customMessage + '<br> <a href="platform.simplyk.org">Voir mes bénévoles</a></p>';
 
   var mailOptions = {
     from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
-    to: content.recipient, 
-    subject: 'Nouvelle inscription !', // Subject line
+    to: content.recipient,
+    subject: 'Nouvelle inscription sur Simplyk !', // Subject line
     text: '', // plaintext body
     html: body
   };
@@ -76,14 +71,12 @@ function sendSubscriptionEmail(content) {
 }
 
 function sendUnsubscriptionEmail(content) {
-  var body = '<p>Malheureusement, '
-    + '<br> ' + content.customMessage
-    + '<br> <a href="platform.simplyk.org">Simplyk</a></p>';
+  var body = '<p>Malheureusement, ' + '<br> ' + content.customMessage + '<br> <a href="platform.simplyk.org">Voir mes bénévoles</a></p>';
 
   var mailOptions = {
     from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
-    to: content.recipient, 
-    subject: 'Désinscription :(', // Subject line
+    to: content.recipient,
+    subject: 'Désinscription sur Simplyk :(', // Subject line
     text: '', // plaintext body
     html: body
   };

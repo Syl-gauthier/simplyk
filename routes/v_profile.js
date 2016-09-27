@@ -103,7 +103,7 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
           var content = {
             recipient: newActivity.email,
             name: newActivity.org_name,
-            customMessage: req.session.volunteer.firstname + ' s\'est désinscrit de votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !'
+            customMessage: req.session.volunteer.firstname + req.session.volunteer.lastname + ' s\'est désinscrit de votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !'
           };
           emailer.sendUnsubscriptionEmail(content);
           const dayString = new Date(req.params.day).toLocaleDateString();
