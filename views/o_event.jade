@@ -3,6 +3,7 @@ block vars
 	- var page = 'event'
 	- var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
 	- var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+	- /* parse a date in yyyy-mm-dd format*/ function parseDate(input) {var parts = input.match(/(\d+)/g);/* new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])*/return new Date(parts[0], parts[1]-1, parts[2]); /* months are 0-based*/}
 	- function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
 
 
@@ -46,6 +47,9 @@ block content
 																h6
 																	i.fa.fa-at
 																	p.inline #{vol.email}
+																h6
+																	i.fa.fa-birthday-cake
+																	p.inline #{days_name[correctDate(vol.birthdate).getDay()]  + ' ' + (correctDate(vol.birthdate).getDate()) + ' ' + months_name[correctDate(vol.birthdate).getMonth()]  + ' ' + correctDate(vol.birthdate).getFullYear()}
 															each event, event_i in vol.events
 																if ((Date.parse(event.day) == Date.parse(day.day)) && (act._id.toString() == event.activity_id.toString()))
 																	if Date.parse(day.day)<Date.now()

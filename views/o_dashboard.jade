@@ -95,7 +95,7 @@ block content
                             h4 <b>#{act.intitule}</b>
                             each day, day_i in act.days
                               h4
-                                h5.inline <b>#{day.day.toLocaleDateString()} : </b>
+                                h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
                                 h6.inline
                                   i.fa.fa-user
                                   p.inline= day.applicants.length+' bénévoles se sont inscrits'
