@@ -211,6 +211,23 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
 router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
   console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
   console.log('JSON.stringify(req.params) : ' + JSON.stringify(req.params));
+
+  function isLongTerm(longterm) {
+    console.log('isLongTerm : ' + (longterm._id == req.params.lt_id));
+    return longterm._id == req.params.lt_id;
+  };
+  const lt = req.session.volunteer.long_terms.find(isLongTerm);
+  console.log('req.session.volunteer : ' + JSON.stringify(req.session.volunteer));
+  console.log('lt : ' + JSON.stringify(lt));
+  console.log('lt.hours_pending : ' + lt.hours_pending);
+  if (lt.hours_pending > 0) {
+    console.log('lt.hours_pending is positive');
+    var new_hours_pending = parseInt(lt.hours_pending) + parseInt(req.body.hours_pending);
+  } else {
+    var new_hours_pending = parseInt(req.body.hours_pending);
+    console.log('lt.hours_pending is not positive');
+  };
+  console.log('new_hours_pending : ' + new_hours_pending);
   Volunteer.findOneAndUpdate({
     "$and": [{
       "_id": req.session.volunteer._id
@@ -223,7 +240,7 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
     }]
   }, {
     "$set": {
-      "long_terms.$.hours_pending": req.body.hours_pending,
+      "long_terms.$.hours_pending": new_hours_pending,
       "long_terms.$.status": 'pending'
     }
   }, {
@@ -232,40 +249,34 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
   }, function(err, newVolunteer) {
     if (err) {
       console.log(err);
-      res.redirect('/volunteer/map?error=' + err);
+      res.redirect(404, '/volunteer/map?error=' + err);
     } else {
       req.session.volunteer = newVolunteer;
       console.log('newVolunteer ' + newVolunteer);
-
-      function isLongTerm(longterm) {
-        console.log('isLongTerm : ' + (longterm._id == req.params.lt_id));
-        return longterm.activity_id == req.params.lt_id;
-      };
-
-      const lt = newVolunteer.long_terms.filter(isLongTerm);
-      console.log(lt);
+      const new_lt = newVolunteer.long_terms.find(isLongTerm);
+      console.log(new_lt);
       if (newVolunteer.student) {
         var newTodo = new OrgTodo({
           type: 'LThours_pending',
-          org_id: lt.org_id,
+          org_id: new_lt.org_id,
           lastname: newVolunteer.lastname,
           firstname: newVolunteer.firstname,
           vol_id: newVolunteer._id,
           lt_id: req.params.lt_id,
-          lt_intitule: lt.intitule,
+          lt_intitule: new_lt.intitule,
           hours: req.body.hours_pending,
           student: true,
-          organism_questions: lt.organism_questions
+          organism_questions: new_lt.organism_questions
         });
       } else {
         var newTodo = new OrgTodo({
           type: 'LThours_pending',
-          org_id: lt.org_id,
+          org_id: new_lt.org_id,
           lastname: newVolunteer.lastname,
           firstname: newVolunteer.firstname,
           vol_id: newVolunteer._id,
           lt_id: req.params.lt_id,
-          lt_intitule: lt.intitule,
+          lt_intitule: new_lt.intitule,
           hours: req.body.hours_pending
         });
       };
@@ -276,9 +287,9 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
           console.log(err);
         } else {
           if (req.session.volunteer.student) {
-            res.redirect('/volunteer/student_questions/' + req.params.lt_id);
+            res.redirect(200, '/volunteer/student_questions/' + req.params.lt_id);
           } else {
-            res.redirect('/volunteer/map');
+            res.redirect(200, '/volunteer/map');
           }
         }
       })
