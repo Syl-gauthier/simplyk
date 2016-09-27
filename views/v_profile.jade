@@ -1,6 +1,10 @@
 extends ./g_layout.jade
 block vars
   - var page = 'profile'
+  - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+  - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+  - /* parse a date in yyyy-mm-dd format*/ function parseDate(input) {var parts = input.match(/(\d+)/g);/* new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])*/return new Date(parts[0], parts[1]-1, parts[2]); /* months are 0-based*/}
+  - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(parseDate(date).getTime() + tz_offset);return corrected_datetime}
 
 block content
   #map-section.container-fluid
@@ -19,7 +23,7 @@ block content
         #participations.tab-pane.fade.active.in(role='tabpanel')
           .col-md-4.col-md-offset-1
             .page-header
-              h3 Participations ponctuelles
+              h2 Participations ponctuelles
             #offers-list.no-side-padding
                 ul.list-group.list-opportunity
                   unless (events_past || events_confirmed || events_pending || events_subscribed)
@@ -28,116 +32,160 @@ block content
 
                   //IF EVENT_PAST
                   if events_past.length
-                    h3 Confirmer votre venue
+                    h4 CONFIRMER VOTRE VENUE
                   each event, index in events_past
                     li.list-group-item
-                      div.media-left.media-middle
-                        a(href='profile')
-                          img.media-object.little-img(src='/images/clouds.jpg')
-                      div.media-body
-                        h4.media-heading= event.org_name
-                        a.firstColor= event.intitule + ' (' + event.intitule_activity + ')'
-                        p= event.day
+                      .panel.panel-default
+                        .panel-heading
+                          div.media-left.media-middle
+                            a(href='profile')
+                              img.media-object.little-img(src='/images/clouds.jpg')
+                          div.media-body
+                            h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
+                            h6 <small>pour</small> #{event.org_name}
+                        .panel-body
+                          h6
+                            i.fa.fa-map-marker
+                            p.inline Adresse : #{event.address}
+                          h6.inline
+                            i.fa.fa-calendar-o
+                            p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
+                        .panel-footer
+                          form(method='post' action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day, id='hoursPendingForm'+event.activity_id+event.day)
+                            div.input-group
+                              input.form-control(id='input'+event._id, type='number' placeholder='Heures réalisées' name='hours_pending' required)
+                              .input-group-btn
+                                input.btn.btn-default(type='submit', value='Confirmer' form='hoursPendingForm'+event.activity_id+event.day)
+                                a.btn.btn-default(href='/volunteer/event/'+event.activity_id) Détails
                         #identifiant(style='display:none')
                           p= event._id
-                      div.media-right.media-middle
-                        form(method='post' action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day)
-                          div.form-group
-                            //label(for='input'+event._id) Heures
-                            input.form-control(id='input'+event._id type='number' placeholder='Heures de participation' name='hours_pending' required)
-                            button.btn.btn-default.media-object(type='submit') Confirmer
-                        a.btn.btn-default.block-center(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
 
                   // IF EVENT_PENDING
                   if events_pending.length
-                    h3 En attente de confirmation
+                    h4 EN ATTENTE DE CONFIRMATION
                   each event, index in events_pending
                     li.list-group-item
-                      div.media-left.media-middle
-                        a(href='profile')
-                          img.media-object.little-img(src='/images/clouds.jpg')
-                      div.media-body
-                        h4.media-heading= event.org_name
-                        a.firstColor= event.intitule + ' (' + event.intitule_activity + ')'
-                        p= 'Heures participées: ' + event.hours_pending
+                      .panel.panel-default
+                        .panel-heading
+                          div.media-left.media-middle
+                            a(href='profile')
+                              img.media-object.little-img(src='/images/clouds.jpg')
+                          div.media-body
+                            h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
+                            h6 <small>pour</small> #{event.org_name}
+                        .panel-body
+                          h6
+                            i.fa.fa-map-marker
+                            p.inline Adresse : #{event.address}
+                          h6.inline
+                            i.fa.fa-calendar-o
+                            p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
+                        .panel-footer
+                          ul.list-inline
+                            li
+                              a.btn.btn-default(id= event._id, href='/volunteer/event/'+event.activity_id) Détails
+                            li
+                              h4.text-right
+                                if event.hours_pending
+                                  span.badge(style='background-color: #E33831')= event.hours_pending + ' heures à confirmer'
                         #identifiant(style='display:none')
                           p= event._id
-                      div.media-right.media-middle
-                        a.btn.btn-default.block-center(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
 
                   // IF EVENT_SUBSCRIBED
                   if events_subscribed.length
-                    h3 À venir
+                    h4 À VENIR
                   each event, index in events_subscribed
                     li.list-group-item
-                      div.media-left.media-middle
-                        a(href='profile')
-                          img.media-object.little-img(src='/images/clouds.jpg')
-                      div.media-body
-                        h4.media-heading= event.org_name
-                        a.firstColor= event.intitule + ' (' + event.intitule_activity + ')'
+                      .panel.panel-default
+                        .panel-heading
+                          div.media-left.media-middle
+                            a(href='profile')
+                              img.media-object.little-img(src='/images/clouds.jpg')
+                          div.media-body
+                            h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
+                            h6 <small>pour</small> #{event.org_name}
+                        .panel-body
+                          h6
+                            i.fa.fa-map-marker
+                            p.inline Adresse : #{event.address}
+                          h6.inline
+                            i.fa.fa-calendar-o
+                            p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
+                        .panel-footer
+                          form(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post', id='unsubscribeForm')
+                            .btn-group(role='group')
+                              a.btn.btn-default(href='/volunteer/event/'+event.activity_id) Détails
+                              input.btn.btn-warning(role='submit' form='unsubscribeForm' name='day' value='Se désinscrire')
                         #identifiant(style='display:none')
                           p= event._id
-                      div.media-right.media-middle
-                        form(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post')
-                          div.btn-group-vertical(role='group')
-                            a.btn.btn-default.block-center(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
-                            a.btn.btn-default.block-center(href='/volunteer/event/'+event.activity_id) Détails
-                            button.btn.btn-warning.block-center(role='submit' name='day' value=event.day) Se désinscrire
 
                   // IF EVENT_CONFIRMED
                   if events_confirmed.length
-                    h3 Évènements passés
+                    h4 ÉVÈNEMENTS PASSÉS
                   each event, index in events_confirmed
                     li.list-group-item
-                      div.media-left.media-middle
-                        a(href='profile')
-                          img.media-object.little-img(src='/images/clouds.jpg')
-                      div.media-body
-                        h4.media-heading= event.org_name
-                        a.firstColor= event.intitule + ' (' + event.intitule_activity + ')'
-                        p= event.hours_done + 'h réalisées'
+                      .panel.panel-default
+                        .panel-heading
+                          .media
+                            div.media-left.media-middle
+                              a(href='profile')
+                                img.media-object.little-img(src='/images/clouds.jpg')
+                            div.media-body
+                              h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
+                              h6 <small>pour</small> #{event.org_name}
+                        .panel-body
+                          h6
+                            i.fa.fa-map-marker
+                            p.inline Adresse : #{event.address}
+                          h6.inline
+                            i.fa.fa-calendar-o
+                            p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
+                        .panel-footer
+                          ul.list-inline
+                            li
+                              a.btn.btn-default(id= event._id, href='/volunteer/event/'+event.activity_id) Détails
+                            li
+                              h4.text-right
+                                if event.hours_done
+                                  span.badge(style='background-color: #113A20')= event.hours_done + ' heures réalisées'
                         #identifiant(style='display:none')
                           p= event._id
-                      div.media-right.media-middle
-                        a.btn.btn-default.block-center(href='mailto:'+event.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contacter
           .col-md-4.col-md-offset-2
             .page-header
-              h3 Engagements long terme
+              h2 Engagements long terme
             #offers-list.no-side-padding
                 ul.list-group.list-opportunity
                   unless (volunteer.long_terms)
                     p Pas d'inscriptions
                   //IF EVENT_PAST
                   if volunteer.long_terms.length
-                    h3 Confirmer votre venue
-                  each lt, lt_i in volunteer.long_terms
-                    li.list-group-item.list-longterm-item(id= lt._id)
-                      .panel.panel-default
-                        .panel-heading
-                          div.media-left.media-top
-                            a(href='profile')
-                              img.media-object.little-img(src='/images/clouds.jpg')
-                          div.media-body
-                            h4.media-heading <b>#{lt.intitule}</b>
-                            h6 <small>pour</small> #{lt.org_name}
-                        .panel-body
-                          h6
-                            i.fa.fa-map-marker
-                            p.inline Adresse : #{lt.address}
-                          h6.inline
-                            i.fa.fa-info
-                            p.inline= lt.description
-                        .panel-footer
-                          ul.list-inline
-                            li
-                              a.btn.infos-button-longterm.longterm(id= lt._id, href='/longterm/'+lt._id) Détails
-                            li
-                              h4.text-right
-                                if lt.hours_done
-                                  span.badge(style='background-color: #113A20')= lt.hours_done + ' heures réalisées'
-                                if lt.hours_pending
-                                  span.badge(style='background-color: #E33831')= lt.hours_pending + ' heures à confirmer'
+                    each lt, lt_i in volunteer.long_terms
+                      li.list-group-item.list-longterm-item(id= lt._id)
+                        .panel.panel-default
+                          .panel-heading
+                            div.media-left.media-top
+                              a(href='profile')
+                                img.media-object.little-img(src='/images/clouds.jpg')
+                            div.media-body
+                              h4.media-heading <b>#{lt.intitule}</b>
+                              h6 <small>pour</small> #{lt.org_name}
+                          .panel-body
+                            h6
+                              i.fa.fa-map-marker
+                              p.inline Adresse : #{lt.address}
+                            h6.inline
+                              i.fa.fa-info
+                              p.inline= lt.description
+                          .panel-footer
+                            ul.list-inline
+                              li
+                                a.btn.infos-button-longterm.longterm(id= lt._id, href='/longterm/'+lt._id) Détails
+                              li
+                                h4.text-right
+                                  if lt.hours_done
+                                    span.badge(style='background-color: #113A20')= lt.hours_done + ' heures réalisées'
+                                  if lt.hours_pending
+                                    span.badge(style='background-color: #E33831')= lt.hours_pending + ' heures à confirmer'
         #profile.tab-pane.fade(role='tabpanel')
           .col-md-6.col-md-offset-3
             .page-header
