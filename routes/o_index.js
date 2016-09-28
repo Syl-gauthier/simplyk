@@ -294,14 +294,37 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism'), fu
   console.log('+++++++++++++++++++++');
   console.log('Longterm corresponding to lt_id : ' + longterm)
   console.log('+++++++++++++++++++++');
-  var slotJSON = rewindSlotString(longterm.slot);
-  res.render('o_longterm.jade', {
-    lt_id: req.params.lt_id,
-    organism: organism,
-    longterm: longterm,
-    slotJSON: slotJSON
+  Volunteer.find({
+    "long_terms": {
+      '$elemMatch': {
+        '_id': {
+          '$in': req.params.lt_id
+        }
+      }
+    }
+  }, {
+    'email': 1,
+    'long_terms.$': 1,
+    'firstname': 1,
+    'lastname': 1,
+    'birthdate': 1
+  }, function(err, volunteers) {
+    if (err) {
+      console.log(err);
+      res.redirect('/organism/dashboard?error=' + err);
+    } else {
+      var slotJSON = rewindSlotString(longterm.slot);
+      res.render('o_longterm.jade', {
+        lt_id: req.params.lt_id,
+        organism: organism,
+        longterm: longterm,
+        slotJSON: slotJSON,
+        volunteers: volunteers
+      });
+      res.end();
+    };
   });
-  res.end();
+
 });
 
 //for ajax call only (for now)
