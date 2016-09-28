@@ -9,15 +9,15 @@ block vars
 block content
   #map-section.container-fluid
     .row
-          .col-md-10.col-md-offset-1
-            ul.nav.nav-tabs(role='tablist')
-              li.active(role='navigation')
-                a(href='#participations' aria-controls='participations' role='tab' data-toggle='tab') 
-                  h4 Mes participations 
-                    span.badge= volunteer.events.length + volunteer.long_terms.length
-              li(role='navigation')
-                a(href='#profile' aria-controls='profile' role='tab' data-toggle='tab') 
-                  h4 Mes informations
+      .col-md-10.col-md-offset-1
+        ul.nav.nav-tabs(role='tablist')
+          li.active(role='navigation')
+            a(href='#participations' aria-controls='participations' role='tab' data-toggle='tab') 
+              h4 Mes participations 
+                span.badge= volunteer.events.length + volunteer.long_terms.length
+          li(role='navigation')
+            a(href='#profile' aria-controls='profile' role='tab' data-toggle='tab') 
+              h4 Mes informations
     .row
       .tab-content
         #participations.tab-pane.fade.active.in(role='tabpanel')
@@ -28,7 +28,6 @@ block content
                 ul.list-group.list-opportunity
                   unless (events_past || events_confirmed || events_pending || events_subscribed)
                     p Pas d'inscriptions
-
 
                   //IF EVENT_PAST
                   if events_past.length
