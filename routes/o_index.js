@@ -346,43 +346,91 @@ router.post('/organism/correcthours', function(req, res) {
     } else if (myVolunteer) {
       console.log('myvolunteer exists');
       console.log('MyVolunteer : ' + JSON.stringify(myVolunteer));
-      if (req.body["answers[0][value]"]) {
-        console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
-        //i starts from 1 to avoid to select the number answered as corrected hours
-        var i = 1;
-        var answers = [];
-        while (req.body["answers[" + i + "][value]"]) {
-          console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
-          answers.push(req.body["answers[" + i + "][value]"]);
-          i++;
-        };
-        console.log('Answers : ' + JSON.stringify(answers));
-        var update = {
-          '$set': {
-            'events.$.hours_done': req.body.correct_hours,
-            'events.$.hours_pending': 0,
-            'events.$.status': 'confirmed',
-            'events.$.organism_answers': answers
+      if (typeof req.body.act_id !== 'undefined') {
+        console.log('Correct hours for an activity !');
+        var query = {
+          '_id': req.body.vol_id,
+          'events': {
+            '$elemMatch': {
+              'activity_id': req.body.act_id,
+              'day': req.body.day
+            }
           }
         };
-      } else {
-        var update = {
-          '$set': {
-            'events.$.hours_done': req.body.correct_hours,
-            'events.$.hours_pending': 0,
-            'events.$.status': 'confirmed'
+        if (req.body["answers[0][value]"]) {
+          console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
+          //i starts from 1 to avoid to select the number answered as corrected hours
+          var i = 1;
+          var answers = [];
+          while (req.body["answers[" + i + "][value]"]) {
+            console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
+            answers.push(req.body["answers[" + i + "][value]"]);
+            i++;
+          };
+          console.log('Answers : ' + JSON.stringify(answers));
+          var update = {
+            '$set': {
+              'events.$.hours_done': correct_hours,
+              'events.$.hours_pending': 0,
+              'events.$.status': 'confirmed',
+              'events.$.organism_answers': answers
+            }
+          };
+        } else {
+          var update = {
+            '$set': {
+              'events.$.hours_done': correct_hours,
+              'events.$.hours_pending': 0,
+              'events.$.status': 'confirmed'
+            }
+          };
+        };
+      } else if (typeof req.body.lt_id !== 'undefined') {
+        console.log('Correct hours for a longterm !');
+        var query = {
+          '_id': req.body.vol_id,
+          'long_terms': {
+            '$elemMatch': {
+              '_id': req.body.lt_id
+            }
           }
+        };
+        if (req.body["answers[0][value]"]) {
+          console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
+          //i starts from 1 to avoid to select the number answered as corrected hours
+          var i = 1;
+          var answers = [];
+          while (req.body["answers[" + i + "][value]"]) {
+            console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
+            answers.push(req.body["answers[" + i + "][value]"]);
+            i++;
+          };
+          console.log('Answers : ' + JSON.stringify(answers));
+          var update = {
+            '$inc': {
+              'long_terms.$.hours_done': correct_hours,
+              'long_terms.$.hours_pending': -correct_hours
+            },
+            '$set': {
+              'long_terms.$.status': 'confirmed',
+              'long_terms.$.organism_answers': answers
+            }
+          };
+        } else {
+          var update = {
+            '$inc': {
+              'long_terms.$.hours_done': correct_hours,
+              'long_terms.$.hours_pending': -correct_hours
+            },
+            '$set': {
+              'long_terms.$.status': 'confirmed'
+            }
+          };
         };
       };
-      Volunteer.findOneAndUpdate({
-        '_id': req.body.vol_id,
-        'events': {
-          '$elemMatch': {
-            'activity_id': req.body.act_id,
-            'day': req.body.day
-          }
-        }
-      }, update, function(err) {
+      console.log('query : ' + JSON.stringify(query));
+      console.log('update : ' + JSON.stringify(update));
+      Volunteer.findOneAndUpdate(query, update, function(err) {
         if (err) {
           console.log(err);
           res.sendStatus(404).end();
@@ -417,9 +465,12 @@ router.post('/organism/confirmhours', function(req, res) {
       res.redirect('/organism/dashboard?error=' + err);
     } else if (myVolunteer) {
       console.log('myvolunteer exists');
-      console.log('MyVolunteer : ' + JSON.stringify(myVolunteer));
+      console.log('MyVolunteer : ' + JSON.stringify(myVolunteer.email));
       var hours_pending = req.body.hours;
+      console.log('hours_pending : ' + hours_pending);
+      console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
       var update = {};
+      //If we deal with an event
       if (req.body.act_id) {
         var query = {
           '_id': req.body.vol_id,
@@ -459,6 +510,7 @@ router.post('/organism/confirmhours', function(req, res) {
             }
           };
         };
+        //If we deal with a longterm
       } else if (req.body.lt_id) {
         var query = {
           '_id': req.body.vol_id,

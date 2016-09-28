@@ -254,8 +254,12 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
       req.session.volunteer = newVolunteer;
       console.log('newVolunteer ' + newVolunteer);
       const new_lt = newVolunteer.long_terms.find(isLongTerm);
+      console.log('(typeof new_lt.hours_done == undefined) ' + (typeof new_lt.hours_done == 'undefined'));
+      console.log('(new_lt.organism_answers.length<1) ' + (new_lt.organism_answers.length<1));
+      console.log('(newVolunteer.student) ' + (newVolunteer.student));
+      console.log('!(lt.hours_pending>0) ' + !(lt.hours_pending>0));
       console.log(new_lt);
-      if (newVolunteer.student) {
+      if ((newVolunteer.student) && (typeof new_lt.hours_done == 'undefined') && (new_lt.organism_answers.length<1) && !(lt.hours_pending>0)) {
         var newTodo = new OrgTodo({
           type: 'LThours_pending',
           org_id: new_lt.org_id,

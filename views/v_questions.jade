@@ -8,14 +8,23 @@ block content
         .row.fill
           .col-md-6.col-md-offset-3
             h1.page-header.text-center.firstColor= volunteer.firstname + ' ' + volunteer.lastname +' - ' + org_name
-            h3 L'opportunité
-            li.list-group-item
-                  div.media-heading
-                    h4.media-heading= org_name
-                    a.firstColor= event_intitule
-                    p= activity_intitule
-                  div.media-body
-                    p= description
+            if (act_id)
+              h3 L'opportunité
+              li.list-group-item
+                    div.media-heading
+                      h4.media-heading= org_name
+                      a.firstColor= event_intitule
+                      p= activity_intitule
+                    div.media-body
+                      p= description
+            else if (longterm)
+              h3 L'engagement
+              li.list-group-item
+                    div.media-heading
+                      h4.media-heading= org_name
+                      a.firstColor= longterm.intitule
+                    div.media-body
+                      p= longterm.description
         .row
           .col-md-10.col-md-offset-1
             div.panel.panel-default
@@ -23,8 +32,11 @@ block content
                 h3 Retour de l’élève sur lui-même 
               div.panel-body
                 form(action='/volunteer/student_questions' id='questions_form' method='post')
-                  input(name='act_id' value=act_id, hidden)
-                  input(name='act_day' value=act_day, hidden)
+                  if (act_id)
+                    input(name='act_id' value=act_id, hidden)
+                    input(name='act_day' value=act_day, hidden)
+                  else if (longterm)
+                    input(name='lt_id' value=longterm._id, hidden)
                   each question, q_I in questions
                     div.panel.panel-warning
                       div.panel-heading
