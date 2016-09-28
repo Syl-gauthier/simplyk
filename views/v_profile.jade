@@ -112,10 +112,10 @@ block content
                             i.fa.fa-calendar-o
                             p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
                         .panel-footer
-                          form(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post', id='unsubscribeForm')
+                          form(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post', id='unsubscribeForm'+event.activity_id+'-'+event.day)
                             .btn-group(role='group')
                               a.btn.btn-default(href='/volunteer/event/'+event.activity_id) Détails
-                              input.btn.btn-warning(role='submit' form='unsubscribeForm' name='day' value='Se désinscrire')
+                              input.btn.btn-warning(type='submit' form='unsubscribeForm'+event.activity_id+'-'+event.day, name='day' value='Se désinscrire')
                         #identifiant(style='display:none')
                           p= event._id
 
