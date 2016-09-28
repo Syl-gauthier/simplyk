@@ -21,123 +21,152 @@ block content
                 table.table(id='slot')
                   thead
                     tr
-                      th #
-                      th Lundi
-                      th Mardi
-                      th Mercredi
-                      th Jeudi
-                      th Vendredi
-                      th Samedi
-                      th Dimanche
+                      th.text-center #
+                      th.text-center Lundi
+                      th.text-center Mardi
+                      th.text-center Mercredi
+                      th.text-center Jeudi
+                      th.text-center Vendredi
+                      th.text-center Samedi
+                      th.text-center Dimanche
                   tbody
                     tr
                       th(scope='row') AM
-                      td
+                      td.text-center
                         if slotJSON['mondayAM']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['tuesdayAM']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['wednesdayAM']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['thursdayAM']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['fridayAM']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['saturdayAM']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['sundayAM']
                           i.fa.fa-check
                         else
                           p
                     tr
                       th(scope='row') PM
-                      td
+                      td.text-center
                         if slotJSON['mondayPM']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['tuesdayPM']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['wednesdayPM']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['thursdayPM']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['fridayPM']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['saturdayPM']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['sundayPM']
                           i.fa.fa-check
                         else
                           p
                     tr
                       th(scope='row')= 'Soir (>16h)'
-                      td
+                      td.text-center
                         if slotJSON['mondayEVE']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['tuesdayEVE']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['wednesdayEVE']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['thursdayEVE']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['fridayEVE']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['saturdayEVE']
                           i.fa.fa-check
                         else
                           p
-                      td
+                      td.text-center
                         if slotJSON['sundayEVE']
                           i.fa.fa-check
                         else
                           p
+    .row
+      .col-md-10.col-md-offset-1
+        .panel.panel-default(style='margin-bottom: 60px;')
+          .panel-heading
+            .panel-title
+              h1 Bénévoles inscrits
+          .panel-body
+            table.table.table-striped(id='subscribers')
+              thead
+                tr
+                  th.text-center #
+                  th.text-center Nom
+                  th.text-center Prénom
+                  th.text-center
+                    i.fa.fa-birthday-cake
+                  th.text-center Courriel
+                  th.text-center Participation / À confirmer
+              tbody
+                each vol, vol_i in volunteers
+                  tr
+                    td.text-center= vol_i
+                    td.text-center= vol.lastname
+                    td.text-center= vol.firstname
+                    td.text-center #{(correctDate(vol.birthdate).getDate()) + ' ' + months_name[correctDate(vol.birthdate).getMonth()]  + ' ' + correctDate(vol.birthdate).getFullYear()}
+                    td.text-center= vol.email
+                    td.text-center
+                      span.badge.inline(style='background-color: #113A20')= vol.long_terms[0].hours_done + 'h'
+                      h4.inline <b>/</b>
+                      span.badge.inline(style='background-color: #E33831')= vol.long_terms[0].hours_pending + 'h'

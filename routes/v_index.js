@@ -15,6 +15,7 @@ var subscribe = require('../middlewares/subscribe.js');
 var finder = require('../middlewares/mongo_finder.js');
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
+var ltSubs = require('../lib/subscribe/longterm_subs.js');
 var app = express();
 
 /*GET map page*/
@@ -127,7 +128,7 @@ router.get('/activity/:act_id', permissions.requireGroup('volunteer'), function(
 
 
 router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
-  console.log('In GET to an activity page with lt_id:' + req.params.lt_id);
+  console.log('In GET to a longterm page with lt_id:' + req.params.lt_id);
   //Find organism corresponding to the activity
   Organism.findOne({
     "long_terms": {
@@ -151,12 +152,33 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
       console.log('Longterm found in organism corresponding to lt_id : ' + longterm)
       console.log('+++++++++++++++++++++');
       var slotJSON = rewindSlotString(longterm.slot);
+      const alreadySubscribed = longterm.applicants.find(function(app) {
+        return app == req.session.volunteer._id;
+      });
+      const longtTermInVolunteer = req.session.volunteer.long_terms.find(function(lt) {
+        console.log('longterm._id : ' + longterm._id);
+        console.log('lt._id : ' + lt._id);
+        return longterm._id == lt._id
+      });
+      console.log('longtTermInVolunteer : ' + longtTermInVolunteer);
+      if (longtTermInVolunteer) {
+        var hours_pending = longtTermInVolunteer.hours_pending;
+        var hours_done = longtTermInVolunteer.hours_done;
+        console.log('hours_done : ' + hours_done);
+        console.log('hours_pending : ' + hours_pending);
+      } else {
+        var hours_pending = null;
+        var hours_done = null;
+      };
       res.render('v_longterm.jade', {
         lt_id: req.params.lt_id,
         organism: organism,
         longterm: longterm,
         volunteer: req.session.volunteer,
-        slotJSON: slotJSON
+        slotJSON: slotJSON,
+        alreadySubscribed: alreadySubscribed,
+        hours_done: hours_done,
+        hours_pending: hours_pending
       });
       res.end();
     }
@@ -164,7 +186,7 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
 });
 
 
-router.post('/volunteer/subscribe/:act_id-:activity_day', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requireGroup('volunteer'), function(req, res) {
   //Verify the volunteer is not already susbscribed to the activity
   function subscribeToActivity(student_q, organism_q) {
     function isActivity(activity) {
@@ -274,6 +296,23 @@ router.post('/volunteer/subscribe/:act_id-:activity_day', permissions.requireGro
   }
 });
 
+router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+  console.log('lt_id : ' + req.params.lt_id + typeof req.params.lt_id);
+  ltSubs.subscribe(req.session.volunteer, req.params.lt_id, function(err, results) {
+    if (err) {
+      console.log(err);
+      res.redirect('/volunteer/map?error=' + err);
+    } else {
+      req.session.volunteer = results.newVolunteer;
+      res.render('v_postsubscription.jade', {
+        org_name: results.newOrganism.org_name,
+        email: results.newOrganism.email,
+        volunteer: req.session.volunteer
+      });
+    }
+  });
+});
+
 router.get('/user', function(req, res) {
   res.json(req.session.volunteer);
 });
@@ -319,6 +358,41 @@ router.get('/volunteer/student_questions/:act_id-:act_day', permissions.requireG
   };
 });
 
+router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+  if (!req.session.volunteer.student) {
+    res.redirect('/volunteer/map');
+  }
+
+  function alreadyAnswered(lt) {
+    if (lt._id == req.params.lt_id) {
+      if (lt.student_answers.length) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  };
+
+  function goodLongterm(lt) {
+    return (lt._id == req.params.lt_id);
+  };
+  var lt_answered = req.session.volunteer.long_terms.filter(alreadyAnswered);
+  var longterm = req.session.volunteer.long_terms.find(goodLongterm);
+  console.log('lt_answered = ' + JSON.stringify(lt_answered));
+  console.log('lt_answered.length = ' + lt_answered.length);
+  if (lt_answered.length > 0) {
+    res.redirect('/volunteer/map');
+  } else {
+    res.render('v_questions.jade', {
+      volunteer: req.session.volunteer,
+      longterm: longterm,
+      org_name: longterm.org_name,
+      questions: longterm.student_questions
+    });
+  };
+});
+
 router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'), function(req, res) {
   function isAKeyAnswer(key) {
     return key.search('answer') != -1;
@@ -329,32 +403,53 @@ router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'
     student_answers.push(req.body[student_answers_keys[key_i]]);
   };
   console.log('student_answers : ' + student_answers);
-  Volunteer.findOneAndUpdate({
-    "$and": [{
-      "_id": req.session.volunteer._id
-    }, {
-      "events": {
+  console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
+  if (typeof req.body.act_id !== 'undefined') {
+    console.log('We define query and update for an activity !');
+    var query = {
+      '_id': req.session.volunteer._id,
+      'events': {
         '$elemMatch': {
           'activity_id': req.body.act_id,
           'day': req.body.act_day
         }
       }
-    }]
-  }, {
-    "$set": {
-      "events.$.student_answers": student_answers
-    }
-  }, {
+    };
+    var update = {
+      '$set': {
+        'events.$.student_answers': student_answers
+      }
+    };
+  } else if (typeof req.body.lt_id !== 'undefined') {
+    console.log('We define query and update for a lt !');
+    var query = {
+      '_id': req.session.volunteer._id,
+      'long_terms': {
+        '$elemMatch': {
+          '_id': req.body.lt_id
+        }
+      }
+    };
+    var update = {
+      '$set': {
+        'long_terms.$.student_answers': student_answers
+      }
+    };
+  };
+  console.log('update : ' + JSON.stringify(update));
+  console.log('query : ' + JSON.stringify(query));
+  Volunteer.findOneAndUpdate(query, update, {
     returnNewDocument: true,
     new: true
   }, function(err, newVolunteer) {
     if (err) {
       console.log(err);
+      res.redirect('/volunteer/map?error=' + err);
     } else {
       req.session.volunteer = newVolunteer;
       console.log('newVolunteer : ' + newVolunteer);
       console.log('newVolunteer === req.session.volunteer : ' + (req.session.volunteer === newVolunteer));
-      const message = 'Tes réponses ont bien été prises en compte'
+      const message = encodeURIComponent('Tes réponses ont bien été prises en compte');
       res.redirect('/volunteer/map?success=' + message);
     }
   });

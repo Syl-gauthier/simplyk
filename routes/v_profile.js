@@ -142,7 +142,8 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
     new: true
   }, function(err, newVolunteer) {
     if (err) {
-      console.log('error : ' + err);
+      console.log(err);
+      res.redirect('/volunteer/map?error=' + err);
     } else {
       req.session.volunteer = newVolunteer;
       console.log('newVolunteer ' + newVolunteer);
@@ -192,6 +193,7 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
       newTodo.save(function(err, todo) {
         if (err) {
           console.log(err);
+          res.redirect('/volunteer/map?error=' + err);
         } else {
           if (req.session.volunteer.student) {
             res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
@@ -203,6 +205,102 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
     }
   });
 });
+
+
+//Add hours_pending to an activity
+router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+  console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
+  console.log('JSON.stringify(req.params) : ' + JSON.stringify(req.params));
+
+  function isLongTerm(longterm) {
+    console.log('isLongTerm : ' + (longterm._id == req.params.lt_id));
+    return longterm._id == req.params.lt_id;
+  };
+  const lt = req.session.volunteer.long_terms.find(isLongTerm);
+  console.log('req.session.volunteer : ' + JSON.stringify(req.session.volunteer));
+  console.log('lt : ' + JSON.stringify(lt));
+  console.log('lt.hours_pending : ' + lt.hours_pending);
+  if (lt.hours_pending > 0) {
+    console.log('lt.hours_pending is positive');
+    var new_hours_pending = parseInt(lt.hours_pending) + parseInt(req.body.hours_pending);
+  } else {
+    var new_hours_pending = parseInt(req.body.hours_pending);
+    console.log('lt.hours_pending is not positive');
+  };
+  console.log('new_hours_pending : ' + new_hours_pending);
+  Volunteer.findOneAndUpdate({
+    "$and": [{
+      "_id": req.session.volunteer._id
+    }, {
+      "long_terms": {
+        '$elemMatch': {
+          '_id': req.params.lt_id
+        }
+      }
+    }]
+  }, {
+    "$set": {
+      "long_terms.$.hours_pending": new_hours_pending,
+      "long_terms.$.status": 'pending'
+    }
+  }, {
+    returnNewDocument: true,
+    new: true
+  }, function(err, newVolunteer) {
+    if (err) {
+      console.log(err);
+      res.redirect('/volunteer/map?error=' + err);
+    } else {
+      req.session.volunteer = newVolunteer;
+      console.log('newVolunteer ' + newVolunteer);
+      const new_lt = newVolunteer.long_terms.find(isLongTerm);
+      console.log('(typeof new_lt.hours_done == undefined) ' + (typeof new_lt.hours_done == 'undefined'));
+      console.log('(new_lt.organism_answers.length<1) ' + (new_lt.organism_answers.length<1));
+      console.log('(newVolunteer.student) ' + (newVolunteer.student));
+      console.log('!(lt.hours_pending>0) ' + !(lt.hours_pending>0));
+      console.log(new_lt);
+      if ((newVolunteer.student) && (typeof new_lt.hours_done == 'undefined') && (new_lt.organism_answers.length<1) && !(lt.hours_pending>0)) {
+        var newTodo = new OrgTodo({
+          type: 'LThours_pending',
+          org_id: new_lt.org_id,
+          lastname: newVolunteer.lastname,
+          firstname: newVolunteer.firstname,
+          vol_id: newVolunteer._id,
+          lt_id: req.params.lt_id,
+          lt_intitule: new_lt.intitule,
+          hours: req.body.hours_pending,
+          student: true,
+          organism_questions: new_lt.organism_questions
+        });
+      } else {
+        var newTodo = new OrgTodo({
+          type: 'LThours_pending',
+          org_id: new_lt.org_id,
+          lastname: newVolunteer.lastname,
+          firstname: newVolunteer.firstname,
+          vol_id: newVolunteer._id,
+          lt_id: req.params.lt_id,
+          lt_intitule: new_lt.intitule,
+          hours: req.body.hours_pending
+        });
+      };
+      //TODO creation
+
+      newTodo.save(function(err, todo) {
+        if (err) {
+          console.log(err);
+        } else {
+          if (req.session.volunteer.student) {
+            res.redirect('/volunteer/student_questions/' + req.params.lt_id);
+          } else {
+            res.redirect('/volunteer/map');
+          }
+        }
+      })
+    }
+  });
+});
+
 
 router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), function(req, res) {
 

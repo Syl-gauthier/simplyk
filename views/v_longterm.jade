@@ -10,7 +10,11 @@ block content
     .row
       .col-md-6.col-md-offset-1
         .page-header
-          h1= longterm.intitule
+          if (alreadySubscribed)
+            h1= longterm.intitule + ' '
+              span.badge Inscrit
+          else
+            h1= longterm.intitule
           p= longterm.description
           p <b>Adresse : </b> #{longterm.address}
             li.list-group-item
@@ -21,17 +25,17 @@ block content
                 table.table(id='slot')
                   thead
                     tr
-                      th #
-                      th Lundi
-                      th Mardi
-                      th Mercredi
-                      th Jeudi
-                      th Vendredi
-                      th Samedi
-                      th Dimanche
+                      th.text-center #
+                      th.text-center Lundi
+                      th.text-center Mardi
+                      th.text-center Mercredi
+                      th.text-center Jeudi
+                      th.text-center Vendredi
+                      th.text-center Samedi
+                      th.text-center Dimanche
                   tbody
                     tr
-                      th(scope='row') AM
+                      th.text-center(scope='row') AM
                       td
                         if slotJSON['mondayAM']
                           i.fa.fa-check
@@ -48,7 +52,7 @@ block content
                         else
                           p
                       td
-                        if slotJSON['thursdayAM']
+                        if slotJSON['th.text-centerursdayAM']
                           i.fa.fa-check
                         else
                           p
@@ -68,7 +72,7 @@ block content
                         else
                           p
                     tr
-                      th(scope='row') PM
+                      th.text-center(scope='row') PM
                       td
                         if slotJSON['mondayPM']
                           i.fa.fa-check
@@ -85,7 +89,7 @@ block content
                         else
                           p
                       td
-                        if slotJSON['thursdayPM']
+                        if slotJSON['th.text-centerursdayPM']
                           i.fa.fa-check
                         else
                           p
@@ -105,7 +109,7 @@ block content
                         else
                           p
                     tr
-                      th(scope='row')= 'Soir (>16h)'
+                      th.text-center(scope='row')= 'Soir (>16h)'
                       td
                         if slotJSON['mondayEVE']
                           i.fa.fa-check
@@ -122,7 +126,7 @@ block content
                         else
                           p
                       td
-                        if slotJSON['thursdayEVE']
+                        if slotJSON['th.text-centerursdayEVE']
                           i.fa.fa-check
                         else
                           p
@@ -148,7 +152,53 @@ block content
           p='Mission: ' + organism.description
           p= 'Courriel: ' + organism.email
           p= 'Téléphone: ' + organism.phone
+        if (alreadySubscribed)
+          .panel.panel-default
+            .panel-heading
+              div.media
+                div.media-left.media-top
+                  h4 <strong>Mon engagement</strong>
+                div.media-top.media-right
+                  button.btn.longterm(data-toggle='modal' data-target='#addLTHoursModal')
+                    i.fa.fa-plus
+                    p.inline Ajouter des heures
+              #addLTHoursModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="addLTHoursModalLabel")
+                div.modal-dialog(role='document')
+                  form.modal-content.addLTHoursForm(id='addLTHoursForm'+longterm._id, method='post', action='/volunteer/LThours_pending/'+longterm._id)
+                    .modal-header
+                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                        span(aria-hidden='true')
+                        h4.modal-title Ajout d'heures
+                      div.modal-body
+                        div.form-group
+                          label(for='addLTHoursInput') Combien d'heures as-tu effectué dernièrement ?
+                          input(name='hours_pending', form='addLTHoursForm'+longterm._id, required)
+                      div.modal-footer
+                        a.btn.btn-default(data-dismiss='modal') Annuler
+                        input.btn.btn-warning(type='submit' form='addLTHoursForm'+longterm._id, value='Envoyer')
+            .panel-body
+              table.table(id='achievements')
+                  thead
+                    tr
+                      th.text-center Heures réalisées
+                      th.text-center Heures à confirmer
+                  tbody
+                    tr
+                      td
+                        if (hours_done)
+                          p.text-center= hours_done + 'h'
+                        else
+                          p.text-center 0h
+                      td
+                        if (hours_pending)
+                          p.text-center= hours_pending + 'h'
+                        else
+                          p.text-center 0h
     .row
       .col-md-10.col-md-offset-1
-        //form(action='/volunteer/subscribe/'+activity._id+'-'+day.day, method='post')
-        button.btn.btn-default(role='button' data-toggle="tooltip" title='Fonctionnalité à venir' data-placement="top") S'inscrire (à venir)
+        if (!alreadySubscribed)
+          form#subscribe(action='/volunteer/longterm/subscribe/'+longterm._id, method='post')
+            button.btn.btn-default(role='submit' form='subscribe' data-toggle="tooltip" title='Fonctionnalité à venir' data-placement="top") S'inscrire
+
+
+block footscript

@@ -161,30 +161,35 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
             organism: req.isAuthenticated()
           });
         } else {
-          function addEventName(todo) {
-            console.log(JSON.stringify(todo));
-            todo.event_name = null;
+          function addEventName(td) {
+            if (td.type == 'hours_pending') {
+              var todo = JSON.parse(JSON.stringify(td));
+              todo.event_name = null;
 
-            function containsActivity(event) {
-              var isIt = event.activities.find(function(act) {
-                return act.$oid == todo.activity_id;
-              });
-              if (isIt == -1) {
-                return false;
-              } else {
-                return true;
-              }
-            };
-            const theEvent = req.session.organism.events.find(containsActivity);
-            console.log('theEvent : ' + theEvent);
-            todo.event_name = theEvent.intitule;
+              function containsActivity(event) {
+                var isIt = event.activities.find(function(act) {
+                  return act.$oid == todo.activity_id;
+                });
+                if (isIt == -1) {
+                  return false;
+                } else {
+                  return true;
+                }
+              };
+              const theEvent = req.session.organism.events.find(containsActivity);
+              console.log('theEvent : ' + theEvent);
+              todo.event_name = theEvent.intitule;
+              return todo;
+            } else {
+              return td;
+            }
           };
-          todos.map(addEventName);
+          var lastTodos = todos.map(addEventName);
           res.render('o_dashboard.jade', {
             ev_past: ev_past,
             ev_to_come: ev_to_come,
             organism: req.session.organism,
-            todos: todos
+            todos: lastTodos
           });
         }
       });
@@ -289,14 +294,37 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism'), fu
   console.log('+++++++++++++++++++++');
   console.log('Longterm corresponding to lt_id : ' + longterm)
   console.log('+++++++++++++++++++++');
-  var slotJSON = rewindSlotString(longterm.slot);
-  res.render('o_longterm.jade', {
-    lt_id: req.params.lt_id,
-    organism: organism,
-    longterm: longterm,
-    slotJSON: slotJSON
+  Volunteer.find({
+    "long_terms": {
+      '$elemMatch': {
+        '_id': {
+          '$in': req.params.lt_id
+        }
+      }
+    }
+  }, {
+    'email': 1,
+    'long_terms.$': 1,
+    'firstname': 1,
+    'lastname': 1,
+    'birthdate': 1
+  }, function(err, volunteers) {
+    if (err) {
+      console.log(err);
+      res.redirect('/organism/dashboard?error=' + err);
+    } else {
+      var slotJSON = rewindSlotString(longterm.slot);
+      res.render('o_longterm.jade', {
+        lt_id: req.params.lt_id,
+        organism: organism,
+        longterm: longterm,
+        slotJSON: slotJSON,
+        volunteers: volunteers
+      });
+      res.end();
+    };
   });
-  res.end();
+
 });
 
 //for ajax call only (for now)
@@ -341,43 +369,91 @@ router.post('/organism/correcthours', function(req, res) {
     } else if (myVolunteer) {
       console.log('myvolunteer exists');
       console.log('MyVolunteer : ' + JSON.stringify(myVolunteer));
-      if (req.body["answers[0][value]"]) {
-        console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
-        //i starts from 1 to avoid to select the number answered as corrected hours
-        var i = 1;
-        var answers = [];
-        while (req.body["answers[" + i + "][value]"]) {
-          console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
-          answers.push(req.body["answers[" + i + "][value]"]);
-          i++;
-        };
-        console.log('Answers : ' + JSON.stringify(answers));
-        var update = {
-          '$set': {
-            'events.$.hours_done': req.body.correct_hours,
-            'events.$.hours_pending': 0,
-            'events.$.status': 'confirmed',
-            'events.$.organism_answers': answers
+      if (typeof req.body.act_id !== 'undefined') {
+        console.log('Correct hours for an activity !');
+        var query = {
+          '_id': req.body.vol_id,
+          'events': {
+            '$elemMatch': {
+              'activity_id': req.body.act_id,
+              'day': req.body.day
+            }
           }
         };
-      } else {
-        var update = {
-          '$set': {
-            'events.$.hours_done': req.body.correct_hours,
-            'events.$.hours_pending': 0,
-            'events.$.status': 'confirmed'
+        if (req.body["answers[0][value]"]) {
+          console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
+          //i starts from 1 to avoid to select the number answered as corrected hours
+          var i = 1;
+          var answers = [];
+          while (req.body["answers[" + i + "][value]"]) {
+            console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
+            answers.push(req.body["answers[" + i + "][value]"]);
+            i++;
+          };
+          console.log('Answers : ' + JSON.stringify(answers));
+          var update = {
+            '$set': {
+              'events.$.hours_done': correct_hours,
+              'events.$.hours_pending': 0,
+              'events.$.status': 'confirmed',
+              'events.$.organism_answers': answers
+            }
+          };
+        } else {
+          var update = {
+            '$set': {
+              'events.$.hours_done': correct_hours,
+              'events.$.hours_pending': 0,
+              'events.$.status': 'confirmed'
+            }
+          };
+        };
+      } else if (typeof req.body.lt_id !== 'undefined') {
+        console.log('Correct hours for a longterm !');
+        var query = {
+          '_id': req.body.vol_id,
+          'long_terms': {
+            '$elemMatch': {
+              '_id': req.body.lt_id
+            }
           }
+        };
+        if (req.body["answers[0][value]"]) {
+          console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
+          //i starts from 1 to avoid to select the number answered as corrected hours
+          var i = 1;
+          var answers = [];
+          while (req.body["answers[" + i + "][value]"]) {
+            console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
+            answers.push(req.body["answers[" + i + "][value]"]);
+            i++;
+          };
+          console.log('Answers : ' + JSON.stringify(answers));
+          var update = {
+            '$inc': {
+              'long_terms.$.hours_done': correct_hours,
+              'long_terms.$.hours_pending': -req.body.hours_before
+            },
+            '$set': {
+              'long_terms.$.status': 'confirmed',
+              'long_terms.$.organism_answers': answers
+            }
+          };
+        } else {
+          var update = {
+            '$inc': {
+              'long_terms.$.hours_done': correct_hours,
+              'long_terms.$.hours_pending': -req.body.hours_before
+            },
+            '$set': {
+              'long_terms.$.status': 'confirmed'
+            }
+          };
         };
       };
-      Volunteer.findOneAndUpdate({
-        '_id': req.body.vol_id,
-        'events': {
-          '$elemMatch': {
-            'activity_id': req.body.act_id,
-            'day': req.body.day
-          }
-        }
-      }, update, function(err) {
+      console.log('query : ' + JSON.stringify(query));
+      console.log('update : ' + JSON.stringify(update));
+      Volunteer.findOneAndUpdate(query, update, function(err) {
         if (err) {
           console.log(err);
           res.sendStatus(404).end();
@@ -412,52 +488,97 @@ router.post('/organism/confirmhours', function(req, res) {
       res.redirect('/organism/dashboard?error=' + err);
     } else if (myVolunteer) {
       console.log('myvolunteer exists');
-      console.log('MyVolunteer : ' + JSON.stringify(myVolunteer));
-
-      function goodEvent(event) {
-        return (event.activity_id == req.body.act_id) && (Date.parse(event.day) == Date.parse(req.body.day));
-      };
-      var hours_pending = myVolunteer.events.find(goodEvent).hours_pending;
+      console.log('MyVolunteer : ' + JSON.stringify(myVolunteer.email));
+      var hours_pending = req.body.hours;
       console.log('hours_pending : ' + hours_pending);
-      console.log('req.body : ' + JSON.stringify(req.body));
-      //If we deal with a student
-      if (req.body["answers[0][value]"]) {
-        console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
-        var i = 0;
-        var answers = [];
-        while (req.body["answers[" + i + "][value]"]) {
-          console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
-          answers.push(req.body["answers[" + i + "][value]"]);
-          i++;
-        };
-        console.log('Answers : ' + JSON.stringify(answers));
-        var update = {
-          '$set': {
-            'events.$.hours_done': hours_pending,
-            'events.$.hours_pending': 0,
-            'events.$.status': 'confirmed',
-            'events.$.organism_answers': answers
+      console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
+      var update = {};
+      //If we deal with an event
+      if (req.body.act_id) {
+        var query = {
+          '_id': req.body.vol_id,
+          'events': {
+            '$elemMatch': {
+              'activity_id': req.body.act_id,
+              'day': req.body.day
+            }
           }
         };
-      } else {
-        console.log("NO answers");
-        var update = {
-          '$set': {
-            'events.$.hours_done': hours_pending,
-            'events.$.hours_pending': 0,
-            'events.$.status': 'confirmed'
+        //If we deal with a student
+        if (req.body["answers[0][value]"]) {
+          console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
+          var i = 0;
+          var answers = [];
+          while (req.body["answers[" + i + "][value]"]) {
+            console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
+            answers.push(req.body["answers[" + i + "][value]"]);
+            i++;
+          };
+          console.log('Answers : ' + JSON.stringify(answers));
+          var update = {
+            '$set': {
+              'events.$.hours_done': hours_pending,
+              'events.$.hours_pending': 0,
+              'events.$.status': 'confirmed',
+              'events.$.organism_answers': answers
+            }
+          };
+        } else {
+          console.log("NO answers");
+          var update = {
+            '$set': {
+              'events.$.hours_done': hours_pending,
+              'events.$.hours_pending': 0,
+              'events.$.status': 'confirmed'
+            }
+          };
+        };
+        //If we deal with a longterm
+      } else if (req.body.lt_id) {
+        var query = {
+          '_id': req.body.vol_id,
+          'long_terms': {
+            '$elemMatch': {
+              '_id': req.body.lt_id
+            }
           }
         };
-      };
-      Volunteer.findOneAndUpdate({
-        '_id': req.body.vol_id,
-        'events': {
-          '$elemMatch': {
-            'activity_id': req.body.act_id,
-            'day': req.body.day
-          }
-        }
-      }, update, function(err) {
+        //If we deal with a student
+        if (req.body["answers[0][value]"]) {
+          console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
+          var i = 0;
+          var answers = [];
+          while (req.body["answers[" + i + "][value]"]) {
+            console.log('Add to answers : ' + req.body["answers[" + i + "][value]"]);
+            answers.push(req.body["answers[" + i + "][value]"]);
+            i++;
+          };
+          console.log('Answers : ' + JSON.stringify(answers));
+          var update = {
+            '$inc': {
+              'long_terms.$.hours_done': hours_pending,
+              'long_terms.$.hours_pending': -hours_pending
+            },
+            '$set': {
+              'long_terms.$.status': 'confirmed',
+              'long_terms.$.organism_answers': answers
+            }
+          };
+        } else {
+          console.log("NO answers");
+          var update = {
+            '$inc': {
+              'long_terms.$.hours_done': hours_pending,
+              'long_terms.$.hours_pending': -hours_pending
+            },
+            '$set': {
+              'long_terms.$.status': 'confirmed'
+            }
+          };
+        };
+      }
+
+      Volunteer.findOneAndUpdate(query, update, function(err) {
         if (err) {
           console.log(err);
           res.sendStatus(404).end();

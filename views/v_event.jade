@@ -40,10 +40,13 @@ block content
 										if day.applicants.find(function(applicant){return applicant==volunteer._id})
 											div.media-right.media-middle
 												h4 <b>Inscrit</b>
+										else if day.day > Date.now()
+											div.media-right.media-middle
+												form(action='/volunteer/event/event/subscribe/'+activity._id+'-'+day.day, method='post')
+													button.btn.btn-default(role='button' name='day' value=day.day) S'inscrire
 										else
 											div.media-right.media-middle
-												form(action='/volunteer/subscribe/'+activity._id+'-'+day.day, method='post')
-													button.btn.btn-default(role='button' name='day' value=day.day) S'inscrire
+												h4 <b>Passé</b>
 				if other_activities.length > 0
 					h3 Autres activités de l'évènement
 					each act, act_i in other_activities
@@ -66,18 +69,25 @@ block content
 												i.fa.fa-calendar
 											div.media-body
 												h4
-													h5.inline <b>#{day.day.toLocaleDateString()} : </b>
+													h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
 													h6.inline
 														i.fa.fa-user
 														p.inline= (day.vol_nb - day.applicants.length)+' places restantes'
 													h6 De #{day.start_time} à #{day.end_time}
 											if day.applicants.find(function(applicant){return applicant==volunteer._id})
+												if day.day > Date.now()
+													div.media-right.media-middle
+														h4 <b>Inscrit</b>
+												else
+													div.media-right.media-middle
+														h4 <b>Participé</b>
+											else if day.day > Date.now()
 												div.media-right.media-middle
-													h4 <b>Inscrit</b>
+													form(action='/volunteer/event/event/subscribe/'+activity._id+'-'+day.day, method='post')
+														button.btn.btn-default(role='button' name='day' value=day.day) S'inscrire
 											else
 												div.media-right.media-middle
-													form(action='/volunteer/subscribe/'+act._id+'-'+day.day, method='post')
-														button.btn.btn-default(role='button' name='day' value=day.day) S'inscrire
+													h4 <b>Passé</b>
 			.col-md-3.col-md-offset-1.no-side-padding
 				h4 L'organisme <b> #{organism.org_name} </b>
 				h5 <b>Mission : </b> #{organism.description}
