@@ -409,7 +409,7 @@ router.post('/organism/correcthours', function(req, res) {
           var update = {
             '$inc': {
               'long_terms.$.hours_done': correct_hours,
-              'long_terms.$.hours_pending': -correct_hours
+              'long_terms.$.hours_pending': -req.body.hours_before
             },
             '$set': {
               'long_terms.$.status': 'confirmed',
@@ -420,7 +420,7 @@ router.post('/organism/correcthours', function(req, res) {
           var update = {
             '$inc': {
               'long_terms.$.hours_done': correct_hours,
-              'long_terms.$.hours_pending': -correct_hours
+              'long_terms.$.hours_pending': -req.body.hours_before
             },
             '$set': {
               'long_terms.$.status': 'confirmed'
