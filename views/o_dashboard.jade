@@ -106,11 +106,11 @@ block content
                 h4 Besoin de bénévoles sur du long terme ?
                 a.btn.longterm(href='/organism/addlongterm') Ajouter un engagement !
                 h3
-                ul.list-group.list-longterm
+                ul.list-group
                   if organism.long_terms.length
                     h3 En cours
                   each lt, lt_i in organism.long_terms
-                    li.list-group-item(id= lt._id)
+                    li.list-group-item.list-longterm-item(id= lt._id)
                       .panel.panel-default
                         .panel-heading
                           div.media-left.media-top

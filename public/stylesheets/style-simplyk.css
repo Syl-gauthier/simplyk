@@ -180,7 +180,7 @@ body{
 }
 
 .list-longterm-item:hover{
-    background-color: #E3DF2F;
+    background-color: #359B9C;
 }
 
 .starring{
@@ -209,8 +209,8 @@ body{
 }
 
 .longterm{
-    background-color: #E3DF2F;
-	border-color:#E3DF2F;
+    background-color: #359B9C;
+	border-color:#359B9C;
 	color: #F5F5F5;
 }
 
