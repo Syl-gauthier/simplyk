@@ -42,8 +42,18 @@ block content
 												h4 <b>Inscrit</b>
 										else if day.day > Date.now()
 											div.media-right.media-middle
-												form(action='/volunteer/event/event/subscribe/'+activity._id+'-'+day.day, method='post')
-													button.btn.btn-default(role='button' name='day' value=day.day) S'inscrire
+												input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal'+activity._id+(day.day).toLocaleDateString())
+												.modal.fade(id='activity-modal'+activity._id+(day.day).toLocaleDateString(), tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+activity._id+(day.day).toLocaleDateString())
+													.modal-dialog(role='document')
+														.modal-content
+															.modal-header
+																button.close(type='button' data-dismiss="modal" aria-label="Close")
+																	span(aria-hidden='true')&times;
+																h4.modal-title(id='myModalLabel'+activity._id+(day.day).toLocaleDateString()) Es-tu sûr de vouloir t'inscrire à cette activité ?
+															.modal-footer
+																a.btn.btn-warning(data-dismiss='modal') Annuler
+																form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post')
+																	input.btn.btn-default(type='submit' value='Oui' role='button')
 										else
 											div.media-right.media-middle
 												h4 <b>Passé</b>
@@ -63,28 +73,38 @@ block content
 											p.inline Adresse : #{event.address}
 								.panel-body
 									h5 <b>Description : </b> #{act.description}
-									each day, day_i in act.days
+									each other_day, day_i in act.days
 										div.media
 											div.media-left.media-middle
 												i.fa.fa-calendar
 											div.media-body
 												h4
-													h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+													h5.inline <b>#{days_name[correctDate(other_day.day).getDay()]  + ' ' + (correctDate(other_day.day).getDate()) + ' ' + months_name[correctDate(other_day.day).getMonth()]  + ' ' + correctDate(other_day.day).getFullYear()} : </b>
 													h6.inline
 														i.fa.fa-user
-														p.inline= (day.vol_nb - day.applicants.length)+' places restantes'
-													h6 De #{day.start_time} à #{day.end_time}
-											if day.applicants.find(function(applicant){return applicant==volunteer._id})
-												if day.day > Date.now()
+														p.inline= (other_day.vol_nb - other_day.applicants.length)+' places restantes'
+													h6 De #{other_day.start_time} à #{other_day.end_time}
+											if other_day.applicants.find(function(applicant){return applicant==volunteer._id})
+												if other_day.day > Date.now()
 													div.media-right.media-middle
 														h4 <b>Inscrit</b>
 												else
 													div.media-right.media-middle
 														h4 <b>Participé</b>
-											else if day.day > Date.now()
+											else if other_day.day > Date.now()
 												div.media-right.media-middle
-													form(action='/volunteer/event/event/subscribe/'+activity._id+'-'+day.day, method='post')
-														button.btn.btn-default(role='button' name='day' value=day.day) S'inscrire
+													input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal'+act._id+(other_day.day).toLocaleDateString())
+													.modal.fade(tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+act._id+(other_day.day).toLocaleDateString(), id='activity-modal'+act._id+(other_day.day).toLocaleDateString())
+														.modal-dialog(role='document')
+															.modal-content
+																.modal-header
+																	button.close(type='button' data-dismiss="modal" aria-label="Close")
+																		span(aria-hidden='true')&times;
+																	h4.modal-title(id='myModalLabel'+act._id+(other_day.day).toLocaleDateString()) Es-tu sûr de vouloir t'inscrire à cette activité ?
+																.modal-footer
+																	a.btn.btn-warning(data-dismiss='modal') Annuler
+																	form.inline(action='/volunteer/event/subscribe/'+act._id+'-'+other_day.day, method='post')
+																		input.btn.btn-default(type='submit' value='Oui' role='button')
 											else
 												div.media-right.media-middle
 													h4 <b>Passé</b>

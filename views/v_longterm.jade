@@ -197,8 +197,17 @@ block content
     .row
       .col-md-10.col-md-offset-1
         if (!alreadySubscribed)
-          form#subscribe(action='/volunteer/longterm/subscribe/'+longterm._id, method='post')
-            button.btn.btn-default(role='submit' form='subscribe' data-toggle="tooltip" title='Fonctionnalité à venir' data-placement="top") S'inscrire
-
+          input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#longterm-modal')
+          .modal.fade(id='longterm-modal' tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
+            .modal-dialog(role='document')
+              .modal-content
+                .modal-header
+                  button.close(type='button' data-dismiss="modal" aria-label="Close")
+                    span(aria-hidden='true')&times;
+                  h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cet engagement ?
+                .modal-footer
+                  a.btn.btn-warning(data-dismiss='modal') Annuler
+                  form.inline(action='/volunteer/longterm/subscribe/'+longterm._id, method='post')
+                    input.btn.btn-default(type='submit' value='Oui' role='button')
 
 block footscript
