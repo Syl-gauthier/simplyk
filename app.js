@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var flash = require('connect-flash');
 const MongoStore = require('connect-mongo')(session);
+var helmet = require('helmet');
 
 //Auth
 var passport = require('passport');
@@ -196,6 +197,7 @@ app.use(bodyParser.urlencoded({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+app.use(helmet());
 
 app.use('/', a_routes);
 app.use('/', o_routes);
