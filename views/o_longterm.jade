@@ -167,6 +167,12 @@ block content
                     td.text-center #{(correctDate(vol.birthdate).getDate()) + ' ' + months_name[correctDate(vol.birthdate).getMonth()]  + ' ' + correctDate(vol.birthdate).getFullYear()}
                     td.text-center= vol.email
                     td.text-center
-                      span.badge.inline(style='background-color: #113A20')= vol.long_terms[0].hours_done + 'h'
+                      if typeof vol.long_terms[0].hours_done !== 'undefined'
+                        span.badge.inline(style='background-color: #113A20')= vol.long_terms[0].hours_done + 'h'
+                      else
+                        span.badge.inline(style='background-color: #113A20')= '0h'
                       h4.inline <b>/</b>
-                      span.badge.inline(style='background-color: #E33831')= vol.long_terms[0].hours_pending + 'h'
+                      if typeof vol.long_terms[0].hours_pending !== 'undefined'
+                        span.badge.inline(style='background-color: #E33831')= vol.long_terms[0].hours_pending + 'h'
+                      else
+                        span.badge.inline(style='background-color: #E33831')= '0h'
