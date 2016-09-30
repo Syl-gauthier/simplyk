@@ -68,27 +68,6 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
       });
     }
   });
-})
-
-router.get('/admin/classexample', permissions.requireGroup('admin'), function(req, res, next) {
-  res.render('a_classexample.jade', {
-    session: req.session,
-    admin: req.session.admin
-  });
-});
-
-router.get('/admin/dashboard', permissions.requireGroup('admin'), function(req, res, next) {
-  res.render('a_dashboard.jade', {
-    session: req.session,
-    admin: req.session.admin
-  });
-});
-
-router.get('/admin/dashboard2', permissions.requireGroup('admin'), function(req, res, next) {
-  res.render('a_dashboard2.jade', {
-    session: req.session,
-    admin: req.session.admin
-  });
 });
 
 router.get('/admin/feedback', permissions.requireGroup('admin'), function(req, res, next) {
@@ -100,13 +79,6 @@ router.get('/admin/feedback', permissions.requireGroup('admin'), function(req, r
 
 router.get('/admin/internopps', permissions.requireGroup('admin'), function(req, res, next) {
   res.render('a_internopps.jade', {
-    session: req.session,
-    admin: req.session.admin
-  });
-});
-
-router.get('/admin/studentexample', permissions.requireGroup('admin'), function(req, res, next) {
-  res.render('a_studentexample.jade', {
     session: req.session,
     admin: req.session.admin
   });
@@ -133,7 +105,10 @@ router.get('/admin/listorganisms', permissions.requireGroup('admin'), function(r
 
 router.get('/admin/profile', permissions.requireGroup('admin'), function(req, res) {
   console.log('Begin get /profile')
-  res.json(req.session.admin);
+  res.render('a_profile.jade', {
+    admin: req.session.admin,
+    session: req.session
+  });
 });
 
 router.post('/admin/logout', function(req, res) {
