@@ -241,7 +241,7 @@ router.post('/volunteer/subscribe/:act_id-:activity_day', permissions.requireGro
                 var content = {
                   recipient: organism.email,
                   name: organism.firstname + ' ' + organism.lastname,
-                  customMessage: req.session.volunteer.firstname + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !<br>'
+                  customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !<br>'
                 };
                 emailer.sendSubscriptionEmail(content);
               });
