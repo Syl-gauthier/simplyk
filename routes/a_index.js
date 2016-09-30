@@ -10,8 +10,13 @@ var Volunteer = require('../models/volunteer_model.js');
 
 
 router.get('/admin/classes', permissions.requireGroup('admin'), function(req, res, next) {
+  const student_ids = req.session.admin.students.map(function(el){return el._id;});
+  console.log('Import students to classes page ! ');
+  console.log('student_ids : ' + student_ids);
   Volunteer.find({
-    'admin.admin_id': req.session.admin._id
+    '_id': {
+      '$in': student_ids
+    }
   }, function(err, volunteers) {
     if (err) {
       console.log('There is an error to access /listorganisms and get all the volunteers, the error is : ' + err);
