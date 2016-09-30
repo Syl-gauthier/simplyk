@@ -26,10 +26,19 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
         admin: req.session.admin
       });
     } else {
+      var classes_array = [];
+      volunteers.forEach(function(vol){
+        var classe = vol.admin.class;
+        if(classes_array.indexOf(classe) > -1){
+        } else {
+          classes_array.push(classe);
+        }
+      });
       res.render('a_classes.jade', {
         volunteers: volunteers,
         session: req.session,
-        admin: req.session.admin
+        admin: req.session.admin,
+        classes_array: classes_array
       });
     }
   })
