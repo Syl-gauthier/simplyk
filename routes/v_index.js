@@ -298,19 +298,32 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
 
 router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
   console.log('lt_id : ' + req.params.lt_id + typeof req.params.lt_id);
-  ltSubs.subscribe(req.session.volunteer, req.params.lt_id, function(err, results) {
-    if (err) {
-      console.log(err);
-      res.redirect('/volunteer/map?error=' + err);
-    } else {
-      req.session.volunteer = results.newVolunteer;
-      res.render('v_postsubscription.jade', {
-        org_name: results.newOrganism.org_name,
-        email: results.newOrganism.email,
-        volunteer: req.session.volunteer
-      });
-    }
-  });
+
+  function isLongterm(lt) {
+    return (lt._id === req.params.lt_id);
+  };
+  var alreadyExists = req.session.volunteer.long_terms.find(isLongterm);
+  console.log('alreadyExists : ' + alreadyExists + typeof alreadyExists);
+  if (typeof alreadyExists === 'undefined') {
+    ltSubs.subscribe(req.session.volunteer, req.params.lt_id, function(err, results) {
+      if (err) {
+        console.log(err);
+        res.redirect('/volunteer/map?error=' + err);
+      } else {
+        req.session.volunteer = results.newVolunteer;
+        res.render('v_postsubscription.jade', {
+          org_name: results.newOrganism.org_name,
+          email: results.newOrganism.email,
+          volunteer: req.session.volunteer
+        });
+      }
+    });
+  } else {
+    console.log('Already subscribed to this long_term');
+    var error = encodeURIComponent('Vous êtes déjà inscrit à cet engagement !');
+    res.redirect('/volunteer/map?error=' + error);
+    res.end();
+  }
 });
 
 router.get('/user', function(req, res) {
