@@ -17,7 +17,6 @@ body{
 .bigtext{
 	width: 100%;
 	height: 200px;
-
 }
 
 
@@ -40,6 +39,7 @@ body{
 .inline{
 	display: inline;
 }
+
 #nav-me{
     background-color: #5BCF8F;
 	opacity: 100%;
@@ -55,6 +55,10 @@ body{
 	color: #F5F5F5;
 }
 
+#nav-me > .open > a{
+	background-color: #25A191;
+	color: #25A191;
+}
 
 .dropdown-menu{
 	background-color: #5BCF8F;
@@ -99,16 +103,21 @@ body{
 }
 
 #legend {
-        background: #FFF;
-        padding: 10px;
-        margin: 5px;
-        font-size: 12px;
-        font-family: Arial, sans-serif;
+    background: #FFF;
+    padding: 10px;
+    margin: 5px;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
 }
 
 #offers-list{
 	height: 85vh;
 }
+
+.navbar-nav > li:hover {
+	color: #25A191;
+}
+
 
 .conn-input{
 	padding-top: 15px;

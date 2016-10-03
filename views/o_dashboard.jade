@@ -17,6 +17,7 @@ block content
               .media-left.media-middle
                 img.media-object.img-profile(src='/images/rocket.png')
               .media-body.media-middle
+                if organism
                   h4.media-heading= organism.org_name
                   a(href='http://www.'+organism.website)= organism.website
                   h4
@@ -26,6 +27,11 @@ block content
                     i.fa.fa-envelope
                     p.inline #{organism.email}
                   br
+                else if admin
+                  h4.media-heading= '<strong>' + admin.firstname + ' ' + admin.lastname + '</strong>'
+                  h4= admin.name
+
+        if organism
         .row
           .col-md-4.col-md-offset-8
             p <b>Description</b> : #{organism.description}

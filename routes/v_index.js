@@ -468,11 +468,6 @@ router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'
   });
 });
 
-router.post('/volunteer/logout', function(req, res) {
-  req.session.destroy();
-  res.redirect('/');
-});
-
 
 function getAge(dateString) {
   var today = new Date();

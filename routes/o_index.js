@@ -33,18 +33,19 @@ router.get('/', function(req, res, next) {
       console.log(err);
       res.render('g_accueil.jade', {
         session: req.session,
-        error: err,
-        organism: req.session.organism
+        error: err
       });
     }
     //Create events list
     else {
-      console.log(req.isAuthenticated());
+      console.log('req.isAuthenticated() : ' + req.isAuthenticated());
       console.log('**************');
       if (req.session) {
         if (req.session.organism) {
+          console.log('Try to access / but req.session.organism');
           res.redirect('/organism/dashboard');
         } else if (req.session.volunteer) {
+          console.log('Try to access / but req.session.volunteer');
           res.redirect('/volunteer/map');
         } else {
           var isNotPassed = function(activity) {
@@ -597,11 +598,6 @@ router.post('/organism/confirmhours', function(req, res) {
 
 router.get(/dashboard/, permissions.requireGroup('organism'), function(req, res) {
   res.redirect('/dashboard');
-});
-
-router.post(/logout/, function(req, res) {
-  req.session.destroy();
-  res.redirect('/');
 });
 
 module.exports = router;

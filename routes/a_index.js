@@ -92,7 +92,7 @@ router.get('/admin/feedback', permissions.requireGroup('admin'), function(req, r
 });
 
 router.get('/admin/internopps', permissions.requireGroup('admin'), function(req, res, next) {
-  res.render('a_internopps.jade', {
+  res.render('o_dashboard.jade', {
     session: req.session,
     admin: req.session.admin
   });
@@ -123,11 +123,6 @@ router.get('/admin/profile', permissions.requireGroup('admin'), function(req, re
     admin: req.session.admin,
     session: req.session
   });
-});
-
-router.post('/admin/logout', function(req, res) {
-  req.session.destroy();
-  res.redirect('/');
 });
 
 module.exports = router;
