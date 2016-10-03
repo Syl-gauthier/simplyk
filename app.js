@@ -132,20 +132,22 @@ passport.use('local-admin', new LocalStrategy({
     }, function(err, admin) {
       if (err) {
         return done(err);
-      }
-      if (!admin) {
+      } else if (!admin) {
         return done(null, false, {
           message: 'Incorrect mail.'
         });
-      }
-      if (!admin.validPassword(password)) {
+      } else if (!admin.validPassword(password)) {
         return done(null, false, {
-          message: 'Incorrect password.'
+          exists: true,
+          message: 'Incorrect password.',
+          code: 1
         });
+      } else {
+        //Login info correct
+        admin = admin.toJSON();
+        admin.group = "admin";
+        return done(null, admin);
       }
-      admin = admin.toJSON();
-      admin.group = "admin";
-      return done(null, admin);
     });
   }
 ));

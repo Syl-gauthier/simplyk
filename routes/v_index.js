@@ -260,12 +260,18 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               req.session.volunteer = newVolunteer;
               var success = encodeURIComponent('Vous avez été inscrit à l\'activité avec succès !');
               Organism.findById(newActivity.org_id, function(err, organism) {
-                var content = {
+                var org_content = {
                   recipient: organism.email,
                   name: organism.firstname + ' ' + organism.lastname,
                   customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !<br>'
                 };
-                emailer.sendSubscriptionEmail(content);
+                emailer.sendSubscriptionOrgEmail(org_content);
+                var vol_content = {
+                  recipient: newVolunteer.email,
+                  name: newVolunteer.firstname + ' ' + newVolunteer.lastname,
+                  customMessage: 'Tu t\' es inscrit à l\'évènement de ' + organism.org_name + ' : ' + newActivity.event_intitule + ' !<br>' + ' N\'oublie pas d\'enregistrer tes heures de participation à cet évènement ! <br> Cela bénéficiera à la fois à ' + organism.org_name + ' et à toi pour passer aux échelons supérieurs de l\'engagement !'
+                };
+                emailer.sendSubscriptionVolEmail(vol_content);
               });
               res.render('v_postsubscription.jade', {
                 org_name: newActivity.org_name,

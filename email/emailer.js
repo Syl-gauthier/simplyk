@@ -25,7 +25,7 @@ function callSendMail(mailOptions) {
 
 // content newUser
 function sendWelcomeEmail(content) {
-  var body = '<p>You created an account for ' + content.name + '. ' + content.customMessage + ' <a href="simplyk.org">Simplyk</a></p>';
+  var body = '<p>You created an account for ' + content.name + '. <br>' + content.customMessage + ' <a href="simplyk.org">Simplyk</a></p>';
 
   var mailOptions = {
     from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
@@ -56,8 +56,22 @@ function sendVerifyEmail(content) {
   callSendMail(mailOptions);
 };
 
-function sendSubscriptionEmail(content) {
+function sendSubscriptionOrgEmail(content) {
   var body = '<p>Bonne nouvelle ' + content.name + ' !' + '<br> ' + content.customMessage + '<br> <a href="platform.simplyk.org">Voir mes bénévoles</a></p>';
+
+  var mailOptions = {
+    from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+    to: content.recipient,
+    subject: 'Nouvelle inscription sur Simplyk !', // Subject line
+    text: '', // plaintext body
+    html: body
+  };
+
+  callSendMail(mailOptions);
+}
+
+function sendSubscriptionVolEmail(content) {
+  var body = '<p>Merci ' + content.name + ' !' + '<br> ' + content.customMessage + '<br> <a href="platform.simplyk.org/volunteer/profile">Voir mon profil</a></p>';
 
   var mailOptions = {
     from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
@@ -86,7 +100,8 @@ function sendUnsubscriptionEmail(content) {
 
 module.exports = {
   sendWelcomeEmail: sendWelcomeEmail,
-  sendSubscriptionEmail: sendSubscriptionEmail,
+  sendSubscriptionOrgEmail: sendSubscriptionOrgEmail,
+  sendSubscriptionVolEmail: sendSubscriptionVolEmail,
   sendUnsubscriptionEmail: sendUnsubscriptionEmail,
   sendVerifyEmail: sendVerifyEmail
 };
