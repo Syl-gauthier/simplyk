@@ -33,7 +33,8 @@ router.get('/', function(req, res, next) {
       console.log(err);
       res.render('g_accueil.jade', {
         session: req.session,
-        error: err
+        error: err,
+        group: req.session.group
       });
     }
     //Create events list
@@ -73,7 +74,8 @@ router.get('/', function(req, res, next) {
               res.render('g_accueil.jade', {
                 session: req.session,
                 error: err,
-                organism: req.session.organism
+                organism: req.session.organism,
+                group: req.session.group
               });
             } else {
               var longterms = longtermsList(organisms);
@@ -82,7 +84,8 @@ router.get('/', function(req, res, next) {
                 activities: acts,
                 session: req.session,
                 longterms: longterms,
-                error: req.query.error
+                error: req.query.error,
+                group: req.session.group
               });
             }
           });
@@ -98,7 +101,8 @@ router.get('/', function(req, res, next) {
         res.render('g_accueil.jade', {
           activities: actis,
           session: req.session,
-          error: req.query.error
+          error: req.query.error,
+          group: req.session.group
         });
       }
     };
@@ -119,7 +123,8 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
       res.render('g_accueil.jade', {
         session: req.session,
         error: err,
-        organism: req.isAuthenticated()
+        organism: req.isAuthenticated(),
+        group: req.session.group
       });
     } else {
       var events = req.session.organism.events;
@@ -159,7 +164,8 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
           res.render('g_accueil.jade', {
             session: req.session,
             error: err,
-            organism: req.isAuthenticated()
+            organism: req.session.organism,
+            group: req.session.group
           });
         } else {
           function addEventName(td) {
@@ -190,7 +196,8 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
             ev_past: ev_past,
             ev_to_come: ev_to_come,
             organism: req.session.organism,
-            todos: lastTodos
+            todos: lastTodos,
+            group: req.session.group
           });
         }
       });
@@ -274,7 +281,8 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism'), fu
           //res.json(event);
           res.render('o_event.jade', {
             event: event,
-            organism: req.session.organism
+            organism: req.session.organism,
+            group: req.session.group
           });
         }
       });
@@ -320,7 +328,8 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism'), fu
         organism: organism,
         longterm: longterm,
         slotJSON: slotJSON,
-        volunteers: volunteers
+        volunteers: volunteers,
+        group: req.session.group
       });
       res.end();
     };

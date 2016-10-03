@@ -11,13 +11,13 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
         span.icon-bar
         span.icon-bar
       a.navbar-brand(href='/volunteer/map')
-        if volunteer
+        if group == 'volunteer'
           a.navbar-brand(href='/volunteer/map')
             img(alt='Brand', src='/images/simplyk-text-egg-hor.png')
-        else if organism
+        else if group == 'organism'
           a.navbar-brand(href='/organism/dashboard')
             img(alt='Brand', src='/images/simplyk-text-egg-hor.png')
-        else if admin
+        else if group == 'admin'
           a.navbar-brand(href='/admin/classes')
             img(alt='Brand', src='/images/simplyk-text-egg-hor.png')
         else
@@ -29,7 +29,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
     #myNavbar.collapse.navbar-collapse
       .navbar-header
       ul.nav.navbar-nav.navbar-right
-        if volunteer
+        if group == 'volunteer'
           unless page=='profile'
             li.navbar-link(role='presentation')
               a(href='/volunteer/profile') Mon tableau de bord
@@ -39,7 +39,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form( method='post', action='./logout')
               button.btn.btn-default(type='submit') Déconnexion
-        else if organism
+        else if group == 'organism'
           unless page == 'profile'
             li.navbar-link(role='presentation')
               a(href='/organism/profile') Mon profil
@@ -49,7 +49,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form( method='post', action='./logout')
               button.btn.btn-default(type='submit') Déconnexion
-        else if admin
+        else if group == 'admin'
           li.navbar-link(role='presentation')
             a(href='/admin/profile') Mon profil
           li.navbar-link(role='presentation')

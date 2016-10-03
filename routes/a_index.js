@@ -10,7 +10,9 @@ var Volunteer = require('../models/volunteer_model.js');
 
 
 router.get('/admin/classes', permissions.requireGroup('admin'), function(req, res, next) {
-  const student_ids = req.session.admin.students.map(function(el){return el._id;});
+  const student_ids = req.session.admin.students.map(function(el) {
+    return el._id;
+  });
   console.log('Import students to classes page ! ');
   console.log('student_ids : ' + student_ids);
   Volunteer.find({
@@ -23,14 +25,14 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
       res.render('a_classes.jade', {
         error: err,
         session: req.session,
-        admin: req.session.admin
+        admin: req.session.admin,
+        group: req.session.group
       });
     } else {
       var classes_array = [];
-      volunteers.forEach(function(vol){
+      volunteers.forEach(function(vol) {
         var classe = vol.admin.class;
-        if(classes_array.indexOf(classe) > -1){
-        } else {
+        if (classes_array.indexOf(classe) > -1) {} else {
           classes_array.push(classe);
         }
       });
@@ -38,7 +40,8 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
         volunteers: volunteers,
         session: req.session,
         admin: req.session.admin,
-        classes_array: classes_array
+        classes_array: classes_array,
+        group: req.session.group
       });
     }
   })
@@ -51,7 +54,8 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
       res.render('a_classes.jade', {
         error: err,
         session: req.session,
-        admin: req.session.admin
+        admin: req.session.admin,
+        group: req.session.group
       });
     } else {
       var formatted_events = volunteer.events;
@@ -78,7 +82,8 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
       };
       res.render('a_report.jade', {
         volunteer: volunteer,
-        events: formatted_events
+        events: formatted_events,
+        group: req.session.group
       });
     }
   });
@@ -87,14 +92,16 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
 router.get('/admin/feedback', permissions.requireGroup('admin'), function(req, res, next) {
   res.render('a_feedback.jade', {
     session: req.session,
-    admin: req.session.admin
+    admin: req.session.admin,
+    group: req.session.group
   });
 });
 
 router.get('/admin/internopps', permissions.requireGroup('admin'), function(req, res, next) {
   res.render('o_dashboard.jade', {
     session: req.session,
-    admin: req.session.admin
+    admin: req.session.admin,
+    group: req.session.group
   });
 });
 
@@ -105,13 +112,15 @@ router.get('/admin/listorganisms', permissions.requireGroup('admin'), function(r
       res.render('a_listorganisms.jade', {
         error: err,
         session: req.session,
-        admin: req.session.admin
+        admin: req.session.admin,
+        group: req.session.group
       });
     } else {
       res.render('a_listorganisms.jade', {
         organisms: organisms,
         session: req.session,
-        admin: req.session.admin
+        admin: req.session.admin,
+        group: req.session.group
       });
     }
   })
@@ -121,7 +130,8 @@ router.get('/admin/profile', permissions.requireGroup('admin'), function(req, re
   console.log('Begin get /profile')
   res.render('a_profile.jade', {
     admin: req.session.admin,
-    session: req.session
+    session: req.session,
+    group: req.session.group
   });
 });
 

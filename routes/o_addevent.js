@@ -9,7 +9,8 @@ var Activity = require('../models/activity_model.js');
 
 router.get('/organism/addevent', permissions.requireGroup('organism'), function(req, res) {
   res.render('o_addevent.jade', {
-    organism: req.session.organism
+    organism: req.session.organism,
+    group: req.session.group
   });
 });
 
@@ -26,7 +27,8 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
       var error = 'La position de l\'adresse que vous avez mentionné n\'a pas été trouvé par Google Maps';
       res.render('o_addevent.jade', {
         error: error,
-        organism: req.session.organism
+        organism: req.session.organism,
+        group: req.session.group
       });
     } else {
       Organism.findById(req.session.organism._id, function(err, organism) {
@@ -133,7 +135,8 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
                     var error = 'Something bad happened! Try again!';
                     res.render('o_addevent.jade', {
                       error: err,
-                      organism: req.session.organism
+                      organism: req.session.organism,
+                      group: req.session.group
                     });
                   } else {
                     req.session.organism = org;
@@ -141,7 +144,8 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
                       if (err) {
                         res.render('o_addevent.jade', {
                           error: err,
-                          organism: req.session.organism
+                          organism: req.session.organism,
+                          group: req.session.group
                         });
                       } else {
                         res.redirect('/organism/dashboard');
