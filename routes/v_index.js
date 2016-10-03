@@ -31,6 +31,9 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       });
     } else { //Create opps list
       const age = getAge(req.session.volunteer.birthdate);
+      if (req.session.volunteer.admin) {
+        const my_admin = req.session.volunteer.admin.admin_id;
+      }
       console.log('Volunteer age : ' + age);
       var isTooYoung = function(activity) {
         if (activity.min_age) {
@@ -48,11 +51,18 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       var isUnverified = function(activity) {
         return activity.validation;
       };
+      var isMySchool = function(activity) {
+        if (activity.admin_id) {
+          return activity.admin_id == my_admin;
+        } else {
+          return true;
+        }
+      };
       //If user is under 16, he can't see the activities of unverified organisms
       if (age < 16) {
-        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified);
+        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(isMySchool);
       } else {
-        var acts = activities.filter(isNotPassed).filter(isTooYoung);
+        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isMySchool);
       }
       Organism.find({
         'long_terms': {

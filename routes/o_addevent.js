@@ -79,7 +79,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
         var activitiesList = [];
         var admin_id = null;
         if (req.session.admin){
-          admin_id = req.session.admin._id;
+          admin_id = req.session.admin.admin_id;
         }
         for (var i = 1; i < nb_activities + 1; i++) {
           console.log('Activivity number ' + i)

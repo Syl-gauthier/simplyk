@@ -55,7 +55,10 @@ router.get('/', function(req, res, next) {
             });
             return days_length.length > 0;
           };
-          const acts = activities.filter(isNotPassed);
+          var isNotASchool = function(activity){
+            return !(activity.admin_id);
+          };
+          const acts = activities.filter(isNotPassed).filter(isNotASchool);
           Organism.find({
             'long_terms': {
               '$exists': true,
