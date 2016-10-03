@@ -109,7 +109,7 @@ router.get('/', function(req, res, next) {
   });
 });
 
-router.get('/organism/dashboard', permissions.requireGroup('organism'), function(req, res) {
+router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'), function(req, res) {
   console.log('req.body : ' + req.body);
   if (req.body.org) {
     req.session.organism = req.body.org;
@@ -205,7 +205,7 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
   })
 });
 
-router.get('/organism/event/:event_id', permissions.requireGroup('organism'), function(req, res) {
+router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
   function isEvent(event) {
     console.log('Test : ' + event._id + ' = ' + req.params.event_id + ' ?');
     return event._id === req.params.event_id;
@@ -291,7 +291,7 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism'), fu
 });
 
 
-router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism'), function(req, res) {
+router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
   console.log('In GET to a longterm page with lt_id:' + req.params.lt_id);
   var organism = req.session.organism;
 
@@ -337,27 +337,8 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism'), fu
 
 });
 
-//for ajax call only (for now)
-//Get users info from an opp intitule
-router.post('/organism/getOppUsers', function(req, res) {
 
-  opp_management.getOppUsers(req.body.opp_id, req, res);
-
-});
-
-router.post('/organism/validate', function(req, res) {
-
-  opp_management.validate_application(req, res);
-
-});
-
-router.post('/organism/reject', function(req, res) {
-
-  opp_management.reject_application(req, res);
-
-});
-
-router.post('/organism/correcthours', function(req, res) {
+router.post('/organism/correcthours', permissions.requireGroup('organism', 'admin'), function(req, res) {
   console.log('Correct Hours starts');
   const correct_hours = req.body.correct_hours;
   console.log('Correct_hours: ' + correct_hours);
@@ -479,7 +460,7 @@ router.post('/organism/correcthours', function(req, res) {
   });
 });
 
-router.post('/organism/confirmhours', function(req, res) {
+router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admin'), function(req, res) {
   console.log('Confirm Hours starts');
   OrgTodo.findOneAndRemove({
     _id: req.body.todo
@@ -605,7 +586,7 @@ router.post('/organism/confirmhours', function(req, res) {
   });
 });
 
-router.get(/dashboard/, permissions.requireGroup('organism'), function(req, res) {
+router.get(/dashboard/, permissions.requireGroup('organism', 'admin'), function(req, res) {
   res.redirect('/dashboard');
 });
 

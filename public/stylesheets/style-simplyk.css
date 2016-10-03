@@ -54,19 +54,19 @@ body{
 #nav-me a{
 	color: #F5F5F5;
 }
-
+/*
 #nav-me > .open > a{
 	background-color: #25A191;
 	color: #25A191;
-}
+}*/
 
 .dropdown-menu{
 	background-color: #5BCF8F;
 	color: #F5F5F5;
 }
 
-#toggle-but:hover{
-	background-color: #8BE78F;
+.toggle-but:hover{
+	background-color: #00009F;
 	color: #F5F5F5;
 }
 
@@ -113,11 +113,6 @@ body{
 #offers-list{
 	height: 85vh;
 }
-
-.navbar-nav > li:hover {
-	color: #25A191;
-}
-
 
 .conn-input{
 	padding-top: 15px;

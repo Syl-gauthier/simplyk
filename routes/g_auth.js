@@ -74,12 +74,20 @@ router.post('/login', function(req, res, next) {
     } else if (user.group == "admin") {
       req.session.admin = user;
       req.session.group = "admin";
-      console.log('IN LOGIN post and req.session.group = ' + req.session.group);
-      req.session.save(function(err) {
+      Organism.findOne({
+        admin_id: req.session.admin._id
+      }, function(err, org) {
         if (err) {
           return next(err);
         }
-        res.redirect('/admin/classes');
+        req.session.organism = org;
+        console.log('IN LOGIN post and req.session.group = ' + req.session.group);
+        req.session.save(function(err) {
+          if (err) {
+            return next(err);
+          }
+          res.redirect('/admin/classes');
+        });
       });
     }
   })(req, res, next);

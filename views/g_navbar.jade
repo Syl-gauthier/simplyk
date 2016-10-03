@@ -55,13 +55,15 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li.navbar-link(role='presentation')
             a(href='/admin/classes') Mes étudiants
           li.navbar-link(role='presentation')
-            a(href='/admin/internopps') Mes opportunités internes
-          li.dropdown
-            a.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore
-              span.caret
-            ul.dropdown-menu
-              li
-                a(href='/admin/listorganisms') Organismes
+            a(href='/organism/dashboard') Mes opportunités internes
+          li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore
+                  span.caret
+                ul.dropdown-menu#drop-down-but
+                  li
+                    a.toggle-but(href='/admin/listorganisms') Organismes
           li(role='presentation')
             form.navbar-form( method='post', action='/logout')
               button.btn.btn-default(type='submit') Déconnexion
@@ -75,11 +77,11 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                   span.caret
                 ul.dropdown-menu#drop-down-but
                   li
-                    a#toggle-but(href='register_organism') Organismes
+                    a.toggle-but(href='register_organism') Organismes
                   li
-                    a#toggle-but(href='register_volunteer') Bénévoles
+                    a.toggle-but(href='register_volunteer') Bénévoles
                   //- li
-                  //-   a#toggle-but(href='register_admin') Administrateurs
+                  //-   a.toggle-but(href='register_admin') Administrateurs
           li(role='presentation')
             form.navbar-form( method='get', action='login')
               button.btn.btn-default(type='submit') Connexion

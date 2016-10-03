@@ -7,18 +7,14 @@ var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
 var Activity = require('../models/activity_model.js');
 
-router.get('/organism/addevent', permissions.requireGroup('organism'), function(req, res) {
+router.get('/organism/addevent', permissions.requireGroup('organism', 'admin'), function(req, res) {
   res.render('o_addevent.jade', {
     organism: req.session.organism,
     group: req.session.group
   });
 });
 
-router.post('/organism/addevent/json', permissions.requireGroup('organism'), function(req, res) {
-  res.json(req.body);
-});
-
-router.post('/organism/addevent', permissions.requireGroup('organism'), function(req, res) {
+router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'), function(req, res) {
   //Transform address into lon/lat
   console.log('address sent to gmaps: ' + req.body.address);
 
@@ -81,6 +77,10 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
         console.log('There are ' + nb_activities + ' activities in the event !');
         //Create activities
         var activitiesList = [];
+        var admin_id = null;
+        if (req.session.admin){
+          admin_id = req.session.admin._id;
+        }
         for (var i = 1; i < nb_activities + 1; i++) {
           console.log('Activivity number ' + i)
           var activity = {
@@ -94,6 +94,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism'), function
             language: req.body.language,
             cause: req.session.organism.cause,
             email: req.session.organism.email,
+            admin_id: admin_id,
             validation: req.session.organism.validation,
             intitule: req.body['activity' + i + '_intitule_activity'],
             description: req.body['activity' + i + '_activity_description'],

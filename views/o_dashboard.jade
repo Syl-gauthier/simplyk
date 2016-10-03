@@ -17,19 +17,16 @@ block content
               .media-left.media-middle
                 img.media-object.img-profile(src='/images/rocket.png')
               .media-body.media-middle
+                h4.media-heading= organism.org_name
                 if group == 'organism'
-                  h4.media-heading= organism.org_name
                   a(href='http://www.'+organism.website)= organism.website
                   h4
                     i.fa.fa-phone
                     p.inline #{organism.phone}
-                  h4
-                    i.fa.fa-envelope
-                    p.inline #{organism.email}
-                  br
-                else if group == 'admin'
-                  h4.media-heading= '<strong>' + admin.firstname + ' ' + admin.lastname + '</strong>'
-                  h4= admin.name
+                h4
+                  i.fa.fa-envelope
+                  p.inline #{organism.email}
+                br
 
         if group == 'organism'
           .row
