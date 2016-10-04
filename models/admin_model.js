@@ -16,7 +16,7 @@ var AdminSchema = new Schema({
 	lat: Number,
 	lon: Number,
 	email: String,
-	admin_id: { type: Schema.Types.ObjectId, ref: 'Admin' },//ID of the school coordinator
+	school_id: { type: Schema.Types.ObjectId, ref: 'Admin' },//ID of the school coordinator
 	students: [{
 		id: { type: Schema.Types.ObjectId, ref: 'Volunteer' },
 		status: String

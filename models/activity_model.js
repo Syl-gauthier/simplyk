@@ -18,7 +18,7 @@ var ActivitySchema = new Schema({
 	lat: Number,
 	lon: Number,
 	cause: String,
-	admin_id: {type: Schema.Types.ObjectId, ref:'Admin'},
+	school_id: {type: Schema.Types.ObjectId, ref:'Admin'},
 	days: [{
 		start_time: String,
 		end_time: String,
