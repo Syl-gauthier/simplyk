@@ -32,7 +32,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
     } else { //Create opps list
       const age = getAge(req.session.volunteer.birthdate);
       if (req.session.volunteer.admin) {
-        const my_admin = req.session.volunteer.admin.admin_id;
+        const my_school = req.session.volunteer.admin.school_id;
       }
       console.log('Volunteer age : ' + age);
       var isTooYoung = function(activity) {
@@ -52,8 +52,8 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         return activity.validation;
       };
       var isMySchool = function(activity) {
-        if (activity.admin_id) {
-          return activity.admin_id == my_admin;
+        if (activity.school_id) {
+          return activity.school_id == my_school;
         } else {
           return true;
         }
@@ -63,15 +63,35 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(isMySchool);
       } else {
         var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isMySchool);
-      }
-      Organism.find({
-        'long_terms': {
-          '$exists': true,
-          '$not': {
-            '$size': 0
+      };
+      if (my_school) {
+        var organism_query = {
+          'long_terms': {
+            '$exists': true,
+            '$not': {
+              '$size': 0
+            }
+          },
+          'school_id': {
+            '$in': [undefined, my_school]
           }
-        }
-      }, {
+        };
+      } else {
+        var organism_query = {
+          'long_terms': {
+            '$exists': true,
+            '$not': {
+              '$size': 0
+            }
+          },
+          'school_id': {
+            '$not': {
+              '$exists': true
+            }
+          }
+        };
+      };
+      Organism.find(organism_query, {
         'org_name': true,
         '_id': true,
         'cause': true,

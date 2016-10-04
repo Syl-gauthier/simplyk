@@ -8,14 +8,15 @@ var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
 
 
-router.get('/organism/addlongterm', permissions.requireGroup('organism'), function(req, res) {
+router.get('/organism/addlongterm', permissions.requireGroup('organism', 'admin'), function(req, res) {
 	res.render('o_addlongterm.jade', {
 		organism: req.session.organism,
+		admin: req.session.admin,
 		group: req.session.group
 	});
 });
 
-router.post('/organism/addlongterm', permissions.requireGroup('organism'), function(req, res) {
+router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin'), function(req, res) {
 	//Transform address into lon/lat
 	console.log('address sent to gmaps: ' + req.body.address);
 
@@ -25,6 +26,7 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism'), funct
 			res.render('o_addlongterm.jade', {
 				error: error,
 				organism: req.session.organism,
+				admin: req.session.admin,
 				group: req.session.group
 			});
 		} else {
@@ -58,7 +60,8 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism'), funct
 					res.render('o_addlongterm.jade', {
 						error: err,
 						organism: req.session.organism,
-    group: req.session.group
+						admin: req.session.admin,
+						group: req.session.group
 					});
 				} else {
 					req.session.organism = organism;

@@ -55,15 +55,21 @@ router.get('/', function(req, res, next) {
             });
             return days_length.length > 0;
           };
-          var isNotASchool = function(activity){
-            return !(activity.admin_id);
+          var isNotASchool = function(activity) {
+            return !(activity.school_id);
           };
           const acts = activities.filter(isNotPassed).filter(isNotASchool);
+          //Select organisms who have longterms and are not admin ones
           Organism.find({
             'long_terms': {
               '$exists': true,
               '$not': {
                 '$size': 0
+              }
+            },
+            'school_id': {
+              '$not': {
+                '$exists': true
               }
             }
           }, {

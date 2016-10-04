@@ -77,9 +77,9 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
         console.log('There are ' + nb_activities + ' activities in the event !');
         //Create activities
         var activitiesList = [];
-        var admin_id = null;
+        var school_id = null;
         if (req.session.admin){
-          admin_id = req.session.admin.admin_id;
+          school_id = req.session.admin.school_id;
         }
         for (var i = 1; i < nb_activities + 1; i++) {
           console.log('Activivity number ' + i)
@@ -94,7 +94,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
             language: req.body.language,
             cause: req.session.organism.cause,
             email: req.session.organism.email,
-            admin_id: admin_id,
+            school_id: school_id,
             validation: req.session.organism.validation,
             intitule: req.body['activity' + i + '_intitule_activity'],
             description: req.body['activity' + i + '_activity_description'],
