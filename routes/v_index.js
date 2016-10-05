@@ -109,6 +109,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           var longterms = longtermsList(organisms);
           console.log('LONG' + organisms);
           res.render('v_map.jade', {
+            session: req.session,
             activities: acts,
             volunteer: req.session.volunteer,
             error: req.query.error,
@@ -147,6 +148,7 @@ router.get('/activity/:act_id', permissions.requireGroup('volunteer'), function(
         console.log('+++++++++++++++++++++');
         console.log('Activity : ' + activity);
         res.render('v_activity.jade', {
+          session: req.session,
           act_id: req.params.act_id,
           event: event_filtered,
           organism: organism[0],
@@ -205,6 +207,7 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
         var hours_done = null;
       };
       res.render('v_longterm.jade', {
+        session: req.session,
         lt_id: req.params.lt_id,
         organism: organism,
         longterm: longterm,
@@ -309,6 +312,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                 emailer.sendSubscriptionVolEmail(vol_content);
               });
               res.render('v_postsubscription.jade', {
+                session: req.session,
                 org_name: newActivity.org_name,
                 day: dayString,
                 start_time: newActivity.days.find(isGoodDay).start_time,
@@ -354,6 +358,7 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
       } else {
         req.session.volunteer = results.newVolunteer;
         res.render('v_postsubscription.jade', {
+          session: req.session,
           org_name: results.newOrganism.org_name,
           email: results.newOrganism.email,
           volunteer: req.session.volunteer,
@@ -401,6 +406,7 @@ router.get('/volunteer/student_questions/:act_id-:act_day', permissions.requireG
     var event = req.session.volunteer.events.find(goodEvent);
     Activity.findById(req.params.act_id, function(err, activity) {
       res.render('v_questions.jade', {
+        session: req.session,
         volunteer: req.session.volunteer,
         act_id: req.params.act_id,
         act_day: req.params.act_day,
@@ -442,6 +448,7 @@ router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volu
     res.redirect('/volunteer/map');
   } else {
     res.render('v_questions.jade', {
+      session: req.session,
       volunteer: req.session.volunteer,
       longterm: longterm,
       org_name: longterm.org_name,

@@ -42,12 +42,15 @@ router.get('/', function(req, res, next) {
       console.log('req.isAuthenticated() : ' + req.isAuthenticated());
       console.log('**************');
       if (req.session) {
-        if (req.session.organism) {
+        if (req.session.group == 'organism') {
           console.log('Try to access / but req.session.organism');
           res.redirect('/organism/dashboard');
-        } else if (req.session.volunteer) {
+        } else if (req.session.group == 'volunteer') {
           console.log('Try to access / but req.session.volunteer');
           res.redirect('/volunteer/map');
+        } else if (req.session.group == 'admin') {
+          console.log('Try to access / but req.session.admin');
+          res.redirect('/admin/classes');
         } else {
           var isNotPassed = function(activity) {
             var days_length = activity.days.filter(function(day) {
@@ -204,6 +207,7 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
           res.render('o_dashboard.jade', {
             ev_past: ev_past,
             ev_to_come: ev_to_come,
+            session: req.session,
             organism: req.session.organism,
             todos: lastTodos,
             group: req.session.group
@@ -289,6 +293,7 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
           console.log('activities_list : ' + event.acts[0].days[0].vols);
           //res.json(event);
           res.render('o_event.jade', {
+            session: req.session,
             event: event,
             organism: req.session.organism,
             group: req.session.group
@@ -333,6 +338,7 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
     } else {
       var slotJSON = rewindSlotString(longterm.slot);
       res.render('o_longterm.jade', {
+        session: req.session,
         lt_id: req.params.lt_id,
         organism: organism,
         longterm: longterm,

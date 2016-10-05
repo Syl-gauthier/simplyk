@@ -10,6 +10,7 @@ var Organism = require('../models/organism_model.js');
 
 router.get('/organism/addlongterm', permissions.requireGroup('organism', 'admin'), function(req, res) {
 	res.render('o_addlongterm.jade', {
+		session: req.session,
 		organism: req.session.organism,
 		admin: req.session.admin,
 		group: req.session.group
@@ -24,6 +25,7 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 		if ('ZERO_RESULTS' === lat) {
 			var error = 'La position de l\'adresse que vous avez mentionné n\'a pas été trouvé par Google Maps';
 			res.render('o_addlongterm.jade', {
+				session: req.session,
 				error: error,
 				organism: req.session.organism,
 				admin: req.session.admin,
@@ -58,6 +60,7 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 			}, function(err, organism) {
 				if (err) {
 					res.render('o_addlongterm.jade', {
+						session: req.session,
 						error: err,
 						organism: req.session.organism,
 						admin: req.session.admin,

@@ -44,7 +44,7 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
         group: req.session.group
       });
     }
-  })
+  });
 });
 
 router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(req, res, next) {
@@ -83,6 +83,7 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
       res.render('a_report.jade', {
         volunteer: volunteer,
         events: formatted_events,
+        session: req.session,
         group: req.session.group
       });
     }

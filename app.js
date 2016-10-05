@@ -85,6 +85,36 @@ passport.use('local-volunteer', new LocalStrategy({
   }
 ));
 
+passport.use('local-admin', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  function(email, password, done) {
+    Admin.findOne({
+      email: email
+    }, function(err, admin) {
+      if (err) {
+        return done(err);
+      } else if (!admin) {
+        return done(null, false, {
+          message: 'Incorrect mail.'
+        });
+      } else if (!admin.validPassword(password)) {
+        return done(null, false, {
+          exists: true,
+          message: 'Incorrect password.',
+          code: 1
+        });
+      } else {
+        //Login info correct
+        admin = admin.toJSON();
+        admin.group = "admin";
+        return done(null, admin);
+      }
+    });
+  }
+));
+
 passport.use('local-organism', new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password'
@@ -115,38 +145,27 @@ passport.use('local-organism', new LocalStrategy({
       } else {
         //Login info correct
         org = org.toJSON();
-        org.group = "organism";
-        return done(null, org);
-      }
-    });
-  }
-));
-
-passport.use('local-admin', new LocalStrategy({
-    usernameField: 'email',
-    passwordField: 'password'
-  },
-  function(email, password, done) {
-    Admin.findOne({
-      email: email
-    }, function(err, admin) {
-      if (err) {
-        return done(err);
-      } else if (!admin) {
-        return done(null, false, {
-          message: 'Incorrect mail.'
+        Admin.findOne({
+          email: email
+        }, function(err, admin) {
+          if (err) {
+            return done(err);
+          } else if (!admin) {
+            org.group = "organism";
+            return done(null, org);
+          } else if (!admin.validPassword(password)) {
+            return done(null, false, {
+              exists: true,
+              message: 'Incorrect password.',
+              code: 1
+            });
+          } else {
+            //Login info correct
+            admin = admin.toJSON();
+            admin.group = "admin";
+            return done(null, admin);
+          }
         });
-      } else if (!admin.validPassword(password)) {
-        return done(null, false, {
-          exists: true,
-          message: 'Incorrect password.',
-          code: 1
-        });
-      } else {
-        //Login info correct
-        admin = admin.toJSON();
-        admin.group = "admin";
-        return done(null, admin);
       }
     });
   }
@@ -185,7 +204,9 @@ app.use(session({
   },
   saveUninitialized: false,
   resave: true,
-  store: new MongoStore({mongooseConnection: mongoose.connection})
+  store: new MongoStore({
+    mongooseConnection: mongoose.connection
+  })
 }));
 
 
