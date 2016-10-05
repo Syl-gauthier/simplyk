@@ -49,8 +49,7 @@ router.post('/login', function(req, res, next) {
         return res.redirect('login?login_error=1')
       }
     };
-
-    console.log(JSON.stringify(user));
+    console.log(user.email + ' is connected !');
     if (user.group == "organism") {
       req.session.organism = user;
       req.session.group = "organism";
