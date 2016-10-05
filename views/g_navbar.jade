@@ -11,11 +11,14 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
         span.icon-bar
         span.icon-bar
       a.navbar-brand(href='/volunteer/map')
-        if volunteer
+        if group == 'volunteer'
           a.navbar-brand(href='/volunteer/map')
             img(alt='Brand', src='/images/simplyk-text-egg-hor.png')
-        else if organism || admin
+        else if group == 'organism'
           a.navbar-brand(href='/organism/dashboard')
+            img(alt='Brand', src='/images/simplyk-text-egg-hor.png')
+        else if group == 'admin'
+          a.navbar-brand(href='/admin/classes')
             img(alt='Brand', src='/images/simplyk-text-egg-hor.png')
         else
           a.navbar-brand(href='/')
@@ -26,7 +29,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
     #myNavbar.collapse.navbar-collapse
       .navbar-header
       ul.nav.navbar-nav.navbar-right
-        if volunteer
+        if group == 'volunteer'
           unless page=='profile'
             li.navbar-link(role='presentation')
               a(href='/volunteer/profile') Mon tableau de bord
@@ -36,7 +39,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form( method='post', action='./logout')
               button.btn.btn-default(type='submit') Déconnexion
-        else if organism
+        else if group == 'organism'
           unless page == 'profile'
             li.navbar-link(role='presentation')
               a(href='/organism/profile') Mon profil
@@ -46,19 +49,21 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form( method='post', action='./logout')
               button.btn.btn-default(type='submit') Déconnexion
-        else if admin
-          li.navbar-link(role='presentation', class= page === 'profile' ? 'active':'')
+        else if group == 'admin'
+          li.navbar-link(role='presentation')
             a(href='/admin/profile') Mon profil
-          li.navbar-link(role='presentation', class= page === 'students' ? 'active':'')
+          li.navbar-link(role='presentation')
             a(href='/admin/classes') Mes étudiants
-          li.navbar-link(role='presentation', class= page === 'internopps' ? 'active':'')
-            a(href='/admin/internopps') Mes opportunités internes
-          li.dropdown
-            a.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore
-              span.caret
-            ul.dropdown-menu
-              li
-                a(href='/admin/listorganisms') Organismes
+          li.navbar-link(role='presentation')
+            a(href='/organism/dashboard') Mes opportunités internes
+          li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                  span.caret
+                ul.dropdown-menu#drop-down-but
+                  li
+                    a.toggle-but(href='/admin/listorganisms') Organismes
           li(role='presentation')
             form.navbar-form( method='post', action='/logout')
               button.btn.btn-default(type='submit') Déconnexion
@@ -72,11 +77,11 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                   span.caret
                 ul.dropdown-menu#drop-down-but
                   li
-                    a#toggle-but(href='register_organism') Organismes
+                    a.toggle-but(href='register_organism') Organismes
                   li
-                    a#toggle-but(href='register_volunteer') Bénévoles
+                    a.toggle-but(href='register_volunteer') Bénévoles
                   //- li
-                  //-   a#toggle-but(href='register_admin') Administrateurs
+                  //-   a.toggle-but(href='register_admin') Administrateurs
           li(role='presentation')
             form.navbar-form( method='get', action='login')
               button.btn.btn-default(type='submit') Connexion

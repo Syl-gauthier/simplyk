@@ -7,10 +7,6 @@ block vars
 block content
       .container-fluid
         .row.fill
-          ol.breadcrumb
-              li
-                a(href="/admin/dashboard") Tableau de bord
-              li.active Mes étudiants
           .col-md-10.col-md-offset-1
             h1.page-header.firstColor Mes étudiants
             div.table-responsive
@@ -19,21 +15,23 @@ block content
                 th Prénom
                 th Heures effectués
                 th Dossier
-                tr.warning
-                  td 1ère secondaire
-                  td
-                  td
-                  td
-                each vol, vol_i in volunteers
-                  tr.success
-                    td= vol.lastname
-                    td= vol.firstname
-                    if vol.events.length
-                      td= vol.events.map(el => el.hours_done).reduce(hours_done, 0) + ' h'
-                    else
-                      td 0 h
+                each classe, classe_i in classes_array
+                  tr.warning
+                    td= classe.toString()
                     td
-                      a.btn-link(href="/admin/report"+vol._id) Accéder
+                    td
+                    td
+                  each vol, vol_i in volunteers
+                    if vol.admin.class == classe
+                      tr.success
+                        td= vol.lastname
+                        td= vol.firstname
+                        if vol.events.length
+                          td= vol.events.map(el => el.hours_done).reduce(hours_done, 0) + ' h'
+                        else
+                          td 0 h
+                        td
+                          a.btn-link(href="/admin/report"+vol._id) Accéder
 
 block footscript
   // jQuery (necessary for Bootstrap's JavaScript plugins)

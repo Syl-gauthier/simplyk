@@ -10,21 +10,38 @@ var Volunteer = require('../models/volunteer_model.js');
 
 
 router.get('/admin/classes', permissions.requireGroup('admin'), function(req, res, next) {
+  const student_ids = req.session.admin.students.map(function(el) {
+    return el._id;
+  });
+  console.log('Import students to classes page ! ');
+  console.log('student_ids : ' + student_ids);
   Volunteer.find({
-    'admin.admin_id': req.session.admin._id
+    '_id': {
+      '$in': student_ids
+    }
   }, function(err, volunteers) {
     if (err) {
       console.log('There is an error to access /listorganisms and get all the volunteers, the error is : ' + err);
       res.render('a_classes.jade', {
         error: err,
         session: req.session,
-        admin: req.session.admin
+        admin: req.session.admin,
+        group: req.session.group
       });
     } else {
+      var classes_array = [];
+      volunteers.forEach(function(vol) {
+        var classe = vol.admin.class;
+        if (classes_array.indexOf(classe) > -1) {} else {
+          classes_array.push(classe);
+        }
+      });
       res.render('a_classes.jade', {
         volunteers: volunteers,
         session: req.session,
-        admin: req.session.admin
+        admin: req.session.admin,
+        classes_array: classes_array,
+        group: req.session.group
       });
     }
   })
@@ -37,7 +54,8 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
       res.render('a_classes.jade', {
         error: err,
         session: req.session,
-        admin: req.session.admin
+        admin: req.session.admin,
+        group: req.session.group
       });
     } else {
       var formatted_events = volunteer.events;
@@ -64,51 +82,26 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
       };
       res.render('a_report.jade', {
         volunteer: volunteer,
-        events: formatted_events
+        events: formatted_events,
+        group: req.session.group
       });
     }
-  });
-})
-
-router.get('/admin/classexample', permissions.requireGroup('admin'), function(req, res, next) {
-  res.render('a_classexample.jade', {
-    session: req.session,
-    admin: req.session.admin
-  });
-});
-
-router.get('/admin/dashboard', permissions.requireGroup('admin'), function(req, res, next) {
-  res.render('a_dashboard.jade', {
-    session: req.session,
-    admin: req.session.admin
-  });
-});
-
-router.get('/admin/dashboard2', permissions.requireGroup('admin'), function(req, res, next) {
-  res.render('a_dashboard2.jade', {
-    session: req.session,
-    admin: req.session.admin
   });
 });
 
 router.get('/admin/feedback', permissions.requireGroup('admin'), function(req, res, next) {
   res.render('a_feedback.jade', {
     session: req.session,
-    admin: req.session.admin
+    admin: req.session.admin,
+    group: req.session.group
   });
 });
 
 router.get('/admin/internopps', permissions.requireGroup('admin'), function(req, res, next) {
-  res.render('a_internopps.jade', {
+  res.render('o_dashboard.jade', {
     session: req.session,
-    admin: req.session.admin
-  });
-});
-
-router.get('/admin/studentexample', permissions.requireGroup('admin'), function(req, res, next) {
-  res.render('a_studentexample.jade', {
-    session: req.session,
-    admin: req.session.admin
+    admin: req.session.admin,
+    group: req.session.group
   });
 });
 
@@ -119,13 +112,15 @@ router.get('/admin/listorganisms', permissions.requireGroup('admin'), function(r
       res.render('a_listorganisms.jade', {
         error: err,
         session: req.session,
-        admin: req.session.admin
+        admin: req.session.admin,
+        group: req.session.group
       });
     } else {
       res.render('a_listorganisms.jade', {
         organisms: organisms,
         session: req.session,
-        admin: req.session.admin
+        admin: req.session.admin,
+        group: req.session.group
       });
     }
   })
@@ -133,12 +128,11 @@ router.get('/admin/listorganisms', permissions.requireGroup('admin'), function(r
 
 router.get('/admin/profile', permissions.requireGroup('admin'), function(req, res) {
   console.log('Begin get /profile')
-  res.json(req.session.admin);
-});
-
-router.post('/admin/logout', function(req, res) {
-  req.session.destroy();
-  res.redirect('/');
+  res.render('a_profile.jade', {
+    admin: req.session.admin,
+    session: req.session,
+    group: req.session.group
+  });
 });
 
 module.exports = router;

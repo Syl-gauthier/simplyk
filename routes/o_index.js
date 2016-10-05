@@ -34,17 +34,19 @@ router.get('/', function(req, res, next) {
       res.render('g_accueil.jade', {
         session: req.session,
         error: err,
-        organism: req.session.organism
+        group: req.session.group
       });
     }
     //Create events list
     else {
-      console.log(req.isAuthenticated());
+      console.log('req.isAuthenticated() : ' + req.isAuthenticated());
       console.log('**************');
       if (req.session) {
         if (req.session.organism) {
+          console.log('Try to access / but req.session.organism');
           res.redirect('/organism/dashboard');
         } else if (req.session.volunteer) {
+          console.log('Try to access / but req.session.volunteer');
           res.redirect('/volunteer/map');
         } else {
           var isNotPassed = function(activity) {
@@ -53,12 +55,21 @@ router.get('/', function(req, res, next) {
             });
             return days_length.length > 0;
           };
-          const acts = activities.filter(isNotPassed);
+          var isNotASchool = function(activity) {
+            return !(activity.school_id);
+          };
+          const acts = activities.filter(isNotPassed).filter(isNotASchool);
+          //Select organisms who have longterms and are not admin ones
           Organism.find({
             'long_terms': {
               '$exists': true,
               '$not': {
                 '$size': 0
+              }
+            },
+            'school_id': {
+              '$not': {
+                '$exists': true
               }
             }
           }, {
@@ -72,7 +83,8 @@ router.get('/', function(req, res, next) {
               res.render('g_accueil.jade', {
                 session: req.session,
                 error: err,
-                organism: req.session.organism
+                organism: req.session.organism,
+                group: req.session.group
               });
             } else {
               var longterms = longtermsList(organisms);
@@ -81,7 +93,8 @@ router.get('/', function(req, res, next) {
                 activities: acts,
                 session: req.session,
                 longterms: longterms,
-                error: req.query.error
+                error: req.query.error,
+                group: req.session.group
               });
             }
           });
@@ -97,14 +110,15 @@ router.get('/', function(req, res, next) {
         res.render('g_accueil.jade', {
           activities: actis,
           session: req.session,
-          error: req.query.error
+          error: req.query.error,
+          group: req.session.group
         });
       }
     };
   });
 });
 
-router.get('/organism/dashboard', permissions.requireGroup('organism'), function(req, res) {
+router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'), function(req, res) {
   console.log('req.body : ' + req.body);
   if (req.body.org) {
     req.session.organism = req.body.org;
@@ -118,7 +132,8 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
       res.render('g_accueil.jade', {
         session: req.session,
         error: err,
-        organism: req.isAuthenticated()
+        organism: req.isAuthenticated(),
+        group: req.session.group
       });
     } else {
       var events = req.session.organism.events;
@@ -158,7 +173,8 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
           res.render('g_accueil.jade', {
             session: req.session,
             error: err,
-            organism: req.isAuthenticated()
+            organism: req.session.organism,
+            group: req.session.group
           });
         } else {
           function addEventName(td) {
@@ -189,7 +205,8 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
             ev_past: ev_past,
             ev_to_come: ev_to_come,
             organism: req.session.organism,
-            todos: lastTodos
+            todos: lastTodos,
+            group: req.session.group
           });
         }
       });
@@ -197,7 +214,7 @@ router.get('/organism/dashboard', permissions.requireGroup('organism'), function
   })
 });
 
-router.get('/organism/event/:event_id', permissions.requireGroup('organism'), function(req, res) {
+router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
   function isEvent(event) {
     console.log('Test : ' + event._id + ' = ' + req.params.event_id + ' ?');
     return event._id === req.params.event_id;
@@ -273,7 +290,8 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism'), fu
           //res.json(event);
           res.render('o_event.jade', {
             event: event,
-            organism: req.session.organism
+            organism: req.session.organism,
+            group: req.session.group
           });
         }
       });
@@ -282,7 +300,7 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism'), fu
 });
 
 
-router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism'), function(req, res) {
+router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
   console.log('In GET to a longterm page with lt_id:' + req.params.lt_id);
   var organism = req.session.organism;
 
@@ -319,7 +337,8 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism'), fu
         organism: organism,
         longterm: longterm,
         slotJSON: slotJSON,
-        volunteers: volunteers
+        volunteers: volunteers,
+        group: req.session.group
       });
       res.end();
     };
@@ -327,27 +346,8 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism'), fu
 
 });
 
-//for ajax call only (for now)
-//Get users info from an opp intitule
-router.post('/organism/getOppUsers', function(req, res) {
 
-  opp_management.getOppUsers(req.body.opp_id, req, res);
-
-});
-
-router.post('/organism/validate', function(req, res) {
-
-  opp_management.validate_application(req, res);
-
-});
-
-router.post('/organism/reject', function(req, res) {
-
-  opp_management.reject_application(req, res);
-
-});
-
-router.post('/organism/correcthours', function(req, res) {
+router.post('/organism/correcthours', permissions.requireGroup('organism', 'admin'), function(req, res) {
   console.log('Correct Hours starts');
   const correct_hours = req.body.correct_hours;
   console.log('Correct_hours: ' + correct_hours);
@@ -469,7 +469,7 @@ router.post('/organism/correcthours', function(req, res) {
   });
 });
 
-router.post('/organism/confirmhours', function(req, res) {
+router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admin'), function(req, res) {
   console.log('Confirm Hours starts');
   OrgTodo.findOneAndRemove({
     _id: req.body.todo
@@ -595,13 +595,8 @@ router.post('/organism/confirmhours', function(req, res) {
   });
 });
 
-router.get(/dashboard/, permissions.requireGroup('organism'), function(req, res) {
+router.get(/dashboard/, permissions.requireGroup('organism', 'admin'), function(req, res) {
   res.redirect('/dashboard');
-});
-
-router.post(/logout/, function(req, res) {
-  req.session.destroy();
-  res.redirect('/');
 });
 
 module.exports = router;

@@ -17,6 +17,8 @@ var OrganismSchema = new Schema({
 	lastname: String,
 	phone: String,
 	description: String,
+	admin_id: {type: Schema.Types.ObjectId, ref:'Admin'},
+	school_id: {type: Schema.Types.ObjectId, ref:'Admin'},
 	cause: String, // solidarité, environnement, culture
 	validation: Boolean,//Simplyk approved ?
 	events: [{

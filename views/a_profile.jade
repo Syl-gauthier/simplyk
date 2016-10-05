@@ -1,0 +1,49 @@
+extends ./g_layout.jade
+block vars
+	- var page = 'profile'
+	- var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+	- var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+
+
+block content
+	#map-section.container-fluid
+		.row
+			.col-md-6.col-md-offset-3
+				.page-header
+					h3
+						| Mon profil
+						small
+					if error
+						p.alert.alert-danger #{error}
+				ul.list-group
+					li.list-group-item
+						| Prénom: #{admin.firstname}
+						small
+					li.list-group-item
+						| Nom: #{admin.lastname}
+						small
+					li.list-group-item= 'Institution : ' + admin.name
+						small
+					li.list-group-item
+						| Adresse mail: #{admin.email}
+						small
+					li.list-group-item#password-group
+						p Mot de passe: #[span.display ******]
+						form#edit-password-form.form-horizontal.hidden.editing
+							.input-group.conn-input
+								p#password-error.alert.alert-danger.hidden Mot de passe incorrect
+								.input-group.conn-input
+									input.form-control(name="current-password", type="password", placeholder="Mot de passe actuel")
+								.input-group.conn-input
+									input.form-control(name="new-password", type="password", placeholder="Nouveau mot de passe")
+								.input-group.conn-input
+									input.form-control(name="confirm-password", type="password", placeholder="Confirmer mot de passe")
+						div.btn-toolbar
+								button.btn.btn-default#edit-password-button.display Éditer
+								button.btn.btn-default#cancel-password-button.editing.hidden Annuler
+								button.btn.btn-default#save-password-button.editing.hidden Enregistrer
+
+
+block footscript
+	script(src='/edit-password.js')
+	script(src='/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.js')

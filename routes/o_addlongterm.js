@@ -8,13 +8,15 @@ var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
 
 
-router.get('/organism/addlongterm', permissions.requireGroup('organism'), function(req, res) {
+router.get('/organism/addlongterm', permissions.requireGroup('organism', 'admin'), function(req, res) {
 	res.render('o_addlongterm.jade', {
-		organism: req.session.organism
+		organism: req.session.organism,
+		admin: req.session.admin,
+		group: req.session.group
 	});
 });
 
-router.post('/organism/addlongterm', permissions.requireGroup('organism'), function(req, res) {
+router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin'), function(req, res) {
 	//Transform address into lon/lat
 	console.log('address sent to gmaps: ' + req.body.address);
 
@@ -23,7 +25,9 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism'), funct
 			var error = 'La position de l\'adresse que vous avez mentionné n\'a pas été trouvé par Google Maps';
 			res.render('o_addlongterm.jade', {
 				error: error,
-				organism: req.session.organism
+				organism: req.session.organism,
+				admin: req.session.admin,
+				group: req.session.group
 			});
 		} else {
 			var slotString = sloter.createSlotString(req.body);
@@ -55,7 +59,9 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism'), funct
 				if (err) {
 					res.render('o_addlongterm.jade', {
 						error: err,
-						organism: req.session.organism
+						organism: req.session.organism,
+						admin: req.session.admin,
+						group: req.session.group
 					});
 				} else {
 					req.session.organism = organism;

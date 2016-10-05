@@ -26,10 +26,14 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       res.render('v_map.jade', {
         session: req.session,
         error: err,
-        volunteer: req.session.volunteer
+        volunteer: req.session.volunteer,
+        group: req.session.group
       });
     } else { //Create opps list
       const age = getAge(req.session.volunteer.birthdate);
+      if (req.session.volunteer.admin) {
+        const my_school = req.session.volunteer.admin.school_id;
+      }
       console.log('Volunteer age : ' + age);
       var isTooYoung = function(activity) {
         if (activity.min_age) {
@@ -47,20 +51,47 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       var isUnverified = function(activity) {
         return activity.validation;
       };
+      var isMySchool = function(activity) {
+        if (activity.school_id) {
+          return activity.school_id == my_school;
+        } else {
+          return true;
+        }
+      };
       //If user is under 16, he can't see the activities of unverified organisms
       if (age < 16) {
-        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified);
+        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(isMySchool);
       } else {
-        var acts = activities.filter(isNotPassed).filter(isTooYoung);
-      }
-      Organism.find({
-        'long_terms': {
-          '$exists': true,
-          '$not': {
-            '$size': 0
+        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isMySchool);
+      };
+      if (my_school) {
+        var organism_query = {
+          'long_terms': {
+            '$exists': true,
+            '$not': {
+              '$size': 0
+            }
+          },
+          'school_id': {
+            '$in': [undefined, my_school]
           }
-        }
-      }, {
+        };
+      } else {
+        var organism_query = {
+          'long_terms': {
+            '$exists': true,
+            '$not': {
+              '$size': 0
+            }
+          },
+          'school_id': {
+            '$not': {
+              '$exists': true
+            }
+          }
+        };
+      };
+      Organism.find(organism_query, {
         'org_name': true,
         '_id': true,
         'cause': true,
@@ -71,7 +102,8 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           res.render('v_map.jade', {
             session: req.session,
             error: err,
-            organism: req.session.organism
+            organism: req.session.organism,
+            group: req.session.group
           });
         } else {
           var longterms = longtermsList(organisms);
@@ -81,7 +113,8 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
             volunteer: req.session.volunteer,
             error: req.query.error,
             longterms: longterms,
-            success: req.query.success
+            success: req.query.success,
+            group: req.session.group
           });
         }
       });
@@ -118,7 +151,8 @@ router.get('/activity/:act_id', permissions.requireGroup('volunteer'), function(
           event: event_filtered,
           organism: organism[0],
           activity: activity,
-          volunteer: req.session.volunteer
+          volunteer: req.session.volunteer,
+          group: req.session.group
         });
         res.end();
       }
@@ -178,7 +212,8 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
         slotJSON: slotJSON,
         alreadySubscribed: alreadySubscribed,
         hours_done: hours_done,
-        hours_pending: hours_pending
+        hours_pending: hours_pending,
+        group: req.session.group
       });
       res.end();
     }
@@ -279,7 +314,8 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                 start_time: newActivity.days.find(isGoodDay).start_time,
                 end_time: newActivity.days.find(isGoodDay).end_time,
                 address: newActivity.address,
-                volunteer: req.session.volunteer
+                volunteer: req.session.volunteer,
+                group: req.session.group
               });
               res.end();
             }
@@ -320,7 +356,8 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
         res.render('v_postsubscription.jade', {
           org_name: results.newOrganism.org_name,
           email: results.newOrganism.email,
-          volunteer: req.session.volunteer
+          volunteer: req.session.volunteer,
+          group: req.session.group
         });
       }
     });
@@ -371,7 +408,8 @@ router.get('/volunteer/student_questions/:act_id-:act_day', permissions.requireG
         event_intitule: activity.event_intitule,
         activity_intitule: activity.intitule,
         description: event.description_event,
-        questions: event.student_questions
+        questions: event.student_questions,
+        group: req.session.group
       });
     });
   };
@@ -407,7 +445,8 @@ router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volu
       volunteer: req.session.volunteer,
       longterm: longterm,
       org_name: longterm.org_name,
-      questions: longterm.student_questions
+      questions: longterm.student_questions,
+      group: req.session.group
     });
   };
 });
@@ -472,11 +511,6 @@ router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'
       res.redirect('/volunteer/map?success=' + message);
     }
   });
-});
-
-router.post('/volunteer/logout', function(req, res) {
-  req.session.destroy();
-  res.redirect('/');
 });
 
 

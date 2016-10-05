@@ -48,5 +48,6 @@ block content
           h2= organism.org_name
           p='Mission: ' + organism.description
           p= 'Courriel: ' + organism.email
-          p= 'Téléphone: ' + organism.phone
+          if organism.phone
+            p= 'Téléphone: ' + organism.phone
 
