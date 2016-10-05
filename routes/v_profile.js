@@ -35,6 +35,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
     }
   }
   res.render('v_profile.jade', {
+    session: req.session,
     events_subscribed: events_subscribed,
     events_confirmed: events_confirmed,
     events_pending: events_pending,
@@ -110,6 +111,7 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
           const dayString = new Date(req.params.day).toLocaleDateString();
           console.log('newVolunteer after unsubscription process : ' + newVolunteer);
           res.render('v_postunsubscription.jade', {
+            session: req.session,
             org_name: newActivity.org_name,
             day: dayString,
             volunteer: req.session.volunteer,
@@ -360,6 +362,7 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
           }
           const acts_subscribed = acts.filter(isSubscribed)*/
           res.render('v_event.jade', {
+            session: req.session,
             other_activities: other_activities,
             event: event,
             organism: org,

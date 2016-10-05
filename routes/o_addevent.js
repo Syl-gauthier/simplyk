@@ -9,6 +9,7 @@ var Activity = require('../models/activity_model.js');
 
 router.get('/organism/addevent', permissions.requireGroup('organism', 'admin'), function(req, res) {
   res.render('o_addevent.jade', {
+    session: req.session,
     organism: req.session.organism,
     group: req.session.group
   });
@@ -22,6 +23,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
     if ('ZERO_RESULTS' == lat) {
       var error = 'La position de l\'adresse que vous avez mentionné n\'a pas été trouvé par Google Maps';
       res.render('o_addevent.jade', {
+        session: req.session,
         error: error,
         organism: req.session.organism,
         group: req.session.group
@@ -78,7 +80,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
         //Create activities
         var activitiesList = [];
         var school_id = null;
-        if (req.session.admin){
+        if (req.session.admin) {
           school_id = req.session.admin.school_id;
         }
         for (var i = 1; i < nb_activities + 1; i++) {
@@ -135,6 +137,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
                   if (err) {
                     var error = 'Something bad happened! Try again!';
                     res.render('o_addevent.jade', {
+                      session: req.session,
                       error: err,
                       organism: req.session.organism,
                       group: req.session.group
@@ -144,6 +147,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
                     req.session.organism.save(function(err, orga) {
                       if (err) {
                         res.render('o_addevent.jade', {
+                          session: req.session,
                           error: err,
                           organism: req.session.organism,
                           group: req.session.group
