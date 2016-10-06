@@ -34,7 +34,7 @@ block content
               p <b>Adresse : </b> #{act.address}
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-            .subscribe-button-activity.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id) Plus d'infos
+            a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act_id) Plus d'infos
   each lt, index in longterms
     div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id, id=lt.long_term._id)
       .modal-dialog(role='document')
@@ -49,7 +49,7 @@ block content
             p <b>Adresse : </b> #{lt.long_term.address}
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-            .subscribe-button-longterm.button.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id) Plus d'infos
+            a.subscribe-button-longterm.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id, href='/longterm/'+lt.long_term._id) Plus d'infos
   .container-fluid
     .row.fill
       #offers-list.col-sm-5.hidden-xs.no-side-padding.scrollable
@@ -92,20 +92,6 @@ block content
 
 block footscript
   script.
-    $(function() {
-      $('.subscribe-button-activity').click(function(){
-        console.log('Clic sur le bouton  de subscription');
-        var act_id = $(this).attr('activité');
-        console.log('act_id : ' + act_id);
-        $.redirect('/activity/'+act_id, {}, 'GET');
-      });
-      $('.subscribe-button-longterm').click(function(){
-        console.log('Clic sur le bouton  de subscription');
-        var lt_id = $(this).attr('longterm');
-        console.log('lt_id : ' + lt_id);
-        $.redirect('/longterm/'+lt_id, {}, 'GET');
-      });
-    });
     function initMap(){ 
       function listStar(i){
         listElement = document.getElementById("offers-list").childNodes[0].childNodes[i];
