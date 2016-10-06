@@ -1,7 +1,7 @@
 extends ./g_layout.jade
 block vars
   - var page = 'report'
-  - var hours_count = function(previousValue, currentValue, currentIndex, array) {return previousValue + currentValue; };
+  - var hours_count = function(previousValue, currentValue, currentIndex, array) {if(currentValue) {return previousValue + currentValue;} else {return currentValue;} };
 
 block content
   #map-section.container-fluid
@@ -29,18 +29,30 @@ block content
       .col-md-6.col-md-offset-1
         .page-header
           h3 Bilan
-        ul.list-group
-          li.list-group-item= 'Heures réalisées: ' + events.map(el => el.hours_done).reduce(hours_count, 0) + ' h (de ' + events.filter(function(event) {return event.status == 'confirmed'}).length + ' évènements)'
-          li.list-group-item= 'Heures en attente de confirmation par l\'organisme: ' + events.filter(function(event) {return event.status != 'gathered'}).map(el => el.hours_pending).reduce(hours_count, 0) + ' h (de ' + events.filter(function(event) {return event.status == 'pending'}).length + ' évènements)'
-          li.list-group-item= 'Nombre d\'évènements passés à valider: ' + events.filter(function(event) {return event.status == 'past'}).length
-          li.list-group-item= 'Nombre d\'évènements à venir: ' + events.filter(function(event) {return event.status == 'subscribed'}).length
+        table.table.table-stripped
+          tr
+            th
+            th.text-center Inscriptions
+            th.text-center Heures
+          tr
+            th(rowspan='2' style="vertical-align:middle").text-center Engagements
+            td(rowspan='2' style="vertical-align:middle").text-center <strong> #{volunteer.long_terms.length} </strong>
+            td.text-center <strong>#{volunteer.long_terms.filter(function(long){if(long.hours_pending){return true;}else{return false;}}).map(el => el.hours_pending).reduce(hours_count, 0)}</strong> heures à confirmer
+          tr
+            td.text-center(style="vertical-align:middle")  <strong>#{volunteer.long_terms.filter(function(long){if(long.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)}</strong>  heures confirmées
+          tr
+            th(rowspan='2' style="vertical-align:middle").text-center Évènements ponctuels
+            td(rowspan='2' style="vertical-align:middle").text-center <strong> #{volunteer.events.length} </strong>
+            td.text-center <strong>#{volunteer.events.filter(function(ev){if(ev.hours_pending){return true;}else{return false;}}).map(el => el.hours_pending).reduce(hours_count, 0)}</strong> heures à confirmer
+          tr
+            td.text-center(style="vertical-align:middle")  <strong>#{volunteer.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)}</strong>  heures confirmées
 
 
     .row
       .col-md-10.col-md-offset-1
         .page-header
           h3 Les activités
-        #offers-list.no-side-padding
+        .no-side-padding
             ul.list-group.list-opportunity
               unless (events)
                 p.alert.alert-danger Aucune activité
@@ -74,7 +86,7 @@ block content
                       if event.student_answers.length > 0
                         div.panel.panel-default
                           div.panel-heading
-                            h3 Retour de l’élève sur lui-même 
+                            h4 Retour de l’élève sur lui-même 
                           div.panel-body
                               each question, q_I in event.student_questions
                                 div.panel.panel-warning
@@ -85,7 +97,7 @@ block content
                       if event.organism_answers.length > 0
                         div.panel.panel-default
                           div.panel-heading
-                            h3 Retour de l'organisme sur l'élève
+                            h4 Retour de l'organisme sur l'élève
                           div.panel-body
                               each question, q_I in event.organism_questions
                                 div.panel.panel-success
@@ -93,3 +105,55 @@ block content
                                     h6= question
                                   div.panel-body
                                     h6= event.organism_answers[q_I]
+    .row
+      .col-md-10.col-md-offset-1
+        .page-header
+          h3 Les engagements
+        .no-side-padding
+          ul.list-group.list-opportunity
+            unless (volunteer.long_terms)
+              p.alert.alert-danger Aucun engagement
+            if (volunteer.long_terms)
+              table.table.table-striped
+                tr
+                  th Informations
+                  th Retours
+                each lt, lt_i in volunteer.long_terms
+                  tr
+                    td
+                      if (lt.hours_pending > 0 || lt.hours_done > 0)
+                        if (lt.hours_pending > 0)
+                          span.badge(style='background-color: #E33831')= lt.hours_pending + ' heures à confirmer'
+                        if (lt.hours_done > 0)
+                          span.badge(style='background-color: #113A20')= lt.hours_done + ' heures réalisées'
+                      else 
+                        span.badge(style='background-color: #E33831')= 'Aucune heure enregistrée'
+                      h4= lt.intitule
+                      h6 pour <strong> #{lt.org_name} </strong>
+                      if (lt.hours_pending > 0 || lt.hours_done > 0)
+                        h6= lt.description
+                    td
+                      unless (lt.hours_pending > 0 || lt.hours_done > 0)
+                        h6= lt.description
+                      if lt.student_answers.length > 0
+                        div.panel.panel-default
+                          div.panel-heading
+                            h4 Retour de l’élève sur lui-même 
+                          div.panel-body
+                              each question, q_I in lt.student_questions
+                                div.panel.panel-warning
+                                  div.panel-heading
+                                    h6= question
+                                  div.panel-body
+                                    h6= lt.student_answers[q_I]
+                      if lt.organism_answers.length > 0
+                        div.panel.panel-default
+                          div.panel-heading
+                            h4 Retour de l'organisme sur l'élève
+                          div.panel-body
+                              each question, q_I in lt.organism_questions
+                                div.panel.panel-success
+                                  div.panel-heading
+                                    h6= question
+                                  div.panel-body
+                                    h6= lt.organism_answers[q_I]
