@@ -34,7 +34,7 @@ block content
               p <b>Adresse : </b> #{act.address}
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-            a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act_id) Plus d'infos
+            a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act._id) Plus d'infos
   each lt, index in longterms
     div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id, id=lt.long_term._id)
       .modal-dialog(role='document')
