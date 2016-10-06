@@ -33,8 +33,8 @@ block content
                   p= act._id
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-            a#link-btn-ref.btn.btn-default(href='register_volunteer') S'inscrire
-            a#link-btn-ref.btn.btn-default(href='register_volunteer') Plus d'infos
+            a#link-btn-ref.btn.btn-default(href='login') S'inscrire
+            a#link-btn-ref.btn.btn-default(href='login') Plus d'infos
   each lt, index in longterms
     div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id, id=lt.long_term._id)
       .modal-dialog(role='document')
@@ -49,8 +49,8 @@ block content
             p <b>Adresse : </b> #{lt.long_term.address}
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-            a#link-btn-ref.btn.btn-default(href='register_volunteer') S'inscrire
-            a#link-btn-ref.btn.btn-default(href='register_volunteer') Plus d'infos
+            a#link-btn-ref.btn.btn-default(href='login') S'inscrire
+            a#link-btn-ref.btn.btn-default(href='login') Plus d'infos
   .container-fluid.degrade
     #first_section_entrance.row
       .col-md-8.col-md-offset-2
