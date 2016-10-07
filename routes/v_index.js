@@ -465,7 +465,7 @@ router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'
   const student_answers_keys = Object.keys(req.body).filter(isAKeyAnswer);
   var student_answers = [];
   for (var key_i = student_answers_keys.length - 1; key_i >= 0; key_i--) {
-    student_answers.push(req.body[student_answers_keys[key_i]]);
+    student_answers.push(req.body[student_answers_keys[student_answers_keys.length - 1 - key_i]]);
   };
   console.log('student_answers : ' + student_answers);
   console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));

@@ -90,14 +90,6 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
   });
 });
 
-router.get('/admin/feedback', permissions.requireGroup('admin'), function(req, res, next) {
-  res.render('a_feedback.jade', {
-    session: req.session,
-    admin: req.session.admin,
-    group: req.session.group
-  });
-});
-
 router.get('/admin/internopps', permissions.requireGroup('admin'), function(req, res, next) {
   res.render('o_dashboard.jade', {
     session: req.session,
