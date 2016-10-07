@@ -165,7 +165,7 @@ block content
                                               for question, q_i in todo.organism_questions
                                                 div.form-group
                                                   label(for='confirmationHoursInput')= question
-                                                  textarea.confirmation_text(name='answer'+q_i, form='confirmStudentHoursForm'+todo._id, minlength='20' required)
+                                                  textarea.confirmation_text(name='answer'+q_i, form='confirmStudentHoursForm'+todo._id, minlength='10' required)
                                             div.modal-footer
                                               a.btn.btn-default(data-dismiss='modal') Annuler
                                               button.btn.btn-warning(type='submit' form='confirmStudentHoursForm'+todo._id) Envoyer
@@ -186,7 +186,7 @@ block content
                                               for question, q_i in todo.organism_questions
                                                 div.form-group
                                                   label(for='answer'+q_i)= question
-                                                  textarea.correction_text(name='answer'+q_i, form='correctStudentHoursForm'+todo._id, minlength='20' required)
+                                                  textarea.correction_text(name='answer'+q_i, form='correctStudentHoursForm'+todo._id, minlength='10' required)
                                             div.modal-footer
                                               a.btn.btn-default(data-dismiss='modal') Annuler
                                               button.btn.btn-warning(type='submit' form='correctStudentHoursForm'+todo._id) Envoyer
@@ -241,7 +241,7 @@ block content
                                               for question, q_i in todo.organism_questions
                                                 div.form-group
                                                   label(for='confirmationHoursInput')= question
-                                                  textarea.confirmation_text(name='answer'+q_i, form='confirmStudentHoursForm'+todo._id, minlength='20' required)
+                                                  textarea.confirmation_text(name='answer'+q_i, form='confirmStudentHoursForm'+todo._id, minlength='10' required)
                                             div.modal-footer
                                               a.btn.btn-default(data-dismiss='modal') Annuler
                                               input.btn.btn-warning(type='submit' form='confirmStudentHoursForm'+todo._id, value='Envoyer')
@@ -262,7 +262,7 @@ block content
                                               for question, q_i in todo.organism_questions
                                                 div.form-group
                                                   label(for='answer'+q_i)= question
-                                                  textarea.correction_text(name='answer'+q_i, form='correctStudentHoursForm'+todo._id, minlength='20' required)
+                                                  textarea.correction_text(name='answer'+q_i, form='correctStudentHoursForm'+todo._id, minlength='10' required)
                                             div.modal-footer
                                               a.btn.btn-default(data-dismiss='modal') Annuler
                                               button.btn.btn-warning(type='submit' form='correctStudentHoursForm'+todo._id) Envoyer
