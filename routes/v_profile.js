@@ -44,6 +44,14 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
     }
     return pre;
   }, lt_hours_done);
+  const events_hours_done = events_confirmed.reduce(function(pre, cur, ind, arr) {
+    if (arr[ind].hours_done) {
+      console.log('pre + arr[ind].hours_done : ' + (pre + arr[ind].hours_done));
+      return pre + arr[ind].hours_done;
+    } else {
+      return pre;
+    }
+  }, 0);
   //VOLUNTEERING_LEVEL
   var vol_level;
   if (volunteer.events.length == 0 && lt_nb == 0) {
@@ -73,7 +81,9 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
     volunteer: req.session.volunteer,
     error: error,
     group: req.session.group,
-    vol_level: vol_level
+    vol_level: vol_level,
+    events_hours_done: events_hours_done,
+    lt_hours_done: lt_hours_done
   });
 });
 
