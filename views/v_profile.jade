@@ -11,9 +11,17 @@ block content
     .row
       .col-md-5.col-md-offset-1
         h3.page-header <strong> #{volunteer.firstname} #{volunteer.lastname}  </strong>
+        if lt_hours_done
+          p <i class='fa fa-2x fa-link fa-pull-left fa-border'></i> <b>Engagements</b> <br> #{lt_hours_done} heures confirmées
+        else 
+          p <i class='fa fa-2x fa-link fa-pull-left fa-border'></i> <b>Engagements</b> <br> 0 heures confirmées
+        if events_hours_done
+          p <i class='fa fa-2x fa-trophy fa-pull-left fa-border'></i> <b>Évènements</b> <br> #{events_hours_done} heures confirmées
+        else 
+          p <i class='fa fa-2x fa-trophy fa-pull-left fa-border'></i> <b>Évènements</b> <br> 0 heures confirmées
       if vol_level
         .col-md-5
-          .media.tp-15(style='margin-top: 30px')
+          .media.tp-15(style='margin-top: 6%')
             if (vol_level == 1)
               .media-left.media-middle(style='width: 40vw')
                 img.media-object(src='/images/grade_10.png' width='100')
@@ -21,7 +29,7 @@ block content
                 h3.media-heading <strong>Mon niveau d'engagement</strong>
                 h3
                   span.label.label-default Débutant
-                //p Participe à du bénévolat pour progresser !
+                p.text-info <strong>Conseil : </strong> Inscris-toi à une activité bénévole pour augmenter ton niveau d'engagement !
             if (vol_level == 2)
               .media-left.media-middle(style='width: 40vw')
                 img.media-object(src='/images/grade_25.png' width='100')
@@ -29,7 +37,7 @@ block content
                 h3.media-heading <strong>Mon niveau d'engagement</strong>
                 h3
                   span.label.label-info Apprenti
-                //p Participe à du bénévolat pour progresser !
+                p.text-info <strong>Conseil : </strong> Une fois ton opération bénévole terminée, fais valider ta participation via ton tableau de bord !
             if (vol_level == 3)
               .media-left.media-middle(style='width: 40vw')
                 img.media-object(src='/images/grade_40.png' width='100')
@@ -37,7 +45,7 @@ block content
                 h3.media-heading <strong>Mon niveau d'engagement</strong>
                 h3
                   span.label.label-primary Gros potentiel
-                //p Participe à du bénévolat pour progresser !
+                p.text-info <strong>Conseil : </strong> Il ne te manque que quelques heures supplémentaires de bénévolat pour passer au rang suivant !
             if (vol_level == 4)
               .media-left.media-middle(style='width: 40vw')
                 img.media-object(src='/images/grade_55.png' width='100')
@@ -45,7 +53,10 @@ block content
                 h3.media-heading <strong>Mon niveau d'engagement</strong>
                 h3
                   span.label.label-success Force vive
-                //p Participe à du bénévolat pour progresser !
+                if (events_hours_done == 0)
+                  p.text-info <strong>Conseil : </strong> Participe à ton premier évènement et fais valider tes heures par l'organisme afin de monter de niveau !
+                else
+                  p.text-info <strong>Conseil : </strong> Augmente ton nombre d'heures d'implication pour atteindre le niveau suivant !
             if (vol_level == 5)
               .media-left.media-middle(style='width: 40vw')
                 img.media-object(src='/images/grade_70.png' width='100')
@@ -53,7 +64,12 @@ block content
                 h3.media-heading <strong>Mon niveau d'engagement</strong>
                 h3
                   span.label.label-warning Formidable
-                //p Participe à du bénévolat pour progresser !
+                if (events_hours_done == 0)
+                  p.text-info <strong>Conseil : </strong> Pour devenir un expert du bénévolat, il faut maintenant que tu participes aussi à un évènement ponctuel !
+                else if (lt_hours_done == 0)
+                  p.text-info <strong>Conseil : </strong> Participe à ton premier engagement à long terme afin de devenir un expert du bénévolat !
+                else
+                  p.text-info <strong>Conseil : </strong> Il ne te reste plus beaucoup d'heures d'implication pour devenir un expert du bénévolat !
             if (vol_level == 6)
               .media-left.media-middle(style='width: 40vw')
                 img.media-object(src='/images/grade_max.png' width='100')
@@ -61,7 +77,7 @@ block content
                 h3.media-heading <strong>Mon niveau d'engagement</strong>
                 h3
                   span.label.label-danger Expert
-                //p Participe à du bénévolat pour progresser !
+                p.text-info <strong>Conseil : </strong> Maintenant que tu es un expert, continue de t'impliquer afin de relever les challenges à venir sur la plateforme !
 
 
     .row
@@ -167,12 +183,20 @@ block content
                             i.fa.fa-calendar-o
                             p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
                         .panel-footer
-                          form(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post', id='unsubscribeForm'+event.activity_id+'-'+event.day)
-                            .btn-group(role='group')
-                              a.btn.btn-default(href='/volunteer/event/'+event.activity_id) Détails
-                              input.btn.btn-warning(type='submit' form='unsubscribeForm'+event.activity_id+'-'+event.day, name='day' value='Se désinscrire')
-                        #identifiant(style='display:none')
-                          p= event._id
+                          .btn-group(role='group')
+                            a.btn.btn-default(href='/volunteer/event/'+event.activity_id) Détails
+                            input.btn.btn-warning(type='button' value='Se désinscrire' data-toggle='modal' data-target='#unsubscribe-modal'+index)
+                            .modal.fade(id='unsubscribe-modal'+index, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+index)
+                              .modal-dialog(role='document')
+                                .modal-content
+                                  .modal-header
+                                    button.close(type='button' data-dismiss="modal" aria-label="Close")
+                                      span(aria-hidden='true') &times;
+                                    h4.modal-title(id='myModalLabel'+index) Es-tu sûr de vouloir te désinscrire de cette activité ?
+                                  .modal-footer
+                                    a.btn.btn-warning(data-dismiss='modal') Annuler
+                                    form.inline(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post')
+                                      input.btn.btn-default(type='submit' value='Oui' role='button')
 
                   // IF EVENT_CONFIRMED
                   if events_confirmed.length
