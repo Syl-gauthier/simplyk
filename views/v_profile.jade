@@ -167,12 +167,20 @@ block content
                             i.fa.fa-calendar-o
                             p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
                         .panel-footer
-                          form(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post', id='unsubscribeForm'+event.activity_id+'-'+event.day)
-                            .btn-group(role='group')
-                              a.btn.btn-default(href='/volunteer/event/'+event.activity_id) Détails
-                              input.btn.btn-warning(type='submit' form='unsubscribeForm'+event.activity_id+'-'+event.day, name='day' value='Se désinscrire')
-                        #identifiant(style='display:none')
-                          p= event._id
+                          .btn-group(role='group')
+                            a.btn.btn-default(href='/volunteer/event/'+event.activity_id) Détails
+                            input.btn.btn-warning(type='button' value='Se désinscrire' data-toggle='modal' data-target='#unsubscribe-modal'+index)
+                            .modal.fade(id='unsubscribe-modal'+index, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+index)
+                              .modal-dialog(role='document')
+                                .modal-content
+                                  .modal-header
+                                    button.close(type='button' data-dismiss="modal" aria-label="Close")
+                                      span(aria-hidden='true') &times;
+                                    h4.modal-title(id='myModalLabel'+index) Es-tu sûr de vouloir te désinscrire de cette activité ?
+                                  .modal-footer
+                                    a.btn.btn-warning(data-dismiss='modal') Annuler
+                                    form.inline(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post')
+                                      input.btn.btn-default(type='submit' value='Oui' role='button')
 
                   // IF EVENT_CONFIRMED
                   if events_confirmed.length
