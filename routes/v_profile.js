@@ -19,21 +19,51 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   var events_subscribed = [];
   var events_confirmed = [];
   var error;
+  const volunteer = req.session.volunteer;
   for (var eventI = req.session.volunteer.events.length - 1; eventI >= 0; eventI--) {
-    if (Date.parse(req.session.volunteer.events[eventI].day) < Date.now() && req.session.volunteer.events[eventI].status === 'subscribed') {
-      events_past.push(req.session.volunteer.events[eventI]);
-    } else if (Date.parse(req.session.volunteer.events[eventI].day) > Date.now()) {
-      req.session.volunteer.events[eventI].status = 'subscribed';
-      events_subscribed.push(req.session.volunteer.events[eventI]);
-    } else if (Date.parse(req.session.volunteer.events[eventI].day) < Date.now() && req.session.volunteer.events[eventI].status === 'pending') {
-      events_pending.push(req.session.volunteer.events[eventI]);
-    } else if (Date.parse(req.session.volunteer.events[eventI].day) < Date.now() && req.session.volunteer.events[eventI].status === 'confirmed') {
-      events_confirmed.push(req.session.volunteer.events[eventI]);
+    if (Date.parse(volunteer.events[eventI].day) < Date.now() && volunteer.events[eventI].status === 'subscribed') {
+      events_past.push(volunteer.events[eventI]);
+    } else if (Date.parse(volunteer.events[eventI].day) > Date.now()) {
+      volunteer.events[eventI].status = 'subscribed';
+      events_subscribed.push(volunteer.events[eventI]);
+    } else if (Date.parse(volunteer.events[eventI].day) < Date.now() && volunteer.events[eventI].status === 'pending') {
+      events_pending.push(volunteer.events[eventI]);
+    } else if (Date.parse(volunteer.events[eventI].day) < Date.now() && volunteer.events[eventI].status === 'confirmed') {
+      events_confirmed.push(volunteer.events[eventI]);
     } else {
       error = 'Une erreur avec vos inscriptions';
       console.log(error);
     }
-  }
+  };
+  const lt_nb = volunteer.long_terms.length;
+  var lt_hours_done = 0;
+  volunteer.long_terms.reduce(function(pre, cur, ind, arr) {
+    if (arr[ind].hours_done) {
+      lt_hours_done = lt_hours_done + arr[ind].hours_done;
+      console.log('lt_hours_done :  ' + lt_hours_done);
+    }
+    return pre;
+  }, lt_hours_done);
+  //VOLUNTEERING_LEVEL
+  var vol_level;
+  if (volunteer.events.length == 0 && lt_nb == 0) {
+    vol_level = 1;
+  } else if ((volunteer.events.length > 0 || lt_nb > 0) && events_pending.length == 0 && events_confirmed.length == 0 && lt_hours_done == 0) {
+    vol_level = 2;
+  } else if ((events_confirmed.length == 1 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_nb > 0 && lt_hours_done > 0 && lt_hours_done < 5)) {
+    vol_level = 3;
+  } else if ((events_confirmed.length == 1 && lt_hours_done > 0 && lt_hours_done < 5) || (events_confirmed.length == 2 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 4 && lt_hours_done < 25)) {
+    vol_level = 4;
+  } else if ((events_confirmed.length == 1 && lt_hours_done > 4 && lt_hours_done < 25) || (events_confirmed.length > 3 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 24) || (events_confirmed.length > 1 && lt_hours_done < 5 && lt_hours_done > 0)) {
+    vol_level = 5;
+  } else if ((events_confirmed.length > 0 && lt_hours_done > 24) || (events_confirmed.length > 3 && lt_hours_done > 0)) {
+    vol_level = 6;
+  } else {
+    vol_level = 0;
+  };
+  console.log('events_confirmed.length :  ' + events_confirmed.length);
+  console.log('lt_hours_done :  ' + lt_hours_done);
+  console.log('Volunteer level is : ' + vol_level);
   res.render('v_profile.jade', {
     session: req.session,
     events_subscribed: events_subscribed,
@@ -42,7 +72,8 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
     events_past: events_past,
     volunteer: req.session.volunteer,
     error: error,
-    group: req.session.group
+    group: req.session.group,
+    vol_level: vol_level
   });
 });
 

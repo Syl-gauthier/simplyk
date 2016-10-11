@@ -9,6 +9,62 @@ block vars
 block content
   #map-section.container-fluid
     .row
+      .col-md-5.col-md-offset-1
+        h3.page-header <strong> #{volunteer.firstname} #{volunteer.lastname}  </strong>
+      if vol_level
+        .col-md-5
+          .media.tp-15(style='margin-top: 30px')
+            if (vol_level == 1)
+              .media-left.media-middle(style='width: 40vw')
+                img.media-object(src='/images/grade_10.png' width='100')
+              .media-body
+                h3.media-heading <strong>Mon niveau d'engagement</strong>
+                h3
+                  span.label.label-default Débutant
+                //p Participe à du bénévolat pour progresser !
+            if (vol_level == 2)
+              .media-left.media-middle(style='width: 40vw')
+                img.media-object(src='/images/grade_25.png' width='100')
+              .media-body
+                h3.media-heading <strong>Mon niveau d'engagement</strong>
+                h3
+                  span.label.label-info Apprenti
+                //p Participe à du bénévolat pour progresser !
+            if (vol_level == 3)
+              .media-left.media-middle(style='width: 40vw')
+                img.media-object(src='/images/grade_40.png' width='100')
+              .media-body
+                h3.media-heading <strong>Mon niveau d'engagement</strong>
+                h3
+                  span.label.label-primary Gros potentiel
+                //p Participe à du bénévolat pour progresser !
+            if (vol_level == 4)
+              .media-left.media-middle(style='width: 40vw')
+                img.media-object(src='/images/grade_55.png' width='100')
+              .media-body
+                h3.media-heading <strong>Mon niveau d'engagement</strong>
+                h3
+                  span.label.label-success Force vive
+                //p Participe à du bénévolat pour progresser !
+            if (vol_level == 5)
+              .media-left.media-middle(style='width: 40vw')
+                img.media-object(src='/images/grade_70.png' width='100')
+              .media-body
+                h3.media-heading <strong>Mon niveau d'engagement</strong>
+                h3
+                  span.label.label-warning Formidable
+                //p Participe à du bénévolat pour progresser !
+            if (vol_level == 6)
+              .media-left.media-middle(style='width: 40vw')
+                img.media-object(src='/images/grade_max.png' width='100')
+              .media-body
+                h3.media-heading <strong>Mon niveau d'engagement</strong>
+                h3
+                  span.label.label-danger Expert
+                //p Participe à du bénévolat pour progresser !
+
+
+    .row
       .col-md-10.col-md-offset-1
         ul.nav.nav-tabs(role='tablist')
           li.active(role='navigation')
