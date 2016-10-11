@@ -69,11 +69,6 @@ router.get('/', function(req, res, next) {
               '$not': {
                 '$size': 0
               }
-            },
-            'school_id': {
-              '$not': {
-                '$exists': true
-              }
             }
           }, {
             'org_name': true,
@@ -90,7 +85,14 @@ router.get('/', function(req, res, next) {
                 group: req.session.group
               });
             } else {
-              var longterms = longtermsList(organisms);
+              //Get the longterms from all the organisms which are not a school
+              var longterms = longtermsList(organisms.filter(function(orga) {
+                if (orga.school_id) {
+                  return false;
+                } else {
+                  return true;
+                }
+              }));
               console.log('LONG' + organisms);
               res.render('g_accueil.jade', {
                 activities: acts,
