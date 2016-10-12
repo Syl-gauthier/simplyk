@@ -2,7 +2,7 @@
  *Wrap nodemailer to provide convinient functions to send emails
  * */
 var nodemailer = require('nodemailer');
-var fs = require('fs');
+var EmailTemplate = require('email-templates').EmailTemplate;
 
 var emailCredentials = process.env.EMAIL_CREDENTIALS;
 if (emailCredentials === 'undefined') {
@@ -11,6 +11,9 @@ if (emailCredentials === 'undefined') {
 
 // create reusable transporter object using the default SMTP transport
 var transporter = nodemailer.createTransport(emailCredentials);
+
+// import templates
+const verify_template = new EmailTemplate('./templates/verify_template');
 
 //Wrap sendMail
 function callSendMail(mailOptions) {
@@ -26,7 +29,7 @@ function callSendMail(mailOptions) {
 
 // content newUser
 function sendWelcomeEmail(content) {
-  var body = '<p>You created an account for ' + content.name + '. <br>' + content.customMessage + ' <a href="simplyk.org">Simplyk</a></p>';
+  var body = '<p>You created an account for ' + content.firstname + '. <br>' + content.customMessage + ' <a href="simplyk.org">Simplyk</a></p>';
 
   var mailOptions = {
     from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
@@ -42,46 +45,59 @@ function sendWelcomeEmail(content) {
 
 //Send email with verify url
 function sendVerifyEmail(content) {
-  var body = '<div><p>Merci ' + content.firstname + ' de t\'être inscrire à notre plateforme ! </p></div>' + '<div><p>Vérifie ton adresse courriel : ' + content.recipient + '</p></div>' + '<div><a href="' + content.verify_url + '">Clique ici</a></div>';
+  content.subtitle = 'On est ravi que tu nous rejoignes. Tout d\'abord, confirme ton compte grâce au bouton ci-dessous';
+  content.type = 'verify';
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
 
-  console.log(body);
+    var mailOptions = {
+      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: content.firstname + ', vérifie ton courriel', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
 
-  var mailOptions = {
-    from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
-    to: content.recipient,
-    subject: content.firstname + ', vérifie ton courriel', // Subject line
-    text: '', // plaintext body
-    html: body
-  };
+    callSendMail(mailOptions);
 
-  callSendMail(mailOptions);
+  });
 };
 
 function sendSubscriptionOrgEmail(content) {
-  var rstream = fs.createReadStream('./email/template.html');
+  var headerstream = fs.createReadStream('./email/template_header.html');
   var mailOptions = {
     from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
     to: content.recipient,
     subject: 'Nouvelle inscription sur Simplyk !', // Subject line
     text: '', // plaintext body
-    html: rstream
+    html: headerstream
   };
 
   callSendMail(mailOptions);
 }
 
 function sendSubscriptionVolEmail(content) {
-  var body = '<p>Merci ' + content.name + ' !' + '<br> ' + content.customMessage + '<br> <a href="platform.simplyk.org/volunteer/profile">Voir mon profil</a></p>';
+  content.subtitle = content.customMessage;
+  content.type = 'subscriptionvol';
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
 
-  var mailOptions = {
-    from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
-    to: content.recipient,
-    subject: 'Nouvelle inscription sur Simplyk !', // Subject line
-    text: '', // plaintext body
-    html: body
-  };
+    var body = 'Merci ' + content.name + ' !' + '<br> ' + content.customMessage + '<br> <a href="platform.simplyk.org/volunteer/profile">Voir mon profil</a></p>';
 
-  callSendMail(mailOptions);
+    var mailOptions = {
+      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: 'Nouvelle inscription sur Simplyk !', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
 }
 
 function sendUnsubscriptionEmail(content) {
