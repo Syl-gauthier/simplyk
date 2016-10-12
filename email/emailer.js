@@ -2,6 +2,7 @@
  *Wrap nodemailer to provide convinient functions to send emails
  * */
 var nodemailer = require('nodemailer');
+var fs = require('fs');
 
 var emailCredentials = process.env.EMAIL_CREDENTIALS;
 if (emailCredentials === 'undefined') {
@@ -57,14 +58,13 @@ function sendVerifyEmail(content) {
 };
 
 function sendSubscriptionOrgEmail(content) {
-  var body = '<p>Bonne nouvelle ' + content.name + ' !' + '<br> ' + content.customMessage + '<br> <a href="platform.simplyk.org">Voir mes bénévoles</a></p>';
-
+  var rstream = fs.createReadStream('./email/template.html');
   var mailOptions = {
     from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
     to: content.recipient,
     subject: 'Nouvelle inscription sur Simplyk !', // Subject line
     text: '', // plaintext body
-    html: body
+    html: rstream
   };
 
   callSendMail(mailOptions);
