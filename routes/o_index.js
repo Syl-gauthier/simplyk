@@ -74,7 +74,8 @@ router.get('/', function(req, res, next) {
             'org_name': true,
             'cause': true,
             '_id': true,
-            'long_terms': true
+            'long_terms': true,
+            'school_id': true
           }, function(err, organisms) {
             if (err) {
               console.log(err);
@@ -93,7 +94,6 @@ router.get('/', function(req, res, next) {
                   return true;
                 }
               }));
-              console.log('LONG' + organisms);
               res.render('g_accueil.jade', {
                 activities: acts,
                 session: req.session,
