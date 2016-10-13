@@ -51,7 +51,8 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       var isUnverified = function(activity) {
         return activity.validation;
       };
-      var isMySchool = function(activity) {
+      var justMySchool = function(activity) {
+        console.log('activity.school_id :' + activity.school_id + ' my_school : ' + my_school + 'activity.school_id == my_school' + (activity.school_id == my_school));
         if (activity.school_id) {
           return activity.school_id == my_school;
         } else {
@@ -60,65 +61,47 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       };
       //If user is under 16, he can't see the activities of unverified organisms
       if (age < 16) {
-        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(isMySchool);
+        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(justMySchool);
       } else {
-        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isMySchool);
+        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool);
       };
-      if (my_school) {
-        var organism_query = {
+      Organism.find({
           'long_terms': {
             '$exists': true,
             '$not': {
               '$size': 0
             }
-          },
-          'school_id': {
-            '$in': [undefined, my_school]
           }
-        };
-      } else {
-        var organism_query = {
-          'long_terms': {
-            '$exists': true,
-            '$not': {
-              '$size': 0
-            }
-          },
-          'school_id': {
-            '$not': {
-              '$exists': true
-            }
+        }, {
+          'org_name': true,
+          '_id': true,
+          'cause': true,
+          'long_terms': true,
+          'school_id': true
+        },
+        function(err, organisms) {
+          if (err) {
+            console.log(err);
+            res.render('v_map.jade', {
+              session: req.session,
+              error: err,
+              organism: req.session.organism,
+              group: req.session.group
+            });
+          } else {
+            const lt_organisms = organisms.filter(justMySchool);
+            var longterms = longtermsList(lt_organisms);
+            res.render('v_map.jade', {
+              session: req.session,
+              activities: acts,
+              volunteer: req.session.volunteer,
+              error: req.query.error,
+              longterms: longterms,
+              success: req.query.success,
+              group: req.session.group
+            });
           }
-        };
-      };
-      Organism.find(organism_query, {
-        'org_name': true,
-        '_id': true,
-        'cause': true,
-        'long_terms': true
-      }, function(err, organisms) {
-        if (err) {
-          console.log(err);
-          res.render('v_map.jade', {
-            session: req.session,
-            error: err,
-            organism: req.session.organism,
-            group: req.session.group
-          });
-        } else {
-          var longterms = longtermsList(organisms);
-          console.log('LONG' + organisms);
-          res.render('v_map.jade', {
-            session: req.session,
-            activities: acts,
-            volunteer: req.session.volunteer,
-            error: req.query.error,
-            longterms: longterms,
-            success: req.query.success,
-            group: req.session.group
-          });
-        }
-      });
+        });
     }
   });
 });
