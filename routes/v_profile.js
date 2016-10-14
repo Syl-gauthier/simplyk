@@ -56,7 +56,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   var vol_level;
   if (volunteer.events.length == 0 && lt_nb == 0) {
     vol_level = 1;
-  } else if ((volunteer.events.length > 0 || lt_nb > 0) && events_pending.length == 0 && events_confirmed.length == 0 && lt_hours_done == 0) {
+  } else if ((volunteer.events.length > 0 || lt_nb > 0) && events_confirmed.length == 0 && lt_hours_done == 0) {
     vol_level = 2;
   } else if ((events_confirmed.length == 1 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_nb > 0 && lt_hours_done > 0 && lt_hours_done < 5)) {
     vol_level = 3;
