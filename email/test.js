@@ -26,8 +26,7 @@ function testVerifyEmail() {
 		button: {
 			text: 'Vérifier mon compte',
 			link: 'platform.simplyk.org'
-		},
-		title: 'Bienvenue ' + firstname + ' !'
+		}
 	});
 }
 

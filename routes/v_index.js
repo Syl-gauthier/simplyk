@@ -289,8 +289,12 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                 emailer.sendSubscriptionOrgEmail(org_content);
                 var vol_content = {
                   recipient: newVolunteer.email,
-                  name: newVolunteer.firstname + ' ' + newVolunteer.lastname,
-                  customMessage: 'Tu t\' es inscrit à l\'évènement de ' + organism.org_name + ' : ' + newActivity.event_intitule + ' !<br>' + ' N\'oublie pas d\'enregistrer tes heures de participation à cet évènement ! <br> Cela bénéficiera à la fois à ' + organism.org_name + ' et à toi pour passer aux échelons supérieurs de l\'engagement !'
+                  firstname: newVolunteer.firstname,
+                  customMessage: ['Tu t\' es inscrit à l\'évènement de ' + organism.org_name + ' : ' + newActivity.event_intitule + ' !', ' N\'oublie pas d\'enregistrer tes heures de participation à cet évènement !', 'Cela bénéficiera à la fois à ' + organism.org_name + ' et à toi pour passer aux échelons supérieurs de l\'engagement !'],
+                  button: {
+                    text: 'Voir mon profil',
+                    link: 'platform.simplyk.org'
+                  }
                 };
                 emailer.sendSubscriptionVolEmail(vol_content);
               });

@@ -13,7 +13,7 @@ if (emailCredentials === 'undefined') {
 var transporter = nodemailer.createTransport(emailCredentials);
 
 // import templates
-const verify_template = new EmailTemplate('./templates/verify_template');
+const verify_template = new EmailTemplate('email/templates/verify_template');
 
 //Wrap sendMail
 function callSendMail(mailOptions) {
@@ -45,8 +45,10 @@ function sendWelcomeEmail(content) {
 
 //Send email with verify url
 function sendVerifyEmail(content) {
-  content.subtitle = 'On est ravi que tu nous rejoignes. Tout d\'abord, confirme ton compte grâce au bouton ci-dessous';
+  content.subtitle = 'On est ravi que tu sois maintenant sur la plateforme Simplyk. Tout d\'abord, confirme ton compte grâce au bouton ci-dessous';
   content.type = 'verify';
+  content.button.text = 'Vérifier mon compte';
+  content.title = 'Bienvenue ' + content.firstname + ' !';
   verify_template.render(content, function(err, results) {
     if (err) {
       return console.error(err);
@@ -66,13 +68,12 @@ function sendVerifyEmail(content) {
 };
 
 function sendSubscriptionOrgEmail(content) {
-  var headerstream = fs.createReadStream('./email/template_header.html');
   var mailOptions = {
     from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
     to: content.recipient,
     subject: 'Nouvelle inscription sur Simplyk !', // Subject line
     text: '', // plaintext body
-    html: headerstream
+    html: ''
   };
 
   callSendMail(mailOptions);
@@ -81,12 +82,11 @@ function sendSubscriptionOrgEmail(content) {
 function sendSubscriptionVolEmail(content) {
   content.subtitle = content.customMessage;
   content.type = 'subscriptionvol';
+  content.title = 'Merci ' + content.firstname + ' !';
   verify_template.render(content, function(err, results) {
     if (err) {
       return console.error(err);
     };
-
-    var body = 'Merci ' + content.name + ' !' + '<br> ' + content.customMessage + '<br> <a href="platform.simplyk.org/volunteer/profile">Voir mon profil</a></p>';
 
     var mailOptions = {
       from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address

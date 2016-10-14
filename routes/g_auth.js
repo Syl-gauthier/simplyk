@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var passport = require('passport')
+var passport = require('passport');
+var Intercom = require('intercom-client');
+var client = new Intercom.Client({
+  token: 'dG9rOmQ0MWQ4N2UzXzA4ZmNfNGMyMV9hOGM1XzExOTllOTQ5NTQzNToxOjA='
+});
 
 var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
@@ -17,6 +21,16 @@ router.get('/login', function(req, res, next) {
       error: req.query.login_error
     });
   } else {
+    client.users.list(function(err, d) {
+      // d is the response from the server
+      if (err) {
+        console.log(err);
+        console.log(process.env.INTERCOM_TOKEN);
+      } else {
+        console.log(d);
+        console.log(process.env.INTERCOM_TOKEN);
+      }
+    });
     res.render('g_login.jade');
   }
 });
@@ -154,7 +168,9 @@ router.post('/register_volunteer', function(req, res) {
 
             emailer.sendVerifyEmail({
               recipient: req.body.email,
-              verify_url: verifyUrl,
+              button: {
+                link: verifyUrl
+              },
               firstname: req.body.firstname
             });
           }
@@ -206,8 +222,9 @@ router.post('/register_organism', function(req, res) {
             console.log('Verify url sent: ' + verifyUrl);
             emailer.sendVerifyEmail({
               recipient: email,
-              name: org_name,
-              verify_url: verifyUrl,
+              button: {
+                link: verifyUrl
+              },
               firstname: req.body.firstname
                 //customMessage: 'Congratulations, create an event to get volunteers!'
             });
@@ -259,8 +276,11 @@ router.post('/register_check', function(req, res) {
 router.post('/sendVerificationEmail', function(req, res) {
   emailer.sendVerifyEmail({
     recipient: req.body.recipient,
-    verify_url: req.body.verify_url,
+    button: {
+      link: req.body.verify_url
+    },
     firstname: req.body.firstname
+      //customMessage: 'Congratulations, create an event to get volunteers!'
   });
 })
 
