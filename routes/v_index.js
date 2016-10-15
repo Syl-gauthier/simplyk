@@ -3,6 +3,10 @@ var router = express.Router();
 var passport = require('passport');
 var mongoose = require('mongoose');
 var emailer = require('../email/emailer.js');
+var Intercom = require('intercom-client');
+var client = new Intercom.Client({
+  token: process.env.INTERCOM_TOKEN
+});
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -51,7 +55,8 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       var isUnverified = function(activity) {
         return activity.validation;
       };
-      var isMySchool = function(activity) {
+      var justMySchool = function(activity) {
+        console.log('activity.school_id :' + activity.school_id + ' my_school : ' + my_school + 'activity.school_id == my_school' + (activity.school_id == my_school));
         if (activity.school_id) {
           return activity.school_id == my_school;
         } else {
@@ -60,65 +65,47 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       };
       //If user is under 16, he can't see the activities of unverified organisms
       if (age < 16) {
-        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(isMySchool);
+        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(justMySchool);
       } else {
-        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isMySchool);
+        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool);
       };
-      if (my_school) {
-        var organism_query = {
+      Organism.find({
           'long_terms': {
             '$exists': true,
             '$not': {
               '$size': 0
             }
-          },
-          'school_id': {
-            '$in': [undefined, my_school]
           }
-        };
-      } else {
-        var organism_query = {
-          'long_terms': {
-            '$exists': true,
-            '$not': {
-              '$size': 0
-            }
-          },
-          'school_id': {
-            '$not': {
-              '$exists': true
-            }
+        }, {
+          'org_name': true,
+          '_id': true,
+          'cause': true,
+          'long_terms': true,
+          'school_id': true
+        },
+        function(err, organisms) {
+          if (err) {
+            console.log(err);
+            res.render('v_map.jade', {
+              session: req.session,
+              error: err,
+              organism: req.session.organism,
+              group: req.session.group
+            });
+          } else {
+            const lt_organisms = organisms.filter(justMySchool);
+            var longterms = longtermsList(lt_organisms);
+            res.render('v_map.jade', {
+              session: req.session,
+              activities: acts,
+              volunteer: req.session.volunteer,
+              error: req.query.error,
+              longterms: longterms,
+              success: req.query.success,
+              group: req.session.group
+            });
           }
-        };
-      };
-      Organism.find(organism_query, {
-        'org_name': true,
-        '_id': true,
-        'cause': true,
-        'long_terms': true
-      }, function(err, organisms) {
-        if (err) {
-          console.log(err);
-          res.render('v_map.jade', {
-            session: req.session,
-            error: err,
-            organism: req.session.organism,
-            group: req.session.group
-          });
-        } else {
-          var longterms = longtermsList(organisms);
-          console.log('LONG' + organisms);
-          res.render('v_map.jade', {
-            session: req.session,
-            activities: acts,
-            volunteer: req.session.volunteer,
-            error: req.query.error,
-            longterms: longterms,
-            success: req.query.success,
-            group: req.session.group
-          });
-        }
-      });
+        });
     }
   });
 });
@@ -306,10 +293,27 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                 emailer.sendSubscriptionOrgEmail(org_content);
                 var vol_content = {
                   recipient: newVolunteer.email,
-                  name: newVolunteer.firstname + ' ' + newVolunteer.lastname,
-                  customMessage: 'Tu t\' es inscrit à l\'évènement de ' + organism.org_name + ' : ' + newActivity.event_intitule + ' !<br>' + ' N\'oublie pas d\'enregistrer tes heures de participation à cet évènement ! <br> Cela bénéficiera à la fois à ' + organism.org_name + ' et à toi pour passer aux échelons supérieurs de l\'engagement !'
+                  firstname: newVolunteer.firstname,
+                  customMessage: ['Tu t\' es inscrit à l\'évènement de ' + organism.org_name + ' : ' + newActivity.event_intitule + ' !', ' N\'oublie pas d\'enregistrer tes heures de participation à cet évènement !', 'Cela bénéficiera à la fois à ' + organism.org_name + ' et à toi pour passer aux échelons supérieurs de l\'engagement !'],
+                  button: {
+                    text: 'Voir mon profil',
+                    link: 'platform.simplyk.org'
+                  }
                 };
                 emailer.sendSubscriptionVolEmail(vol_content);
+                //Intercom create addlongterm event
+                client.events.create({
+                  event_name: 'vol_event_subscribe',
+                  created_at: Math.round(Date.now() / 1000),
+                  user_id: req.session.volunteer._id,
+                  metadata: {
+                    act_id: req.params.act_id
+                  }
+                });
+                client.users.update({
+                  user_id: req.session.volunteer._id,
+                  update_last_request_at: true
+                });
               });
               res.render('v_postsubscription.jade', {
                 session: req.session,
@@ -357,6 +361,19 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
         res.redirect('/volunteer/map?error=' + err);
       } else {
         req.session.volunteer = results.newVolunteer;
+        //Intercom create subscribe to longterm event
+        client.events.create({
+          event_name: 'vol_longterm_subscribe',
+          created_at: Math.round(Date.now() / 1000),
+          user_id: req.session.volunteer._id,
+          metadata: {
+            lt_id: req.params.lt_id
+          }
+        });
+        client.users.update({
+          user_id: req.session.volunteer._id,
+          update_last_request_at: true
+        });
         res.render('v_postsubscription.jade', {
           session: req.session,
           org_name: results.newOrganism.org_name,

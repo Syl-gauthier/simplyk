@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var emailer = require('../email/emailer.js');
+var Intercom = require('intercom-client');
+var client = new Intercom.Client({
+  token: process.env.INTERCOM_TOKEN
+});
 
 
 var permissions = require('../middlewares/permissions.js');
@@ -56,7 +60,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   var vol_level;
   if (volunteer.events.length == 0 && lt_nb == 0) {
     vol_level = 1;
-  } else if ((volunteer.events.length > 0 || lt_nb > 0) && events_pending.length == 0 && events_confirmed.length == 0 && lt_hours_done == 0) {
+  } else if ((volunteer.events.length > 0 || lt_nb > 0) && events_confirmed.length == 0 && lt_hours_done == 0) {
     vol_level = 2;
   } else if ((events_confirmed.length == 1 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_nb > 0 && lt_hours_done > 0 && lt_hours_done < 5)) {
     vol_level = 3;
@@ -99,12 +103,6 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
       "days": {
         "$elemMatch": {
           "day": req.params.day
-            /*,
-                      "applicants": {
-                        "$elemMatch": {
-                          "$eq": req.session.volunteer._id
-                        }
-                      }*/
         }
       }
     }]
@@ -149,6 +147,20 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
             customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est désinscrit de votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !'
           };
           emailer.sendUnsubscriptionEmail(content);
+          //Intercom create unsubscribe to longterm event
+          client.events.create({
+            event_name: 'vol_longterm_subscribe',
+            created_at: Math.round(Date.now() / 1000),
+            user_id: req.session.volunteer._id,
+            metadata: {
+              act_id: req.params.act_id,
+              org_name: newActivity.org_name
+            }
+          });
+          client.users.update({
+            user_id: req.session.volunteer._id,
+            update_last_request_at: true
+          });
           const dayString = new Date(req.params.day).toLocaleDateString();
           console.log('newVolunteer after unsubscription process : ' + newVolunteer);
           res.render('v_postunsubscription.jade', {
@@ -233,8 +245,21 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
           hours: req.body.hours_pending
         });
       };
+      //Intercom create unsubscribe to longterm event
+      client.events.create({
+        event_name: 'vol_activity_hourspending',
+        created_at: Math.round(Date.now() / 1000),
+        user_id: req.session.volunteer._id,
+        metadata: {
+          act_id: req.params.act_id,
+          intitule_activity: event.intitule_activity
+        }
+      });
+      client.users.update({
+        user_id: req.session.volunteer._id,
+        update_last_request_at: true
+      });
       //TODO creation
-
       newTodo.save(function(err, todo) {
         if (err) {
           console.log(err);

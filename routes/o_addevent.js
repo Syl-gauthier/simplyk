@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var gmaps = require('../middlewares/gmaps.js');
+var Intercom = require('intercom-client');
+var client = new Intercom.Client({
+  token: process.env.INTERCOM_TOKEN
+});
 
 var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
@@ -82,7 +86,20 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
         var school_id = null;
         if (req.session.admin) {
           school_id = req.session.admin.school_id;
-        }
+        };
+        //Intercom create addevent event
+        client.events.create({
+          event_name: 'org_addevent',
+          created_at: Math.round(Date.now() / 1000),
+          user_id: organism._id
+        });
+        client.users.update({
+          user_id: organism._id,
+          update_last_request_at: true,
+          metadata: {
+            event_name: req.body.intitule_event,
+          }
+        });
         for (var i = 1; i < nb_activities + 1; i++) {
           console.log('Activivity number ' + i)
           var activity = {

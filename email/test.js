@@ -1,7 +1,7 @@
 var emailer = require('./emailer.js');
 
 //test send email to
-function testVerifyEmail() {
+/*function testVerifyEmail() {
   console.log('Send test verify email');
 
   var recipient = 'arowana87@gmail.com';
@@ -13,4 +13,42 @@ function testVerifyEmail() {
   });
 }
 
+testVerifyEmail();*/
+function testVerifyEmail() {
+	console.log('Send test verify email');
+
+	var recipient = 'thibaut.jaurou@gmail.com';
+	var firstname = 'Thibaut';
+
+	emailer.sendVerifyEmail({
+		recipient: recipient,
+		firstname: firstname,
+		button: {
+			text: 'Vérifier mon compte',
+			link: 'platform.simplyk.org'
+		}
+	});
+}
+
 testVerifyEmail();
+
+
+function testSubscriptionVolEmail() {
+	console.log('Send Subscription Vol Email');
+
+	var recipient = 'thibaut.jaurou@gmail.com';
+	var firstname = 'Thibaut';
+
+	emailer.sendSubscriptionVolEmail({
+		recipient: recipient,
+		firstname: firstname,
+		customMessage: ['Tu t\' es inscrit à l\'évènement de Simplyk Dev : Test de la plateforme !', ' N\'oublie pas d\'enregistrer tes heures de participation à cet évènement ! ', 'Cela bénéficiera à la fois à Simplyk Dev et à toi pour passer aux échelons supérieurs de l\'engagement !'],
+		title: 'Merci '+firstname+' !',
+		button: {
+			text: 'Voir mon profil',
+			link: 'platform.simplyk.org'
+		}
+	});
+}
+
+testSubscriptionVolEmail();

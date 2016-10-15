@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var passport = require('passport')
+var passport = require('passport');
+var Intercom = require('intercom-client');
+var client = new Intercom.Client({
+  token: process.env.INTERCOM_TOKEN
+});
 
 var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
@@ -54,6 +58,16 @@ router.post('/login', function(req, res, next) {
       req.session.organism = user;
       req.session.group = "organism";
       console.log('IN LOGIN post and req.session.group = ' + req.session.group);
+      //Intercom create connexion event
+      client.events.create({
+        event_name: 'org_connexion',
+        created_at: Math.round(Date.now() / 1000),
+        user_id: user._id
+      });
+      client.users.update({
+        user_id: user._id,
+        update_last_request_at: true
+      });
       req.session.save(function(err) {
         if (err) {
           return next(err);
@@ -64,6 +78,16 @@ router.post('/login', function(req, res, next) {
       req.session.volunteer = user;
       req.session.group = "volunteer";
       console.log('IN LOGIN post and req.session.group = ' + req.session.group);
+      //Intercom create connexion event
+      client.events.create({
+        event_name: 'vol_connexion',
+        created_at: Math.round(Date.now() / 1000),
+        user_id: user._id
+      });
+      client.users.update({
+        user_id: user._id,
+        update_last_request_at: true
+      });
       req.session.save(function(err) {
         if (err) {
           return next(err);
@@ -81,6 +105,16 @@ router.post('/login', function(req, res, next) {
         }
         req.session.organism = org;
         console.log('IN LOGIN post and req.session.group = ' + req.session.group);
+        //Intercom create connexion event
+        client.events.create({
+          event_name: 'admin_connexion',
+          created_at: Math.round(Date.now() / 1000),
+          user_id: user._id
+        });
+        client.users.update({
+          user_id: user._id,
+          update_last_request_at: true
+        });
         req.session.save(function(err) {
           if (err) {
             return next(err);
@@ -93,6 +127,12 @@ router.post('/login', function(req, res, next) {
 });
 
 router.post('*/logout', function(req, res, next) {
+  //Intercom create logout event
+  client.events.create({
+    event_name: 'logout',
+    created_at: Math.round(Date.now() / 1000),
+    user_id: req.session[req.session.group]._id
+  });
   req.session.destroy(function(err) {
     if (err) {
       return next(err);
@@ -154,10 +194,24 @@ router.post('/register_volunteer', function(req, res) {
 
             emailer.sendVerifyEmail({
               recipient: req.body.email,
-              verify_url: verifyUrl,
+              button: {
+                link: verifyUrl
+              },
               firstname: req.body.firstname
             });
-          }
+          };
+          // Intercom creates volunteers
+          client.users.create({
+            email: vol.email,
+            name: vol.firstname + ' ' + vol.lastname,
+            user_id: vol._id,
+            signed_up_at: Math.round(Date.now() / 1000),
+            last_request_at: Math.round(Date.now() / 1000),
+            custom_attributes: {
+              firstname: vol.firstname,
+              group: 'volunteer'
+            }
+          });
           res.redirect('/waitforverifying?recipient=' + req.body.email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);
         }
       });
@@ -206,8 +260,9 @@ router.post('/register_organism', function(req, res) {
             console.log('Verify url sent: ' + verifyUrl);
             emailer.sendVerifyEmail({
               recipient: email,
-              name: org_name,
-              verify_url: verifyUrl,
+              button: {
+                link: verifyUrl
+              },
               firstname: req.body.firstname
                 //customMessage: 'Congratulations, create an event to get volunteers!'
             });
@@ -215,7 +270,17 @@ router.post('/register_organism', function(req, res) {
             res.locals.name = org_name;
             res.locals.verify_url = verifyUrl;
             res.locals.firstname = req.body.firstname;
-          }
+          };
+          client.users.create({
+            email: org.email,
+            name: org.org_name,
+            user_id: org._id,
+            signed_up_at: Math.round(Date.now() / 1000),
+            custom_attributes: {
+              firstname: org.firstname,
+              group: 'organism'
+            }
+          });
           res.redirect('/waitforverifying?recipient=' + email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);
         }
       });
@@ -259,10 +324,13 @@ router.post('/register_check', function(req, res) {
 router.post('/sendVerificationEmail', function(req, res) {
   emailer.sendVerifyEmail({
     recipient: req.body.recipient,
-    verify_url: req.body.verify_url,
+    button: {
+      link: req.body.verify_url
+    },
     firstname: req.body.firstname
+      //customMessage: 'Congratulations, create an event to get volunteers!'
   });
-})
+});
 
 
 router.get('/waitforverifying', function(req, res) {
@@ -274,8 +342,8 @@ router.get('/waitforverifying', function(req, res) {
     recipient: req.query.recipient,
     verify_url: req.query.verify_url,
     firstname: req.query.firstname
-  })
-})
+  });
+});
 
 //Verify volunteer email address by random generated string
 router.get('/verifyV/:verifyString', function(req, res) {
