@@ -6,6 +6,10 @@ var passport = require('passport');
 var jade = require('jade');
 
 var GoogleMapsAPI = require('googlemaps');
+var Intercom = require('intercom-client');
+var client = new Intercom.Client({
+  token: process.env.INTERCOM_TOKEN
+});
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;

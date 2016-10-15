@@ -3,6 +3,10 @@ var router = express.Router();
 var passport = require('passport');
 var mongoose = require('mongoose');
 var emailer = require('../email/emailer.js');
+var Intercom = require('intercom-client');
+var client = new Intercom.Client({
+  token: process.env.INTERCOM_TOKEN
+});
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;

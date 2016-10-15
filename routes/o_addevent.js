@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var gmaps = require('../middlewares/gmaps.js');
+var Intercom = require('intercom-client');
+var client = new Intercom.Client({
+  token: process.env.INTERCOM_TOKEN
+});
 
 var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');

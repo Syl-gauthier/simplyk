@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var emailer = require('../email/emailer.js');
+var Intercom = require('intercom-client');
+var client = new Intercom.Client({
+  token: process.env.INTERCOM_TOKEN
+});
 
 
 var permissions = require('../middlewares/permissions.js');
