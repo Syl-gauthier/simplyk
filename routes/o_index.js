@@ -496,15 +496,6 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
 
 router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admin'), function(req, res) {
   console.log('Confirm Hours starts');
-  OrgTodo.findOneAndRemove({
-    _id: req.body.todo
-  }, function(err, todoremoved) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('todoremoved : ' + todoremoved);
-    }
-  });
   Volunteer.findOne({
     _id: req.body.vol_id
   }, function(err, myVolunteer) {
@@ -529,7 +520,7 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
         }
       });
       client.users.update({
-        user_id: organism._id,
+        user_id: req.session.organism._id,
         update_last_request_at: true
       });
       //If we deal with an event
@@ -624,6 +615,15 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
         } else {
           console.log('Hours_pending goes to hours_done : ' + hours_pending);
           console.log(req.body);
+          OrgTodo.findOneAndRemove({
+            _id: req.body.todo
+          }, function(err, todoremoved) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log('todoremoved : ' + todoremoved);
+            }
+          });
           res.sendStatus(200).end();
         }
       });
