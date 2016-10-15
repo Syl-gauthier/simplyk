@@ -67,6 +67,19 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 						group: req.session.group
 					});
 				} else {
+					//Intercom create addlongterm event
+					client.events.create({
+						event_name: 'org_addlongterm',
+						created_at: Math.round(Date.now() / 1000),
+						user_id: organism._id
+					});
+					client.users.update({
+						user_id: organism._id,
+						update_last_request_at: true,
+						metadata: {
+							longterm_name: req.body.title,
+						}
+					});
 					req.session.organism = organism;
 					res.redirect('/organism/dashboard');
 				}
