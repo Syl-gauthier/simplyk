@@ -23,6 +23,7 @@
     "express-subdomain": "^1.0.5",
     "googlemaps": "^1.6.0",
     "helmet": "^2.2.0",
+    "intercom-client": "^2.8.4",
     "jade": "~1.11.0",
     "moment": "^2.14.1",
     "mongoose": "^4.4.17",
