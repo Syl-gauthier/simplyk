@@ -64,6 +64,10 @@ router.post('/login', function(req, res, next) {
         created_at: Math.round(Date.now() / 1000),
         user_id: user._id
       });
+      client.users.update({
+        user_id: user._id,
+        update_last_request_at: true
+      });
       req.session.save(function(err) {
         if (err) {
           return next(err);
@@ -79,6 +83,10 @@ router.post('/login', function(req, res, next) {
         event_name: 'vol_connexion',
         created_at: Math.round(Date.now() / 1000),
         user_id: user._id
+      });
+      client.users.update({
+        user_id: user._id,
+        update_last_request_at: true
       });
       req.session.save(function(err) {
         if (err) {
@@ -102,6 +110,10 @@ router.post('/login', function(req, res, next) {
           event_name: 'admin_connexion',
           created_at: Math.round(Date.now() / 1000),
           user_id: user._id
+        });
+        client.users.update({
+          user_id: user._id,
+          update_last_request_at: true
         });
         req.session.save(function(err) {
           if (err) {
@@ -193,6 +205,8 @@ router.post('/register_volunteer', function(req, res) {
             email: vol.email,
             name: vol.firstname + ' ' + vol.lastname,
             user_id: vol._id,
+            signed_up_at: Math.round(Date.now() / 1000),
+            last_request_at: Math.round(Date.now() / 1000),
             custom_attributes: {
               firstname: vol.firstname,
               group: 'volunteer'
@@ -261,6 +275,7 @@ router.post('/register_organism', function(req, res) {
             email: org.email,
             name: org.org_name,
             user_id: org._id,
+            signed_up_at: Math.round(Date.now() / 1000),
             custom_attributes: {
               firstname: org.firstname,
               group: 'organism'
