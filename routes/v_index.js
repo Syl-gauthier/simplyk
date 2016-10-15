@@ -297,6 +297,19 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                   }
                 };
                 emailer.sendSubscriptionVolEmail(vol_content);
+                //Intercom create addlongterm event
+                client.events.create({
+                  event_name: 'vol_event_subscribe',
+                  created_at: Math.round(Date.now() / 1000),
+                  user_id: req.session.volunteer._id,
+                  metadata: {
+                    act_id: req.params.act_id
+                  }
+                });
+                client.users.update({
+                  user_id: req.session.volunteer._id,
+                  update_last_request_at: true
+                });
               });
               res.render('v_postsubscription.jade', {
                 session: req.session,
@@ -344,6 +357,19 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
         res.redirect('/volunteer/map?error=' + err);
       } else {
         req.session.volunteer = results.newVolunteer;
+        //Intercom create subscribe to longterm event
+        client.events.create({
+          event_name: 'vol_longterm_subscribe',
+          created_at: Math.round(Date.now() / 1000),
+          user_id: req.session.volunteer._id,
+          metadata: {
+            lt_id: req.params.lt_id
+          }
+        });
+        client.users.update({
+          user_id: req.session.volunteer._id,
+          update_last_request_at: true
+        });
         res.render('v_postsubscription.jade', {
           session: req.session,
           org_name: results.newOrganism.org_name,

@@ -99,12 +99,6 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
       "days": {
         "$elemMatch": {
           "day": req.params.day
-            /*,
-                      "applicants": {
-                        "$elemMatch": {
-                          "$eq": req.session.volunteer._id
-                        }
-                      }*/
         }
       }
     }]
@@ -149,6 +143,20 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
             customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est désinscrit de votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !'
           };
           emailer.sendUnsubscriptionEmail(content);
+          //Intercom create unsubscribe to longterm event
+          client.events.create({
+            event_name: 'vol_longterm_subscribe',
+            created_at: Math.round(Date.now() / 1000),
+            user_id: req.session.volunteer._id,
+            metadata: {
+              act_id: req.params.act_id,
+              org_name: newActivity.org_name
+            }
+          });
+          client.users.update({
+            user_id: req.session.volunteer._id,
+            update_last_request_at: true
+          });
           const dayString = new Date(req.params.day).toLocaleDateString();
           console.log('newVolunteer after unsubscription process : ' + newVolunteer);
           res.render('v_postunsubscription.jade', {
@@ -233,8 +241,21 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
           hours: req.body.hours_pending
         });
       };
+      //Intercom create unsubscribe to longterm event
+      client.events.create({
+        event_name: 'vol_activity_hourspending',
+        created_at: Math.round(Date.now() / 1000),
+        user_id: req.session.volunteer._id,
+        metadata: {
+          act_id: req.params.act_id,
+          intitule_activity: event.intitule_activity
+        }
+      });
+      client.users.update({
+        user_id: req.session.volunteer._id,
+        update_last_request_at: true
+      });
       //TODO creation
-
       newTodo.save(function(err, todo) {
         if (err) {
           console.log(err);

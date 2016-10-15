@@ -28,7 +28,6 @@ var opp_management = require('../middlewares/opp_management.js');
 router.get('/', function(req, res, next) {
   console.log('Organism index');
   Activity.find({}, function(err, activities) {
-    console.log(activities);
     if (err) {
       console.log(err);
       res.render('g_accueil.jade', {
@@ -359,6 +358,20 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
   console.log('Correct Hours starts');
   const correct_hours = req.body.correct_hours;
   console.log('Correct_hours: ' + correct_hours);
+  //Intercom create addlongterm event
+  client.events.create({
+    event_name: 'org_correcthours',
+    created_at: Math.round(Date.now() / 1000),
+    user_id: req.session.organism._id,
+    metadata: {
+      act_id: req.body.act_id,
+      lt_id: req.body.lt_id
+    }
+  });
+  client.users.update({
+    user_id: organism._id,
+    update_last_request_at: true
+  });
   OrgTodo.findOneAndRemove({
     _id: req.body.todo
   }, function(err, todoremoved) {
@@ -501,6 +514,20 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
       console.log('hours_pending : ' + hours_pending);
       console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
       var update = {};
+      //Intercom create addlongterm event
+      client.events.create({
+        event_name: 'org_confirmhours',
+        created_at: Math.round(Date.now() / 1000),
+        user_id: req.session.organism._id,
+        metadata: {
+          act_id: req.body.act_id,
+          lt_id: req.body.lt_id
+        }
+      });
+      client.users.update({
+        user_id: organism._id,
+        update_last_request_at: true
+      });
       //If we deal with an event
       if (req.body.act_id) {
         var query = {
