@@ -68,21 +68,38 @@ function sendVerifyEmail(content) {
 };
 
 function sendSubscriptionOrgEmail(content) {
-  var mailOptions = {
-    from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
-    to: content.recipient,
-    subject: 'Nouvelle inscription sur Simplyk !', // Subject line
-    text: '', // plaintext body
-    html: ''
+  content.subtitle = content.customMessage;
+  content.type = 'subscriptionorg';
+  content.title = 'Nouveau bénévole !';
+  content.button = {
+    text: 'Voir mon bénévole',
+    link: content.link
   };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.log(err);
+    }
+    var mailOptions = {
+      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sener address
+      to: content.recipient,
+      subject: content.event + ': un nouveau bénévole inscrit !', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
 
-  callSendMail(mailOptions);
-}
+    callSendMail(mailOptions);
+
+  });
+};
 
 function sendSubscriptionVolEmail(content) {
   content.subtitle = content.customMessage;
   content.type = 'subscriptionvol';
   content.title = 'Merci ' + content.firstname + ' !';
+  content.button = {
+    text: 'Voir mon profil',
+    link: 'platform.simplyk.org'
+  };
   verify_template.render(content, function(err, results) {
     if (err) {
       return console.error(err);
@@ -98,20 +115,31 @@ function sendSubscriptionVolEmail(content) {
 
     callSendMail(mailOptions);
   });
-}
+};
 
 function sendUnsubscriptionEmail(content) {
-  var body = '<p>Malheureusement, ' + '<br> ' + content.customMessage + '<br> <a href="platform.simplyk.org">Voir mes bénévoles</a></p>';
-
-  var mailOptions = {
-    from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
-    to: content.recipient,
-    subject: 'Désinscription sur Simplyk :(', // Subject line
-    text: '', // plaintext body
-    html: body
+  content.subtitle = ['Malheureusement,', content.customMessage];
+  content.type = 'unsubscriptionorg';
+  content.title = 'Désinscription d\'un bénévole :( ';
+  content.button = {
+    text: 'Voir mon tableau de bord',
+    link: 'platform.simplyk.org'
   };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
 
-  callSendMail(mailOptions);
+    var mailOptions = {
+      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: content.activity_name + ': désinscription d\'un bénévole :( ', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
 }
 
 module.exports = {
