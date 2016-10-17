@@ -354,8 +354,17 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
           hours: req.body.hours_pending
         });
       };
-      //TODO creation
 
+      //Intercom create unsubscribe to longterm event
+      client.events.create({
+        event_name: 'vol_longterm_hourspending',
+        created_at: Math.round(Date.now() / 1000),
+        user_id: req.session.volunteer._id,
+        metadata: {
+          lt_id: req.params.lt_id,
+          intitule_longterm: new_lt.intitule
+        }
+      });
       newTodo.save(function(err, todo) {
         if (err) {
           console.log(err);
