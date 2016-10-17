@@ -13,7 +13,7 @@ if (emailCredentials === 'undefined') {
 var transporter = nodemailer.createTransport(emailCredentials);
 
 // import templates
-const verify_template = new EmailTemplate('email/templates/verify_template');
+const verify_template = new EmailTemplate('email/templates/basic_template');
 
 //Wrap sendMail
 function callSendMail(mailOptions) {
@@ -27,21 +27,6 @@ function callSendMail(mailOptions) {
   });
 }
 
-// content newUser
-function sendWelcomeEmail(content) {
-  var body = '<p>You created an account for ' + content.firstname + '. <br>' + content.customMessage + ' <a href="simplyk.org">Simplyk</a></p>';
-
-  var mailOptions = {
-    from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
-    to: content.recipient,
-    subject: 'Bienvenue sur Simplyk', // Subject line
-    text: '', // plaintext body
-    html: body
-  };
-
-  callSendMail(mailOptions);
-  console.log('callSendMail call');
-};
 
 //Send email with verify url
 function sendVerifyEmail(content) {
@@ -143,7 +128,6 @@ function sendUnsubscriptionEmail(content) {
 }
 
 module.exports = {
-  sendWelcomeEmail: sendWelcomeEmail,
   sendSubscriptionOrgEmail: sendSubscriptionOrgEmail,
   sendSubscriptionVolEmail: sendSubscriptionVolEmail,
   sendUnsubscriptionEmail: sendUnsubscriptionEmail,

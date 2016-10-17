@@ -361,7 +361,7 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
   var alreadyExists = req.session.volunteer.long_terms.find(isLongterm);
   console.log('alreadyExists : ' + alreadyExists + typeof alreadyExists);
   if (typeof alreadyExists === 'undefined') {
-    ltSubs.subscribe(req.session.volunteer, req.params.lt_id, function(err, results) {
+    ltSubs.subscribe(req.session.volunteer, req.params.lt_id, req.headers.host, function(err, results) {
       if (err) {
         console.log(err);
         res.redirect('/volunteer/map?error=' + err);

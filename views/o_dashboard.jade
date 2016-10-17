@@ -9,7 +9,10 @@ block vars
 block content
       .container-fluid
         .row
-          .col-md-offset-8
+          .col-md-8
+            if error
+              p.alert.alert-danger #{error}
+          .col-md-4
             h2.pull-left Mes infos
         .row
           .col-md-4.col-md-offset-8
