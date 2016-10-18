@@ -19,6 +19,7 @@ var subscribe = require('../middlewares/subscribe.js');
 var finder = require('../middlewares/mongo_finder.js');
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
+var update_intercom = require('../lib/intercom/update_intercom.js');
 var ltSubs = require('../lib/subscribe/longterm_subs.js');
 var app = express();
 
@@ -310,9 +311,12 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                     act_id: req.params.act_id
                   }
                 });
-                client.users.update({
-                  user_id: req.session.volunteer._id,
-                  update_last_request_at: true
+                update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.events, function(err) {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
+                  };
                 });
               });
               res.render('v_postsubscription.jade', {
@@ -361,18 +365,23 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
         res.redirect('/volunteer/map?error=' + err);
       } else {
         req.session.volunteer = results.newVolunteer;
+        const newlt = results.newVolunteer.long_terms.find(isLongterm);
         //Intercom create subscribe to longterm event
         client.events.create({
           event_name: 'vol_longterm_subscribe',
           created_at: Math.round(Date.now() / 1000),
           user_id: req.session.volunteer._id,
           metadata: {
-            lt_id: req.params.lt_id
+            lt_id: req.params.lt_id,
+            lt_intitule: newlt.intitule
           }
         });
-        client.users.update({
-          user_id: req.session.volunteer._id,
-          update_last_request_at: true
+        update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, function(err) {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
+          };
         });
         res.render('v_postsubscription.jade', {
           session: req.session,

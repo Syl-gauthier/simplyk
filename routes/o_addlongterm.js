@@ -80,8 +80,8 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 					client.users.update({
 						user_id: organism._id,
 						update_last_request_at: true,
-						metadata: {
-							longterm_name: req.body.title,
+						custom_attributes: {
+							longterm_name: newLongterm.intitule,
 						}
 					});
 					req.session.organism = organism;

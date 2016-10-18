@@ -124,7 +124,7 @@ block content
                         .panel-footer
                           form(method='post' action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day, id='hoursPendingForm'+event.activity_id+event.day)
                             div.input-group
-                              input.form-control(id='input'+event._id, type='number' placeholder='Heures réalisées' name='hours_pending' required)
+                              input.form-control(id='input'+event._id, type='number', min=1, max=50, placeholder='Heures réalisées' name='hours_pending', required)
                               .input-group-btn
                                 input.btn.btn-default(type='submit', value='Confirmer' form='hoursPendingForm'+event.activity_id+event.day)
                                 a.btn.btn-default(href='/volunteer/event/'+event.activity_id) Détails
