@@ -143,6 +143,7 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
           //req.session.save();
           var content = {
             recipient: newActivity.email,
+            activity_name: newActivity.intitule,
             name: newActivity.org_name,
             customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est désinscrit de votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !'
           };
@@ -376,6 +377,7 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
           if (err) {
             console.log(err);
           } else {
+            console.log('INFO : Todo created : ' + todo);
             if (req.session.volunteer.student) {
               res.redirect('/volunteer/student_questions/' + req.params.lt_id);
             } else {

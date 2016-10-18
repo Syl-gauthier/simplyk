@@ -147,7 +147,6 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
       var events = req.session.organism.events;
       var ev_past = [];
       var ev_to_come = [];
-      var error;
       for (var eventI = events.length - 1; eventI >= 0; eventI--) {
         events[eventI].acts = [];
         console.log('******************');
@@ -211,6 +210,7 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
           var lastTodos = todos.map(addEventName);
           res.render('o_dashboard.jade', {
             ev_past: ev_past,
+            error: req.query.error,
             ev_to_come: ev_to_come,
             session: req.session,
             organism: req.session.organism,
@@ -229,84 +229,90 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
     return event._id === req.params.event_id;
   };
   var event = req.session.organism.events.find(isEvent);
-  var acts_id = event.activities;
-  Activity.find({
-    "_id": {
-      '$in': acts_id
-    }
-  }, function(err, activities) {
-    if (err) {
-      console.log(err);
-      res.redirect('/organism/dashboard?error=' + err);
-    } else {
-      Volunteer.find({
-        "events": {
-          '$elemMatch': {
-            'activity_id': {
-              '$in': acts_id
+  if (event) {
+    var acts_id = event.activities;
+    Activity.find({
+      "_id": {
+        '$in': acts_id
+      }
+    }, function(err, activities) {
+      if (err) {
+        console.log(err);
+        res.redirect('/organism/dashboard?error=' + err);
+      } else {
+        Volunteer.find({
+          "events": {
+            '$elemMatch': {
+              'activity_id': {
+                '$in': acts_id
+              }
             }
           }
-        }
-      }, function(err, volunteers) {
-        if (err) {
-          console.log(err);
-          res.redirect('/organism/dashboard?error=' + err);
-        } else {
-          var activities_list = activities;
-          console.log('ALL ACTIVITIES : ' + activities_list);
-          console.log('****************************');
-          console.log('ALL VOLUNTEERS : ' + volunteers);
-          console.log('****************************');
-          event.acts = [];
-          for (var actI = activities_list.length - 1; actI >= 0; actI--) {
-            for (var daysI = activities_list[actI].days.length - 1; daysI >= 0; daysI--) {
-              activities_list[actI].days[daysI].vols = [];
-              var vols = [];
-              console.log('activities_list[actI] : ' + activities_list[actI].days[daysI]);
-              console.log('**************');
+        }, function(err, volunteers) {
+          if (err) {
+            console.log(err);
+            res.redirect('/organism/dashboard?error=' + err);
+          } else {
+            var activities_list = activities;
+            console.log('ALL ACTIVITIES : ' + activities_list);
+            console.log('****************************');
+            console.log('ALL VOLUNTEERS : ' + volunteers);
+            console.log('****************************');
+            event.acts = [];
+            for (var actI = activities_list.length - 1; actI >= 0; actI--) {
+              for (var daysI = activities_list[actI].days.length - 1; daysI >= 0; daysI--) {
+                activities_list[actI].days[daysI].vols = [];
+                var vols = [];
+                console.log('activities_list[actI] : ' + activities_list[actI].days[daysI]);
+                console.log('**************');
 
-              function goodEvent(event) {
-                console.log('blop');
-                console.log('event.activity_id : ' + event.activity_id.toString());
-                console.log('activities_list[actI]._id : ' + activities_list[actI]._id.toString());
-                console.log('event.activity_id === activities_list[actI]._id : ' + (event.activity_id.toString() === activities_list[actI]._id.toString()));
-                return ((event.activity_id.toString() === activities_list[actI]._id.toString()) && (Date.parse(event.day) === Date.parse(activities_list[actI].days[daysI].day)));
-              };
+                function goodEvent(event) {
+                  console.log('blop');
+                  console.log('event.activity_id : ' + event.activity_id.toString());
+                  console.log('activities_list[actI]._id : ' + activities_list[actI]._id.toString());
+                  console.log('event.activity_id === activities_list[actI]._id : ' + (event.activity_id.toString() === activities_list[actI]._id.toString()));
+                  return ((event.activity_id.toString() === activities_list[actI]._id.toString()) && (Date.parse(event.day) === Date.parse(activities_list[actI].days[daysI].day)));
+                };
 
-              function isParticipating(volunteer) {
-                console.log('volunteer.events : ' + volunteer.events);
-                var result = volunteer.events.find(goodEvent);
-                console.log('result : ' + result);
-                return typeof result !== 'undefined';
-              };
-              var these_volunteers = volunteers.filter(isParticipating);
-              console.log('these_volunteers : ' + these_volunteers);
-
-
-              Array.prototype.push.apply(activities_list[actI].days[daysI].vols, these_volunteers);
-              console.log('activities_list[actI] avec vols : ' + activities_list[actI]);
-              console.log('activities_list[actI].vols : ' + activities_list[actI].days[daysI].vols);
-            }
-          };
+                function isParticipating(volunteer) {
+                  console.log('volunteer.events : ' + volunteer.events);
+                  var result = volunteer.events.find(goodEvent);
+                  console.log('result : ' + result);
+                  return typeof result !== 'undefined';
+                };
+                var these_volunteers = volunteers.filter(isParticipating);
+                console.log('these_volunteers : ' + these_volunteers);
 
 
-          Array.prototype.push.apply(event.acts, activities_list);
-          console.log('activities_list : ' + event.acts[0]);
-          console.log('activities_list : ' + event.acts[0].lat);
-          console.log('activities_list : ' + event.acts[0].min_hours);
-          console.log('activities_list : ' + event.acts[0].days);
-          console.log('activities_list : ' + event.acts[0].days[0].vols);
-          //res.json(event);
-          res.render('o_event.jade', {
-            session: req.session,
-            event: event,
-            organism: req.session.organism,
-            group: req.session.group
-          });
-        }
-      });
-    }
-  });
+                Array.prototype.push.apply(activities_list[actI].days[daysI].vols, these_volunteers);
+                console.log('activities_list[actI] avec vols : ' + activities_list[actI]);
+                console.log('activities_list[actI].vols : ' + activities_list[actI].days[daysI].vols);
+              }
+            };
+
+
+            Array.prototype.push.apply(event.acts, activities_list);
+            console.log('activities_list : ' + event.acts[0]);
+            console.log('activities_list : ' + event.acts[0].lat);
+            console.log('activities_list : ' + event.acts[0].min_hours);
+            console.log('activities_list : ' + event.acts[0].days);
+            console.log('activities_list : ' + event.acts[0].days[0].vols);
+            //res.json(event);
+            res.render('o_event.jade', {
+              session: req.session,
+              event: event,
+              organism: req.session.organism,
+              group: req.session.group
+            });
+          }
+        });
+      }
+    });
+  } else {
+    const err = 'Évènement non trouvé';
+    res.redirect('/organism/dashboard?error=' + err);
+
+  }
 });
 
 
@@ -322,38 +328,43 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
   console.log('+++++++++++++++++++++');
   console.log('Longterm corresponding to lt_id : ' + longterm)
   console.log('+++++++++++++++++++++');
-  Volunteer.find({
-    "long_terms": {
-      '$elemMatch': {
-        '_id': {
-          '$in': req.params.lt_id
+  if (longterm) {
+    Volunteer.find({
+      "long_terms": {
+        '$elemMatch': {
+          '_id': {
+            '$in': req.params.lt_id
+          }
         }
       }
-    }
-  }, {
-    'email': 1,
-    'long_terms.$': 1,
-    'firstname': 1,
-    'lastname': 1,
-    'birthdate': 1
-  }, function(err, volunteers) {
-    if (err) {
-      console.log(err);
-      res.redirect('/organism/dashboard?error=' + err);
-    } else {
-      var slotJSON = rewindSlotString(longterm.slot);
-      res.render('o_longterm.jade', {
-        session: req.session,
-        lt_id: req.params.lt_id,
-        organism: organism,
-        longterm: longterm,
-        slotJSON: slotJSON,
-        volunteers: volunteers,
-        group: req.session.group
-      });
-    };
-  });
-
+    }, {
+      'email': 1,
+      'long_terms.$': 1,
+      'firstname': 1,
+      'lastname': 1,
+      'birthdate': 1
+    }, function(err, volunteers) {
+      if (err) {
+        console.log(err);
+        res.redirect('/organism/dashboard?error=' + err);
+      } else {
+        var slotJSON = rewindSlotString(longterm.slot);
+        res.render('o_longterm.jade', {
+          session: req.session,
+          lt_id: req.params.lt_id,
+          organism: organism,
+          longterm: longterm,
+          slotJSON: slotJSON,
+          volunteers: volunteers,
+          group: req.session.group
+        });
+        res.end();
+      };
+    });
+  } else {
+    const err = 'Engagement non disponible';
+    res.redirect('/organism/dashboard?error=' + err);
+  };
 });
 
 
@@ -586,15 +597,6 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
             }
           }
         };
-        //Check if hours_pending different from 0 (meaning OrgTodo already done)
-        const thelt = myVolunteer.long_terms.find(function(lt) {
-          return lt._id == req.body.lt_id;
-        });
-        if (thelt.hours_pending >= req.body.hours_before) {
-          var already_done = false;
-        } else {
-          var already_done = true;
-        };
         //If we deal with a student
         if (req.body["answers[0][value]"]) {
           console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
@@ -630,30 +632,25 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
         };
       };
 
-      if (!already_done) {
-        Volunteer.findOneAndUpdate(query, update, function(err) {
-          if (err) {
-            console.log(err);
-            res.sendStatus(404);
-          } else {
-            console.log('Hours_pending goes to hours_done : ' + hours_pending);
-            console.log(req.body);
-            OrgTodo.findOneAndRemove({
-              _id: req.body.todo
-            }, function(err, todoremoved) {
-              if (err) {
-                console.log(err);
-              } else {
-                console.log('todoremoved : ' + todoremoved);
-              }
-            });
-            res.sendStatus(200);
-          }
-        });
-      } else {
-        console.log('ERR : It seems that the todo has already been done since the hours_pending in volunteer is less than the hours in the TODO');
-        res.sendStatus(404);
-      };
+      Volunteer.findOneAndUpdate(query, update, function(err) {
+        if (err) {
+          console.log(err);
+          res.sendStatus(404);
+        } else {
+          console.log('Hours_pending goes to hours_done : ' + hours_pending);
+          console.log(req.body);
+          OrgTodo.findOneAndRemove({
+            _id: req.body.todo
+          }, function(err, todoremoved) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log('todoremoved : ' + todoremoved);
+            }
+          });
+          res.sendStatus(200);
+        }
+      });
     } else {
       console.log('MyVolunteer doesnt exist');
       res.sendStatus(404);

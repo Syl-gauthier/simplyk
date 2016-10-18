@@ -286,20 +286,26 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               req.session.volunteer = newVolunteer;
               var success = encodeURIComponent('Vous avez été inscrit à l\'activité avec succès !');
               Organism.findById(newActivity.org_id, function(err, organism) {
+                //Find the event in organism
+                const theEvent = organism.events.find(function(event){
+                  const goodEvent = event.activities.find(function(acti){
+                    console.log('acti and req.params.act_id : ' + acti + '   ' + req.params.act_id);
+                    return acti == req.params.act_id;
+                  });
+                  return goodEvent;
+                });
                 var org_content = {
+                  event: newActivity.event_intitule,
                   recipient: organism.email,
                   name: organism.firstname + ' ' + organism.lastname,
-                  customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !<br>'
+                  link: 'http://' + req.headers.host + '/organism/event/' + theEvent._id,
+                  customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !'
                 };
                 emailer.sendSubscriptionOrgEmail(org_content);
                 var vol_content = {
                   recipient: newVolunteer.email,
                   firstname: newVolunteer.firstname,
                   customMessage: ['Tu t\' es inscrit à l\'évènement de ' + organism.org_name + ' : ' + newActivity.event_intitule + ' !', ' N\'oublie pas d\'enregistrer tes heures de participation à cet évènement !', 'Cela bénéficiera à la fois à ' + organism.org_name + ' et à toi pour passer aux échelons supérieurs de l\'engagement !'],
-                  button: {
-                    text: 'Voir mon profil',
-                    link: 'platform.simplyk.org'
-                  }
                 };
                 emailer.sendSubscriptionVolEmail(vol_content);
                 //Intercom create addlongterm event
@@ -359,7 +365,7 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
   var alreadyExists = req.session.volunteer.long_terms.find(isLongterm);
   console.log('alreadyExists : ' + alreadyExists + typeof alreadyExists);
   if (typeof alreadyExists === 'undefined') {
-    ltSubs.subscribe(req.session.volunteer, req.params.lt_id, function(err, results) {
+    ltSubs.subscribe(req.session.volunteer, req.params.lt_id, req.headers.host, function(err, results) {
       if (err) {
         console.log(err);
         res.redirect('/volunteer/map?error=' + err);
