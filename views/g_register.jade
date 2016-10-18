@@ -21,8 +21,8 @@ block content
             a.btn.btn-default(href='/login') Se connecter
         .row
           .col-md-6.col-md-offset-3
-            form#registerform(action="/register_#{group}", method="post", role='form')
-              if group == 'volunteer'
+            form#registerform(action="/register_#{type}", method="post", role='form')
+              if type == 'volunteer'
                 .col-md-6
                   .form-group.conn-input
                     label.control-label Adresse courriel
@@ -37,7 +37,7 @@ block content
                   .form-group.conn-input
                     label.control-label Date de naissance
                     input#birthdate.form-control(type='date', placeholder='', name='birthdate', aria-describedby='basic-addon1')
-              if group == 'organism'
+              if type == 'organism'
                 .form-group.conn-input
                   label.control-label Nom de l'organisme
                   input#mail.form-control(type='text', placeholder='Ex: Simplyk', name='name', aria-describedby='basic-addon1', required)
@@ -68,7 +68,7 @@ block content
                 .form-group.conn-input
                     label.control-label Adresse courriel
                     input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='email', aria-describedby='basic-addon1', required)
-              if group == 'admin'
+              if type == 'admin'
                 .form-group.conn-input
                   label.control-label Nom de l'organisation
                   input#name.form-control(type='text', name='name', aria-describedby='basic-addon1', required)
