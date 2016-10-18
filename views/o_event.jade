@@ -5,8 +5,9 @@ block vars
 	- var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
 	- /* parse a date in yyyy-mm-dd format*/ function parseDate(input) {var parts = input.match(/(\d+)/g);/* new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])*/return new Date(parts[0], parts[1]-1, parts[2]); /* months are 0-based*/}
 	- function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
-
-
+block head
+	title Bénévoles à court terme
+	meta(name='content', content='Gère tes bénévoles inscrits à court terme')
 block content
 	.container-fluid
 		.row.fill
