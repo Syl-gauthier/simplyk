@@ -372,35 +372,12 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
   console.log('Correct Hours starts');
   const correct_hours = req.body.correct_hours;
   console.log('Correct_hours: ' + correct_hours);
-  //Intercom create addlongterm event
-  client.events.create({
-    event_name: 'org_correcthours',
-    created_at: Math.round(Date.now() / 1000),
-    user_id: req.session.organism._id,
-    metadata: {
-      act_id: req.body.act_id,
-      lt_id: req.body.lt_id
-    }
-  });
-  client.users.update({
-    user_id: organism._id,
-    update_last_request_at: true
-  });
-  OrgTodo.findOneAndRemove({
-    _id: req.body.todo
-  }, function(err, todoremoved) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('todoremoved : ' + todoremoved);
-    }
-  });
   Volunteer.findOne({
     _id: req.body.vol_id
   }, function(err, myVolunteer) {
     if (err) {
       console.log(err);
-      res.sendStatus(404).end();
+      res.sendStatus(404);
     } else if (myVolunteer) {
       console.log('myvolunteer exists');
       console.log('MyVolunteer : ' + JSON.stringify(myVolunteer));
@@ -453,6 +430,15 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
             }
           }
         };
+        //Check if hours_pending different from 0 (meaning OrgTodo already done)
+        const thelt = myVolunteer.long_terms.find(function(lt) {
+          return lt._id == req.body.lt_id;
+        });
+        if (thelt.hours_pending >= req.body.hours_before) {
+          var already_done = false;
+        } else {
+          var already_done = true;
+        };
         if (req.body["answers[0][value]"]) {
           console.log("req.body.answers[0][value] : " + req.body["answers[0][value]"]);
           //i starts from 1 to avoid to select the number answered as corrected hours
@@ -488,18 +474,46 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
       };
       console.log('query : ' + JSON.stringify(query));
       console.log('update : ' + JSON.stringify(update));
-      Volunteer.findOneAndUpdate(query, update, function(err) {
-        if (err) {
-          console.log(err);
-          res.sendStatus(404).end();
-        } else {
-          console.log('Hours_pending goes to hours_done with corrected_hours : ' + req.body.correct_hours);
-          res.sendStatus(200).end();
-        }
-      });
+      if (!already_done) {
+        Volunteer.findOneAndUpdate(query, update, function(err) {
+          if (err) {
+            console.log(err);
+            res.sendStatus(404);
+          } else {
+            //Intercom create addlongterm event
+            client.events.create({
+              event_name: 'org_correcthours',
+              created_at: Math.round(Date.now() / 1000),
+              user_id: req.session.organism._id,
+              metadata: {
+                act_id: req.body.act_id,
+                lt_id: req.body.lt_id
+              }
+            });
+            client.users.update({
+              user_id: req.session.organism._id,
+              update_last_request_at: true
+            });
+            OrgTodo.findOneAndRemove({
+              _id: req.body.todo
+            }, function(err, todoremoved) {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log('todoremoved : ' + todoremoved);
+              }
+            });
+            console.log('Hours_pending goes to hours_done with corrected_hours : ' + req.body.correct_hours);
+            res.sendStatus(200);
+          }
+        });
+      } else {
+        console.log('ERR : It seems that the todo has already been done since the hours_pending in volunteer is less than the hours in the TODO');
+        res.sendStatus(404);
+      }
     } else {
       console.log('MyVolunteer doesnt exist');
-      res.sendStatus(404).end();
+      res.sendStatus(404);
     };
   });
 });
@@ -616,12 +630,12 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
             }
           };
         };
-      }
+      };
 
       Volunteer.findOneAndUpdate(query, update, function(err) {
         if (err) {
           console.log(err);
-          res.sendStatus(404).end();
+          res.sendStatus(404);
         } else {
           console.log('Hours_pending goes to hours_done : ' + hours_pending);
           console.log(req.body);
@@ -634,12 +648,12 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
               console.log('todoremoved : ' + todoremoved);
             }
           });
-          res.sendStatus(200).end();
+          res.sendStatus(200);
         }
       });
     } else {
       console.log('MyVolunteer doesnt exist');
-      res.sendStatus(404).end();
+      res.sendStatus(404);
     };
   });
 });

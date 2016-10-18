@@ -66,7 +66,8 @@ router.post('/login', function(req, res, next) {
       });
       client.users.update({
         user_id: user._id,
-        update_last_request_at: true
+        update_last_request_at: true,
+        new_session: true
       });
       req.session.save(function(err) {
         if (err) {
@@ -86,7 +87,8 @@ router.post('/login', function(req, res, next) {
       });
       client.users.update({
         user_id: user._id,
-        update_last_request_at: true
+        update_last_request_at: true,
+        new_session: true
       });
       req.session.save(function(err) {
         if (err) {
@@ -113,7 +115,8 @@ router.post('/login', function(req, res, next) {
         });
         client.users.update({
           user_id: user._id,
-          update_last_request_at: true
+          update_last_request_at: true,
+          new_session: true
         });
         req.session.save(function(err) {
           if (err) {
@@ -144,19 +147,19 @@ router.post('*/logout', function(req, res, next) {
 /* GET Registration Page */
 router.get('/register_organism', function(req, res) {
   res.render('g_register.jade', {
-    group: 'organism'
+    type: 'organism'
   });
 });
 
 router.get('/register_volunteer', function(req, res) {
   res.render('g_register.jade', {
-    group: 'volunteer'
+    type: 'volunteer'
   });
 });
 
 router.get('/register_admin', function(req, res) {
   res.render('g_register.jade', {
-    group: 'admin'
+    type: 'admin'
   });
 });
 
