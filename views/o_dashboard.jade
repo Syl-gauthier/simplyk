@@ -151,11 +151,11 @@ block content
                               div.media-right.media-middle
                                 if todo.student
                                   div.btn-group(style='width: 120px', todo=todo._id)
-                                    button.btn.btn-default.confirm_hours_student(data-toggle='modal' data-target='#confirmationModal')
+                                    button.btn.btn-default.confirm_hours_student(data-toggle='modal' data-target='#confirmationModal'+todo._id)
                                       i.fa.fa-thumbs-up
-                                    #confirmationModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="confirmationModalLabel")
+                                    .modal.fade(tabindex='-1', role='dialog' aria-labelledby="confirmationModalLabel", id='confirmationModal'+todo._id)
                                       div.modal-dialog(role='document')
-                                        form.modal-content.confirmStudentHoursForm(id='confirmStudentHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id, hours=todo.hours)
+                                        form.modal-content.confirmStudentHoursForm(id='confirmStudentHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id, hours=todo.hours, modal_id='#confirmationModal'+todo._id)
                                           .modal-header
                                             button(type='button' class="close" data-dismiss="modal" aria-label="Close")
                                               span(aria-hidden='true')
@@ -169,11 +169,11 @@ block content
                                             div.modal-footer
                                               a.btn.btn-default(data-dismiss='modal') Annuler
                                               button.btn.btn-warning(type='submit' form='confirmStudentHoursForm'+todo._id) Envoyer
-                                    button.btn.btn-warning.correct_hours_student(data-toggle='modal' data-target='#correctionModal')
+                                    button.btn.btn-warning.correct_hours_student(data-toggle='modal' data-target='#correctionModal'+todo._id)
                                       i.fa.fa-thumbs-down
-                                    #correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
+                                    .modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel", id='correctionModal'+todo._id)
                                       div.modal-dialog(role='document')
-                                        form.modal-content.correctStudentHoursForm(id='correctStudentHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id, hours=todo.hours)
+                                        form.modal-content.correctStudentHoursForm(id='correctStudentHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id, hours=todo.hours, modal_id='#correctionModal'+todo._id)
                                           .modal-header
                                             button(type='button' class="close" data-dismiss="modal" aria-label="Close")
                                               span(aria-hidden='true')
@@ -194,11 +194,11 @@ block content
                                   div.btn-group(style='width: 120px', todo=todo._id)
                                     button.btn.btn-default.validate_hours_pending(vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id, hours=todo.hours)
                                       i.fa.fa-thumbs-up
-                                    button.btn.btn-warning.decline_hours_pending(data-toggle='modal' data-target='#correctionModal')
+                                    button.btn.btn-warning.decline_hours_pending(data-toggle='modal' data-target='#correctionModal'+todo._id)
                                       i.fa.fa-thumbs-down
-                                    #correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
+                                    .modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel", id='correctionModal'+todo._id)
                                       div.modal-dialog(role='document')
-                                        form.modal-content.correctHoursForm(id='correctHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id, hours=todo.hours)
+                                        form.modal-content.correctHoursForm(id='correctHoursForm'+todo._id, vol=todo.vol_id, act=todo.activity_id, day=todo.day, todo=todo._id, hours=todo.hours, modal_id='#correctionModal'+todo._id)
                                           .modal-header
                                             button(type='button' class="close" data-dismiss="modal" aria-label="Close")
                                               span(aria-hidden='true')
@@ -231,7 +231,7 @@ block content
                                       i.fa.fa-thumbs-up
                                     .modal.fade(tabindex='-1', role='dialog' aria-labelledby="confirmationModalLabel" id='confirmationModal'+todo._id)
                                       div.modal-dialog(role='document')
-                                        form.modal-content.confirmStudentHoursForm(id='confirmStudentHoursForm'+todo._id, vol=todo.vol_id, lt=todo.lt_id, todo=todo._id, hours=todo.hours)
+                                        form.modal-content.confirmStudentHoursForm(id='confirmStudentHoursForm'+todo._id, vol=todo.vol_id, lt=todo.lt_id, todo=todo._id, hours=todo.hours, modal_id='#confirmationModal'+todo._id)
                                           .modal-header
                                             button(type='button' class="close" data-dismiss="modal" aria-label="Close")
                                               span(aria-hidden='true')
@@ -249,7 +249,7 @@ block content
                                       i.fa.fa-thumbs-down
                                     .modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel" id='correctionModal'+todo._id)
                                       div.modal-dialog(role='document')
-                                        form.modal-content.correctStudentHoursForm(id='correctStudentHoursForm'+todo._id, vol=todo.vol_id, lt=todo.lt_id, todo=todo._id, hours=todo.hours)
+                                        form.modal-content.correctStudentHoursForm(id='correctStudentHoursForm'+todo._id, vol=todo.vol_id, lt=todo.lt_id, todo=todo._id, hours=todo.hours, modal_id='#correctionModal'+todo._id)
                                           .modal-header
                                             button(type='button' class="close" data-dismiss="modal" aria-label="Close")
                                               span(aria-hidden='true')
@@ -274,7 +274,7 @@ block content
                                       i.fa.fa-thumbs-down
                                     .modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel", id='correctionModal'+todo._id)
                                       div.modal-dialog(role='document')
-                                        form.modal-content.correctHoursForm(id='correctHoursForm'+todo._id, vol=todo.vol_id, lt=todo.lt_id, todo=todo._id, hours=todo.hours)
+                                        form.modal-content.correctHoursForm(id='correctHoursForm'+todo._id, vol=todo.vol_id, lt=todo.lt_id, todo=todo._id, hours=todo.hours, modal_id='#correctionModal'+todo._id)
                                           .modal-header
                                             button(type='button' class="close" data-dismiss="modal" aria-label="Close")
                                               span(aria-hidden='true')
@@ -295,13 +295,12 @@ block content
 
 
 block footscript
-  // jQuery (necessary for Bootstrap's JavaScript plugins)
-  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
   script.
     $(document).ready(function(){
       $('.correctHoursForm').submit(function(){
         let vol_id = $(this).attr('vol');
         let todo_id = $(this).attr('todo');
+        let modal_id = $(this).attr('modal_id');
         let hours_before = $(this).attr('hours');
         let correct_hours = $(this).find('.correction_input').val();
         let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
@@ -309,31 +308,29 @@ block footscript
         if ($(this).attr('act')){
           let act_id = $(this).attr('act');
           let day = $(this).attr('day');
-          $.post('/organism/correcthours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, correct_hours: correct_hours, hours_before: hours_before}).done(function(data, status){
-            if(status == 404){
-              console.log("Remarque: " + data.error);
-              input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
-            }
-            else {
-              console.log('$(this) : ' + $(this));
-              console.log("Post request done.");
-              input_group.replaceWith('<p><b>Heures corrigées</b></p>');
-            }
+          $.post('/organism/correcthours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, correct_hours: correct_hours, hours_before: hours_before})
+          .done(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Heures confirmées</b></p>');
+          })
+          .fail(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Erreur lors de l\'opération</b></p>');
           });
         } else if ($(this).attr('lt')){
           let lt_id = $(this).attr('lt');
-          $.post('/organism/correcthours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, correct_hours: correct_hours, hours_before: hours_before}).done(function(data, status){
-            if(status == 404){
-              console.log("Remarque: " + data.error);
-              input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
-            }
-            else {
-              console.log('$(this) : ' + $(this));
-              console.log("Post request done.");
-              input_group.replaceWith('<p><b>Heures corrigées</b></p>');
-            }
+          $.post('/organism/correcthours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, correct_hours: correct_hours, hours_before: hours_before})
+          .done(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Heures confirmées</b></p>');
+          })
+          .fail(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Erreur lors de l\'opération</b></p>');
           });
-        }
+        };
+        $($(this).attr('modal_id')).modal('toggle');
+        return false;
       });
 
       $('.validate_hours_pending').click(function(){
@@ -342,18 +339,18 @@ block footscript
           let vol_id = $(this).attr('vol');
           let act_id = $(this).attr('act');
           let day = $(this).attr('day');
+          let modal_id = $(this).attr('modal_id');
           let todo_id = $(this).attr('todo');
           let hours = $(this).attr('hours');
           let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
-          $.post('/organism/confirmhours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, hours: hours}).done(function(data, status){
-            if(data.error){
-              console.log("Remarque: " + data.error);
-              input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
-            }
-            else {
-              console.log("Post request done.");
-              input_group.replaceWith('<p><b>Heures confirmées</b></p>');
-            }
+          $.post('/organism/confirmhours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, hours: hours})
+          .done(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Heures confirmées</b></p>');
+          })
+          .fail(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Erreur lors de l\'opération</b></p>');
           });
         } else if ($(this).attr('lt')){
           let vol_id = $(this).attr('vol');
@@ -361,25 +358,27 @@ block footscript
           let todo_id = $(this).attr('todo');
           let hours = $(this).attr('hours');
           let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
-          $.post('/organism/confirmhours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, hours: hours}).done(function(data, status){
-            if(data.error){
-              console.log("Error: " + data.error);
-              input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
-            }
-            else {
-              console.log("Post request done.");
-              input_group.replaceWith('<p><b>Heures confirmées</b></p>');
-            }
+          $.post('/organism/confirmhours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, hours: hours})
+          .done(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Heures confirmées</b></p>');
+          })
+          .fail(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Erreur lors de l\'opération</b></p>');
           });
         } else {
           console.log("Error: " + data.error);
           input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
         };
+        $($(this).attr('modal_id')).modal('toggle');
+        return false;
       });
       $('.confirmStudentHoursForm').submit(function(){
         let vol_id = $(this).attr('vol');
         let todo_id = $(this).attr('todo');
         let hours = $(this).attr('hours');
+        let modal_id = $(this).attr('modal_id');
         let answers_input = $(this).find('.confirmation_text');
         let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
         let answers_json = $(this).serializeArray();
@@ -392,37 +391,36 @@ block footscript
           console.log('We are beginning activity confirm_hours_student');
           let act_id = $(this).attr('act');
           let day = $(this).attr('day');
-          $.post('/organism/confirmhours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, answers: answers_json, hours: hours}).done(function(data, status){
-            if(data.error){
-              console.log('$(this) : ' + $(this));
-              console.log("Remarque: " + data.error);
-              input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
-            }
-            else {
-              console.log("Post request done.");
-              input_group.replaceWith('<p><b>Heures confirmées</b></p>');
-            }
+          $.post('/organism/confirmhours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, answers: answers_json, hours: hours})
+          .done(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Heures confirmées</b></p>');
+          })
+          .fail(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Erreur lors de l\'opération</b></p>');
           });
         } else if (typeof $(this).attr('lt') !== 'undefined'){
           console.log('We are beginning longterm confirm_hours_student');
           let lt_id = $(this).attr('lt');
-          $.post('/organism/confirmhours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, answers: answers_json, hours: hours}).done(function(data, status){
-            if(data.error){
-              console.log('$(this) : ' + $(this));
-              console.log("Remarque: " + data.error);
-              input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
-            }
-            else {
-              console.log("Post request done.");
-              input_group.replaceWith('<p><b>Heures confirmées</b></p>');
-            }
-          });          
-        }
+          $.post('/organism/confirmhours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, answers: answers_json, hours: hours})
+          .done(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Heures confirmées</b></p>');
+          })
+          .fail(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Erreur lors de l\'opération</b></p>');
+          });
+        };
+        $($(this).attr('modal_id')).modal('toggle');
+        return false;
       });
       $('.correctStudentHoursForm').submit(function(){
         let vol_id = $(this).attr('vol');
         let todo_id = $(this).attr('todo');
         let hours_before = $(this).attr('hours');
+        let modal_id = $(this).attr('modal_id');
         let answers_input = $(this).find('.correction_text');
         let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
         let answers_json = $(this).serializeArray();
@@ -431,28 +429,28 @@ block footscript
         if($(this).attr('act')){
           let act_id = $(this).attr('act');
           let day = $(this).attr('day');
-          $.post('/organism/correcthours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, answers: answers_json, correct_hours: correct_hours, hours_before: hours_before}).done(function(data, status){
-            if(data.error){
-              console.log("Remarque: " + data.error);
-              input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
-            }
-            else {
-              console.log("Post request done.");
-              input_group.replaceWith('<p><b>Heures confirmées</b></p>');
-            }
+          $.post('/organism/correcthours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, answers: answers_json, correct_hours: correct_hours, hours_before: hours_before})
+          .done(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Heures confirmées</b></p>');
+          })
+          .fail(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Erreur lors de l\'opération</b></p>');
           });
         } else if ($(this).attr('lt')){
           let lt_id = $(this).attr('lt');
-          $.post('/organism/correcthours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, answers: answers_json, correct_hours: correct_hours, hours_before: hours_before}).done(function(data, status){
-            if(data.error){
-              console.log("Remarque: " + data.error);
-              input_group.replaceWith('<p><b>Il y a une erreur</b></p>');
-            }
-            else {
-              console.log("Post request done.");
-              input_group.replaceWith('<p><b>Heures confirmées</b></p>');
-            }
+          $.post('/organism/correcthours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, answers: answers_json, correct_hours: correct_hours, hours_before: hours_before})
+          .done(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Heures confirmées</b></p>');
+          })
+          .fail(function(data, status){
+            console.log("Remarque: " + status);
+            input_group.replaceWith('<p><b>Erreur lors de l\'opération</b></p>');
           });
-        }
+        };
+        $($(this).attr('modal_id')).modal('toggle');
+        return false;
       });
     })
