@@ -5,7 +5,9 @@ block vars
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
 
-
+block head
+  title Carte
+  meta(name='content', content='Opportunités de bénévolat à Montréal')
 block content
   each act, index in activities
     div(tabindex='-1', role='dialog', class='modal fade ' + act._id, id=act._id)
@@ -120,7 +122,7 @@ block footscript
         center: {lat: 45.503, lng: -73.613},
         zoom: 12,
         streetViewControl: false,
-        scrollwheel: false,
+        scrollwheel: true,
         mapTypeControl: false,
         mapTypeId: google.maps.MapTypeId.ROADMAP
       });
@@ -165,7 +167,7 @@ block footscript
         var content = [];
         content.push('<i class="fa fa-envira" id="leaf"> Environnement</i><br>');
         content.push('<i class="fa fa-heart" id="soli"> Solidarité</i><br>');
-        content.push('<i class="fa fa-institution" id="cult"> Culture</i><br>');
+        content.push('<i class="fa fa-institution" id="cult"> Sport et culture</i><br>');
         legend.innerHTML = content.join('');
         legend.index = 1;
         map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);

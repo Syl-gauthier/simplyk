@@ -3,6 +3,9 @@ block vars
   - var page = 'report'
   - var hours_count = function(previousValue, currentValue, currentIndex, array) {if(currentValue) {return previousValue + currentValue;} else {return currentValue;} };
 
+block head
+  title Rapport de l'élèves
+  meta(name='content', content='Lisez le rapport de bénévolat de l\'élèves')
 block content
   #map-section.container-fluid
     .row

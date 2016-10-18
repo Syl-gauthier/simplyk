@@ -1,7 +1,9 @@
 extends ./g_layout.jade
 block vars
   - var page = 'register'
-
+block head
+  title S'inscrire'
+  meta(name='content', content='Inscrivez-vous pour trouver du bénévolat, ou recruter des bénévoles')
 block content
       #map-section.container-fluid
         .row
@@ -55,7 +57,7 @@ block content
                   select#cause.form-control(placeholder='', name='cause', aria-describedby='basic-addon1')
                     option Environnement
                     option Solidarité
-                    option Culture
+                    option Sport et culture
                 h2 Informations du responsable des bénévoles
                 .col-md-6
                   .form-group.conn-input
