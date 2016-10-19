@@ -7,6 +7,7 @@ var jade = require('jade');
 
 var GoogleMapsAPI = require('googlemaps');
 var Intercom = require('intercom-client');
+var emailer = require('../email/emailer.js');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
@@ -387,6 +388,10 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
       console.log('MyVolunteer : ' + JSON.stringify(myVolunteer));
       if (typeof req.body.act_id !== 'undefined') {
         console.log('Correct hours for an activity !');
+        const theactivity = myVolunteer.events.find(function(event) {
+          return event.activity_id.toString() == req.body.act_id.toString();
+        });
+        var activity_name = theactivity.intitule;
         var query = {
           '_id': req.body.vol_id,
           'events': {
@@ -438,6 +443,7 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
         const thelt = myVolunteer.long_terms.find(function(lt) {
           return lt._id.toString() == req.body.lt_id;
         });
+        var activity_name = thelt.intitule;
         if (thelt.hours_pending >= req.body.hours_before) {
           var already_done = false;
         } else {
@@ -498,6 +504,13 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
               user_id: req.session.organism._id,
               update_last_request_at: true
             });
+            //Send email to felicitate the volunteer
+            emailer.sendHoursConfirmedVolEmail({
+              firstname: myVolunteer.firstname,
+              recipient: myVolunteer.email,
+              activity_name: activity_name,
+              customMessage: req.session.organism.org_name + ' vient de valider ta participation de ' + correct_hours + ' h (nombre d\'heures corrigés par l\'organisme) à ' + activity_name + ' !'
+            });
             OrgTodo.findOneAndRemove({
               _id: req.body.todo
             }, function(err, todoremoved) {
@@ -553,6 +566,9 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
       });
       //If we deal with an event
       if (req.body.act_id) {
+        var activity_name = (myVolunteer.events.find(function(eve) {
+          return eve.activity_id.toString() == req.body.act_id.toString();
+        })).intitule;
         var query = {
           '_id': req.body.vol_id,
           'events': {
@@ -593,6 +609,9 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
         };
         //If we deal with a longterm
       } else if (req.body.lt_id) {
+        var activity_name = (myVolunteer.long_terms.find(function(lt) {
+          return lt._id.toString() == req.body.lt_id.toString();
+        })).intitule;
         var query = {
           '_id': req.body.vol_id,
           'long_terms': {
@@ -636,6 +655,13 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
         };
       };
 
+      //Send email to felicitate the volunteer
+      emailer.sendHoursConfirmedVolEmail({
+        firstname: myVolunteer.firstname,
+        recipient: myVolunteer.email,
+        activity_name: activity_name,
+        customMessage: req.session.organism.org_name + ' vient de valider ta participation de ' + hours_pending + ' h à ' + activity_name  + ' !'
+      });
       Volunteer.findOneAndUpdate(query, update, function(err) {
         if (err) {
           console.log(err);

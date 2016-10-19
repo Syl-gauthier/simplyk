@@ -130,7 +130,7 @@ function sendUnsubscriptionEmail(content) {
 function sendHoursPendingOrgEmail(content) {
   content.subtitle = content.customMessage;
   content.type = 'hourspendingorg';
-  content.title = 'Valider la participation ';
+  content.title = 'Valider la participation';
   content.button = {
     text: 'Valider la participation',
     link: 'platform.simplyk.org/organism/dashboard'
@@ -152,10 +152,36 @@ function sendHoursPendingOrgEmail(content) {
   });
 };
 
+function sendHoursConfirmedVolEmail(content) {
+  content.subtitle = ['Félicitation ' + content.firstname + ',', content.customMessage];
+  content.type = 'hoursconfirmedvol';
+  content.title = 'Participation confirmée !';
+  content.button = {
+    text: 'Voir mon nouveau profil',
+    link: 'platform.simplyk.org/volunteer/profile'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: content.activity_name + ': participation validée !', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
 module.exports = {
   sendSubscriptionOrgEmail: sendSubscriptionOrgEmail,
   sendSubscriptionVolEmail: sendSubscriptionVolEmail,
   sendUnsubscriptionEmail: sendUnsubscriptionEmail,
   sendVerifyEmail: sendVerifyEmail,
-  sendHoursPendingOrgEmail: sendHoursPendingOrgEmail
+  sendHoursPendingOrgEmail: sendHoursPendingOrgEmail,
+  sendHoursConfirmedVolEmail: sendHoursConfirmedVolEmail
 };
