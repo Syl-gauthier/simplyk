@@ -191,7 +191,11 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
 
               function containsActivity(event) {
                 var isIt = event.activities.find(function(act) {
-                  return act.$oid.toString() == todo.activity_id.toString();
+                  if (act.$oid) {
+                    return act.$oid.toString() == todo.activity_id.toString();
+                  } else {
+                    return false;
+                  }
                 });
                 if (isIt == -1) {
                   return false;
