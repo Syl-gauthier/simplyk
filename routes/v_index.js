@@ -287,8 +287,8 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               var success = encodeURIComponent('Vous avez été inscrit à l\'activité avec succès !');
               Organism.findById(newActivity.org_id, function(err, organism) {
                 //Find the event in organism
-                const theEvent = organism.events.find(function(event){
-                  const goodEvent = event.activities.find(function(acti){
+                const theEvent = organism.events.find(function(event) {
+                  const goodEvent = event.activities.find(function(acti) {
                     console.log('acti and req.params.act_id : ' + acti + '   ' + req.params.act_id);
                     return acti == req.params.act_id;
                   });
@@ -371,7 +371,13 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
         res.redirect('/volunteer/map?error=' + err);
       } else {
         req.session.volunteer = results.newVolunteer;
-        const newlt = results.newVolunteer.long_terms.find(isLongterm);
+        console.log('newltreq.session.volunteer.long_terms : ' + req.session.volunteer.long_terms);
+        var newlt = req.session.volunteer.long_terms.find(function(lt) {
+          console.log('lt._id: ' + lt._id + 'req.params.lt_id :' + req.params.lt_id);
+          console.log((lt._id === req.params.lt_id));
+          return ((lt._id).toString() === (req.params.lt_id).toString());
+        });
+        console.log('newlt : ' + newlt);
         //Intercom create subscribe to longterm event
         client.events.create({
           event_name: 'vol_longterm_subscribe',
