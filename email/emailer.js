@@ -125,11 +125,37 @@ function sendUnsubscriptionEmail(content) {
 
     callSendMail(mailOptions);
   });
-}
+};
+
+function sendHoursPendingOrgEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'hourspendingorg';
+  content.title = 'Valider la participation ';
+  content.button = {
+    text: 'Valider la participation',
+    link: 'platform.simplyk.org/organism/dashboard'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: content.firstname + ' ' + content.lastname + ': validation de la participation !', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
 
 module.exports = {
   sendSubscriptionOrgEmail: sendSubscriptionOrgEmail,
   sendSubscriptionVolEmail: sendSubscriptionVolEmail,
   sendUnsubscriptionEmail: sendUnsubscriptionEmail,
-  sendVerifyEmail: sendVerifyEmail
+  sendVerifyEmail: sendVerifyEmail,
+  sendHoursPendingOrgEmail: sendHoursPendingOrgEmail
 };

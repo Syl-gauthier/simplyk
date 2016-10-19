@@ -261,6 +261,12 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
           user_id: req.session.volunteer._id,
           update_last_request_at: true
         });
+        emailer.sendHoursPendingOrgEmail({
+          firstname: req.session.volunteer.firstname,
+          lastname: req.session.volunteer.lastname,
+          recipient: req.session.volunteer.email,
+          customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + 'vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+        });
         //TODO creation
         newTodo.save(function(err, todo) {
           if (err) {
@@ -372,6 +378,12 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
             lt_id: req.params.lt_id,
             intitule_longterm: new_lt.intitule
           }
+        });
+        emailer.sendHoursPendingOrgEmail({
+          firstname: req.session.volunteer.firstname,
+          lastname: req.session.volunteer.lastname,
+          recipient: 'thibaut.jaurou@gmail.com',
+          customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'engagement ' + new_lt.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
         });
         newTodo.save(function(err, todo) {
           if (err) {
