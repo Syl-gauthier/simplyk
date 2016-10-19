@@ -59,7 +59,11 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       var justMySchool = function(activity) {
         console.log('activity.school_id :' + activity.school_id + ' my_school : ' + my_school + 'activity.school_id == my_school' + (activity.school_id == my_school));
         if (activity.school_id) {
-          return activity.school_id == my_school;
+          if (my_school) {
+            return activity.school_id.toString() == my_school.toString();
+          } else {
+            return false;
+          };
         } else {
           return true;
         }
@@ -168,8 +172,8 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
       console.log('Organism from longterm : ' + organism);
 
       function isRightLongterm(long) {
-        console.log('long._id == req.params.lt_id : ' + (long._id == req.params.lt_id) + long._id + '  ' + req.params.lt_id)
-        return long._id == req.params.lt_id;
+        console.log('long._id == req.params.lt_id : ' + (long._id.toString() == req.params.lt_id.toString()) + long._id + '  ' + req.params.lt_id)
+        return long._id.toString() == req.params.lt_id.toString();
       };
       var longterm = organism.long_terms.find(isRightLongterm);
       console.log('+++++++++++++++++++++');
@@ -177,12 +181,12 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
       console.log('+++++++++++++++++++++');
       var slotJSON = rewindSlotString(longterm.slot);
       const alreadySubscribed = longterm.applicants.find(function(app) {
-        return app == req.session.volunteer._id;
+        return app.toString() == req.session.volunteer._id.toString();
       });
       const longtTermInVolunteer = req.session.volunteer.long_terms.find(function(lt) {
         console.log('longterm._id : ' + longterm._id);
         console.log('lt._id : ' + lt._id);
-        return longterm._id == lt._id
+        return longterm._id.toString() == lt._id.toString()
       });
       console.log('longtTermInVolunteer : ' + longtTermInVolunteer);
       if (longtTermInVolunteer) {
@@ -290,7 +294,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                 const theEvent = organism.events.find(function(event) {
                   const goodEvent = event.activities.find(function(acti) {
                     console.log('acti and req.params.act_id : ' + acti + '   ' + req.params.act_id);
-                    return acti == req.params.act_id;
+                    return acti.toString() == req.params.act_id.toString();
                   });
                   return goodEvent;
                 });
@@ -360,7 +364,7 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
   console.log('lt_id : ' + req.params.lt_id + typeof req.params.lt_id);
 
   function isLongterm(lt) {
-    return (lt._id === req.params.lt_id);
+    return (lt._id.toString() === req.params.lt_id.toString());
   };
   var alreadyExists = req.session.volunteer.long_terms.find(isLongterm);
   console.log('alreadyExists : ' + alreadyExists + typeof alreadyExists);
@@ -374,7 +378,7 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
         console.log('newltreq.session.volunteer.long_terms : ' + req.session.volunteer.long_terms);
         var newlt = req.session.volunteer.long_terms.find(function(lt) {
           console.log('lt._id: ' + lt._id + 'req.params.lt_id :' + req.params.lt_id);
-          console.log((lt._id === req.params.lt_id));
+          console.log((lt._id.toString() === req.params.lt_id.toString()));
           return ((lt._id).toString() === (req.params.lt_id).toString());
         });
         console.log('newlt : ' + newlt);
@@ -422,7 +426,7 @@ router.get('/volunteer/student_questions/:act_id-:act_day', permissions.requireG
   }
 
   function alreadyAnswered(event) {
-    if (event.activity_id == req.params.act_id) {
+    if (event.activity_id.toString() == req.params.act_id.toString()) {
       if (event.student_answers.length) {
         return true;
       } else {
@@ -433,7 +437,7 @@ router.get('/volunteer/student_questions/:act_id-:act_day', permissions.requireG
   };
 
   function goodEvent(event) {
-    return ((event.activity_id == req.params.act_id) && (event.day == req.params.act_day));
+    return ((event.activity_id.toString() == req.params.act_id.toString()) && (event.day == req.params.act_day));
   };
   var event_answered = req.session.volunteer.events.filter(alreadyAnswered);
   console.log('event_answered = ' + JSON.stringify(event_answered));
@@ -465,7 +469,7 @@ router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volu
   }
 
   function alreadyAnswered(lt) {
-    if (lt._id == req.params.lt_id) {
+    if (lt._id.toString() == req.params.lt_id.toString()) {
       if (lt.student_answers.length) {
         return true;
       } else {
@@ -476,7 +480,7 @@ router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volu
   };
 
   function goodLongterm(lt) {
-    return (lt._id == req.params.lt_id);
+    return (lt._id.toString() == req.params.lt_id.toString());
   };
   var lt_answered = req.session.volunteer.long_terms.filter(alreadyAnswered);
   var longterm = req.session.volunteer.long_terms.find(goodLongterm);

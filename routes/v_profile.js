@@ -208,8 +208,8 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
         console.log('newVolunteer ' + newVolunteer);
 
         function isActivity(event) {
-          console.log('isActivity : ' + (event.activity_id == req.params.act_id));
-          return event.activity_id == req.params.act_id;
+          console.log('isActivity : ' + (event.activity_id.toString() == req.params.act_id.toString()));
+          return event.activity_id.toString() == req.params.act_id.toString();
         };
 
         function isDay(event) {
@@ -292,7 +292,7 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
 
     function isLongTerm(longterm) {
       console.log('isLongTerm : ' + (longterm._id == req.params.lt_id));
-      return longterm._id == req.params.lt_id;
+      return (longterm._id).toString() == (req.params.lt_id).toString();
     };
     const lt = req.session.volunteer.long_terms.find(isLongTerm);
     console.log('req.session.volunteer : ' + JSON.stringify(req.session.volunteer));
@@ -431,7 +431,7 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
         } else {
           const acts = activities;
           var isActivity = function(activity) {
-            return activity._id == req.params.act_id;
+            return activity._id.toString() == req.params.act_id.toString();
           };
           const activity = acts.find(isActivity);
           var isNotActivity = function(activity) {

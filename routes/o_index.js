@@ -191,7 +191,7 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
 
               function containsActivity(event) {
                 var isIt = event.activities.find(function(act) {
-                  return act.$oid == todo.activity_id;
+                  return act.$oid.toString() == todo.activity_id.toString();
                 });
                 if (isIt == -1) {
                   return false;
@@ -226,7 +226,7 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
 router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
   function isEvent(event) {
     console.log('Test : ' + event._id + ' = ' + req.params.event_id + ' ?');
-    return event._id === req.params.event_id;
+    return event._id.toString() === req.params.event_id;
   };
   var event = req.session.organism.events.find(isEvent);
   if (event) {
@@ -321,8 +321,8 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
   var organism = req.session.organism;
 
   function isRightLongterm(long) {
-    console.log('long._id == req.params.lt_id : ' + (long._id == req.params.lt_id) + long._id + '  ' + req.params.lt_id)
-    return long._id == req.params.lt_id;
+    console.log('long._id == req.params.lt_id : ' + (long._id.toString() == req.params.lt_id) + long._id + '  ' + req.params.lt_id)
+    return long._id.toString() == req.params.lt_id;
   };
   var longterm = organism.long_terms.find(isRightLongterm);
   console.log('+++++++++++++++++++++');
@@ -432,7 +432,7 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
         };
         //Check if hours_pending different from 0 (meaning OrgTodo already done)
         const thelt = myVolunteer.long_terms.find(function(lt) {
-          return lt._id == req.body.lt_id;
+          return lt._id.toString() == req.body.lt_id;
         });
         if (thelt.hours_pending >= req.body.hours_before) {
           var already_done = false;
