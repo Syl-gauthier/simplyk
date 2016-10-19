@@ -261,11 +261,20 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
           user_id: req.session.volunteer._id,
           update_last_request_at: true
         });
-        emailer.sendHoursPendingOrgEmail({
-          firstname: req.session.volunteer.firstname,
-          lastname: req.session.volunteer.lastname,
-          recipient: req.session.volunteer.email,
-          customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + 'vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+        Organism.findById(event.org_id, {
+          email: true
+        }, function(err, orga) {
+          if (err) {
+            console.log('ERR: hourspendingOrg has not been sent !');
+            console.log(err);
+          } else {
+            emailer.sendHoursPendingOrgEmail({
+              firstname: req.session.volunteer.firstname,
+              lastname: req.session.volunteer.lastname,
+              recipient: orga.email,
+              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + 'vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+            });
+          };
         });
         //TODO creation
         newTodo.save(function(err, todo) {
@@ -379,11 +388,20 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
             intitule_longterm: new_lt.intitule
           }
         });
-        emailer.sendHoursPendingOrgEmail({
-          firstname: req.session.volunteer.firstname,
-          lastname: req.session.volunteer.lastname,
-          recipient: 'thibaut.jaurou@gmail.com',
-          customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'engagement ' + new_lt.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+        Organism.findById(new_lt.org_id, {
+          email: true
+        }, function(err, orga) {
+          if (err) {
+            console.log('ERR: hourspendingOrg has not been sent !');
+            console.log(err);
+          } else {
+            emailer.sendHoursPendingOrgEmail({
+              firstname: req.session.volunteer.firstname,
+              lastname: req.session.volunteer.lastname,
+              recipient: orga.email,
+              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'engagement ' + new_lt.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+            });
+          }
         });
         newTodo.save(function(err, todo) {
           if (err) {
