@@ -102,7 +102,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
             //Filter organisms authorized to be seen by the volunteer
             const lt_organisms = organisms.filter(function(orga) {
               if (orga.school_id || orga.admin_id) {
-                if(orga.school_id) {
+                if (orga.school_id) {
                   var the_school = orga.school_id;
                 } else {
                   var the_school = orga.admin_id;
@@ -110,9 +110,11 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
                 if (my_school) {
                   return the_school.toString() == my_school.toString();
                 } else {
+                  console.log('NO LONGTERM FOR ' + orga.org_name + ' BECAUSE the_school.school_id : ' + the_school.school_id + ' or my_school : ' + my_school);
                   return false;
                 }
               } else {
+                console.log('PRINT LONGTERM FOR ' + orga.org_name + ' THANKS TO orga.school_id : ' + orga.school_id + ' or orga.admin_id : ' + orga.admin_id);
                 return true;
               }
             });

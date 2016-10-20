@@ -94,8 +94,10 @@ router.get('/', function(req, res, next) {
               //Get the longterms from all the organisms which are not a school
               var longterms = longtermsList(organisms.filter(function(orga) {
                 if (orga.school_id || orga.admin_id) {
+                  console.log('NO LONGTERM FOR ' + orga.org_name + ' BECAUSE orga.school_id : ' + orga.school_id + ' or orga.admin_id : ' + orga.admin_id);
                   return false;
                 } else {
+                  console.log('PRINT LONGTERM FOR ' + orga.org_name + ' THANKS TO orga.school_id : ' + orga.school_id + ' or orga.admin_id : ' + orga.admin_id);
                   return true;
                 }
               }));
