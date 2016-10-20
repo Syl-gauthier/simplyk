@@ -86,7 +86,8 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           '_id': true,
           'cause': true,
           'long_terms': true,
-          'school_id': true
+          'school_id': true,
+          'admin_id': true
         },
         function(err, organisms) {
           if (err) {
@@ -98,7 +99,23 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
               group: req.session.group
             });
           } else {
-            const lt_organisms = organisms.filter(justMySchool);
+            //Filter organisms authorized to be seen by the volunteer
+            const lt_organisms = organisms.filter(function(orga) {
+              if (orga.school_id || orga.admin_id) {
+                if(orga.school_id) {
+                  var the_school = orga.school_id;
+                } else {
+                  var the_school = orga.admin_id;
+                };
+                if (my_school) {
+                  return the_school.toString() == my_school.toString();
+                } else {
+                  return false;
+                }
+              } else {
+                return true;
+              }
+            });
             var longterms = longtermsList(lt_organisms);
             res.render('v_map.jade', {
               session: req.session,

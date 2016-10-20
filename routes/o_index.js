@@ -79,7 +79,8 @@ router.get('/', function(req, res, next) {
             'cause': true,
             '_id': true,
             'long_terms': true,
-            'school_id': true
+            'school_id': true,
+            'admin_id': true
           }, function(err, organisms) {
             if (err) {
               console.log(err);
@@ -92,7 +93,7 @@ router.get('/', function(req, res, next) {
             } else {
               //Get the longterms from all the organisms which are not a school
               var longterms = longtermsList(organisms.filter(function(orga) {
-                if (orga.school_id) {
+                if (orga.school_id || orga.admin_id) {
                   return false;
                 } else {
                   return true;
