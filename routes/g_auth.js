@@ -66,6 +66,7 @@ router.post('/login', function(req, res, next) {
       });
       client.users.update({
         user_id: user._id,
+        group: 'organism',
         update_last_request_at: true,
         new_session: true
       });
@@ -87,6 +88,7 @@ router.post('/login', function(req, res, next) {
       });
       client.users.update({
         user_id: user._id,
+        group: 'volunteer',
         update_last_request_at: true,
         new_session: true
       });
@@ -115,6 +117,7 @@ router.post('/login', function(req, res, next) {
         });
         client.users.update({
           user_id: user._id,
+          group: 'admin',
           update_last_request_at: true,
           new_session: true
         });
