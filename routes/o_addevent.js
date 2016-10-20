@@ -85,20 +85,24 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
         var activitiesList = [];
         var school_id = null;
         if (req.session.admin) {
-          school_id = req.session.admin.school_id;
+          if (req.session.organism.school_id) {
+            school_id = req.session.organism.school_id;
+          } else if (req.session.organism.admin_id) {
+            school_id = req.session.organism.admin_id;
+          }
         };
         //Intercom create addevent event
         client.events.create({
           event_name: 'org_addevent',
           created_at: Math.round(Date.now() / 1000),
-          user_id: organism._id
-        });
-        client.users.update({
           user_id: organism._id,
-          update_last_request_at: true,
           metadata: {
             event_name: req.body.intitule_event,
           }
+        });
+        client.users.update({
+          user_id: organism._id,
+          update_last_request_at: true
         });
         for (var i = 1; i < nb_activities + 1; i++) {
           console.log('Activivity number ' + i)
