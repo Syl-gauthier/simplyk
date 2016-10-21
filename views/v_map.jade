@@ -165,9 +165,10 @@ block footscript
         var legend = document.createElement('div');
         legend.id = 'legend';
         var content = [];
-        content.push('<i class="fa fa-envira" id="leaf"> Environnement</i><br>');
-        content.push('<i class="fa fa-heart" id="soli"> Solidarité</i><br>');
-        content.push('<i class="fa fa-institution" id="cult"> Sport et culture</i><br>');
+        content.push('<h5 class="leaf" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-envira fa-lg fa-fw leaf"></i> Nature </h5><br>');
+        content.push('<h5 class="soli" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-heart fa-lg fa-fw soli"></i> Solidarité </h5><br>');
+        content.push('<h5 class="cult" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-institution fa-lg fa-fw cult"></i> Sport et culture </h5><br>');
+        content.push('<h5 class="child" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-child fa-lg fa-fw child"></i> Enfance </h5>');
         legend.innerHTML = content.join('');
         legend.index = 1;
         map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);

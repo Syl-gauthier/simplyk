@@ -86,19 +86,19 @@ body{
 }
 
 /*icones de fontwesome*/
-#leaf {
+.leaf {
     color: #5BCF8F
 }
 
-#cult {
+.cult {
     color: #FFD117
 }
 
-#soli {
+.soli {
     color: #0099ff
 }
 
-#child {
+.child {
     color: #FF4F3C
 }
 
