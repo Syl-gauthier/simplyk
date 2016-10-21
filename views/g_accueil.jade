@@ -201,9 +201,12 @@ block footscript
       var legend = document.createElement('div');
         legend.id = 'legend';
         var content = [];
-        content.push('<i class="fa fa-envira" id="leaf">Environnement</i><br>');
-        content.push('<i class="fa fa-heart" id="soli">Solidarité</i><br>');
-        content.push('<i class="fa fa-institution" id="cult">Sport et culture</i><br>');
+        //content.push('<div class="list-group">');
+        content.push('<h5 style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-envira fa-lg fa-fw" id="leaf"></i> Nature </h5><br>');
+        content.push('<h5 style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-heart fa-lg fa-fw" id="soli"></i> Solidarité </h5><br>');
+        content.push('<h5 style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-institution fa-lg fa-fw" id="cult"></i> Sport et culture </h5><br>');
+        content.push('<h5 style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-child fa-lg fa-fw" id="child"></i> Enfance </h5>');
+        //content.push('</div>');
         legend.innerHTML = content.join('');
         legend.index = 1;
         map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);

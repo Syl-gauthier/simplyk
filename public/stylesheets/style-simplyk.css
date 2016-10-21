@@ -98,6 +98,10 @@ body{
     color: #0099ff
 }
 
+#child {
+    color: #FF4F3C
+}
+
 #map-section{
 	height: 90%;
 }
