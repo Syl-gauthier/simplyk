@@ -57,9 +57,15 @@ block content
   .container-fluid.degrade
     #first_section_entrance.row
       .col-md-8.col-md-offset-2
-        .logo
-          img#logo_entrance(src='images/simplyk_log_text_v2.png', align='middle')
-          h1.text-center La plateforme de mise en relation entre organismes et bénévoles! <br><br>
+        .logo.text-center.center-block
+          div
+            img#logo_entrance(src='images/simplyk_log_text_v2.png', align='middle')
+          div
+            h1.text-center La plateforme de mise en relation entre organismes et bénévoles! <br><br>
+          div.text-center
+            .btn-group(role='group')
+              button#find_vol.btn.btn-warning.btn-lg.center-block <b>TROUVE TON BÉNÉVOLAT</b>
+              button#find_vol_bis.text-center.btn.btn-warning.btn-lg.center-block <b>GO !</b>
         if error
           p.alert.alert-danger ERROR : #{error}
   .container-fluid
@@ -126,6 +132,11 @@ block content
 block footscript
   script.
     $( document ).ready(function() {
+      $('#find_vol, #find_vol_bis').click(function(){
+        $('html, body').animate({
+          scrollTop: $('#map').offset().top - 70
+        }, 500)
+      });
     });
     function initMap(){
       function listStar(i){
@@ -148,7 +159,6 @@ block footscript
         center: {lat: 45.503, lng: -73.613},
         zoom: 12,
         streetViewControl: false,
-        scrollwheel: false,
         mapTypeControl: false,
         mapTypeId: google.maps.MapTypeId.ROADMAP
       });
@@ -291,6 +301,3 @@ block footscript
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
     ga('create', 'UA-82053185-2', 'auto');
     ga('send', 'pageview');
-
-
-
