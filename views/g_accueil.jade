@@ -118,8 +118,6 @@ block content
           i.fa.fa-angellist.fa-2x#social
         a(href="https://www.linkedin.com/company/simplyk")
           i.fa.fa-linkedin.fa-2x#social
-        a(href="https://plus.google.com/communities/111513518415440141417")
-          i.fa.fa-google-plus.fa-2x#social
 
 
 
@@ -200,8 +198,8 @@ block footscript
       for(i=0; i<acts.length; i++){
         console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].lat + acts[i].lon);
         var act = acts[i];
-        var lati = act.lat+0.0015*(Math.random()-0.5);
-        var longi = act.lon+0.0015*(Math.random()-0.5);
+        var lati = act.lat+0.005*(Math.random()-0.5);
+        var longi = act.lon+0.005*(Math.random()-0.5);
         infowindows[i] = new google.maps.InfoWindow({
           content: act.org_name + '<br>' + act.intitule
         });
@@ -235,8 +233,8 @@ block footscript
       for(j=0+acts.length; j<lts.length+acts.length; j++){
         console.log(lts[j-acts.length].long_term.intitule + " marker generated with lat and lon : " + lts[j-acts.length].long_term.lat + lts[j-acts.length].long_term.lon);
         var lt = lts[j-acts.length];
-        var latj = lt.long_term.lat+0.0015*(Math.random()-0.5);
-        var longj = lt.long_term.lon+0.0015*(Math.random()-0.5);
+        var latj = lt.long_term.lat+0.005*(Math.random()-0.5);
+        var longj = lt.long_term.lon+0.005*(Math.random()-0.5);
         infowindows[j] = new google.maps.InfoWindow({
           content: lt.org_name + '<br>' + lt.long_term.intitule
         });
