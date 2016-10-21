@@ -60,6 +60,9 @@ block content
             p.alert.alert-danger #{error}
           if success
             p.alert.alert-success #{success}
+          h2.text-center
+            i.fa.fa-heart.child 
+            p.inline Coup de coeur Simplyk !
           li.list-group-item(id= the_favorite._id)
             .panel.panel-default
               .panel-heading
@@ -80,8 +83,6 @@ block content
                   h6
                     i.fa.fa-map-marker
                     p.inline Adresse : #{the_favorite.address}
-                div.media-right.media-middle
-                  button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favorite._id) Plus d'infos
               .panel-body
                 h4 Dans le cadre de : <b>#{the_favorite.event_intitule}</b>
                 each day, day_i in the_favorite.days
@@ -90,15 +91,18 @@ block content
                     h6.inline
                       i.fa.fa-user
                       p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+                    h2
+                    p <b> Description : </b>
+                    p= the_favorite.description
               .panel-footer
+                button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favorite._id) Plus d'infos
 
           each act, index in activities
-              li.list-group-item(id= act._id)
+              li.hidden.list-group-item(id= act._id)
                 .panel.panel-default
                   .panel-heading
                     div.media-left.media-middle
                       a(href='#')
-                        //img.media-object.little-img(src='/images/clouds.jpg')
                         if act.cause == 'Solidarité'
                           i.fa.fa-heart
                         else if act.cause == 'Nature'

@@ -66,6 +66,19 @@ router.get('/', function(req, res, next) {
             return !(activity.school_id);
           };
           const acts = activities.filter(isNotPassed).filter(isNotASchool);
+          const favorites = acts.reduce(function(pre, cur, ind, arr) {
+            console.log('cur.intitule ' + cur.intitule + ' & cur.favorite : ' + cur.favorite);
+            if (cur.favorite) {
+              pre.push(cur);
+              return pre;
+            } else {
+              return pre;
+            };
+          }, []);
+          const fav_index = Math.floor(Math.random() * (favorites.length));
+          console.log('favorites.length : ' + favorites.length);
+          console.log('fav_index : ' + fav_index);
+          const the_favorite = favorites[fav_index];
           //Select organisms who have longterms and are not admin ones
           Organism.find({
             'long_terms': {
@@ -101,6 +114,7 @@ router.get('/', function(req, res, next) {
               }));
               res.render('g_accueil.jade', {
                 activities: acts,
+                the_favorite: the_favorite,
                 session: req.session,
                 longterms: longterms,
                 error: req.query.error,
