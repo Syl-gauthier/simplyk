@@ -18,6 +18,7 @@ var ActivitySchema = new Schema({
 	lat: Number,
 	lon: Number,
 	cause: String,
+	favorite: Boolean,
 	school_id: {type: Schema.Types.ObjectId, ref:'Admin'},
 	days: [{
 		start_time: String,

@@ -60,6 +60,38 @@ block content
             p.alert.alert-danger #{error}
           if success
             p.alert.alert-success #{success}
+          li.list-group-item(id= the_favorite._id)
+            .panel.panel-default
+              .panel-heading
+                div.media-left.media-middle
+                  a(href='#')
+                    //img.media-object.little-img(src='/images/clouds.jpg')
+                    if the_favorite.cause == 'Solidarité'
+                      i.fa.fa-heart
+                    else if the_favorite.cause == 'Nature'
+                      i.fa.fa-envira(style='color: #5BCF8F')
+                    else if the_favorite.cause == 'Sport et Culture'
+                      i.fa.fa-institution(style='color: #FFC858')
+                    else if the_favorite.cause == 'Enfance'
+                      i.fa.fa-child(style='color: #FF4F3C')
+                div.media-body
+                  h4.media-heading <b>#{the_favorite.org_name}</b>
+                  h5.media-heading <b>#{the_favorite.intitule}</b>
+                  h6
+                    i.fa.fa-map-marker
+                    p.inline Adresse : #{the_favorite.address}
+                div.media-right.media-middle
+                  button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favorite._id) Plus d'infos
+              .panel-body
+                h4 Dans le cadre de : <b>#{the_favorite.event_intitule}</b>
+                each day, day_i in the_favorite.days
+                  h4
+                    h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                    h6.inline
+                      i.fa.fa-user
+                      p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+              .panel-footer
+
           each act, index in activities
               li.list-group-item(id= act._id)
                 .panel.panel-default
