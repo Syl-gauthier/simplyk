@@ -85,6 +85,15 @@ body{
 	height: 85vh;
 }
 
+.text-shadowed {
+	text-shadow: 1px 1px #999;
+}
+
+.text-bordered {
+	border: 5px solid black;
+	padding: 5px;
+}
+
 /*icones de fontwesome*/
 .leaf {
     color: #5BCF8F
