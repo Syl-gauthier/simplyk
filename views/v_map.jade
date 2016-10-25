@@ -54,7 +54,7 @@ block content
             a.subscribe-button-longterm.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id, href='/longterm/'+lt.long_term._id) Plus d'infos
   .container-fluid
     .row.fill
-      #offers-list.col-sm-4.hidden-xs.no-side-padding
+      #offers-list.col-sm-4.hidden-xs.no-side-padding.scrollable
         ul.list-group.list-opportunity
           if error
             p.alert.alert-danger #{error}
