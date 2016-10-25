@@ -1,3 +1,4 @@
+"use strict";
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
@@ -36,9 +37,10 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       });
     } else { //Create opps list
       const age = getAge(req.session.volunteer.birthdate);
+      let my_school = null;
       if (req.session.volunteer.admin) {
-        const my_school = req.session.volunteer.admin.school_id;
-      }
+        my_school = req.session.volunteer.admin.school_id;
+      };
       console.log('Volunteer age : ' + age);
       var isTooYoung = function(activity) {
         if (activity.min_age) {
@@ -57,9 +59,9 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         return activity.validation;
       };
       var justMySchool = function(activity) {
-        console.log('activity.school_id :' + activity.school_id + ' my_school : ' + my_school + 'activity.school_id == my_school' + (activity.school_id == my_school));
         if (activity.school_id) {
           if (my_school) {
+            console.log('activity.school_id :' + activity.school_id + ' my_school : ' + my_school + 'activity.school_id == my_school' + (activity.school_id == my_school));
             return activity.school_id.toString() == my_school.toString();
           } else {
             return false;
@@ -86,7 +88,13 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       const fav_index = Math.floor(Math.random() * (favorites.length));
       console.log('favorites.length : ' + favorites.length);
       console.log('fav_index : ' + fav_index);
-      const the_favorite = favorites[fav_index];
+      let the_favorite = {};
+      if (favorites.length != 0) {
+        the_favorite = favorites[fav_index];
+      } else {
+        the_favorite = acts[Math.floor(Math.random() * (acts.length))];
+        console.log('INFO : There was no favorites so the random fav is ' + the_favorite.org_name + ', ' + the_favorite.intitule);
+      };
       Organism.find({
           'long_terms': {
             '$exists': true,

@@ -1,4 +1,5 @@
 /*jslint node: true */
+"use strict";
 
 var express = require('express');
 var router = express.Router();
@@ -78,7 +79,13 @@ router.get('/', function(req, res, next) {
           const fav_index = Math.floor(Math.random() * (favorites.length));
           console.log('favorites.length : ' + favorites.length);
           console.log('fav_index : ' + fav_index);
-          const the_favorite = favorites[fav_index];
+          let the_favorite = {};
+          if (favorites.length != 0) {
+            the_favorite = favorites[fav_index];
+          } else {
+            the_favorite = acts[Math.floor(Math.random() * (acts.length))];
+            console.log('INFO : There was no favorites so the random fav is ' + the_favorite.org_name + ', ' + the_favorite.intitule);
+          };
           //Select organisms who have longterms and are not admin ones
           Organism.find({
             'long_terms': {
