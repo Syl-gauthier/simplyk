@@ -85,6 +85,7 @@ block content
                     p.inline Adresse : #{the_favorite.address}
               .panel-body
                 h4 Dans le cadre de : <b>#{the_favorite.event_intitule}</b>
+                p= the_favorite.description
                 each day, day_i in the_favorite.days
                   h4
                     h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
@@ -92,8 +93,6 @@ block content
                       i.fa.fa-user
                       p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
                     h2
-                    p <b> Description : </b>
-                    p= the_favorite.description
               .panel-footer
                 button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favorite._id) Plus d'infos
 
