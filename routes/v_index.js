@@ -74,6 +74,19 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       } else {
         var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool);
       };
+      const favorites = acts.reduce(function(pre, cur, ind, arr) {
+        console.log('cur.intitule ' + cur.intitule + ' & cur.favorite : ' + cur.favorite);
+        if (cur.favorite) {
+          pre.push(cur);
+          return pre;
+        } else {
+          return pre;
+        };
+      }, []);
+      const fav_index = Math.floor(Math.random() * (favorites.length));
+      console.log('favorites.length : ' + favorites.length);
+      console.log('fav_index : ' + fav_index);
+      const the_favorite = favorites[fav_index];
       Organism.find({
           'long_terms': {
             '$exists': true,
@@ -120,6 +133,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
             res.render('v_map.jade', {
               session: req.session,
               activities: acts,
+              the_favorite: the_favorite,
               volunteer: req.session.volunteer,
               error: req.query.error,
               longterms: longterms,

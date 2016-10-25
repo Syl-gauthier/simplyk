@@ -57,32 +57,77 @@ block content
   .container-fluid.degrade
     #first_section_entrance.row
       .col-md-8.col-md-offset-2
-        .logo
-          img#logo_entrance(src='images/simplyk_log_text_v2.png', align='middle')
-          h1.text-center La plateforme de mise en relation entre organismes et bénévoles! <br><br>
+        .logo.text-center.center-block
+          div
+            img#logo_entrance(src='images/simplyk_log_text_v2.png', align='middle')
+          div
+            h1.text-center La plateforme de mise en relation entre organismes et bénévoles! <br><br>
+          div.text-center
+            .btn-group(role='group')
+              button#find_vol.btn.btn-warning.btn-lg.center-block <b>TROUVE TON BÉNÉVOLAT</b>
+              button#find_vol_bis.text-center.btn.btn-warning.btn-lg.center-block <b>GO !</b>
         if error
           p.alert.alert-danger ERROR : #{error}
   .container-fluid
     .row.fill
-      #offers-list.col-sm-5.hidden-xs.no-side-padding.scrollable
+      #offers-list.col-sm-4.hidden-xs.no-side-padding
         ul.list-group.list-opportunity
           if error
             p.alert.alert-danger #{error}
           if success
             p.alert.alert-success #{success}
+          h3.text-center
+            img(src='http://i.giphy.com/7WH2eHCxpFcI0.gif' style='height: 1.5em; width: auto;')
+            p.inline.text-shadowed <b>COUP DE COEUR</b>
+          li.list-group-item(id= the_favorite._id)
+            .panel.panel-default
+              .panel-heading
+                div.media-left.media-middle
+                  a(href='#')
+                    //img.media-object.little-img(src='/images/clouds.jpg')
+                    if the_favorite.cause == 'Solidarité'
+                      i.fa.fa-heart
+                    else if the_favorite.cause == 'Nature'
+                      i.fa.fa-envira(style='color: #5BCF8F')
+                    else if the_favorite.cause == 'Sport et Culture'
+                      i.fa.fa-institution(style='color: #FFC858')
+                    else if the_favorite.cause == 'Enfance'
+                      i.fa.fa-child(style='color: #FF4F3C')
+                div.media-body
+                  h4.media-heading <b>#{the_favorite.org_name}</b>
+                  h5.media-heading <b>#{the_favorite.intitule}</b>
+                  h6
+                    i.fa.fa-map-marker
+                    p.inline Adresse : #{the_favorite.address}
+              .panel-body
+                h4 Dans le cadre de : <b>#{the_favorite.event_intitule}</b>
+                each day, day_i in the_favorite.days
+                  h4
+                    h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                    h6.inline
+                      i.fa.fa-user
+                      p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+                    h2
+                    p <b> Description : </b>
+                    p= the_favorite.description
+              .panel-footer
+                button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favorite._id) Plus d'infos
+
           each act, index in activities
-              li.list-group-item(id= act._id)
+            if act._id != the_favorite._id
+              li.hidden.list-group-item(id= act._id)
                 .panel.panel-default
                   .panel-heading
                     div.media-left.media-middle
                       a(href='#')
-                        //img.media-object.little-img(src='/images/clouds.jpg')
                         if act.cause == 'Solidarité'
                           i.fa.fa-heart
                         else if act.cause == 'Environnement'
                           i.fa.fa-envira(style='color: #5BCF8F')
-                        else if act.cause == 'Culture'
+                        else if act.cause == 'Sport et Culture'
                           i.fa.fa-institution(style='color: #FFC858')
+                        else if act.cause == 'Enfance'
+                          i.fa.fa-child(style='color: #FF4F3C')
                     div.media-body
                       h4.media-heading <b>#{act.org_name}</b>
                       h5.media-heading <b>#{act.intitule}</b>
@@ -99,7 +144,7 @@ block content
                           h6.inline
                             i.fa.fa-user
                             p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-      .col-sm-7.no-side-padding
+      .col-sm-8.no-side-padding
         #map
   .container-fluid.footer
     .row
@@ -124,6 +169,11 @@ block content
 block footscript
   script.
     $( document ).ready(function() {
+      $('#find_vol, #find_vol_bis').click(function(){
+        $('html, body').animate({
+          scrollTop: $('#map').offset().top - 70
+        }, 500)
+      });
     });
     function initMap(){
       function listStar(i){
@@ -146,13 +196,13 @@ block footscript
         center: {lat: 45.503, lng: -73.613},
         zoom: 12,
         streetViewControl: false,
-        scrollwheel: false,
         mapTypeControl: false,
         mapTypeId: google.maps.MapTypeId.ROADMAP
       });
       //Generate markers
       var acts = !{JSON.stringify(activities)};
       var lts = !{JSON.stringify(longterms)};
+      const the_fav = !{JSON.stringify(the_favorite)};
       var infowindows = [];
       var imageSol = {
       url: '/images/Perso/blue-icon-marker.svg', // image is 512 x 512
@@ -166,6 +216,10 @@ block footscript
       url: '/images/Perso/yellow-icon-marker.svg', // image is 512 x 512
       scaledSize : new google.maps.Size(30, 36)
       };
+      var imageEnf = {
+      url: '/images/Perso/red-icon-marker.svg', // image is 512 x 512
+      scaledSize : new google.maps.Size(30, 36)
+      };
       var markers = [];
       var options = {
             gridSize: 50,
@@ -174,24 +228,44 @@ block footscript
             imagePath: 'images/m'
         };
       function attachInfoWindow(marker, infoWindow, act, i){
-        marker.addListener('click', function(){
-          $("."+act._id).modal();
-        });
-        marker.addListener('mouseover', function(){
-          infoWindow.open(map, marker);
-          listStar(i);
-        });
-        marker.addListener('mouseout', function(){
-          infoWindow.close();
-          listUnstar(i);
-        });
+        if(marker){
+          marker.addListener('click', function(){
+            $("."+act._id).modal();
+          });
+          marker.addListener('mouseover', function(){
+            infoWindow.open(map, marker);
+            //listStar(i);
+          });
+          marker.addListener('mouseout', function(){
+            infoWindow.close();
+            //listUnstar(i);
+          });
+          if(act._id.toString() == the_fav._id.toString()){
+            $('#'+the_fav._id).hover(function(e){
+              infoWindow.open(map, marker);
+            }, function(e){
+              infoWindow.close();
+            });
+            marker.addListener('mouseover', function(){
+              //infoWindow.open(map, marker);
+              $('#'+the_fav._id).addClass('starring');
+            });
+            marker.addListener('mouseout', function(){
+              //infoWindow.close();
+              $('#'+the_fav._id).removeClass('starring');
+            });
+          };
+        } else {
+          console.log('Marker is not defined in attachInfoWindow');
+        };
       };
       var legend = document.createElement('div');
         legend.id = 'legend';
         var content = [];
-        content.push('<i class="fa fa-envira" id="leaf">Environnement</i><br>');
-        content.push('<i class="fa fa-heart" id="soli">Solidarité</i><br>');
-        content.push('<i class="fa fa-institution" id="cult">Sport et culture</i><br>');
+        content.push('<h5 class="leaf" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-envira fa-lg fa-fw leaf"></i> Nature </h5><br>');
+        content.push('<h5 class="soli" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-heart fa-lg fa-fw soli"></i> Solidarité </h5><br>');
+        content.push('<h5 class="cult" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-institution fa-lg fa-fw cult"></i> Sport et culture </h5><br>');
+        content.push('<h5 class="child" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-child fa-lg fa-fw child"></i> Enfance </h5>');
         legend.innerHTML = content.join('');
         legend.index = 1;
         map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
@@ -203,29 +277,36 @@ block footscript
         infowindows[i] = new google.maps.InfoWindow({
           content: act.org_name + '<br>' + act.intitule
         });
-        if (acts[i].cause=='Environnement'){
+        if (acts[i].cause=='Nature'){
+          markers[i] = new google.maps.Marker({
+            position: {lat: lati, lng: longi},
+            map: map,
+            icon: imageEnv,
+            clickable: true
+          });
+        } else if (acts[i].cause=='Solidarité'){
+          markers[i] = new google.maps.Marker({
+            position: {lat: lati, lng: longi},
+            map: map,
+            icon: imageSol,
+            clickable: true
+          });
+        } else if (acts[i].cause=='Sport et Culture'){
+          markers[i] = new google.maps.Marker({
+            position: {lat: lati, lng: longi},
+            map: map,
+            icon: imageCul,
+            clickable: true
+          });
+        } else if (acts[i].cause=='Enfance'){
         markers[i] = new google.maps.Marker({
           position: {lat: lati, lng: longi},
           map: map,
-          icon: imageEnv,
+          icon: imageEnf,
           clickable: true
         });
-        }
-        if (acts[i].cause=='Solidarité'){
-        markers[i] = new google.maps.Marker({
-          position: {lat: lati, lng: longi},
-          map: map,
-          icon: imageSol,
-          clickable: true
-        });
-        }
-        if (acts[i].cause=='Culture'){
-        markers[i] = new google.maps.Marker({
-          position: {lat: lati, lng: longi},
-          map: map,
-          icon: imageCul,
-          clickable: true
-        });
+        } else {
+          markers[i] = null;
         }
         attachInfoWindow(markers[i], infowindows[i], act, i);
       };
@@ -240,7 +321,7 @@ block footscript
         });
         console.log('lts[j-acts.length] : '+ JSON.stringify(lts[j-acts.length]));
         //choix du marqueur en fonction de la cause, changer avec le json
-        if (lts[j-acts.length].cause=='Environnement'){
+        if (lts[j-acts.length].cause=='Nature'){
         markers[j] = new google.maps.Marker({
           position: {lat: latj, lng: longj},
           map: map,
@@ -255,12 +336,19 @@ block footscript
           icon: imageSol,
           clickable: true
         });
-        }
-        else if (lts[j-acts.length].cause=='Culture'){
+        } else if (lts[j-acts.length].cause=='Sport et Culture'){
         markers[j] = new google.maps.Marker({
           position: {lat: latj, lng: longj},
           map: map,
           icon: imageCul,
+          clickable: true
+        });
+        }
+        else if (lts[j-acts.length].cause=='Enfance'){
+        markers[j] = new google.maps.Marker({
+          position: {lat: latj, lng: longj},
+          map: map,
+          icon: imageEnf,
           clickable: true
         });
         } else {
@@ -289,6 +377,3 @@ block footscript
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
     ga('create', 'UA-82053185-2', 'auto');
     ga('send', 'pageview');
-
-
-
