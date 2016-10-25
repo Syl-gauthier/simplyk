@@ -48,6 +48,10 @@ block content
 																h6
 																	i.fa.fa-at
 																	p.inline #{vol.email}
+																if vol.phone
+																	h6
+																		i.fa.fa-phone
+																		p.inline #{vol.phone}
 																h6
 																	i.fa.fa-birthday-cake
 																	p.inline #{days_name[correctDate(vol.birthdate).getDay()]  + ' ' + (correctDate(vol.birthdate).getDate()) + ' ' + months_name[correctDate(vol.birthdate).getMonth()]  + ' ' + correctDate(vol.birthdate).getFullYear()}

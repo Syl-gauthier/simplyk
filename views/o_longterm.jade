@@ -158,6 +158,8 @@ block content
                   th.text-center Prénom
                   th.text-center
                     i.fa.fa-birthday-cake
+                  th.text-center
+                    i.fa.fa-phone
                   th.text-center Courriel
                   th.text-center Participation / À confirmer
               tbody
@@ -167,6 +169,10 @@ block content
                     td.text-center= vol.lastname
                     td.text-center= vol.firstname
                     td.text-center #{(correctDate(vol.birthdate).getDate()) + ' ' + months_name[correctDate(vol.birthdate).getMonth()]  + ' ' + correctDate(vol.birthdate).getFullYear()}
+                    if vol.phone
+                      td.text-center= vol.phone
+                    else 
+                      td.text-center
                     td.text-center= vol.email
                     td.text-center
                       if typeof vol.long_terms[0].hours_done !== 'undefined'
