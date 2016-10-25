@@ -284,9 +284,12 @@ block content
                 small
               li.list-group-item= 'Date de naissance: ' + moment(volunteer.birthdate).format("DD/MM/YYYY")
                 small
+              if volunteer.phone
+                li.list-group-item
+                  | Téléphone: #{volunteer.phone}
+                  small
               li.list-group-item
                 | Adresse mail: #{volunteer.email}
-                small
               li.list-group-item#password-group
                 p Mot de passe: #[span.display ******]
                 form#edit-password-form.form-horizontal.hidden.editing

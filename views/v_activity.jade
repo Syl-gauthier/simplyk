@@ -29,19 +29,28 @@ block content
                   p= event._id
               div.media-right.media-middle
                 if day.day > Date.now()
-                  input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal')
-                  .modal.fade(id='activity-modal' tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
-                    .modal-dialog(role='document')
-                      .modal-content
-                        .modal-header
-                          button.close(type='button' data-dismiss="modal" aria-label="Close")
-                            span(aria-hidden='true')&times;
-                          h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cette activité ?
-                        .modal-footer
-                          a.btn.btn-warning(data-dismiss='modal') Annuler
-                          form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post')
-                            input.btn.btn-default(type='submit' value='Oui' role='button')
-                  
+                  if day.applicants.find(function(applicant){return applicant==volunteer._id})
+                    h4 Inscrit
+                  else
+                    input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal')
+                    .modal.fade(id='activity-modal' tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
+                      .modal-dialog(role='document')
+                        .modal-content
+                          form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone('+day.day.getTime()+')')
+                            .modal-header
+                              button.close(type='button' data-dismiss="modal" aria-label="Close")
+                                span(aria-hidden='true')&times;
+                              h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cette activité ?
+                              if !volunteer.phone
+                                .modal-body
+                                  h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
+                                  p.alert.alert-danger.hidden(class='phone_alert'+day.day.getTime()) Entrer un numéro de téléphone
+                                  .form-group.conn-input
+                                    label.control-label Téléphone
+                                    input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone'+day.day.getTime())
+                            .modal-footer
+                              a.btn.btn-warning(data-dismiss='modal') Annuler
+                              input.btn.btn-default(type='submit' value='Oui' role='button')
                 else
                   h4 Passé
       .col-md-4.col-md-offset-1
@@ -53,3 +62,16 @@ block content
           if organism.phone
             p= 'Téléphone: ' + organism.phone
 
+block footscript
+  script(type="text/javascript").
+    function validatePhone(day){
+      const phone_number = $('#phone'+day).val();
+      console.log('phone_number.length : ' + phone_number.length);
+      if(phone_number.length < 10){
+        $('.phone_alert'+day).removeClass('hidden');
+        return false;
+      };
+    };
+    $(document).ready(function(){
+      
+    });

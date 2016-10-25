@@ -369,7 +369,8 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
       'long_terms.$': 1,
       'firstname': 1,
       'lastname': 1,
-      'birthdate': 1
+      'birthdate': 1,
+      'phone': 1
     }, function(err, volunteers) {
       if (err) {
         console.log(err);
