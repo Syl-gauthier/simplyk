@@ -63,7 +63,7 @@ block content
           h3.text-center
             img(src='http://i.giphy.com/7WH2eHCxpFcI0.gif' style='height: 1.5em; width: auto;')
             p.inline.text-shadowed <b>COUP DE COEUR</b>
-          li.list-group-item(id= the_favorite._id)
+          li.list-group-item(id= 'the_favo')
             .panel.panel-default
               .panel-heading
                 div.media-left.media-middle
@@ -198,18 +198,18 @@ block footscript
             //listUnstar(i);
           });
           if(act._id.toString() == the_fav._id.toString()){
-            $('#'+the_fav._id).hover(function(e){
+            $('#the_favo').hover(function(e){
               infoWindow.open(map, marker);
             }, function(e){
               infoWindow.close();
             });
             marker.addListener('mouseover', function(){
               //infoWindow.open(map, marker);
-              $('#'+the_fav._id).addClass('starring');
+              $('#the_favo').addClass('starring');
             });
             marker.addListener('mouseout', function(){
               //infoWindow.close();
-              $('#'+the_fav._id).removeClass('starring');
+              $('#the_favo').removeClass('starring');
             });
           };
         } else {
