@@ -286,6 +286,15 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
             return (Date.parse(day.day) === Date.parse(req.params.activity_day));
           };
           console.log('Isgood day result : ' + newActivity.days.find(isGoodDay));
+          let phone = {};
+          if (req.session.volunteer.phone) {
+            phone = req.session.volunteer.phone;
+          } else if (req.body.phone){
+            phone = req.body.phone;
+          } else {
+            phone = null;
+          };
+          console.log('phone : ' + phone);
           Volunteer.findOneAndUpdate({
             "_id": req.session.volunteer._id
           }, {
@@ -311,6 +320,9 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                 "organism_questions": organism_q,
                 "organism_answers": []
               }
+            },
+            "$set": {
+              "phone": phone
             }
           }, {
             returnNewDocument: true,
