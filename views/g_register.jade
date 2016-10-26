@@ -46,10 +46,8 @@ block content
                   .form-group.conn-input.hidden#admin_dropdown
                     label.control-label Établissement scolaire
                     select#admin.form-control(placeholder='', name='admin', aria-describedby='basic-addon1')
-                      option École Louis-Riel
-                      option École Père-Marquette
-                      option Collège Lasalle
-                      option Enfance
+                      each school, school_i in schools_list
+                        option= school
               if type == 'organism'
                 .form-group.conn-input
                   label.control-label Nom de l'organisme
@@ -109,7 +107,7 @@ block content
                 p.
                   En cliquant sur le bouton "s'inscrire", j'accepte les <a href="\legal">conditions générales d'utilisation </a>. Si je suis mineur je dois prévenir un responsable avant de me rendre à une activité.
               .row
-                input.btn.btn-default#submit-button(type='submit', form='registerform', value='S \'inscrire')
+                input.btn.btn-default#submit-button(type='submit', form='registerform', value='S \'inscrire', style='margin-bottom: 50px;')
 block footscript
   script(src="/bower_components/jquery-ui/ui/widgets/datepicker.js")
   script.

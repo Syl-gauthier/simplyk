@@ -163,9 +163,16 @@ router.get('/register_organism', function(req, res) {
 });
 
 router.get('/register_volunteer', function(req, res) {
-
-  res.render('g_register.jade', {
-    type: 'volunteer'
+  //Get schools_list
+  school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
+    if (err) {
+      console.error('ERR : ' + err);
+    };
+    res.render('g_register.jade', {
+      type: 'volunteer',
+      error: err,
+      schools_list
+    });
   });
 });
 
