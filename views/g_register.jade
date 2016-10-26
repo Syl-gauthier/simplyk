@@ -39,6 +39,17 @@ block content
                   .form-group.conn-input
                     label.control-label Date de naissance
                     input#birthdate.form-control(type='date', placeholder='', name='birthdate', aria-describedby='basic-addon1')
+                .col-md-12
+                  input#admin_checkbox(type='checkbox' name='admin_checkbox') 
+                  |   Je suis actuellement inscrit dans un établissement scolaire
+                  br
+                  .form-group.conn-input.hidden#admin_dropdown
+                    label.control-label Établissement scolaire
+                    select#admin.form-control(placeholder='', name='admin', aria-describedby='basic-addon1')
+                      option École Louis-Riel
+                      option École Père-Marquette
+                      option Collège Lasalle
+                      option Enfance
               if type == 'organism'
                 .form-group.conn-input
                   label.control-label Nom de l'organisme
@@ -106,6 +117,10 @@ block footscript
       if ( $('#birthdate').prop('type') != 'date' ) {
         $('#birthdate').datepicker();
       }
+      $('#admin_checkbox').click(function(){
+        $('#admin_dropdown').removeClass('hidden');
+        $('#admin_dropdown').toggle(this.checked);
+      });
     })
     var password = document.getElementById('password'),
     confirm_password = document.getElementById('confirmPassword');
