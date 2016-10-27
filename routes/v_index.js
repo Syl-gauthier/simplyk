@@ -71,10 +71,11 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         }
       };
       //If user is under 16, he can't see the activities of unverified organisms
+      let acts = {};
       if (age < 16) {
-        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(justMySchool);
+        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(justMySchool);
       } else {
-        var acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool);
+        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool);
       };
       const favorites = acts.reduce(function(pre, cur, ind, arr) {
         console.log('cur.intitule ' + cur.intitule + ' & cur.favorite : ' + cur.favorite);
