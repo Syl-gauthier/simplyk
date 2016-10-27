@@ -1,7 +1,9 @@
+'use strict';
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var Intercom = require('intercom-client');
+var school_list = require('../lib/ressources/school_list.js');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
@@ -161,8 +163,16 @@ router.get('/register_organism', function(req, res) {
 });
 
 router.get('/register_volunteer', function(req, res) {
-  res.render('g_register.jade', {
-    type: 'volunteer'
+  //Get schools_list
+  school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
+    if (err) {
+      console.error('ERR : ' + err);
+    };
+    res.render('g_register.jade', {
+      type: 'volunteer',
+      error: err,
+      schools_list
+    });
   });
 });
 
@@ -182,14 +192,23 @@ router.post('/register_volunteer', function(req, res) {
       res.redirect('register_volunteer');
     } else {
       //Add volunteer
-      newVolunteer = new Volunteer({
+      //Chack if an admin has been selected
+      let admin = {};
+      if (req.body.admin_checkbox && req.body.admin) {
+        admin = {
+          class: req.body.admin
+        }
+      };
+
+      let newVolunteer = new Volunteer({
         email: req.body.email,
         email_verified: false,
         email_verify_string: randomString,
         lastname: req.body.lastname,
         firstname: req.body.firstname,
         birthdate: req.body.birthdate,
-        password: req.body.password
+        password: req.body.password,
+        admin
       });
 
       newVolunteer.password = newVolunteer.generateHash(req.body.password);
