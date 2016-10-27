@@ -262,7 +262,7 @@ router.post('/register_organism', function(req, res) {
       res.redirect('register_organism');
     } else {
 
-      newOrganism = new Organism({
+      let newOrganism = new Organism({
         email: email,
         org_name: org_name,
         lastname: req.body.lastname,
@@ -323,7 +323,7 @@ router.post('/register_organism', function(req, res) {
 /* Handle Registration POST for admin*/
 router.post('/register_admin', function(req, res) {
   //Add Volunteer
-  newAdmin = new Admin({
+  let newAdmin = new Admin({
     email: req.body.email,
     name: req.body.name,
     type: req.body.type,
