@@ -1,0 +1,74 @@
+extends ./g_layout.jade
+block vars
+
+block head
+    script(src='/bower_components/pickadate/lib/picker.js', type='text/javascript')
+    script(src='/bower_components/pickadate/lib/picker.date.js', type='text/javascript')
+    script(src='/bower_components/pickadate/lib/picker.time.js', type='text/javascript')
+    script(src='/bower_components/pickadate/lib/legacy.js', type='text/javascript')
+    link(href='/bower_components/pickadate/lib/themes/classic.css', rel='stylesheet')
+    link(href='/bower_components/pickadate/lib/themes/classic.date.css', rel='stylesheet')
+    link(href='/bower_components/pickadate/lib/themes/classic.time.css', rel='stylesheet')
+    title Ajoute des heures de bénévolat extra-Simplyk
+    meta(name='description', content='Ajoute des heures de bénévolat extra-Simplyk ')
+block content
+    .container-fluid
+        .row
+            .col-md-6.col-md-offset-3
+                .page-header
+                    h1.text-center Ajoute des heures extra-Simplyk
+                    if error
+                        p.alert.alert-danger #{error}
+                    p.alert.alert-warning Les heures ajoutées ici seront vérifiées auprès de l'organisme en question, ainsi que par la coordinatrice du bénévolat de ton école ;)
+        .row
+            .col-md-6.col-md-offset-3
+                form(id='addextrahours', name='addextrahours', action='addextrahours', method='post')
+                    .form-group.conn-input
+                        label(for='org_name') Nom de l'organisme
+                        input.form-control(id='org_name', type='text', placeholder='Ex: Équiterre', name='org_name', required)
+                    .form-group.conn-input
+                        label(for='org_email') Email de l'organisme
+                        input.form-control(id='org_email', name='org_email', type='text' required)
+                    .form-group.conn-input
+                        label(for='org_phone') Téléphone de l'organisme
+                        input.form-control(id='org_phone', name='org_phone', type='text' required)
+                    .form-group.conn-input
+                        label(for='intitule') Titre de l'activité
+                        input.form-control(id='intitule', name='intitule', type='text' required)
+                    .form-group.conn-input
+                        label(for='description') Description de l'activité
+                        textarea.form-control(id='description', name='description', rows="6" required)
+                .row
+                    .col-md-6
+                        .form-group.conn-input
+                            label(for='activity_date') Date de l'activité
+                            input.form-control.datepicker(id='activity_date', type='text', name='activity_date' required)
+                    .col-md-6
+                        .form-group.conn-input
+                            label(for='hours_done') Nombres d'heures réalisées
+                            input.form-control(id='hours_done', type='number', name='hours_done', min="0", max="40", required)
+                .row
+                    input.btn.btn-default.form-control(type='submit', form='addextrahours', style="margin-bottom: 250px;")
+
+
+    .modal#warningModal(role='dialog')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true')&times;
+                    img.text-center(src='http://i.giphy.com/Y5wlazC8lSVuU.gif', style='height: 50px;')
+                .modal-body
+                    p.alert.alert-danger <b>Cette fonctionnalité est destinée à ajouter des heures à votre profil pour les activités que tu N'AS PAS FAIT au travers de la plateforme Simplyk ! </br></br> Avant de faire ça, vérifie que tu n'es pas déjà inscrit à cette activité sur ton profil :)</b>
+
+
+block footscript
+    script(type='text/javascript').
+        $(document).ready(function(){
+            $('#warningModal').modal('show');
+            var input = $('.datepicker');
+            input.pickadate({
+                firstDay: 1,
+                formatSubmit: 'yyyy-mm-dd'
+            });
+        });
