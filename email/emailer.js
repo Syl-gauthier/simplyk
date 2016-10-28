@@ -177,6 +177,30 @@ function sendHoursConfirmedVolEmail(content) {
   });
 };
 
+
+function sendAutomaticSubscriptionOrgEmail(content) {
+  content.subtitle = content.customMessage;
+  content.title = 'Bénévolat de ' + content.firstname + ' ' + content.lastname + ' !';
+  content.type = 'verify';
+  content.button.text = 'Valider les heures de l\'élève';
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: 'Bénévolat de ' + content.firstname + ' ' + content.lastname + ' !', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
+
 module.exports = {
   sendSubscriptionOrgEmail: sendSubscriptionOrgEmail,
   sendSubscriptionVolEmail: sendSubscriptionVolEmail,

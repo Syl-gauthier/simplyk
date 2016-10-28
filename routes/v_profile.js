@@ -1,7 +1,9 @@
+'use strict';
 var express = require('express');
 var router = express.Router();
 var emailer = require('../email/emailer.js');
 var Intercom = require('intercom-client');
+var randomstring = require('randomstring');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
@@ -272,7 +274,7 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
               firstname: req.session.volunteer.firstname,
               lastname: req.session.volunteer.lastname,
               recipient: orga.email,
-              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + 'vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
             });
           };
         });
@@ -399,7 +401,7 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
               firstname: req.session.volunteer.firstname,
               lastname: req.session.volunteer.lastname,
               recipient: orga.email,
-              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'engagement ' + new_lt.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
             });
           }
         });
@@ -419,7 +421,7 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
     });
   } else {
     const err = 'ERROR: It seems you didn\'t have complete the hours_done field';
-    console.log(err);
+    console.error(err);
     res.redirect('/volunteer/map?error=' + err);
   }
 });
@@ -494,68 +496,174 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
     };
   });
 });
-/*
-  Volunteer.find({
-    "events":{
-      '$elemMatch': {
-        'activity_id': {'$in': acts_id}
-      }
-    }
-  }, function(err, volunteers){
-    if (err){
-      console.log(err);
-      res.redirect('/organism/dashboard?error='+err);
-    }
-    else {
-      var activities_list = activities;
-      console.log('ALL ACTIVITIES : ' + activities_list);
-      console.log('****************************');
-      console.log('ALL VOLUNTEERS : ' + volunteers);
-      console.log('****************************');
-      event.acts =[];
-      for (var actI = activities_list.length - 1; actI >= 0; actI--) {
-        for (var daysI = activities_list[actI].days.length - 1; daysI >= 0; daysI--) {
-          activities_list[actI].days[daysI].vols = [];
-          var vols = [];
-          console.log('activities_list[actI] : ' + activities_list[actI].days[daysI]);
-          console.log('**************');
 
-          function goodEvent(event){
-            console.log('blop');
-            console.log('event.activity_id : ' + event.activity_id.toString());
-            console.log('activities_list[actI]._id : ' + activities_list[actI]._id.toString());
-            console.log('event.activity_id === activities_list[actI]._id : ' + (event.activity_id.toString() === activities_list[actI]._id.toString()));
-            return ((event.activity_id.toString() === activities_list[actI]._id.toString()) && (Date.parse(event.day) === Date.parse(activities_list[actI].days[daysI].day)));
-          };
-          function isParticipating(volunteer){
-            console.log('volunteer.events : ' + volunteer.events);
-            var result = volunteer.events.find(goodEvent);
-            console.log('result : ' + result);
-            return typeof result !== 'undefined';
-          };
-          var these_volunteers = volunteers.filter(isParticipating);
-          console.log('these_volunteers : ' + these_volunteers);
-
-
-          Array.prototype.push.apply(activities_list[actI].days[daysI].vols, these_volunteers);
-          console.log('activities_list[actI] avec vols : ' + activities_list[actI]);
-          console.log('activities_list[actI].vols : ' + activities_list[actI].days[daysI].vols);
-        }
-      };
-
-
-      Array.prototype.push.apply(event.acts, activities_list);
-      console.log('activities_list : ' + event.acts[0]);
-      console.log('activities_list : ' + event.acts[0].lat);
-      console.log('activities_list : ' + event.acts[0].min_hours);
-      console.log('activities_list : ' + event.acts[0].days);
-      console.log('activities_list : ' + event.acts[0].days[0].vols);
-          //res.json(event);
-          res.render('o_event.jade', {event: event, organism: req.session.organism});
-        }
-      });
-}
+router.get('/volunteer/extra_simplyk_hours', permissions.requireGroup('volunteer'), function(req, res) {
+  if (req.session.volunteer.student) {
+    res.render('v_extra_simplyk_hours.jade', {
+      session: req.session,
+      volunteer: req.session.volunteer,
+      group: req.session.group
+    });
+  } else {
+    const err = 'ERROR: Il te faut être un élève pour accéder à cette page d\'ajout d\'heures extra-Simplyk';
+    console.error(err);
+    res.redirect('/volunteer/map?error=' + err);
+  }
 });
-});*/
+
+router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), function(req, res) {
+  if (req.session.volunteer.student) {
+    let newActivity = new Activity({
+      email: req.body.org_email,
+      org_name: req.body.org_name,
+      org_phone: req.body.org_phone,
+      intitule: req.body.intitule,
+      description: req.body.description,
+      days: [{
+        day: req.body.activity_date,
+        applicants: [req.session.volunteer._id]
+      }]
+    }); ////TO SAVE !!
+    //Ajouter organism s'il n'existe pas
+    Organism.findOne({
+      '$or': [{
+        'email': req.body.org_email
+      }, {
+        'org_name': req.body.org_name
+      }]
+    }, function(err, theOrg) {
+      if (err) {
+        const err = 'ERROR: Il te faut être un élève pour accéder à cette page d\'ajout d\'heures extra-Simplyk';
+        console.error(err);
+        res.redirect('/volunteer/map?error=' + err);
+      } else {
+        //If the organism already has an account, add it a orgTodo and send it an email
+        let organism = {};
+        let newTodo = new OrgTodo({
+          type: 'students_hours_pending',
+          lastname: req.session.volunteer.lastname,
+          firstname: req.session.volunteer.firstname,
+          vol_id: req.session.volunteer._id,
+          activity_intitule: req.body.intitule,
+          day: req.body.activity_date,
+          hours: req.body.hours_pending,
+          student: true,
+          organism_questions: ['Quel point positif pouvez-vous mettre en avant sur l’élève, et qu’est-ce que l’élève pourrait améliorer ?'],
+          activity_id: newActivity._id
+        }); //////TO SAVE !
+        if (theOrg) {
+          //send email and add orgToDo
+          newTodo.org_id = newActivity.org_id = theOrg._id;
+          organism = theOrg;
+          newTodo.save(function(err, newTodo_saved) {
+            if (err) {
+              console.error(err);
+            };
+          });
+          emailer.sendHoursPendingOrgEmail({
+            firstname: req.session.volunteer.firstname,
+            lastname: req.session.volunteer.lastname,
+            recipient: req.body.org_email,
+            customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'En tant qu\'élève dans une école où le bénévolat est encouragé, il a besoin que vous lui validiez ces heures s\'il les a réellement fait. Sinon, il est utile aussi que vous signaliez qu\'il y a une erreur ! :)', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+          });
+          newActivity.save(function(err, activity_saved) {
+            if (err) {
+              console.error(err);
+            };
+            Volunteer.findOneAndUpdate({
+              '_id': req.session.volunteer._id
+            }, {
+              '$push': {
+                'extras': activity_saved
+              }
+            }, {
+              new: true
+            }, function(err, newVolunteer) {
+              if (err) {
+                console.error(err);
+              } else {
+                req.session.volunteer = newVolunteer;
+                res.redirect('/volunteer/map');
+              }
+            })
+          });
+        } else {
+          //The organism hasn't any account on the platform, send it an email, create an account and add an orgTodo
+          let pass1 = req.session.volunteer._id,
+            pass2 = req.body.org_name;
+          const randomString = randomstring.generate();
+
+          organism = new Organism({
+            email: req.body.org_email,
+            org_name: req.body.org_name,
+            email_verified: false,
+            email_verify_string: randomString,
+            password: '',
+            phone: req.body.org_phone,
+            description: req.body.description
+          });
+
+          const passToChange = process.env.PASSWORD_CREATION;
+          organism.password = organism.generateHash(passToChange);
+
+          organism.save(function(err, org_saved) {
+            if (err) {
+              console.error(err);
+            }
+
+            newTodo.org_id = newActivity.org_id = org_saved._id;
+
+            newTodo.save(function(err, newTodo_saved) {
+              if (err) {
+                console.error(err);
+              };
+            });
+
+            var hostname = req.headers.host;
+            var verifyUrl = 'http://' + hostname + '/verifyV/' + randomString;
+            console.log('Verify url sent: ' + verifyUrl);
+
+            emailer.sendAutomaticSubscriptionOrgEmail({
+              recipient: req.body.org_email,
+              button: {
+                link: verifyUrl
+              },
+              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name, 'Vous recevez ce message car il mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Si c\'est bel et bien le cas, venez valider ces heures sur la plateforme Simplyk afin qu\'elles soient comptabiliser par ses professeurs !', 'S\'il n\'a pas fait les heures mentionnées, connectez-vous pour corriger la situation. :) ', 'Vos identifiants de connexion sont les suivants :', 'Email: ' + req.body.org_email, 'Mot de passe: ' + passToChange],
+              firstname: req.session.volunteer.firstname,
+              lastname: req.session.volunteer.lastname
+            });
+
+            newActivity.save(function(err, activity_saved) {
+              if (err) {
+                console.error(err);
+              };
+              Volunteer.findOneAndUpdate({
+                '_id': req.session.volunteer._id
+              }, {
+                '$push': {
+                  'extras': activity_saved
+                }
+              }, {
+                new: true
+              }, function(err, newVolunteer) {
+                if (err) {
+                  console.error(err);
+                } else {
+                  res.session.volunteer = newVolunteer;
+                  res.redirect('/volunteer/map');
+                }
+              });
+
+            });
+          });
+        }
+      }
+    });
+  } else {
+    const err = 'ERROR: Il te faut être un élève pour accéder à cette page d\'ajout d\'heures extra-Simplyk';
+    console.error(err);
+    res.redirect('/volunteer/map?error=' + err);
+  };
+});
 
 module.exports = router;

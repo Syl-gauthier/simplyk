@@ -20,6 +20,7 @@ var OrganismSchema = new Schema({
 	admin_id: {type: Schema.Types.ObjectId, ref:'Admin'},
 	school_id: {type: Schema.Types.ObjectId, ref:'Admin'},
 	cause: String, // solidarité, environnement, culture
+	automatic: Boolean, //if th organism is automatically created
 	validation: Boolean,//Simplyk approved ?
 	events: [{
 		id: ObjectId,

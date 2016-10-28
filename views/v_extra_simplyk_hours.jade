@@ -38,17 +38,17 @@ block content
                     .form-group.conn-input
                         label(for='description') Description de l'activité
                         textarea.form-control(id='description', name='description', rows="6" required)
-                .row
-                    .col-md-6
-                        .form-group.conn-input
-                            label(for='activity_date') Date de l'activité
-                            input.form-control.datepicker(id='activity_date', type='text', name='activity_date' required)
-                    .col-md-6
-                        .form-group.conn-input
-                            label(for='hours_done') Nombres d'heures réalisées
-                            input.form-control(id='hours_done', type='number', name='hours_done', min="0", max="40", required)
-                .row
-                    input.btn.btn-default.form-control(type='submit', form='addextrahours', style="margin-bottom: 250px;")
+                    .row
+                        .col-md-6
+                            .form-group.conn-input
+                                label(for='activity_date') Date de l'activité
+                                input.form-control.datepicker(id='activity_date', type='text', name='activity_date' required)
+                        .col-md-6
+                            .form-group.conn-input
+                                label(for='hours_pending') Nombres d'heures réalisées
+                                input.form-control(id='hours_pending', type='number', name='hours_pending', min="0", max="40", required)
+                    .row
+                        input.btn.btn-default.form-control(type='submit', form='addextrahours', style="margin-bottom: 250px;")
 
 
     .modal#warningModal(role='dialog')
@@ -57,9 +57,12 @@ block content
                 .modal-header
                     button.close(type='button' data-dismiss='modal' aria-label='Close')
                         span(aria-hidden='true')&times;
-                    img.text-center(src='http://i.giphy.com/Y5wlazC8lSVuU.gif', style='height: 50px;')
                 .modal-body
-                    p.alert.alert-danger <b>Cette fonctionnalité est destinée à ajouter des heures à votre profil pour les activités que tu N'AS PAS FAIT au travers de la plateforme Simplyk ! </br></br> Avant de faire ça, vérifie que tu n'es pas déjà inscrit à cette activité sur ton profil :)</b>
+                    img.center-block(src='http://i.giphy.com/Y5wlazC8lSVuU.gif', style='height: 100px;')
+                    h3
+                    .alert.alert-danger
+                        i.fa.fa-info-circle
+                        p.inline <b>Cette fonctionnalité est destinée à ajouter des heures à votre profil pour les activités que tu N'AS PAS FAIT au travers de la plateforme Simplyk ! </br></br> Avant de faire ça, vérifie que tu n'es pas déjà inscrit à cette activité sur ton profil :)</b>
 
 
 block footscript
