@@ -61,7 +61,8 @@ var VolunteerSchema = new Schema({
   student: Boolean, //if has a school or not
   admin: {
       school_id: {type: Schema.Types.ObjectId, ref: 'Admin'},
-      class: String
+      class: String,
+      school_name: String
   }
 });
 

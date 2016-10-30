@@ -196,7 +196,7 @@ router.post('/register_volunteer', function(req, res) {
       let admin = {};
       if (req.body.admin_checkbox && req.body.admin) {
         admin = {
-          class: req.body.admin
+          school_name: req.body.admin
         }
       };
 
@@ -231,6 +231,25 @@ router.post('/register_volunteer', function(req, res) {
               firstname: req.body.firstname
             });
           };
+          if (admin) {
+            Admin.update({
+              'name': req.body.admin
+            }, {
+              '$push': {
+                'students': {
+                  '_id': vol._id,
+                  'status': 'automatic_subscription'
+                }
+              }
+            }, {
+              new: true
+            }, function(err, admins_updated) {
+              if (err) {
+                console.log(err);
+              }
+              console.log('The volunteer has a school : ' + req.body.admin + ', and the number of admins updated is : ' + JSON.stringify(admins_updated));
+            });
+          };
           // Intercom creates volunteers
           client.users.create({
             email: vol.email,
@@ -240,7 +259,8 @@ router.post('/register_volunteer', function(req, res) {
             last_request_at: Math.round(Date.now() / 1000),
             custom_attributes: {
               firstname: vol.firstname,
-              group: 'volunteer'
+              group: 'volunteer',
+              school_name: req.body.admin
             }
           });
           res.redirect('/waitforverifying?recipient=' + req.body.email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);
