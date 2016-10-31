@@ -255,22 +255,24 @@ router.post('/register_volunteer', function(req, res) {
               }, function(err, admin_coordinator) {
                 if (err) {
                   console.error(err);
-                }
-                admin = {
-                  school_name: admin_coordinator.name,
-                  school_id: admin_coordinator._id
                 };
-                Volunteer.update({
-                  '_id': vol._id
-                }, {
-                  '$set': {
-                    'admin': admin
-                  }
-                }, function(err, vol_updated) {
-                  if (err) {
-                    console.error(err);
-                  }
-                })
+                if (admin_coordinator != null) {
+                  admin = {
+                    school_name: admin_coordinator.name,
+                    school_id: admin_coordinator._id
+                  };
+                  Volunteer.update({
+                    '_id': vol._id
+                  }, {
+                    '$set': {
+                      'admin': admin
+                    }
+                  }, function(err, vol_updated) {
+                    if (err) {
+                      console.error(err);
+                    }
+                  })
+                };
               });
             });
           };
