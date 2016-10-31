@@ -399,23 +399,39 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
             console.error(err);
             res.sendStatus(404);
         } else if (myVolunteer) {
+            var type = req.body.type;
             console.info('myvolunteer exists');
             console.info('MyVolunteer : ' + JSON.stringify(myVolunteer));
             if (typeof req.body.act_id !== 'undefined') {
                 console.info('Correct hours for an activity !');
-                const theactivity = myVolunteer.events.find(function(event) {
-                    return event.activity_id.toString() == req.body.act_id.toString();
-                });
-                var activity_name = theactivity.intitule;
-                var query = {
-                    '_id': req.body.vol_id,
-                    'events': {
-                        '$elemMatch': {
-                            'activity_id': req.body.act_id,
-                            'day': req.body.day
+                if (type == 'hours_pending') {
+                    const theactivity = myVolunteer.events.find(function(event) {
+                        return event.activity_id.toString() == req.body.act_id.toString();
+                    });
+                    var activity_name = theactivity.intitule;
+                    var query = {
+                        '_id': req.body.vol_id,
+                        'events': {
+                            '$elemMatch': {
+                                'activity_id': req.body.act_id,
+                                'day': req.body.day
+                            }
                         }
-                    }
-                };
+                    };
+                } else if (type == 'students_hours_pending') {
+                    const theactivity = myVolunteer.extras.find(function(event) {
+                        return event._id.toString() == req.body.act_id.toString();
+                    });
+                    var activity_name = theactivity.intitule;
+                    var query = {
+                        '_id': req.body.vol_id,
+                        'extras': {
+                            '$elemMatch': {
+                                'activity_id': req.body.act_id
+                            }
+                        }
+                    };
+                }
                 if (req.body['answers[0][value]']) {
                     console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
                     //i starts from 1 to avoid to select the number answered as corrected hours
@@ -427,22 +443,44 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
                         i++;
                     }
                     console.info('Answers : ' + JSON.stringify(answers));
-                    var update = {
-                        '$set': {
-                            'events.$.hours_done': correct_hours,
-                            'events.$.hours_pending': 0,
-                            'events.$.status': 'confirmed',
-                            'events.$.organism_answers': answers
-                        }
-                    };
+                    if (type == 'hours_pending') {
+                        var update = {
+                            '$set': {
+                                'events.$.hours_done': correct_hours,
+                                'events.$.hours_pending': 0,
+                                'events.$.status': 'confirmed',
+                                'events.$.organism_answers': answers
+                            }
+                        };
+                    } else if (type == 'students_hours_pending') {
+                        var update = {
+                            '$set': {
+                                'extras.$.hours_done': correct_hours,
+                                'extras.$.hours_pending': 0,
+                                'extras.$.status': 'confirmed',
+                                'extras.$.organism_answers': answers
+                            }
+                        };
+                    }
                 } else {
-                    var update = {
-                        '$set': {
-                            'events.$.hours_done': correct_hours,
-                            'events.$.hours_pending': 0,
-                            'events.$.status': 'confirmed'
-                        }
-                    };
+                    if (type == 'hours_pending') {
+                        var update = {
+                            '$set': {
+                                'events.$.hours_done': correct_hours,
+                                'events.$.hours_pending': 0,
+                                'events.$.status': 'confirmed'
+                            }
+                        };
+                    } else if (type == 'students_hours_pending') {
+                        var update = {
+                            '$set': {
+                                'extras.$.hours_done': correct_hours,
+                                'extras.$.hours_pending': 0,
+                                'extras.$.status': 'confirmed'
+                            }
+                        };
+                    }
+
                 }
             } else if (typeof req.body.lt_id !== 'undefined') {
                 console.info('Correct hours for a longterm !');
@@ -561,6 +599,7 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
         } else if (myVolunteer) {
             console.info('myvolunteer exists');
             console.info('MyVolunteer : ' + JSON.stringify(myVolunteer.email));
+            var type = req.body.type;
             var hours_pending = req.body.hours;
             console.info('hours_pending : ' + hours_pending);
             console.info('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
@@ -581,18 +620,32 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
             });
             //If we deal with an event
             if (req.body.act_id) {
-                var activity_name = (myVolunteer.events.find(function(eve) {
-                    return eve.activity_id.toString() == req.body.act_id.toString();
-                })).intitule;
-                var query = {
-                    '_id': req.body.vol_id,
-                    'events': {
-                        '$elemMatch': {
-                            'activity_id': req.body.act_id,
-                            'day': req.body.day
+                if (type == 'hours_pending') {
+                    var activity_name = (myVolunteer.events.find(function(eve) {
+                        return eve.activity_id.toString() == req.body.act_id.toString();
+                    })).intitule;
+                    var query = {
+                        '_id': req.body.vol_id,
+                        'events': {
+                            '$elemMatch': {
+                                'activity_id': req.body.act_id,
+                                'day': req.body.day
+                            }
                         }
-                    }
-                };
+                    };
+                } else if (type == 'students_hours_pending') {
+                    var activity_name = (myVolunteer.extras.find(function(eve) {
+                        return eve._id.toString() == req.body.act_id.toString();
+                    })).intitule;
+                    var query = {
+                        '_id': req.body.vol_id,
+                        'extras': {
+                            '$elemMatch': {
+                                '_id': req.body.act_id
+                            }
+                        }
+                    };
+                }
                 //If we deal with a student
                 if (req.body['answers[0][value]']) {
                     console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
@@ -604,23 +657,45 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
                         i++;
                     }
                     console.info('Answers : ' + JSON.stringify(answers));
-                    var update = {
-                        '$set': {
-                            'events.$.hours_done': hours_pending,
-                            'events.$.hours_pending': 0,
-                            'events.$.status': 'confirmed',
-                            'events.$.organism_answers': answers
-                        }
-                    };
+                    if (type == 'hours_pending') {
+                        var update = {
+                            '$set': {
+                                'events.$.hours_done': hours_pending,
+                                'events.$.hours_pending': 0,
+                                'events.$.status': 'confirmed',
+                                'events.$.organism_answers': answers
+                            }
+                        };
+                    } else if (type == 'students_hours_pending') {
+                        var update = {
+                            '$set': {
+                                'extras.$.hours_done': hours_pending,
+                                'extras.$.hours_pending': 0,
+                                'extras.$.status': 'confirmed',
+                                'extras.$.organism_answers': answers
+                            }
+                        };
+                    }
                 } else {
+                    if (type == 'hours_pending') {
+                        var update = {
+                            '$set': {
+                                'events.$.hours_done': hours_pending,
+                                'events.$.hours_pending': 0,
+                                'events.$.status': 'confirmed'
+                            }
+                        };
+                    } else if (type == 'students_hours_pending') {
+                        var update = {
+                            '$set': {
+                                'extras.$.hours_done': hours_pending,
+                                'extras.$.hours_pending': 0,
+                                'extras.$.status': 'confirmed'
+                            }
+                        };
+                    }
                     console.info('NO answers');
-                    var update = {
-                        '$set': {
-                            'events.$.hours_done': hours_pending,
-                            'events.$.hours_pending': 0,
-                            'events.$.status': 'confirmed'
-                        }
-                    };
+
                 }
                 //If we deal with a longterm
             } else if (req.body.lt_id) {

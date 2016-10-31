@@ -518,6 +518,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
       org_name: req.body.org_name,
       org_phone: req.body.org_phone,
       intitule: req.body.intitule,
+      extra: true,
       description: req.body.description,
       days: [{
         day: req.body.activity_date,
@@ -570,6 +571,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
             if (err) {
               console.error(err);
             };
+            activity_saved.status = 'pending';
             Volunteer.findOneAndUpdate({
               '_id': req.session.volunteer._id
             }, {

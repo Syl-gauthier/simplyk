@@ -83,13 +83,18 @@ var VolunteerSchema = new Schema({
     org_phone: String,
     intitule: String,
     description: String,
+    status: String, //confirmed, pending
     days: [{
       day: Date,
       applicants: [{
         type: Schema.Types.ObjectId,
         ref: 'Volunteer'
       }]
-    }]
+    }],
+    student_questions: [String],
+    student_answers: [String],
+    organism_questions: [String],
+    organism_answers: [String]
   }]
 });
 
