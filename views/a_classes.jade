@@ -17,23 +17,35 @@ block content
                 th Prénom
                 th Heures effectués
                 th Dossier
-                each classe, classe_i in classes_array
-                  tr.warning
-                    td= classe.toString()
-                    td
-                    td
-                    td
+                if classes_array.length > 1
+                  each classe, classe_i in classes_array
+                    tr.warning
+                      td= classe.toString()
+                      td
+                      td
+                      td
+                    each vol, vol_i in volunteers
+                      if vol.admin.class == classe
+                        tr.success
+                          td= vol.lastname
+                          td= vol.firstname
+                          if vol.events.length
+                            td= vol.events.map(el => el.hours_done).reduce(hours_done, 0) + ' h'
+                          else
+                            td 0 h
+                          td
+                            a.btn-link(href="/admin/report"+vol._id) Accéder
+                else
                   each vol, vol_i in volunteers
-                    if vol.admin.class == classe
-                      tr.success
-                        td= vol.lastname
-                        td= vol.firstname
-                        if vol.events.length
-                          td= vol.events.map(el => el.hours_done).reduce(hours_done, 0) + ' h'
-                        else
-                          td 0 h
-                        td
-                          a.btn-link(href="/admin/report"+vol._id) Accéder
+                    tr.success
+                      td= vol.lastname
+                      td= vol.firstname
+                      if vol.events.length
+                        td= vol.events.map(el => el.hours_done).reduce(hours_done, 0) + ' h'
+                      else
+                        td 0 h
+                      td
+                        a.btn-link(href="/admin/report"+vol._id) Accéder
 
 block footscript
   // jQuery (necessary for Bootstrap's JavaScript plugins)

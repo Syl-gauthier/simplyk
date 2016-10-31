@@ -29,13 +29,14 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
         group: req.session.group
       });
     } else {
+      console.log('Students :' + String(volunteers));
       var classes_array = [];
-      volunteers.forEach(function(vol) {
-        var classe = vol.admin.class;
-        if (classes_array.indexOf(classe) > -1) {} else {
-          classes_array.push(classe);
-        }
-      });
+        volunteers.forEach(function(vol) {
+          var classe = vol.admin.class;
+          if (classes_array.indexOf(classe) > -1) {} else {
+            classes_array.push(classe);
+          }
+        });
       res.render('a_classes.jade', {
         volunteers: volunteers,
         session: req.session,

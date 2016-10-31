@@ -74,7 +74,8 @@ var VolunteerSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'Admin'
     },
-    class: String
+    class: String,
+    school_name: String
   },
   extras: [{ //activities created by the student
     email: String,

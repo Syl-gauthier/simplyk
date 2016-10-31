@@ -196,7 +196,7 @@ router.post('/register_volunteer', function(req, res) {
       let admin = {};
       if (req.body.admin_checkbox && req.body.admin) {
         admin = {
-          class: req.body.admin
+          school_name: req.body.admin
         }
       };
 
@@ -231,6 +231,51 @@ router.post('/register_volunteer', function(req, res) {
               firstname: req.body.firstname
             });
           };
+          if (admin) {
+            Admin.update({
+              'name': req.body.admin
+            }, {
+              '$push': {
+                'students': {
+                  '_id': vol._id,
+                  'status': 'automatic_subscription'
+                }
+              }
+            }, {
+              new: true
+            }, function(err, admins_updated) {
+              if (err) {
+                console.log(err);
+              }
+              console.log('The volunteer has a school : ' + req.body.admin + ', and the number of admins updated is : ' + JSON.stringify(admins_updated));
+              //Add school_id to the student
+              Admin.findOne({
+                'name': req.body.admin,
+                'type': 'school-coordinator'
+              }, function(err, admin_coordinator) {
+                if (err) {
+                  console.error(err);
+                };
+                if (admin_coordinator != null) {
+                  admin = {
+                    school_name: admin_coordinator.name,
+                    school_id: admin_coordinator._id
+                  };
+                  Volunteer.update({
+                    '_id': vol._id
+                  }, {
+                    '$set': {
+                      'admin': admin
+                    }
+                  }, function(err, vol_updated) {
+                    if (err) {
+                      console.error(err);
+                    }
+                  })
+                };
+              });
+            });
+          };
           // Intercom creates volunteers
           client.users.create({
             email: vol.email,
@@ -240,7 +285,8 @@ router.post('/register_volunteer', function(req, res) {
             last_request_at: Math.round(Date.now() / 1000),
             custom_attributes: {
               firstname: vol.firstname,
-              group: 'volunteer'
+              group: 'volunteer',
+              school_name: req.body.admin
             }
           });
           res.redirect('/waitforverifying?recipient=' + req.body.email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);

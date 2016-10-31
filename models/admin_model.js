@@ -19,7 +19,7 @@ var AdminSchema = new Schema({
 	school_id: { type: Schema.Types.ObjectId, ref: 'Admin' },//ID of the school coordinator
 	students: [{
 		id: { type: Schema.Types.ObjectId, ref: 'Volunteer' },
-		status: String
+		status: String //'update_subscription' if it is the vol who claim that he belongs to the school
 	}]//mails des utilisateurs qui ont mis l'Adminortunité en favori
 });
 
