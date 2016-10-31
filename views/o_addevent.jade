@@ -51,12 +51,6 @@ block content
 								label.radio-inline
 									input(type='radio', name='language', value='fr')
 									p Seulement Français
-							.checkbox
-								.col-md-1
-									input#min_age_check(type='checkbox')
-								label.col-md-5
-									p Ajouter un âge minimal
-								input#min_age.form-control(type='number', name='min_age', placeholder='Âge minimal', style="display:none;")
 							h3 {{form.errorMessage}}
 							div(ng-repeat='activity in form.activitiesList')
 								h2.inline {{activity.activityTitle}}
@@ -105,9 +99,6 @@ block footscript
 			});
 			var input = $('.timepicker');
 				input.pickatime({
-			});
-			$('#min_age_check').click(function(){
-				$('#min_age').toggle(this.checked);
 			});
 			$('#creationeventform').submit(function(){
 				console.log('Before submitting');
