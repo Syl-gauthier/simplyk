@@ -248,6 +248,30 @@ router.post('/register_volunteer', function(req, res) {
                 console.log(err);
               }
               console.log('The volunteer has a school : ' + req.body.admin + ', and the number of admins updated is : ' + JSON.stringify(admins_updated));
+              //Add school_id to the student
+              Admin.findOne({
+                'name': req.body.admin,
+                'type': 'school-coordinator'
+              }, function(err, admin_coordinator) {
+                if (err) {
+                  console.error(err);
+                }
+                admin = {
+                  school_name: admin_coordinator.name,
+                  school_id: admin_coordinator._id
+                };
+                Volunteer.update({
+                  '_id': vol._id
+                }, {
+                  '$set': {
+                    'admin': admin
+                  }
+                }, function(err, vol_updated) {
+                  if (err) {
+                    console.error(err);
+                  }
+                })
+              });
             });
           };
           // Intercom creates volunteers
