@@ -207,5 +207,6 @@ module.exports = {
   sendUnsubscriptionEmail: sendUnsubscriptionEmail,
   sendVerifyEmail: sendVerifyEmail,
   sendHoursPendingOrgEmail: sendHoursPendingOrgEmail,
-  sendHoursConfirmedVolEmail: sendHoursConfirmedVolEmail
+  sendHoursConfirmedVolEmail: sendHoursConfirmedVolEmail,
+  sendAutomaticSubscriptionOrgEmail
 };
