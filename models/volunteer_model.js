@@ -15,12 +15,15 @@ var VolunteerSchema = new Schema({
   birthdate: Date,
   phone: String,
   complete: Boolean,
-  emergency : { // this contact is needed for underaged
-      em_name: String,
-      em_phone: Number,
+  emergency: { // this contact is needed for underaged
+    em_name: String,
+    em_phone: Number,
   },
-  events : [{
-    activity_id: {type: Schema.Types.ObjectId, ref:'Organism'},
+  events: [{
+    activity_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'Organism'
+    },
     intitule: String,
     address: String,
     lat: Number,
@@ -29,12 +32,16 @@ var VolunteerSchema = new Schema({
     email: String,
     description_event: String,
     intitule_activity: String,
-    org_id: {type: Schema.Types.ObjectId, ref:'Organism'},
+    org_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'Organism'
+    },
     org_name: String,
     start_time: String,
     end_time: String,
     hours_done: Number,
     status: String,
+    extra: Boolean,
     hours_pending: Number,
     student_questions: [String],
     student_answers: [String],
@@ -45,7 +52,10 @@ var VolunteerSchema = new Schema({
     intitule: String,
     description: String,
     address: String,
-    org_id: {type: Schema.Types.ObjectId, ref:'Organism'},
+    org_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'Organism'
+    },
     org_name: String,
     lat: Number,
     lon: Number,
@@ -60,10 +70,27 @@ var VolunteerSchema = new Schema({
   }],
   student: Boolean, //if has a school or not
   admin: {
-      school_id: {type: Schema.Types.ObjectId, ref: 'Admin'},
-      class: String,
-      school_name: String
-  }
+    school_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'Admin'
+    },
+    class: String,
+    school_name: String
+  },
+  extras: [{ //activities created by the student
+    email: String,
+    org_name: String,
+    org_phone: String,
+    intitule: String,
+    description: String,
+    days: [{
+      day: Date,
+      applicants: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Volunteer'
+      }]
+    }]
+  }]
 });
 
 VolunteerSchema.methods.generateHash = crypt.generateHash;

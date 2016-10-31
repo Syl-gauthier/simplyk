@@ -17,11 +17,18 @@ var OrganismSchema = new Schema({
 	lastname: String,
 	phone: String,
 	description: String,
-	admin_id: {type: Schema.Types.ObjectId, ref:'Admin'},
+	admin_id: {
+		type: Schema.Types.ObjectId,
+		ref: 'Admin'
+	},
 	school_name: String,
-	school_id: {type: Schema.Types.ObjectId, ref:'Admin'},
+	school_id: {
+		type: Schema.Types.ObjectId,
+		ref: 'Admin'
+	},
 	cause: String,
-	validation: Boolean,//Simplyk approved ?
+	automatic: Boolean, //if th organism is automatically created
+	validation: Boolean, //Simplyk approved ?
 	events: [{
 		id: ObjectId,
 		intitule: String,
@@ -33,7 +40,10 @@ var OrganismSchema = new Schema({
 		min_age: Number,
 		description: String,
 		status: String,
-		activities: [{type: Schema.Types.ObjectId, ref:'Activity'}]
+		activities: [{
+			type: Schema.Types.ObjectId,
+			ref: 'Activity'
+		}]
 	}],
 	long_terms: [{
 		intitule: String,
@@ -49,7 +59,10 @@ var OrganismSchema = new Schema({
 		min_age: Number,
 		antecedents: Boolean,
 		tags: String,
-		applicants: [{type: Schema.Types.ObjectId, ref:'Volunteer'}]
+		applicants: [{
+			type: Schema.Types.ObjectId,
+			ref: 'Volunteer'
+		}]
 	}]
 });
 

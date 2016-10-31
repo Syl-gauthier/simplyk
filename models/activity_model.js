@@ -14,11 +14,13 @@ var ActivitySchema = new Schema({
 	language: String,
 	validation: Boolean,
 	description: String,
+	org_phone: String,
 	min_hours: Number,
 	lat: Number,
 	lon: Number,
 	cause: String,
 	favorite: Boolean,
+	extra: Boolean,
 	school_id: {type: Schema.Types.ObjectId, ref:'Admin'},
 	days: [{
 		start_time: String,
