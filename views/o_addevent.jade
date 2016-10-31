@@ -37,6 +37,7 @@ block content
 								input.form-control(id='{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{field.id}}', aria-describedby='basic-addon1')
 
 							h4 Dates de l'évènement
+							p.alert.alert-danger.hidden#day-alert Chaque jour doit être défini par une date
 							div.pickadatediv.input-group.conn-input(ng-repeat='day in form.daysList' on-last-repeat)
 								span#basic-addon1.input-group-addon {{day.title}}
 								input.datepicker.form-control(id='day{{day.nb}}', type='text', name='day{{day.nb}}', placeholder='Choisis un jour', required)
@@ -100,14 +101,33 @@ block footscript
 			var input = $('.timepicker');
 				input.pickatime({
 			});
-			$('#creationeventform').submit(function(){
-				console.log('Before submitting');
-				console.log($('.datepicker').attr('aria-readonly'));
-				$('.datepicker').attr('aria-readonly', false);
-				console.log($('.datepicker').attr('aria-readonly'));
-				console.log($('.datepicker').attr('readonly'));
-				$('.datepicker').attr('readonly', false);
-				console.log($('.datepicker').attr('readonly'));
+			$('#creationeventform').submit(function(event){
+				let days_total = $('.datepicker').length;
+				let days_defined = 0;
+				$('.datepicker').each(function(){
+					console.info('$(this).val() : ' + $(this).val().length);
+					if ($(this).val().length < 4){
+					} else {
+						days_defined ++;
+						console.info('days_defined : ' + days_defined);
+						console.info('days_total : ' + days_total);
+					}
+				});
+				if(days_defined != days_total) {
+					$('html,body').animate({
+						scrollTop: $('#event_description').offset().top
+					},'slow');
+					$('#day-alert').removeClass('hidden');
+					event.preventDefault();
+				} else {
+					console.log('Before submitting');
+					console.log($('.datepicker').attr('aria-readonly'));
+					$('.datepicker').attr('aria-readonly', false);
+					console.log($('.datepicker').attr('aria-readonly'));
+					console.log($('.datepicker').attr('readonly'));
+					$('.datepicker').attr('readonly', false);
+					console.log($('.datepicker').attr('readonly'));
+				}
 			});
 		});
 
