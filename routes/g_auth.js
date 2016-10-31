@@ -265,7 +265,8 @@ router.post('/register_volunteer', function(req, res) {
                     '_id': vol._id
                   }, {
                     '$set': {
-                      'admin': admin
+                      'admin': admin,
+                      'student': true
                     }
                   }, function(err, vol_updated) {
                     if (err) {
