@@ -373,7 +373,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                     act_id: req.params.act_id
                   }
                 });
-                update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.events, function(err) {
+                update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.events, 'EV', function(err) {
                   if (err) {
                     console.log(err);
                   } else {
@@ -444,7 +444,7 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
             lt_intitule: newlt.intitule
           }
         });
-        update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, function(err) {
+        update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, 'LT', function(err) {
           if (err) {
             console.log(err);
           } else {
