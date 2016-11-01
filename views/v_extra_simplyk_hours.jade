@@ -47,8 +47,13 @@ block content
                             .form-group.conn-input
                                 label(for='hours_pending') Nombres d'heures réalisées
                                 input.form-control(id='hours_pending', type='number', name='hours_pending', min="0", max="40", required)
+                    h3 Questions sur l'activité
+                    each question, q_i in student_questions
+                        .form-group.conn-input
+                            label(for='answer'+q_i)= question
+                            textarea.form-control(id='answer'+q_i, name='answer'+q_i, rows="6" required)
                     .row
-                        input.btn.btn-default.form-control(type='submit', form='addextrahours', style="margin-bottom: 250px;")
+                        input.btn.btn-default.form-control(type='submit', form='addextrahours', style="margin-bottom: 100px;")
 
 
     .modal#warningModal(role='dialog')

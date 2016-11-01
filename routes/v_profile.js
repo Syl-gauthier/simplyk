@@ -14,6 +14,7 @@ var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
 var Activity = require('../models/activity_model.js');
 var OrgTodo = require('../models/o_todo_model.js');
+const schools_res = require('../res/schools_res.js');
 
 
 
@@ -401,7 +402,7 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
               firstname: req.session.volunteer.firstname,
               lastname: req.session.volunteer.lastname,
               recipient: orga.email,
-              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'engagement ' + new_lt.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
             });
           }
         });
@@ -499,10 +500,11 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
 
 router.get('/volunteer/extra_simplyk_hours', permissions.requireGroup('volunteer'), function(req, res) {
   if (req.session.volunteer.student) {
-    res.render('v_extra_simplyk_hours.jade', {
+    res.status(200).render('v_extra_simplyk_hours.jade', {
       session: req.session,
       volunteer: req.session.volunteer,
-      group: req.session.group
+      group: req.session.group,
+      student_questions: schools_res.student_questions
     });
   } else {
     const err = 'ERROR: Il te faut être un élève pour accéder à cette page d\'ajout d\'heures extra-Simplyk';
@@ -513,6 +515,19 @@ router.get('/volunteer/extra_simplyk_hours', permissions.requireGroup('volunteer
 
 router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), function(req, res) {
   if (req.session.volunteer.student) {
+
+    function isAKeyAnswer(key) {
+      return key.search('answer') != -1;
+    };
+
+    const student_answers_keys = Object.keys(req.body).filter(isAKeyAnswer);
+    let student_answers = [];
+
+    for (var key_i = student_answers_keys.length - 1; key_i >= 0; key_i--) {
+      student_answers.push(req.body[student_answers_keys[student_answers_keys.length - 1 - key_i]]);
+    };
+
+    console.log('student_answers : ' + student_answers);
     let newActivity = new Activity({
       email: req.body.org_email,
       org_name: req.body.org_name,
@@ -523,14 +538,19 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
       days: [{
         day: req.body.activity_date,
         applicants: [req.session.volunteer._id]
-      }]
-    }); ////TO SAVE !!
+      }],
+      student_questions: schools_res.student_questions,
+      student_answers
+    });
+
     //Ajouter organism s'il n'existe pas
     Organism.findOne({
       '$or': [{
         'email': req.body.org_email
       }, {
         'org_name': req.body.org_name
+      }, {
+        'phone': req.body.org_phone
       }]
     }, function(err, theOrg) {
       if (err) {
@@ -567,6 +587,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
             recipient: req.body.org_email,
             customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'En tant qu\'élève dans une école où le bénévolat est encouragé, il a besoin que vous lui validiez ces heures s\'il les a réellement fait. Sinon, il est utile aussi que vous signaliez qu\'il y a une erreur ! :)', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
           });
+          console.info('INFO: student add extra hours to an organism which ALREADY exists : ' + req.body.org_name);
           newActivity.save(function(err, activity_saved) {
             if (err) {
               console.error(err);
@@ -605,7 +626,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
             description: req.body.description
           });
 
-          const passToChange = process.env.PASSWORD_CREATION;
+          const passToChange = (pass1.substring(0,3)+pass2.substring(0,3)).toLowerCase();
           organism.password = organism.generateHash(passToChange);
 
           organism.save(function(err, org_saved) {
@@ -622,18 +643,19 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
             });
 
             var hostname = req.headers.host;
-            var verifyUrl = 'http://' + hostname + '/verifyV/' + randomString;
+            var verifyUrl = 'http://' + hostname + '/verifyO/' + randomString;
             console.log('Verify url sent: ' + verifyUrl);
 
             emailer.sendAutomaticSubscriptionOrgEmail({
-              recipient: req.body.org_email,
+              recipient: 'thibaut.jaurou@gmail.com' /*req.body.org_email*/ ,
               button: {
                 link: verifyUrl
               },
-              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name, 'Vous recevez ce message car il mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Si c\'est bel et bien le cas, venez valider ces heures sur la plateforme Simplyk afin qu\'elles soient comptabiliser par ses professeurs !', 'S\'il n\'a pas fait les heures mentionnées, connectez-vous pour corriger la situation. :) ', 'Vos identifiants de connexion sont les suivants :', 'Email: ' + req.body.org_email, 'Mot de passe: ' + passToChange],
+              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name + '.', 'Vous recevez ce message car cet élève mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Si c\'est bel et bien le cas, venez valider ses heures sur la plateforme Simplyk afin qu\'elles soient comptabiliser par ses professeurs !', 'S\'il n\'a pas fait les heures mentionnées, connectez-vous pour corriger la situation. :) ', 'Vos identifiants de connexion sont les suivants :', 'Email: ' + req.body.org_email, 'Mot de passe: ' + passToChange],
               firstname: req.session.volunteer.firstname,
               lastname: req.session.volunteer.lastname
             });
+            console.info('INFO: student add extra hours to an organism which has NOT subscribed to the platform : ' + req.body.org_name);
 
             newActivity.save(function(err, activity_saved) {
               if (err) {
@@ -651,7 +673,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 if (err) {
                   console.error(err);
                 } else {
-                  res.session.volunteer = newVolunteer;
+                  req.session.volunteer = newVolunteer;
                   res.redirect('/volunteer/map');
                 }
               });
