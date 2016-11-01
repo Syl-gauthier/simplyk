@@ -538,9 +538,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
       days: [{
         day: req.body.activity_date,
         applicants: [req.session.volunteer._id]
-      }],
-      student_questions: schools_res.student_questions,
-      student_answers
+      }]
     });
 
     //Ajouter organism s'il n'existe pas
@@ -592,12 +590,26 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
             if (err) {
               console.error(err);
             };
-            activity_saved.status = 'pending';
+            let extra_to_add = {
+              status: 'pending',
+              email: activity_saved.email,
+              org_name: activity_saved.org_name,
+              org_phone: activity_saved.org_phone,
+              intitule: activity_saved.intitule,
+              description: activity_saved.description,
+              status: 'pending',
+              days: activity_saved.days,
+              extra: true,
+              student_questions: schools_res.student_questions,
+              organism_questions: schools_res.organism_questions,
+              student_answers
+            };
+            console.log('extra_to_add : ' + JSON.stringify(extra_to_add));
             Volunteer.findOneAndUpdate({
               '_id': req.session.volunteer._id
             }, {
               '$push': {
-                'extras': activity_saved
+                'extras': extra_to_add
               }
             }, {
               new: true
@@ -626,7 +638,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
             description: req.body.description
           });
 
-          const passToChange = (pass1.substring(0,3)+pass2.substring(0,3)).toLowerCase();
+          const passToChange = (pass1.substring(0, 3) + pass2.substring(0, 3)).toLowerCase();
           organism.password = organism.generateHash(passToChange);
 
           organism.save(function(err, org_saved) {
@@ -647,7 +659,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
             console.log('Verify url sent: ' + verifyUrl);
 
             emailer.sendAutomaticSubscriptionOrgEmail({
-              recipient: 'thibaut.jaurou@gmail.com' /*req.body.org_email*/ ,
+              recipient: req.body.org_email,
               button: {
                 link: verifyUrl
               },
@@ -661,11 +673,26 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
               if (err) {
                 console.error(err);
               };
+              let extra_to_add = {
+                status: 'pending',
+                email: activity_saved.email,
+                org_name: activity_saved.org_name,
+                org_phone: activity_saved.org_phone,
+                intitule: activity_saved.intitule,
+                description: activity_saved.description,
+                status: 'pending',
+                days: activity_saved.days,
+                extra: true,
+                student_questions: schools_res.student_questions,
+                organism_questions: schools_res.organism_questions,
+                student_answers
+              };
+              console.log('extra_to_add : ' + JSON.stringify(extra_to_add));
               Volunteer.findOneAndUpdate({
                 '_id': req.session.volunteer._id
               }, {
                 '$push': {
-                  'extras': activity_saved
+                  'extras': extra_to_add
                 }
               }, {
                 new: true
