@@ -113,7 +113,11 @@ block footscript
   script.
     $(document).ready(function(){
       if ( $('#birthdate').prop('type') != 'date' ) {
-        $('#birthdate').datepicker();
+        $('#birthdate').datepicker({
+          changeMonth: true,
+          changeYear: true,
+          yearRange: "1950:2020"
+        });
       }
       $('#admin_checkbox').click(function(){
         $('#admin_dropdown').removeClass('hidden');
