@@ -9,8 +9,12 @@ block content
       .container-fluid
         .row.fill
           .col-md-8.col-md-offset-2.no-side-padding
+            a.white(href='/')
+              h3
+                i.inline.fa.fa-arrow-left
+                p.inline Précédent
             h1.text-center Liste des organismes
-            h4.text-center Tous les organismes inscrit et postant des opportunités sur Simplyk
+            h4.text-center(style='margin-bottom: 50px') Tous les organismes inscrit et postant des opportunités sur Simplyk
             ul.list-group.margintop
               if error
                 p.alert.alert-danger #{error}
@@ -18,21 +22,23 @@ block content
                 each val, index in organisms
                   li.list-group-item
                     div.media-left.media-middle
-                      if (val.cause==='Culture')
-                        i.icon.icon-rocket(style= "color:#{val.color}") 
-                      else if (val.cause === 'Environnement')
-                        i.icon.icon-leaf(style= "color:#{val.color}") 
+                      if (val.cause==='Sport et Culture')
+                        i.fa.fa-institution.fa-lg.fa-fw.cult(style= "color:#{val.color}") 
+                      else if (val.cause === 'Nature')
+                        i.fa.fa-envira.fa-lg.fa-fw.leaf(style= "color:#{val.color}") 
+                      else if (val.cause === 'Solidarité')
+                        i.fa.fa-heart.fa-lg.fa-fw.soli(style= "color:#{val.color}") 
+                      else if (val.cause === 'Enfance')
+                        i.fa.fa-child.fa-lg.fa-fw.child(style= "color:#{val.color}") 
                       else
                         i.icon.icon-puzzle-piece(style= "color:#{val.color}") 
                     div.media-body
-                      if val.validation
-                        h4.media-heading= val.org_name 
-                          i.icon.icon-check.firstColor.icon-fw(href="#" data-toggle="tooltip" data-placement="top" title="Organisme vérifié par Simplyk")
-                      else
-                        h4.media-heading= val.org_name
-                      a.firstColor(href="#" data-toggle="tooltip" data-placement="top" title="Organisme non vérifé par Simplyk")= val.cause
+                      h4.media-heading= val.org_name 
+                      p.firstColor= val.cause
                     div.media-right.media-middle
-                      button.btn.btn-default Opportunités (à venir)
+                      if val.validation
+                        i.icon.icon-check.firstColor.icon-fw(href="#" data-toggle="tooltip" data-placement="top" title="Organisme vérifié par Simplyk")
+                      else
 
 block footscript
   script.
