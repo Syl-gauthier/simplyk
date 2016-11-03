@@ -117,7 +117,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
             res.render('v_map.jade', {
               session: req.session,
               error: err,
-              organism: req.session.organism,
+              volunteer: req.session.volunteer,
               group: req.session.group
             });
           } else {
