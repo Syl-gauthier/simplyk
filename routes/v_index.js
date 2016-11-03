@@ -117,7 +117,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
             res.render('v_map.jade', {
               session: req.session,
               error: err,
-              organism: req.session.organism,
+              volunteer: req.session.volunteer,
               group: req.session.group
             });
           } else {
@@ -139,6 +139,12 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
               }
             });
             var longterms = longtermsList(lt_organisms);
+            const hash = require('intercom-client').SecureMode.userHash({
+              secretKey: process.env.INTERCOM_SECRET_KEY,
+              identifier: req.session.volunteer.email
+            });
+            console.info('hash : ' + hash);
+            console.info('typeof hash : ' + typeof hash);
             res.render('v_map.jade', {
               session: req.session,
               activities: acts,
@@ -147,7 +153,8 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
               error: req.query.error,
               longterms: longterms,
               success: req.query.success,
-              group: req.session.group
+              group: req.session.group,
+              hash
             });
           }
         });
@@ -290,7 +297,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
           let phone = {};
           if (req.session.volunteer.phone) {
             phone = req.session.volunteer.phone;
-          } else if (req.body.phone){
+          } else if (req.body.phone) {
             phone = req.body.phone;
           } else {
             phone = null;
