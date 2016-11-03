@@ -140,7 +140,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
             });
             var longterms = longtermsList(lt_organisms);
             const hash = require('intercom-client').SecureMode.userHash({
-              secretKey: 'sha256',
+              secretKey: process.env.INTERCOM_SECRET_KEY,
               identifier: req.session.volunteer.email
             });
             console.info('hash : ' + hash);
