@@ -26,13 +26,14 @@ block content
                 th.text-center Heure de début
                 th.text-center Heure de fin
               each day, nb in act.days
-                tr
-                  td.text-center= (day.vol_nb-day.applicants.length)
-                  td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
-                  td.text-center= day.start_time
-                  td.text-center= day.end_time
-                #identifiant(style="display:none")
-                  p= act._id
+                if day.day
+                  tr
+                    td.text-center= (day.vol_nb-day.applicants.length)
+                    td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
+                    td.text-center= day.start_time
+                    td.text-center= day.end_time
+                  #identifiant(style="display:none")
+                    p= act._id
               p <b>Adresse : </b> #{act.address}
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
@@ -87,12 +88,13 @@ block content
                 h4 Dans le cadre de : <b>#{the_favorite.event_intitule}</b>
                 p= the_favorite.description
                 each day, day_i in the_favorite.days
-                  h4
-                    h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                    h6.inline
-                      i.fa.fa-user
-                      p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-                    h2
+                  if day.day
+                    h4
+                      h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                      h6.inline
+                        i.fa.fa-user
+                        p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+                      h2
               .panel-footer
                 button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favorite._id) Plus d'infos
 
@@ -122,11 +124,12 @@ block content
                   .panel-body
                       h4 Dans le cadre de : <b>#{act.event_intitule}</b>
                       each day, day_i in act.days
-                        h4
-                          h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                          h6.inline
-                            i.fa.fa-user
-                            p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+                        if day.day
+                          h4
+                            h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                            h6.inline
+                              i.fa.fa-user
+                              p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
       .col-sm-8.no-side-padding
         #map
 

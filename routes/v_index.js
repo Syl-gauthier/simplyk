@@ -22,6 +22,7 @@ var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
 var update_intercom = require('../lib/intercom/update_intercom.js');
 var ltSubs = require('../lib/subscribe/longterm_subs.js');
+const schools_res = require('../res/schools_res.js');
 var app = express();
 
 /*GET map page*/
@@ -411,9 +412,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
     }
   };
   if (req.session.volunteer.student) {
-    const student_q = ['Quel est le but du travail de l’organisme?', 'Identifie une qualité du profil de l’apprenant que tu as développé au cours de cette activité et explique pourquoi.', 'Comment pourrais-tu prolonger ton expérience de bénévolat ?'],
-      organism_q = ['Quel point positif pouvez-vous mettre en avant sur l’élève, et qu’est-ce que l’élève pourrait améliorer ?'];
-    subscribeToActivity(student_q, organism_q);
+    subscribeToActivity(schools_res.student_questions, schools_res.organism_questions);
   } else {
     subscribeToActivity(null, null);
   }

@@ -96,6 +96,12 @@ block content
           li(role='navigation')
             a(href='#profile' aria-controls='profile' role='tab' data-toggle='tab') 
               h4 Mes informations
+          if volunteer.student
+            li(role='navigation')
+              a(href='#extras' aria-controls='extras' role='tab' data-toggle='tab') 
+                h4 Mes extra-Simplyk 
+                  span.badge= volunteer.extras.length
+
     .row
       .tab-content
         #participations.tab-pane.fade.active.in(role='tabpanel')
@@ -279,19 +285,18 @@ block content
                               button(type='button' class="close" data-dismiss="modal" aria-label="Close")
                                 span(aria-hidden='true')
                                 h4.modal-title Ajout d'heures
-                              div.modal-body
-                                div.form-group
-                                  label(for='addLTHoursInput') Combien d'heures as-tu effectué dernièrement ?
-                                  input.form-control(name='hours_pending', type='number', min=1, max=50, form='addLTHoursForm'+lt_i, required)
-                              div.modal-footer
-                                a.btn.btn-default(data-dismiss='modal') Annuler
-                                input.btn.btn-warning(type='submit' form='addLTHoursForm'+lt_i, value='Envoyer')
+                            div.modal-body
+                              div.form-group
+                                label(for='addLTHoursInput') Combien d'heures as-tu effectué dernièrement ?
+                                input.form-control(name='hours_pending', type='number', min=1, max=50, form='addLTHoursForm'+lt_i, required)
+                            div.modal-footer
+                              a.btn.btn-default(data-dismiss='modal') Annuler
+                              input.btn.btn-warning(type='submit' form='addLTHoursForm'+lt_i, value='Envoyer')
         #profile.tab-pane.fade(role='tabpanel')
           .col-md-6.col-md-offset-3
             .page-header
               h3
                 | Mon profil
-                small
               if error
                 p.alert.alert-danger #{error}
             ul.list-group
@@ -324,6 +329,71 @@ block content
                     button.btn.btn-default#edit-password-button.display Éditer
                     button.btn.btn-default#cancel-password-button.editing.hidden Annuler
                     button.btn.btn-default#save-password-button.editing.hidden Enregistrer
+        #extras.tab-pane.fade(role='tabpanel')
+          .col-md-6.col-md-offset-3
+            .page-header
+              h3 Extra-Simplyk
+              h5 Les engagements que j'ai rentré à la main sur la plateforme car j'y avais participé sans passer par Simplyk
+              h3
+              if error
+                p.alert.alert-danger #{error}
+              #offers-list.no-side-padding
+                ul.list-group.list-opportunity
+                  unless (volunteer.extras.length > 0)
+                    p <b>Pas d'extras</b>
+                  //IF EVENT_PAST
+                  if volunteer.extras.length
+                    each ext, ext_i in volunteer.extras
+                      li.list-group-item.list-extra-item(id= ext._id)
+                        .panel.panel-default
+                          .panel-heading
+                            div.media-left.media-top
+                              a(href='profile')
+                                img.media-object.little-img(src='/images/clouds.jpg')
+                            div.media-body
+                              h4.media-heading <b>#{ext.intitule}</b>
+                              h6 <small>pour</small> #{ext.org_name}
+                          .panel-body
+                            h6.inline
+                              i.fa.fa-info
+                              p.inline= ext.description
+                            if ext.hours_done || ext.hours_pending
+                              h4
+                                if ext.hours_done
+                                  span.badge(style='background-color: #113A20')= ext.hours_done + ' heures réalisées '
+                                if ext.hours_pending
+                                  span.badge(style='background-color: #E33831')= ext.hours_pending + ' heures à confirmer '
+                          .panel-footer
+                            .btn-group
+                              button.btn.infos-button-extra.extra(id= ext._id, data-toggle='modal' data-target='#extraModal'+ext_i) Détails
+                      .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='extraModal'+ext_i)
+                        div.modal-dialog(role='document')
+                          .modal-content
+                            .modal-header
+                              button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                span(aria-hidden='true')
+                                h4.modal-title Détails de l'extra
+                            div.modal-body
+                              if ext.student_questions && ext.student_answers
+                                h4 <b>Tes feedbacks</b>
+                                each question, question_i in ext.student_questions
+                                  div.panel.panel-warning
+                                    div.panel-heading
+                                      h6= question
+                                    div.panel-body
+                                      h6= ext.student_answers[question_i]
+                              if ext.organism_questions.length && ext.organism_answers.length
+                                h4 <b>Les feedbacks de l'organisme</b>
+                                each question, question_i in ext.organism_questions
+                                  div.panel.panel-warning
+                                    div.panel-heading
+                                      h6= question
+                                    div.panel-body
+                                      h6= ext.organism_answers[question_i]
+                              else
+                                h4 <b>En attente des feedbacks de l'organisme...</b>
+                            div.modal-footer
+                                a.btn.btn-default(data-dismiss='modal') Fermer
 
 block footscript
   script(src='/edit-password.js')

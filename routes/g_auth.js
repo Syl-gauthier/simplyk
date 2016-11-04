@@ -193,8 +193,10 @@ router.post('/register_volunteer', function(req, res) {
     } else {
       //Add volunteer
       //Chack if an admin has been selected
+      console.info('req.body : ' + String(req.body));
       let admin = {};
       if (req.body.admin_checkbox && req.body.admin) {
+        console.info('Belongs to Admin : ' + req.body.admin_checkbox);
         admin = {
           school_name: req.body.admin
         }
