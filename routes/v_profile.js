@@ -573,6 +573,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
         if (theOrg) {
           //send email and add orgToDo
           newTodo.org_id = newActivity.org_id = theOrg._id;
+
           organism = theOrg;
           newTodo.save(function(err, newTodo_saved) {
             if (err) {
@@ -591,6 +592,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
               console.error(err);
             };
             let extra_to_add = {
+              activity_id: activity_saved._id,
               status: 'pending',
               email: activity_saved.email,
               org_name: activity_saved.org_name,
@@ -599,6 +601,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
               description: activity_saved.description,
               status: 'pending',
               days: activity_saved.days,
+              hours_pending: req.body.hours_pending,
               extra: true,
               student_questions: schools_res.student_questions,
               organism_questions: schools_res.organism_questions,
@@ -674,6 +677,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 console.error(err);
               };
               let extra_to_add = {
+                activity_id: activity_saved._id,
                 status: 'pending',
                 email: activity_saved.email,
                 org_name: activity_saved.org_name,
@@ -682,6 +686,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 description: activity_saved.description,
                 status: 'pending',
                 days: activity_saved.days,
+                hours_pending: req.body.hours_pending,
                 extra: true,
                 student_questions: schools_res.student_questions,
                 organism_questions: schools_res.organism_questions,

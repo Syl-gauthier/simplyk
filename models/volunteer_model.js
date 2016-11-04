@@ -22,7 +22,7 @@ var VolunteerSchema = new Schema({
   events: [{
     activity_id: {
       type: Schema.Types.ObjectId,
-      ref: 'Organism'
+      ref: 'Activity'
     },
     intitule: String,
     address: String,
@@ -82,6 +82,10 @@ var VolunteerSchema = new Schema({
     org_name: String,
     org_phone: String,
     intitule: String,
+    activity_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'Activity'
+    },
     description: String,
     status: String, //confirmed, pending
     days: [{
@@ -91,6 +95,8 @@ var VolunteerSchema = new Schema({
         ref: 'Volunteer'
       }]
     }],
+    hours_pending: Number,
+    hours_done: Number,
     student_questions: [String],
     student_answers: [String],
     organism_questions: [String],

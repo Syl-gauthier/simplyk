@@ -420,7 +420,7 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
                     };
                 } else if (type == 'students_hours_pending') {
                     const theactivity = myVolunteer.extras.find(function(event) {
-                        return event._id.toString() == req.body.act_id.toString();
+                        return event.activity_id.toString() == req.body.act_id.toString();
                     });
                     var activity_name = theactivity.intitule;
                     var query = {
@@ -635,13 +635,13 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
                     };
                 } else if (type == 'students_hours_pending') {
                     var activity_name = (myVolunteer.extras.find(function(eve) {
-                        return eve._id.toString() == req.body.act_id.toString();
+                        return eve.activity_id.toString() == req.body.act_id.toString();
                     })).intitule;
                     var query = {
                         '_id': req.body.vol_id,
                         'extras': {
                             '$elemMatch': {
-                                '_id': req.body.act_id
+                                'activity_id': req.body.act_id
                             }
                         }
                     };
