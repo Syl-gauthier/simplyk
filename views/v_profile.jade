@@ -339,8 +339,8 @@ block content
                 p.alert.alert-danger #{error}
               #offers-list.no-side-padding
                 ul.list-group.list-opportunity
-                  unless (volunteer.extras)
-                    p Pas d'extras
+                  unless (volunteer.extras.length > 0)
+                    p <b>Pas d'extras</b>
                   //IF EVENT_PAST
                   if volunteer.extras.length
                     each ext, ext_i in volunteer.extras
@@ -382,7 +382,7 @@ block content
                                       h6= question
                                     div.panel-body
                                       h6= ext.student_answers[question_i]
-                              if ext.organism_questions && ext.organism_answers
+                              if ext.organism_questions.length && ext.organism_answers.length
                                 h4 <b>Les feedbacks de l'organisme</b>
                                 each question, question_i in ext.organism_questions
                                   div.panel.panel-warning
@@ -390,6 +390,8 @@ block content
                                       h6= question
                                     div.panel-body
                                       h6= ext.organism_answers[question_i]
+                              else
+                                h4 <b>En attente des feedbacks de l'organisme...</b>
                             div.modal-footer
                                 a.btn.btn-default(data-dismiss='modal') Fermer
 

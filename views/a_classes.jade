@@ -1,7 +1,8 @@
 extends ./g_layout.jade
 block vars
   - var page = 'students'
-  - var hours_done = function(previousValue, currentValue, currentIndex, array) {return previousValue + currentValue; };
+  - var hours_count = function(previousValue, currentValue, currentIndex, array) {if(currentValue) {return previousValue + currentValue;} else {return currentValue;} };
+
 
 block head
   title Mes élèves
@@ -29,8 +30,8 @@ block content
                         tr.success
                           td= vol.lastname
                           td= vol.firstname
-                          if vol.events.length
-                            td= vol.events.map(el => el.hours_done).reduce(hours_done, 0) + ' h'
+                          if vol.events.length || vol.long_terms.length || vol.extras.length 
+                            td= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
                           else
                             td 0 h
                           td
@@ -40,8 +41,8 @@ block content
                     tr.success
                       td= vol.lastname
                       td= vol.firstname
-                      if vol.events.length
-                        td= vol.events.map(el => el.hours_done).reduce(hours_done, 0) + ' h'
+                      if vol.events.length || vol.long_terms.length || vol.extras.length 
+                        td= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
                       else
                         td 0 h
                       td
