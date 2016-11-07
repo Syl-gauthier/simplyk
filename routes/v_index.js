@@ -363,7 +363,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                   recipient: organism.email,
                   name: organism.firstname + ' ' + organism.lastname,
                   link: 'http://' + req.headers.host + '/organism/event/' + theEvent._id,
-                  customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !'
+                  customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !', 'Maintenant, tu peux le contacter par courriel : ' + newVolunteer.email, 'Ou par téléphone : ' + newVolunteer.phone]
                 };
                 emailer.sendSubscriptionOrgEmail(org_content);
                 var vol_content = {
