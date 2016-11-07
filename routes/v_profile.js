@@ -638,7 +638,8 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
             email_verify_string: randomString,
             password: '',
             phone: req.body.org_phone,
-            description: req.body.description
+            description: req.body.description,
+            automatic: true
           });
 
           const passToChange = (pass1.substring(0, 3) + pass2.substring(0, 3)).toLowerCase();
