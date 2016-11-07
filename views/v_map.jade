@@ -3,7 +3,7 @@ block vars
   - var page = 'map'
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
-  - var the_fav = {}; if (typeof the_favorite !== 'undefined') {the_fav = the_favorite} else {the_fav = {}};
+  - var the_favo = {}; if (typeof the_favorite !== 'undefined') {the_fav = the_favorite} else {the_fav = {}};
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
 
 block head
@@ -54,24 +54,24 @@ block content
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
             a.subscribe-button-longterm.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id, href='/longterm/'+lt.long_term._id) Plus d'infos
-  if (typeof the_fav !== 'undefined') && the_fav.days
-    div(tabindex='-1', role='dialog', class='modal fade ' + the_fav._id, id=the_fav._id)
+  if (typeof the_favo !== 'undefined') && the_favo.days
+    div(tabindex='-1', role='dialog', class='modal fade ' + the_favo._id, id=the_favo._id)
       .modal-dialog(role='document')
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{the_fav.event_intitule} <small>par</small> <b>#{the_fav.org_name}</b>
+            #myModalLabel.h4.modal-title #{the_favo.event_intitule} <small>par</small> <b>#{the_favo.org_name}</b>
           .modal-body.my-modal-body
-            h4 <b>#{the_fav.intitule}</b>
+            h4 <b>#{the_favo.intitule}</b>
             table.table
               tr
                 th.text-center Places restantes
                 th.text-center Date
                 th.text-center Heure de début
                 th.text-center Heure de fin
-              if (typeof the_fav !== 'undefined')
-                each day, nb in the_fav.days
+              if (typeof the_favo !== 'undefined')
+                each day, nb in the_favo.days
                   if day.day
                     tr
                       td.text-center= (day.vol_nb-day.applicants.length)
@@ -79,11 +79,11 @@ block content
                       td.text-center= day.start_time
                       td.text-center= day.end_time
                     #identifiant(style="display:none")
-                      p= the_fav._id
-              p <b>Adresse : </b> #{the_fav.address}
+                      p= the_favo._id
+              p <b>Adresse : </b> #{the_favo.address}
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-            a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = the_fav._id, href='/activity/'+the_fav._id) Plus d'infos
+            a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = the_favo._id, href='/activity/'+the_favo._id) Plus d'infos
   .container-fluid
     .row.fill
       #offers-list.col-sm-4.no-side-padding.scrollable
@@ -92,7 +92,7 @@ block content
             p.alert.alert-danger #{error}
           if success
             p.alert.alert-success #{success}
-          if (typeof the_fav !== 'undefined') && the_fav.days
+          if (typeof the_favo !== 'undefined') && the_favo.days
             h3.text-center
               img(src='http://i.giphy.com/7WH2eHCxpFcI0.gif' style='height: 1.5em; width: auto;')
               p.inline.text-shadowed <b>COUP DE COEUR</b>
@@ -102,24 +102,24 @@ block content
                   div.media-left.media-middle
                     a(href='#')
                       //img.media-object.little-img(src='/images/clouds.jpg')
-                      if the_fav.cause == 'Solidarité'
+                      if the_favo.cause == 'Solidarité'
                         i.fa.fa-heart
-                      else if the_fav.cause == 'Nature'
+                      else if the_favo.cause == 'Nature'
                         i.fa.fa-envira(style='color: #5BCF8F')
-                      else if the_fav.cause == 'Sport et Culture'
+                      else if the_favo.cause == 'Sport et Culture'
                         i.fa.fa-institution(style='color: #FFC858')
-                      else if the_fav.cause == 'Enfance'
+                      else if the_favo.cause == 'Enfance'
                         i.fa.fa-child(style='color: #FF4F3C')
                   div.media-body
-                    h4.media-heading <b>#{the_fav.org_name}</b>
-                    h5.media-heading <b>#{the_fav.intitule}</b>
+                    h4.media-heading <b>#{the_favo.org_name}</b>
+                    h5.media-heading <b>#{the_favo.intitule}</b>
                     h6
                       i.fa.fa-map-marker
-                      p.inline Adresse : #{the_fav.address}
+                      p.inline Adresse : #{the_favo.address}
                 .panel-body
-                  h4 Dans le cadre de : <b>#{the_fav.event_intitule}</b>
-                  p= the_fav.description
-                  each day, day_i in the_fav.days
+                  h4 Dans le cadre de : <b>#{the_favo.event_intitule}</b>
+                  p= the_favo.description
+                  each day, day_i in the_favo.days
                     if day.day
                       h4
                         h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
@@ -128,9 +128,9 @@ block content
                           p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
                         h2
                 .panel-footer
-                  button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_fav._id) Plus d'infos
+                  button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favo._id) Plus d'infos
           each act, index in activities
-            if act._id != the_fav._id
+            if act._id != the_favo._id
               li.list-group-item(id= act._id)
                 .panel.panel-default
                   .panel-heading
@@ -214,6 +214,7 @@ block footscript
       });
       //Generate markers
       var acts = !{JSON.stringify(activities)};
+      console.log('acts.length : ' + acts.length)
       var lts = !{JSON.stringify(longterms)};
       const the_fav = !{JSON.stringify(the_favorite)};
       var infowindows = [];
@@ -253,20 +254,34 @@ block footscript
             infoWindow.close();
             //listUnstar(i);
           });
-          if(act._id.toString() == the_fav._id.toString()){
-            $('#the_favo').hover(function(e){
-              infoWindow.open(map, marker);
-            }, function(e){
-              infoWindow.close();
-            });
-            marker.addListener('mouseover', function(){
-              //infoWindow.open(map, marker);
-              $('#the_favo').addClass('starring');
-            });
-            marker.addListener('mouseout', function(){
-              //infoWindow.close();
-              $('#the_favo').removeClass('starring');
-            });
+          if (typeof the_fav._id != 'undefined'){
+            if(act._id.toString() == the_fav._id.toString()){
+              $('#the_favo').hover(function(e){
+                infoWindow.open(map, marker);
+              }, function(e){
+                infoWindow.close();
+              });
+              marker.addListener('mouseover', function(){
+                //infoWindow.open(map, marker);
+                $('#the_favo').addClass('starring');
+              });
+              marker.addListener('mouseout', function(){
+                //infoWindow.close();
+                $('#the_favo').removeClass('starring');
+              });
+            } else { 
+              $('[id='+act._id.toString() + '][class=list-group-item]').hover(function(e){
+                infoWindow.open(map, marker);
+              }, function(e){
+                infoWindow.close();
+              });
+            };
+          } else {
+            $('[id='+act._id.toString() + '][class=list-group-item]').hover(function(e){
+                infoWindow.open(map, marker);
+              }, function(e){
+                infoWindow.close();
+              });
           };
         } else {
           console.log('Marker is not defined in attachInfoWindow');
@@ -290,6 +305,7 @@ block footscript
         infowindows[i] = new google.maps.InfoWindow({
           content: act.org_name + '<br>' + act.intitule
         });
+        console.log(acts[i].cause);
         if (acts[i].cause=='Nature'){
           markers[i] = new google.maps.Marker({
             position: {lat: lati, lng: longi},
@@ -325,14 +341,12 @@ block footscript
       };
       //Attach marker to each longterms
       for(j=0+acts.length; j<lts.length+acts.length; j++){
-        console.log(lts[j-acts.length].long_term.intitule + " marker generated with lat and lon : " + lts[j-acts.length].long_term.lat + lts[j-acts.length].long_term.lon);
         var lt = lts[j-acts.length];
         var latj = lt.long_term.lat+0.005*(Math.random()-0.5);
         var longj = lt.long_term.lon+0.005*(Math.random()-0.5);
         infowindows[j] = new google.maps.InfoWindow({
           content: lt.org_name + '<br>' + lt.long_term.intitule
         });
-        console.log('lts[j-acts.length] : '+ JSON.stringify(lts[j-acts.length]));
         //choix du marqueur en fonction de la cause, changer avec le json
         if (lts[j-acts.length].cause=='Nature'){
         markers[j] = new google.maps.Marker({
