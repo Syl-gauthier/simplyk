@@ -22,14 +22,14 @@ block content
             p <b>Adresse : </b> #{act.address}
             table.table
               tr
-                th.text-center Nombre de bénévoles
+                th.text-center Places restantes
                 th.text-center Date
                 th.text-center Heure de début
                 th.text-center Heure de fin
               each day, nb in act.days
                 if day.day
                   tr
-                    td.text-center= day.vol_nb
+                    td.text-center= day.vol_nb-day.applicants.length
                     td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
                     td.text-center= day.start_time
                     td.text-center= day.end_time
