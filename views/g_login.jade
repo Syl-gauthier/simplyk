@@ -15,6 +15,7 @@ block content
 						p.alert.alert-danger Wrong mail or password
 					if error == 2
 						p.alert.alert-danger Ton adresse courriel n'est pas encore vérifiée, vérifie-la en cliquant sur le lien dans le mail de confirmation que tu as reçu. Si tu ne l'as pas reçu, regarde dans tes spams, ta boite courriel nous a peut-être mal jugée !
+					p.alert.alert-success.hidden#forgotten-success
 			.col-md-2.col-md-offset-1
 				.page-header
 					h4 Ou si vous n'avez pas encore de compte
@@ -36,3 +37,45 @@ block content
 						span#basic-addon1.input-group-addon Mot de passe
 						input#password.form-control(type='password', placeholder='', name='password', aria-describedby='basic-addon1', required)
 					input.btn.btn-default(type='submit', form='loginform', value='Se connecter')
+				a(data-toggle='modal' data-target='#forgottenModal', style='cursor: pointer;') Mot de passe oublié ?
+				.modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='forgottenModal')
+					div.modal-dialog(role='document')
+						form(id='forgottenForm', role='form').modal-content
+							.modal-header
+								button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+									span(aria-hidden='true')
+									h4.modal-title Mot de passe oublié
+							div.modal-body
+								p.alert.alert-danger.hidden#forgotten-danger
+								label(for='email') Courriel
+								input.form-control(type='email', name='email', required)
+							div.modal-footer
+								input.btn.btn-warning(type='submit', form='forgottenForm', value='Réinitialiser le mot de passe')
+								a.btn.btn-default(data-dismiss='modal') Fermer
+
+
+block footscript
+	script(type='text/javascript').
+		$(document).ready(function(){
+			$('#forgottenForm').submit(function(event){
+				event.preventDefault();
+				console.log('Submit form');
+				$.post('/forgottenpassword', $('#forgottenForm').serialize())
+				.done(function(data){
+					console.log('On est dans le callback done !');
+					$('#forgottenModal').modal('toggle');
+					console.log('JSON.stringify(data) : ' + JSON.stringify(data));
+					console.log('Mot de passe réinitialisé !');
+					$('#forgotten-success').removeClass('hidden');
+					$('#forgotten-success').html('Mot de passe réinitialisé ! Un email d\'instructions t\'a été envoyé :)');
+				})
+				.fail(function(data){
+					console.log('On est dans le callback fail !');
+					console.log('Erreur !');
+					$('#forgotten-danger').removeClass('hidden');
+					console.log(data.error);
+					$('#forgotten-danger').html(' ' + data.responseJSON.error);
+					console.log('JSON.stringify(data) : ' + JSON.stringify(data));
+				});
+			});
+		});

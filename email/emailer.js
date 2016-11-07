@@ -102,6 +102,31 @@ function sendSubscriptionVolEmail(content) {
   });
 };
 
+function sendForgottenPasswordEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'forgottenMessage';
+  content.title = 'Nouveau mot de passe !';
+  content.button = {
+    text: 'Voir mon profil',
+    link: 'platform.simplyk.org'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: 'Mot de passe réinitialisé sur Simplyk !', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
 function sendUnsubscriptionEmail(content) {
   content.subtitle = ['Malheureusement,', content.customMessage];
   content.type = 'unsubscriptionorg';
@@ -208,5 +233,6 @@ module.exports = {
   sendVerifyEmail: sendVerifyEmail,
   sendHoursPendingOrgEmail: sendHoursPendingOrgEmail,
   sendHoursConfirmedVolEmail: sendHoursConfirmedVolEmail,
-  sendAutomaticSubscriptionOrgEmail
+  sendAutomaticSubscriptionOrgEmail,
+  sendForgottenPasswordEmail
 };

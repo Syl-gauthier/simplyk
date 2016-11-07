@@ -7,6 +7,7 @@ var school_list = require('../lib/ressources/school_list.js');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
+var crypt = require('../auth/crypt');
 
 var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
@@ -497,6 +498,80 @@ router.get('/verifyO/:verifyString', function(req, res) {
   //return res.status(404).send('This page is not valid');
 });
 
+router.post('/forgottenpassword', function(req, res) {
+  console.log('forgottenpassword beginning' + req.body.email);
+  const newPassword = randomstring.generate().substring(0, 11);
+  const passHash = crypt.generateHash(newPassword);
+  const content = {
+    customMessage: 'Ton nouveau mot de passe est : ' + newPassword,
+    recipient: req.body.email
+  };
+  //TO DELETE
+  console.log('New password generated : ' + passHash);
+  Volunteer.findOneAndUpdate({
+    'email': req.body.email
+  }, {
+    '$set': {
+      'password': passHash
+    }
+  }, function(err, doc) {
+    if (err) {
+      console.error(err);
+      res.status(404).send({
+        error: 'Problème de serveur : réessayer et sinon contactez nous à francois@simplyk.org'
+      });
+    } else if (doc) {
+      console.info('Password forgotten : volunteer password changed');
+      emailer.sendForgottenPasswordEmail(content);
+      res.sendStatus(200);
+    } else {
+      console.info('Password forgotten : no volunteer account found with this email');
+      Admin.findOneAndUpdate({
+        'email': req.body.email
+      }, {
+        '$set': {
+          'password': passHash
+        }
+      }, function(err, doc) {
+        if (err) {
+          console.error(err);
+          res.status(404).send({
+            error: 'Problème de serveur : réessayer et sinon contactez nous à francois@simplyk.org'
+          });
+        } else if (doc) {
+          console.info('Password forgotten : admin password changed');
+          emailer.sendForgottenPasswordEmail(content);
+          res.sendStatus(200);
+        } else {
+          console.info('Password forgotten : no admin account found with this email');
+          Organism.findOneAndUpdate({
+            'email': req.body.email
+          }, {
+            '$set': {
+              'password': passHash
+            }
+          }, function(err, doc) {
+            if (err) {
+              console.error(err);
+              res.status(404).send({
+                error: 'Problème de serveur : réessayer et sinon contactez nous à francois@simplyk.org'
+              });
+            } else if (doc) {
+              console.info('Password forgotten : organism password changed');
+              emailer.sendForgottenPasswordEmail(content);
+              res.sendStatus(200);
+            } else {
+              console.info('Password forgotten : 0 account found with this email');
+              res.status(404).send({
+                error: 'Aucun compte n\'a été trouvé avec cette adresse mail'
+              });
+            }
+          })
+        }
+      })
+    }
+  })
+});
 
 function userExists(email, handler) {
   //Look for email in volunteer, organism and admin
