@@ -4,7 +4,11 @@ var router = express.Router();
 var Organism = require('../models/organism_model.js');
 
 router.get('/listorganisms', function(req, res) {
-	Organism.find(function(err, organisms) {
+	Organism.find({
+		"school_id": {
+			$exists: false
+		}
+	}, function(err, organisms) {
 		if (err) {
 			console.log('There is an error to access /listorganisms and get all the oragnisms, the error is : ' + err);
 			res.render('a_listorganisms.jade', {
