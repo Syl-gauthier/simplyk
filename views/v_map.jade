@@ -86,109 +86,127 @@ block content
             a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = the_favo._id, href='/activity/'+the_favo._id) Plus d'infos
   .container-fluid
     .row.fill
-      #offers-list.col-sm-4.no-side-padding.scrollable
-        ul.list-group.list-opportunity
-          if error
-            p.alert.alert-danger #{error}
-          if success
-            p.alert.alert-success #{success}
-          if (typeof the_favo !== 'undefined') && the_favo.days
-            h3.text-center
-              img(src='http://i.giphy.com/7WH2eHCxpFcI0.gif' style='height: 1.5em; width: auto;')
-              p.inline.text-shadowed <b>COUP DE COEUR</b>
-            li.list-group-item(id= 'the_favo')
-              .panel.panel-default
-                .panel-heading
-                  div.media-left.media-middle
-                    a(href='#')
-                      //img.media-object.little-img(src='/images/clouds.jpg')
-                      if the_favo.cause == 'Solidarité'
-                        i.fa.fa-heart
-                      else if the_favo.cause == 'Nature'
-                        i.fa.fa-envira(style='color: #5BCF8F')
-                      else if the_favo.cause == 'Sport et Culture'
-                        i.fa.fa-institution(style='color: #FFC858')
-                      else if the_favo.cause == 'Enfance'
-                        i.fa.fa-child(style='color: #FF4F3C')
-                  div.media-body
-                    h4.media-heading <b>#{the_favo.org_name}</b>
-                    h5.media-heading <b>#{the_favo.intitule}</b>
-                    h6
-                      i.fa.fa-map-marker
-                      p.inline Adresse : #{the_favo.address}
-                .panel-body
-                  h4 Dans le cadre de : <b>#{the_favo.event_intitule}</b>
-                  p= the_favo.description
-                  each day, day_i in the_favo.days
-                    if day.day
-                      h4
-                        h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                        h6.inline
-                          i.fa.fa-user
-                          p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-                        h2
-                .panel-footer
-                  button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favo._id) Plus d'infos
-          each act, index in activities
-            if act._id != the_favo._id
-              li.list-group-item(id= act._id)
+      .col-sm-4.col-xs-12
+        #filter_div.row
+          .col-xs-6#acts_filter(style='cursor: pointer;')
+            h4.text-center.btn-filter.btn-filter-acts
+              i.inline.fa.fa-check-square-o#acts_check
+              p.inline <b>Ponctuels</b>
+          .col-xs-6#lts_filter(style='cursor: pointer;')
+            h4.text-center.btn-filter.btn-filter-lts
+              i.inline.fa.fa-check-square-o#lts_check
+              p.inline <b>Engagements</b>
+        #offers-list.no-side-padding.scrollable.row
+          ul.list-group.list-opportunity
+            if error
+              p.alert.alert-danger #{error}
+            if success
+              p.alert.alert-success #{success}
+            if (typeof the_favo !== 'undefined') && the_favo.days
+              h3.text-center
+                img(src='http://i.giphy.com/7WH2eHCxpFcI0.gif' style='height: 1.5em; width: auto;')
+                p.inline.text-shadowed <b>COUP DE COEUR</b>
+              li.list-group-item(id= 'the_favo')
                 .panel.panel-default
                   .panel-heading
                     div.media-left.media-middle
                       a(href='#')
-                        if act.cause == 'Solidarité'
+                        //img.media-object.little-img(src='/images/clouds.jpg')
+                        if the_favo.cause == 'Solidarité'
                           i.fa.fa-heart
-                        else if act.cause == 'Environnement'
+                        else if the_favo.cause == 'Nature'
                           i.fa.fa-envira(style='color: #5BCF8F')
-                        else if act.cause == 'Sport et Culture'
+                        else if the_favo.cause == 'Sport et Culture'
                           i.fa.fa-institution(style='color: #FFC858')
-                        else if act.cause == 'Enfance'
+                        else if the_favo.cause == 'Enfance'
                           i.fa.fa-child(style='color: #FF4F3C')
                     div.media-body
-                      h4.media-heading <b>#{act.org_name}</b>
-                      h5.media-heading <b>#{act.intitule}</b>
+                      h4.media-heading <b>#{the_favo.org_name}</b>
+                      h5.media-heading <b>#{the_favo.intitule}</b>
                       h6
                         i.fa.fa-map-marker
-                        p.inline Adresse : #{act.address}
-                    div.media-right.media-middle
-                      button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
+                        p.inline Adresse : #{the_favo.address}
                   .panel-body
-                      h4 Dans le cadre de : <b>#{act.event_intitule}</b>
-                      each day, day_i in act.days
-                        if day.day
-                          h4
-                            h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                            h6.inline
-                              i.fa.fa-user
-                              p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-          each lt, index in longterms
-              li.list-group-item(id= lt._id)
-                .panel.panel-default
-                  .panel-heading
-                    div.media-left.media-middle
-                      a(href='#')
-                        if lt.cause == 'Solidarité'
-                          i.fa.fa-heart
-                        else if lt.cause == 'Environnement'
-                          i.fa.fa-envira(style='color: #5BCF8F')
-                        else if lt.cause == 'Sport et Culture'
-                          i.fa.fa-institution(style='color: #FFC858')
-                        else if lt.cause == 'Enfance'
-                          i.fa.fa-child(style='color: #FF4F3C')
-                    div.media-body
-                      h4.media-heading <b>#{lt.org_name}</b>
-                      h5.media-heading <b>#{lt.long_term.intitule}</b>
-                      h6
-                        i.fa.fa-map-marker
-                        p.inline Adresse : #{lt.long_term.address}
-                    div.media-right.media-middle
-                      button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+lt.long_term._id) Plus d'infos
-      .col-sm-8.no-side-padding
+                    h4 Dans le cadre de : <b>#{the_favo.event_intitule}</b>
+                    p= the_favo.description
+                    each day, day_i in the_favo.days
+                      if day.day
+                        h4
+                          h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                          h6.inline
+                            i.fa.fa-user
+                            p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+                          h2
+                  .panel-footer
+                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favo._id) Plus d'infos
+            each act, index in activities
+              if act._id != the_favo._id
+                li.list-group-item(id= act._id, opp_type='activity')
+                  .panel.panel-default
+                    .panel-heading
+                      div.media-left.media-middle
+                        a(href='#')
+                          if act.cause == 'Solidarité'
+                            i.fa.fa-heart
+                          else if act.cause == 'Environnement'
+                            i.fa.fa-envira(style='color: #5BCF8F')
+                          else if act.cause == 'Sport et Culture'
+                            i.fa.fa-institution(style='color: #FFC858')
+                          else if act.cause == 'Enfance'
+                            i.fa.fa-child(style='color: #FF4F3C')
+                      div.media-body
+                        h4.media-heading <b>#{act.org_name}</b>
+                        h5.media-heading <b>#{act.intitule}</b>
+                        h6
+                          i.fa.fa-map-marker
+                          p.inline Adresse : #{act.address}
+                      div.media-right.media-middle
+                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
+                    .panel-body
+                        h4 Dans le cadre de : <b>#{act.event_intitule}</b>
+                        each day, day_i in act.days
+                          if day.day
+                            h4
+                              h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                              h6.inline
+                                i.fa.fa-user
+                                p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+            each lt, index in longterms
+                li.list-group-item(id= lt._id, opp_type='longterm')
+                  .panel.panel-default
+                    .panel-heading
+                      div.media-left.media-middle
+                        a(href='#')
+                          if lt.cause == 'Solidarité'
+                            i.fa.fa-heart
+                          else if lt.cause == 'Environnement'
+                            i.fa.fa-envira(style='color: #5BCF8F')
+                          else if lt.cause == 'Sport et Culture'
+                            i.fa.fa-institution(style='color: #FFC858')
+                          else if lt.cause == 'Enfance'
+                            i.fa.fa-child(style='color: #FF4F3C')
+                      div.media-body
+                        h4.media-heading <b>#{lt.org_name}</b>
+                        h5.media-heading <b>#{lt.long_term.intitule}</b>
+                        h6
+                          i.fa.fa-map-marker
+                          p.inline Adresse : #{lt.long_term.address}
+                      div.media-right.media-middle
+                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+lt.long_term._id) Plus d'infos
+      .col-sm-8.col-xs-12.no-side-padding
         #map
 
 block footscript
   script.
     function initMap(){
+      var markers = [];
+      var infowindows = [];
+      var lts_checked = true;
+      var acts_checked = true;
+      var printed = 'all'; //Markers currently onscreen
+      var acts = !{JSON.stringify(activities)};
+      var lts = !{JSON.stringify(longterms)};
+      const the_fav = !{JSON.stringify(the_favorite)};
       function listStar(i){
         listElement = document.getElementById("offers-list").childNodes[0].childNodes[i];
         $(listElement).addClass('starring');
@@ -204,43 +222,24 @@ block footscript
         listElement.childNodes[2].childNodes[0].click();
         console.log(listElement.childNodes[2]);
       }
-      var mapDiv = document.getElementById('map');
-      var map = new google.maps.Map(mapDiv, {
-        center: {lat: 45.503, lng: -73.613},
-        zoom: 12,
-        streetViewControl: false,
-        mapTypeControl: false,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-      });
-      //Generate markers
-      var acts = !{JSON.stringify(activities)};
-      console.log('acts.length : ' + acts.length)
-      var lts = !{JSON.stringify(longterms)};
-      const the_fav = !{JSON.stringify(the_favorite)};
-      var infowindows = [];
-      var imageSol = {
-      url: '/images/Perso/blue-icon-marker.svg', // image is 512 x 512
-      scaledSize : new google.maps.Size(30, 36)
-      };
-      var imageEnv = {
-      url: '/images/Perso/green-icon-marker.svg', // image is 512 x 512
-      scaledSize : new google.maps.Size(30, 36)
-      };
-      var imageCul = {
-      url: '/images/Perso/yellow-icon-marker.svg', // image is 512 x 512
-      scaledSize : new google.maps.Size(30, 36)
-      };
-      var imageEnf = {
-      url: '/images/Perso/red-icon-marker.svg', // image is 512 x 512
-      scaledSize : new google.maps.Size(30, 36)
-      };
-      var markers = [];
-      var options = {
-            gridSize: 50,
-            maxZoom: 13,
-            minimumClusterSize: 15,
-            imagePath: 'images/m'
-        };
+      function setMapIfExists(map, i){
+        if (markers[i]){
+          markers[i].setMap(map);
+        }
+      }
+      // Set all markers in the array of the type declared on the map.
+      function setMapOnAll(type, map) {
+        console.log('In setMapOnAll with markers : ' + String(markers));
+        if (type == 'acts'){
+          for (i = 0; i < acts.length; i++) {
+            setMapIfExists(map, i);
+          }
+        } else {
+          for (j=0+acts.length; j<lts.length+acts.length; j++) {
+            setMapIfExists(map, j);
+          }
+        }
+      }
       function attachInfoWindow(marker, infoWindow, act, i){
         if(marker){
           marker.addListener('click', function(){
@@ -256,6 +255,7 @@ block footscript
           });
           if (typeof the_fav._id != 'undefined'){
             if(act._id.toString() == the_fav._id.toString()){
+              $('#the_favo').unbind('mouseenter mouseleave');
               $('#the_favo').hover(function(e){
                 infoWindow.open(map, marker);
               }, function(e){
@@ -269,7 +269,8 @@ block footscript
                 //infoWindow.close();
                 $('#the_favo').removeClass('starring');
               });
-            } else { 
+            } else {
+              $('[id='+act._id.toString() + '][class=list-group-item]').unbind('mouseenter mouseleave');
               $('[id='+act._id.toString() + '][class=list-group-item]').hover(function(e){
                 infoWindow.open(map, marker);
               }, function(e){
@@ -277,6 +278,7 @@ block footscript
               });
             };
           } else {
+            $('[id='+act._id.toString() + '][class=list-group-item]').unbind('mouseenter mouseleave');
             $('[id='+act._id.toString() + '][class=list-group-item]').hover(function(e){
                 infoWindow.open(map, marker);
               }, function(e){
@@ -287,103 +289,208 @@ block footscript
           console.log('Marker is not defined in attachInfoWindow');
         };
       };
-      var legend = document.createElement('div');
-        legend.id = 'legend';
-        var content = [];
-        content.push('<h5 class="leaf" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-envira fa-lg fa-fw leaf"></i> Nature </h5><br>');
-        content.push('<h5 class="soli" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-heart fa-lg fa-fw soli"></i> Solidarité </h5><br>');
-        content.push('<h5 class="cult" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-institution fa-lg fa-fw cult"></i> Sport et culture </h5><br>');
-        content.push('<h5 class="child" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-child fa-lg fa-fw child"></i> Enfance </h5>');
-        legend.innerHTML = content.join('');
-        legend.index = 1;
-        map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
-      for(i=0; i<acts.length; i++){
-        console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].lat + acts[i].lon);
-        var act = acts[i];
-        var lati = act.lat+0.005*(Math.random()-0.5);
-        var longi = act.lon+0.005*(Math.random()-0.5);
-        infowindows[i] = new google.maps.InfoWindow({
-          content: act.org_name + '<br>' + act.intitule
-        });
-        console.log(acts[i].cause);
-        if (acts[i].cause=='Nature'){
-          markers[i] = new google.maps.Marker({
+
+      function generateMarkers(map, mks){
+        //Generate markers
+        //infowindows = [];
+        var imageSol = {
+        url: '/images/Perso/blue-icon-marker.svg', // image is 512 x 512
+        scaledSize : new google.maps.Size(30, 36)
+        };
+        var imageEnv = {
+        url: '/images/Perso/green-icon-marker.svg', // image is 512 x 512
+        scaledSize : new google.maps.Size(30, 36)
+        };
+        var imageCul = {
+        url: '/images/Perso/yellow-icon-marker.svg', // image is 512 x 512
+        scaledSize : new google.maps.Size(30, 36)
+        };
+        var imageEnf = {
+        url: '/images/Perso/red-icon-marker.svg', // image is 512 x 512
+        scaledSize : new google.maps.Size(30, 36)
+        };
+        //Attach marker to each acts
+        for(i=0; i<acts.length; i++){
+          console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].lat + acts[i].lon);
+          var act = acts[i];
+          var lati = act.lat+0.005*(Math.random()-0.5);
+          var longi = act.lon+0.005*(Math.random()-0.5);
+          //infowindows[i] = {};
+          infowindows[i] = new google.maps.InfoWindow({
+            content: act.org_name + '<br>' + act.intitule
+          });
+          console.log(acts[i].cause);
+          if (acts[i].cause=='Nature'){
+            mks[i] = new google.maps.Marker({
+              position: {lat: lati, lng: longi},
+              map: map,
+              icon: imageEnv,
+              clickable: true
+            });
+          } else if (acts[i].cause=='Solidarité'){
+            mks[i] = new google.maps.Marker({
+              position: {lat: lati, lng: longi},
+              map: map,
+              icon: imageSol,
+              clickable: true
+            });
+          } else if (acts[i].cause=='Sport et Culture'){
+            mks[i] = new google.maps.Marker({
+              position: {lat: lati, lng: longi},
+              map: map,
+              icon: imageCul,
+              clickable: true
+            });
+          } else if (acts[i].cause=='Enfance'){
+          mks[i] = new google.maps.Marker({
             position: {lat: lati, lng: longi},
+            map: map,
+            icon: imageEnf,
+            clickable: true
+          });
+          } else {
+            mks[i] = null;
+          }
+          attachInfoWindow(mks[i], infowindows[i], act, i);
+        };
+        //Attach marker to each longterms
+        for(j=0+acts.length; j<lts.length+acts.length; j++){
+          var lt = lts[j-acts.length];
+          var latj = lt.long_term.lat+0.005*(Math.random()-0.5);
+          var longj = lt.long_term.lon+0.005*(Math.random()-0.5);
+          //infowindows[j] = {};
+          infowindows[j] = new google.maps.InfoWindow({
+            content: lt.org_name + '<br>' + lt.long_term.intitule
+          });
+          //choix du marqueur en fonction de la cause, changer avec le json
+          if (lts[j-acts.length].cause=='Nature'){
+          mks[j] = new google.maps.Marker({
+            position: {lat: latj, lng: longj},
             map: map,
             icon: imageEnv,
             clickable: true
           });
-        } else if (acts[i].cause=='Solidarité'){
-          markers[i] = new google.maps.Marker({
-            position: {lat: lati, lng: longi},
+          }
+          else if (lts[j-acts.length].cause=='Solidarité'){
+          mks[j] = new google.maps.Marker({
+            position: {lat: latj, lng: longj},
             map: map,
             icon: imageSol,
             clickable: true
           });
-        } else if (acts[i].cause=='Sport et Culture'){
-          markers[i] = new google.maps.Marker({
-            position: {lat: lati, lng: longi},
+          } else if (lts[j-acts.length].cause=='Sport et Culture'){
+          mks[j] = new google.maps.Marker({
+            position: {lat: latj, lng: longj},
             map: map,
             icon: imageCul,
             clickable: true
           });
-        } else if (acts[i].cause=='Enfance'){
-        markers[i] = new google.maps.Marker({
-          position: {lat: lati, lng: longi},
-          map: map,
-          icon: imageEnf,
-          clickable: true
-        });
-        } else {
-          markers[i] = null;
-        }
-        attachInfoWindow(markers[i], infowindows[i], act, i);
+          }
+          else if (lts[j-acts.length].cause=='Enfance'){
+          mks[j] = new google.maps.Marker({
+            position: {lat: latj, lng: longj},
+            map: map,
+            icon: imageEnf,
+            clickable: true
+          });
+          } else {
+            mks[j] = null;
+          }
+          attachInfoWindow(mks[j], infowindows[j], lt.long_term, j);
+        };
+        var markerCluster = new MarkerClusterer(map, mks, options);
+        return mks;
       };
-      //Attach marker to each longterms
-      for(j=0+acts.length; j<lts.length+acts.length; j++){
-        var lt = lts[j-acts.length];
-        var latj = lt.long_term.lat+0.005*(Math.random()-0.5);
-        var longj = lt.long_term.lon+0.005*(Math.random()-0.5);
-        infowindows[j] = new google.maps.InfoWindow({
-          content: lt.org_name + '<br>' + lt.long_term.intitule
-        });
-        //choix du marqueur en fonction de la cause, changer avec le json
-        if (lts[j-acts.length].cause=='Nature'){
-        markers[j] = new google.maps.Marker({
-          position: {lat: latj, lng: longj},
-          map: map,
-          icon: imageEnv,
-          clickable: true
-        });
-        }
-        else if (lts[j-acts.length].cause=='Solidarité'){
-        markers[j] = new google.maps.Marker({
-          position: {lat: latj, lng: longj},
-          map: map,
-          icon: imageSol,
-          clickable: true
-        });
-        } else if (lts[j-acts.length].cause=='Sport et Culture'){
-        markers[j] = new google.maps.Marker({
-          position: {lat: latj, lng: longj},
-          map: map,
-          icon: imageCul,
-          clickable: true
-        });
-        }
-        else if (lts[j-acts.length].cause=='Enfance'){
-        markers[j] = new google.maps.Marker({
-          position: {lat: latj, lng: longj},
-          map: map,
-          icon: imageEnf,
-          clickable: true
-        });
-        } else {
-          markers[j] = null;
-        }
-        attachInfoWindow(markers[j], infowindows[j], lt.long_term, j);
+
+      var mapDiv = document.getElementById('map');
+      var map = new google.maps.Map(mapDiv, {
+        center: {lat: 45.503, lng: -73.613},
+        zoom: 12,
+        streetViewControl: false,
+        mapTypeControl: false,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      });
+      var options = {
+        gridSize: 50,
+        maxZoom: 13,
+        minimumClusterSize: 15,
+        imagePath: 'images/m'
       };
-      var markerCluster = new MarkerClusterer(map, markers, options);
+      var legend = document.createElement('div');
+      legend.id = 'legend';
+      var content = [];
+      content.push('<h5 class="leaf" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-envira fa-lg fa-fw leaf"></i> Nature </h5><br>');
+      content.push('<h5 class="soli" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-heart fa-lg fa-fw soli"></i> Solidarité </h5><br>');
+      content.push('<h5 class="cult" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-institution fa-lg fa-fw cult"></i> Sport et culture </h5><br>');
+      content.push('<h5 class="child" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-child fa-lg fa-fw child"></i> Enfance </h5>');
+      legend.innerHTML = content.join('');
+      legend.index = 1;
+      map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
+      markers = generateMarkers(map, markers);
+
+      $('#acts_filter').click(function(){
+        acts_checked = !acts_checked;
+        if (acts_checked){
+          $('#acts_check').removeClass('fa-square-o');
+          $('#acts_check').addClass('fa-check-square-o');
+        } else {
+          $('#acts_check').removeClass('fa-check-square-o');
+          $('#acts_check').addClass('fa-square-o');
+        }
+        if(printed != 'acts'){
+          if(printed == 'lts'){
+            $("[opp_type='activity']").removeClass('hidden');
+            setMapOnAll('acts', map);
+            printed = 'all';
+          } else {
+            if (acts_checked) {
+              $("[opp_type='longterm']").addClass('hidden');
+              setMapOnAll('lts', null);
+              printed = 'acts';
+            } else {
+              $("[opp_type='activity']").addClass('hidden');
+              setMapOnAll('acts', null);
+              printed = 'lts';
+            }
+          }
+        } else {
+          $("[opp_type='longterm']").removeClass('hidden');
+          setMapOnAll('lts', map);
+          printed = 'all';
+        }
+      });
+      $('#lts_filter').click(function(){
+        lts_checked = !lts_checked;
+        if (lts_checked){
+          $('#lts_check').removeClass('fa-square-o');
+          $('#lts_check').addClass('fa-check-square-o');
+        } else {
+          $('#lts_check').removeClass('fa-check-square-o');
+          $('#lts_check').addClass('fa-square-o');
+        }
+        if(printed != 'lts'){
+          if(printed == 'acts'){
+            $("[opp_type='longterm']").removeClass('hidden');
+            setMapOnAll('lts', map);
+            printed = 'all';
+          } else {
+            if (lts_checked) {
+              $("[opp_type='activity']").addClass('hidden');
+              setMapOnAll('acts', null);
+              printed = 'lts';
+            } else {
+              $("[opp_type='longterm']").addClass('hidden');
+              setMapOnAll('lts', null);
+              printed = 'acts';
+            }
+          }
+        } else {
+          $("[opp_type='activity']").removeClass('hidden');
+          setMapOnAll('acts', map);
+          printed = 'all';
+        }
+      });
+
     }
   script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&callback=initMap"
          async defer)

@@ -124,8 +124,9 @@ body{
 }
 
 #offers-list{
-	height: 85vh;
+	max-height: 80vh;
 }
+
 
 .conn-input{
 	padding-top: 15px;
@@ -179,6 +180,23 @@ body{
 	border-radius: 0px;
 }
 
+.btn-filter {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+.btn-filter-lts{
+	background-color: #359B9C;
+}
+
+.btn-filter-acts{
+	background-color: #E8E52C;
+}
+
+.btn-filter.i {
+	padding-left: 0px;
+}
 
 .firstColor{
 	color:#25A191;

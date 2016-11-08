@@ -40,7 +40,6 @@ block content
             a#link-btn-ref.btn.btn-default(href='login') S'inscrire
             a#link-btn-ref.btn.btn-default(href='login') Plus d'infos
   each lt, index in longterms
-    p= lt.long_term
     div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id, id=lt.long_term._id)
       .modal-dialog(role='document')
         .modal-content
