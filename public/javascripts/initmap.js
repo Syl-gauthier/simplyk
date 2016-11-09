@@ -56,6 +56,7 @@ function initMap() {
       });
       if (typeof the_fav._id != 'undefined') {
         if (opp_id.toString() == the_fav._id.toString()) {
+          console.log('In the favo generate marker');
           $('#the_favo').unbind('mouseenter mouseleave');
           $('#the_favo').hover(function(e) {
             infoWindow.open(map, marker);

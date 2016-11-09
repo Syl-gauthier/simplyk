@@ -3,7 +3,7 @@ block vars
   - var page = 'map'
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
-  - var the_favo = {}; if (typeof the_favorite !== 'undefined') {the_fav = the_favorite} else {the_fav = {}};
+  - var the_favo = {}; if (typeof the_favorite !== 'undefined') {the_favo = the_favorite; console.log('the_favo : ' + the_favo)} else {the_favo = {}; console.log('the_favo : ' + the_favo)};
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
 
 block head
@@ -11,34 +11,39 @@ block head
   meta(name='description', content='Opportunités de bénévolat à Montréal')
 block content
   each act, index in activities
-    div(tabindex='-1', role='dialog', class='modal fade ' + act._id, id=act._id)
-      .modal-dialog(role='document')
-        .modal-content
-          .modal-header
-            button.close(type='button', data-dismiss='modal', aria-label='Close')
-              span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
-          .modal-body.my-modal-body
-            h4 <b>#{act.intitule}</b>
-            table.table
-              tr
-                th.text-center Places restantes
-                th.text-center Date
-                th.text-center Heure de début
-                th.text-center Heure de fin
-              each day, nb in act.days
-                if day.day
-                  tr
-                    td.text-center= (day.vol_nb-day.applicants.length)
-                    td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
-                    td.text-center= day.start_time
-                    td.text-center= day.end_time
-                  #identifiant(style="display:none")
-                    p= act._id
-              p <b>Adresse : </b> #{act.address}
-          .modal-footer
-            button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-            a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act._id) Plus d'infos
+    if act._id != the_favo._id
+      div(tabindex='-1', role='dialog', class='modal fade ' + act._id, id=act._id)
+        .modal-dialog(role='document')
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-label='Close')
+                span(aria-hidden='true') &times;        
+              #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
+            .modal-body.my-modal-body
+              h4 <b>#{act.intitule}</b>
+              table.table
+                tr
+                  th.text-center Places restantes
+                  th.text-center Date
+                  th.text-center Heure de début
+                  th.text-center Heure de fin
+                  if act.min_age
+                    th.text-center Âge minimal
+                each day, nb in act.days
+                  if day.day
+                    tr
+                      td.text-center= (day.vol_nb-day.applicants.length)
+                      td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
+                      td.text-center= day.start_time
+                      td.text-center= day.end_time
+                      if act.min_age
+                        td.text-center= act.min_age
+                    #identifiant(style="display:none")
+                      p= act._id
+                p <b>Adresse : </b> #{act.address}
+            .modal-footer
+              button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+              a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act._id) Plus d'infos
   each lt, index in longterms
     div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id, id=lt.long_term._id)
       .modal-dialog(role='document')
@@ -51,6 +56,8 @@ block content
             h4 <b>#{lt.long_term.intitule}</b>
             p #{lt.long_term.description}
             p <b>Adresse : </b> #{lt.long_term.address}
+            if lt.long_term.min_age
+              p <b>Âge minimal : </b> #{lt.long_term.min_age}
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
             a.subscribe-button-longterm.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id, href='/longterm/'+lt.long_term._id) Plus d'infos
@@ -70,6 +77,8 @@ block content
                 th.text-center Date
                 th.text-center Heure de début
                 th.text-center Heure de fin
+                if the_favo.min_age
+                  th.text-center Âge minimal
               if (typeof the_favo !== 'undefined')
                 each day, nb in the_favo.days
                   if day.day
@@ -78,6 +87,8 @@ block content
                       td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
                       td.text-center= day.start_time
                       td.text-center= day.end_time
+                      if the_favo.min_age
+                        td.text-center= the_favo.min_age + ' ans'
                     #identifiant(style="display:none")
                       p= the_favo._id
               p <b>Adresse : </b> #{the_favo.address}
@@ -103,36 +114,40 @@ block content
             if success
               p.alert.alert-success #{success}
             if (typeof the_favo !== 'undefined') && the_favo.days
-              li.list-group-item(id= act._id, opp_type='activity')
+              li.list-group-item(id='the_favo', opp_type='activity')
                   .panel.panel-default
                     .panel-heading
                       div.media-left.media-middle
                         a(href='#')
-                          if act.cause == 'Solidarité'
+                          if the_favo.cause == 'Solidarité'
                             i.fa.fa-heart
-                          else if act.cause == 'Environnement'
+                          else if the_favo.cause == 'Environnement'
                             i.fa.fa-envira(style='color: #5BCF8F')
-                          else if act.cause == 'Sport et Culture'
+                          else if the_favo.cause == 'Sport et Culture'
                             i.fa.fa-institution(style='color: #FFC858')
-                          else if act.cause == 'Enfance'
+                          else if the_favo.cause == 'Enfance'
                             i.fa.fa-child(style='color: #FF4F3C')
                       div.media-body
-                        h4.media-heading <b>#{act.org_name}</b>
-                        h5.media-heading <b>#{act.intitule}</b>
+                        h5.media-heading <b>#{the_favo.org_name}</b>
+                        h6.media-heading <b>#{the_favo.intitule}</b>
                         //h6
                           i.fa.fa-map-marker
-                          p.inline Adresse : #{act.address}
+                          p.inline Adresse : #{the_favo.address}
                       div.media-right.media-middle
-                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
+                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favo._id) Plus d'infos
                     .panel-body
-                        h4 Dans le cadre de : <b>#{act.event_intitule}</b>
-                        each day, day_i in act.days
-                          if day.day
-                            h4
-                              h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                              h6.inline
-                                i.fa.fa-user
-                                p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+                        h5 Dans le cadre de : <b>#{the_favo.event_intitule}</b>
+                        if the_favo.days.length < 3
+                          each day, day_i in the_favo.days
+                            if day.day
+                              h4
+                                h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                                h6.inline
+                                  i.fa.fa-user
+                                  p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+                        else
+                          if the_favo.days[0].day && the_favo.days[1].day
+                            h6.inline <b>#{days_name[correctDate(the_favo.days[0].day).getDay()]  + ' ' + (correctDate(the_favo.days[0].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[0].day).getMonth()]  + ' ' + correctDate(the_favo.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(the_favo.days[1].day).getDay()]  + ' ' + (correctDate(the_favo.days[1].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[1].day).getMonth()]  + ' ' + correctDate(the_favo.days[1].day).getFullYear()}</b>, ...
             each act, index in activities
               if act._id != the_favo._id
                 li.list-group-item(id= act._id, opp_type='activity')

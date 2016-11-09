@@ -107,7 +107,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       if (favorites.length != 0) {
         the_favorite = favorites[fav_index];
       };
-      acts = acts.filter(isNotTheFav);
+      //acts = acts.filter(isNotTheFav);
       Organism.find({
           'long_terms': {
             '$exists': true,

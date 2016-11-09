@@ -184,6 +184,11 @@ body{
 	border-radius: 0px;
 }
 
+#filter_div {
+	margin-top: 13px;
+	margin-bottom: 13px;
+}
+
 .btn-filter {
 	margin-top: 4px;
 	margin-bottom: 4px;
