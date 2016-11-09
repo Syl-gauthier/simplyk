@@ -133,22 +133,27 @@ block content
                           else if act.cause == 'Enfance'
                             i.fa.fa-child(style='color: #FF4F3C')
                       div.media-body
-                        h4.media-heading <b>#{act.org_name}</b>
-                        h5.media-heading <b>#{act.intitule}</b>
+                        h5.media-heading <b>#{act.org_name}</b>
+                        h6.media-heading <b>#{act.intitule}</b>
                         //h6
                           i.fa.fa-map-marker
                           p.inline Adresse : #{act.address}
                       div.media-right.media-middle
                         button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
                     .panel-body
-                        h4 Dans le cadre de : <b>#{act.event_intitule}</b>
-                        each day, day_i in act.days
-                          if day.day
-                            h4
-                              h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                              h6.inline
-                                i.fa.fa-user
-                                p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+                        h5 Dans le cadre de : <b>#{act.event_intitule}</b>
+                        if act.days.length < 3
+                          each day, day_i in act.days
+                            if day.day
+                              h4
+                                h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                                h6.inline
+                                  i.fa.fa-user
+                                  p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+                        else
+                          if act.days[0].day && act.days[1].day
+                            h5.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
+
             each lt, index in longterms
                 li.list-group-item(id= lt.long_term._id, opp_type='longterm')
                   .panel.panel-default
@@ -164,8 +169,8 @@ block content
                           else if lt.cause == 'Enfance'
                             i.fa.fa-child(style='color: #FF4F3C')
                       div.media-body
-                        h4.media-heading <b>#{lt.org_name}</b>
-                        h5.media-heading <b>#{lt.long_term.intitule}</b>
+                        h5.media-heading <b>#{lt.org_name}</b>
+                        h6.media-heading <b>#{lt.long_term.intitule}</b>
                         h6
                           i.fa.fa-map-marker
                           p.inline Adresse : #{lt.long_term.address}
