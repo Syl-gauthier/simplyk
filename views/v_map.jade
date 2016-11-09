@@ -88,12 +88,12 @@ block content
     .row.fill
       .col-sm-4.col-xs-12
         #filter_div.row
-          .col-sm-6.col-xs-12#acts_filter(style='cursor: pointer;')
-            h4.text-center.btn-filter.btn-filter-acts
+          .col-sd-6.col-md-5.col-md-offset-1.col-xs-10.col-xs-offset-1#acts_filter(style='cursor: pointer;')
+            h5.text-center.btn-filter.btn-filter-acts
               i.inline.fa.fa-check-square-o#acts_check
               p.inline Ponctuels
-          .col-sm-6.col-xs-12#lts_filter(style='cursor: pointer;')
-            h4.text-center.btn-filter.btn-filter-lts
+          .col-sd-6.col-md-5.col-md-offset-0.col-xs-10.col-xs-offset-1#lts_filter(style='cursor: pointer;')
+            h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
               p.inline Engagements
         #offers-list.no-side-padding.scrollable.row
@@ -103,42 +103,36 @@ block content
             if success
               p.alert.alert-success #{success}
             if (typeof the_favo !== 'undefined') && the_favo.days
-              h3.text-center
-                img(src='http://i.giphy.com/7WH2eHCxpFcI0.gif' style='height: 1.5em; width: auto;')
-                p.inline.text-shadowed <b>COUP DE COEUR</b>
-              li.list-group-item(id= 'the_favo')
-                .panel.panel-default
-                  .panel-heading
-                    div.media-left.media-middle
-                      a(href='#')
-                        //img.media-object.little-img(src='/images/clouds.jpg')
-                        if the_favo.cause == 'Solidarité'
-                          i.fa.fa-heart
-                        else if the_favo.cause == 'Nature'
-                          i.fa.fa-envira(style='color: #5BCF8F')
-                        else if the_favo.cause == 'Sport et Culture'
-                          i.fa.fa-institution(style='color: #FFC858')
-                        else if the_favo.cause == 'Enfance'
-                          i.fa.fa-child(style='color: #FF4F3C')
-                    div.media-body
-                      h4.media-heading <b>#{the_favo.org_name}</b>
-                      h5.media-heading <b>#{the_favo.intitule}</b>
-                      h6
-                        i.fa.fa-map-marker
-                        p.inline Adresse : #{the_favo.address}
-                  .panel-body
-                    h4 Dans le cadre de : <b>#{the_favo.event_intitule}</b>
-                    p= the_favo.description
-                    each day, day_i in the_favo.days
-                      if day.day
-                        h4
-                          h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                          h6.inline
-                            i.fa.fa-user
-                            p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-                          h2
-                  .panel-footer
-                    button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favo._id) Plus d'infos
+              li.list-group-item(id= act._id, opp_type='activity')
+                  .panel.panel-default
+                    .panel-heading
+                      div.media-left.media-middle
+                        a(href='#')
+                          if act.cause == 'Solidarité'
+                            i.fa.fa-heart
+                          else if act.cause == 'Environnement'
+                            i.fa.fa-envira(style='color: #5BCF8F')
+                          else if act.cause == 'Sport et Culture'
+                            i.fa.fa-institution(style='color: #FFC858')
+                          else if act.cause == 'Enfance'
+                            i.fa.fa-child(style='color: #FF4F3C')
+                      div.media-body
+                        h4.media-heading <b>#{act.org_name}</b>
+                        h5.media-heading <b>#{act.intitule}</b>
+                        //h6
+                          i.fa.fa-map-marker
+                          p.inline Adresse : #{act.address}
+                      div.media-right.media-middle
+                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
+                    .panel-body
+                        h4 Dans le cadre de : <b>#{act.event_intitule}</b>
+                        each day, day_i in act.days
+                          if day.day
+                            h4
+                              h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                              h6.inline
+                                i.fa.fa-user
+                                p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
             each act, index in activities
               if act._id != the_favo._id
                 li.list-group-item(id= act._id, opp_type='activity')

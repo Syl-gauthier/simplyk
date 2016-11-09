@@ -176,6 +176,10 @@ body{
 
 }
 
+
+#offers_list li.panel{
+	margin-bottom: 0px;
+}
 .btn-landing{
 	border-radius: 0px;
 }
