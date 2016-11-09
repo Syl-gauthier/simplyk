@@ -119,7 +119,8 @@ function initMap() {
       var longi = act.lon + 0.005 * (Math.random() - 0.5);
       //infowindows[i] = {};
       infowindows[i] = new google.maps.InfoWindow({
-        content: act.org_name + '<br>' + act.intitule
+        content: '<b>' + act.org_name + '</b>' + '<br>' + act.intitule,
+        disableAutoPan: true
       });
       console.log(acts[i].cause);
       if (acts[i].cause == 'Nature') {
@@ -174,7 +175,8 @@ function initMap() {
       var longj = lt.long_term.lon + 0.005 * (Math.random() - 0.5);
       //infowindows[j] = {};
       infowindows[j] = new google.maps.InfoWindow({
-        content: lt.org_name + '<br>' + lt.long_term.intitule
+        content: '<b>' + lt.org_name + '</b>' + '<br>' + lt.long_term.intitule,
+        disableAutoPan: true
       });
       //choix du marqueur en fonction de la cause, changer avec le json
       if (lts[j - acts.length].cause == 'Nature') {
