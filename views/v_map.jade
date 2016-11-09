@@ -214,6 +214,9 @@ block footscript
     var acts = !{JSON.stringify(activities)};
     var lts = !{JSON.stringify(longterms)};
     var the_fav = !{JSON.stringify(the_favorite)};
+  //clusterer api
+  script(src="/javascripts/marker-clusterer.js", type="text/javascript")
+
   script(src='/javascripts/initmap.js')
   script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&callback=initMap"
          async defer)
