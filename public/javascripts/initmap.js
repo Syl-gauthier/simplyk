@@ -95,20 +95,36 @@ function initMap() {
   function generateMarkers(map, mks) {
     //Generate markers
     //infowindows = [];
-    var imageSol = {
+    const imageSol = {
       url: '/images/Perso/blue-icon-marker.svg', // image is 512 x 512
       scaledSize: new google.maps.Size(30, 36)
     };
-    var imageEnv = {
+    const imageEnv = {
       url: '/images/Perso/green-icon-marker.svg', // image is 512 x 512
       scaledSize: new google.maps.Size(30, 36)
     };
-    var imageCul = {
+    const imageCul = {
       url: '/images/Perso/yellow-icon-marker.svg', // image is 512 x 512
       scaledSize: new google.maps.Size(30, 36)
     };
-    var imageEnf = {
+    const imageEnf = {
       url: '/images/Perso/red-icon-marker.svg', // image is 512 x 512
+      scaledSize: new google.maps.Size(30, 36)
+    };
+    const imageSolFlash = {
+      url: '/images/Perso/blue-icon-marker-flash.svg', // image is 512 x 512
+      scaledSize: new google.maps.Size(30, 36)
+    };
+    const imageEnvFlash = {
+      url: '/images/Perso/green-icon-marker-flash.svg', // image is 512 x 512
+      scaledSize: new google.maps.Size(30, 36)
+    };
+    const imageCulFlash = {
+      url: '/images/Perso/yellow-icon-marker-flash.svg', // image is 512 x 512
+      scaledSize: new google.maps.Size(30, 36)
+    };
+    const imageEnfFlash = {
+      url: '/images/Perso/red-icon-marker-flash.svg', // image is 512 x 512
       scaledSize: new google.maps.Size(30, 36)
     };
     //Attach marker to each acts
@@ -130,7 +146,7 @@ function initMap() {
             lng: longi
           },
           map: map,
-          icon: imageEnv,
+          icon: imageEnvFlash,
           clickable: true
         });
       } else if (acts[i].cause == 'Solidarité') {
@@ -140,7 +156,7 @@ function initMap() {
             lng: longi
           },
           map: map,
-          icon: imageSol,
+          icon: imageSolFlash,
           clickable: true
         });
       } else if (acts[i].cause == 'Sport et Culture') {
@@ -150,7 +166,7 @@ function initMap() {
             lng: longi
           },
           map: map,
-          icon: imageCul,
+          icon: imageCulFlash,
           clickable: true
         });
       } else if (acts[i].cause == 'Enfance') {
@@ -160,7 +176,7 @@ function initMap() {
             lng: longi
           },
           map: map,
-          icon: imageEnf,
+          icon: imageEnfFlash,
           clickable: true
         });
       } else {
