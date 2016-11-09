@@ -124,8 +124,9 @@ body{
 }
 
 #offers-list{
-	height: 85vh;
+	max-height: 80vh;
 }
+
 
 .conn-input{
 	padding-top: 15px;
@@ -175,10 +176,49 @@ body{
 
 }
 
+
+#offers_list li.panel{
+	margin-bottom: 0px;
+}
 .btn-landing{
 	border-radius: 0px;
 }
 
+#filter_div {
+	margin-top: 13px;
+	margin-bottom: 13px;
+}
+
+.btn-filter {
+	margin-top: 4px;
+	margin-bottom: 4px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+    border-radius: 5px;
+}
+
+.btn-filter-lts{
+	border: 1px solid #359B9C;
+}
+
+.btn-filter-acts{
+	border: 1px solid #8BE78F;
+}
+
+.btn-filter-lts:hover{
+	border: 1px solid #359B9C;
+	background-color: #eee;
+	font-weight: 700;
+}
+
+.btn-filter-acts:hover{
+	background-color: #eee;
+	font-weight: 700;
+}
+
+.btn-filter.i {
+	padding-left: 0px;
+}
 
 .firstColor{
 	color:#25A191;

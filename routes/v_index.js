@@ -43,6 +43,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         my_school = req.session.volunteer.admin.school_id;
       };
       console.log('Volunteer age : ' + age);
+
       var isTooYoung = function(activity) {
         if (activity.min_age) {
           return (activity.min_age <= age);
@@ -50,15 +51,26 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           return true;
         }
       };
+
       var isNotPassed = function(activity) {
         var days_length = activity.days.filter(function(day) {
           return day.day > Date.now();
         });
         return days_length.length > 0;
       };
+
       var isUnverified = function(activity) {
         return activity.validation;
       };
+
+      const isNotTheFav = function(activity) {
+        if(the_favorite){
+          return activity._id != the_favorite._id;
+        } else {
+          return true;
+        }
+      };
+
       var justMySchool = function(activity) {
         if (activity.school_id) {
           if (my_school) {
@@ -71,6 +83,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           return true;
         }
       };
+
       //If user is under 16, he can't see the activities of unverified organisms
       let acts = {};
       if (age < 16) {
@@ -93,10 +106,8 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       let the_favorite = {};
       if (favorites.length != 0) {
         the_favorite = favorites[fav_index];
-      } else {
-        the_favorite = acts[Math.floor(Math.random() * (acts.length))];
-        console.log('INFO : There was no favorites so the random fav is ' + the_favorite.org_name + ', ' + the_favorite.intitule);
       };
+      //acts = acts.filter(isNotTheFav);
       Organism.find({
           'long_terms': {
             '$exists': true,
@@ -139,7 +150,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
                 return true;
               }
             });
-            var longterms = longtermsList(lt_organisms);
+            var longterms = longtermsList(lt_organisms, age);
             const hash = require('intercom-client').SecureMode.userHash({
               secretKey: process.env.INTERCOM_SECRET_KEY,
               identifier: req.session.volunteer.email
@@ -149,12 +160,12 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
             res.render('v_map.jade', {
               session: req.session,
               activities: acts,
-              the_favorite: the_favorite,
               volunteer: req.session.volunteer,
               error: req.query.error,
-              longterms: longterms,
               success: req.query.success,
               group: req.session.group,
+              the_favorite,
+              longterms,
               hash
             });
           }

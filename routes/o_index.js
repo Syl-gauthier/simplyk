@@ -79,10 +79,8 @@ router.get('/', function(req, res, next) {
                     let the_favorite = {};
                     if (favorites.length != 0) {
                         the_favorite = favorites[fav_index];
-                    } else {
-                        the_favorite = acts[Math.floor(Math.random() * (acts.length))];
-                        console.info('INFO : There was no favorites so the random fav is ' + the_favorite.org_name + ', ' + the_favorite.intitule);
                     }
+                    console.log('The favorite is :' + the_favorite.intitule);
                     //Select organisms who have longterms and are not admin ones
                     Organism.find({
                         'long_terms': {
@@ -115,7 +113,7 @@ router.get('/', function(req, res, next) {
                                 } else {
                                     return true;
                                 }
-                            }));
+                            }), null);
                             res.render('g_accueil.jade', {
                                 activities: acts,
                                 the_favorite: the_favorite,
