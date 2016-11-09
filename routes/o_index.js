@@ -115,7 +115,7 @@ router.get('/', function(req, res, next) {
                                 } else {
                                     return true;
                                 }
-                            }));
+                            }), null);
                             res.render('g_accueil.jade', {
                                 activities: acts,
                                 the_favorite: the_favorite,

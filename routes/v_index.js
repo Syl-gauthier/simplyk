@@ -150,7 +150,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
                 return true;
               }
             });
-            var longterms = longtermsList(lt_organisms);
+            var longterms = longtermsList(lt_organisms, age);
             const hash = require('intercom-client').SecureMode.userHash({
               secretKey: process.env.INTERCOM_SECRET_KEY,
               identifier: req.session.volunteer.email

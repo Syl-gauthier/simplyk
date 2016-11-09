@@ -27,6 +27,7 @@ block content
                 th.text-center Date
                 th.text-center Heure de début
                 th.text-center Heure de fin
+                th.text-center Heure de fin
               each day, nb in act.days
                 if day.day
                   tr
@@ -52,6 +53,8 @@ block content
             h4 <b>#{lt.long_term.intitule}</b>
             p #{lt.long_term.description}
             p <b>Adresse : </b> #{lt.long_term.address}
+            if lt.min_age
+              p <b>Âge minimal : </b> #{lt.min_age} ans
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
             a#link-btn-ref.btn.btn-default(href='login') S'inscrire
