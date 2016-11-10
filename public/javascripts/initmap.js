@@ -4,7 +4,7 @@ function initMap() {
   var lts_checked = true;
   var acts_checked = true;
   var printed = 'all'; //Markers currently onscreen
-  
+  let markerCluster = {};
 
   function listStar(i) {
     listElement = document.getElementById("offers-list").childNodes[0].childNodes[i];
@@ -27,6 +27,12 @@ function initMap() {
   function setMapIfExists(map, i) {
     if (markers[i]) {
       markers[i].setMap(map);
+      //Remove the marker even if we zoom
+      if (map === null){
+        markerCluster.removeMarker(markers[i]);
+      } else {
+        markerCluster.addMarker(markers[i]);
+      }
     }
   }
   // Set all markers in the array of the type declared on the map.
@@ -240,7 +246,7 @@ function initMap() {
       }
       attachInfoWindow(mks[j], infowindows[j], lt.long_term._id);
     };
-    var markerCluster = new MarkerClusterer(map, mks, options);
+    markerCluster = new MarkerClusterer(map, mks, options);
     return mks;
   };
 
@@ -258,7 +264,7 @@ function initMap() {
   var options = {
     gridSize: 50,
     maxZoom: 13,
-    minimumClusterSize: 13,
+    minimumClusterSize: 10,
     imagePath: '/images/m'
   };
   var legend = document.createElement('div');
