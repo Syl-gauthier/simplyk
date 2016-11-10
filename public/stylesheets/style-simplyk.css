@@ -208,6 +208,10 @@ body{
 	border: 1px solid #8BE78F;
 }
 
+.btn-filter-age{
+	border: 1px solid #FFC518;
+}
+
 .btn-filter-lts:hover{
 	border: 1px solid #359B9C;
 	background-color: #eee;
@@ -215,6 +219,11 @@ body{
 }
 
 .btn-filter-acts:hover{
+	background-color: #eee;
+	font-weight: 700;
+}
+
+.btn-filter-age:hover{
 	background-color: #eee;
 	font-weight: 700;
 }

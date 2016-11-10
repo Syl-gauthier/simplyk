@@ -8,6 +8,7 @@ block vars
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   - var the_favo = {}; if (typeof the_favorite !== 'undefined') {the_favo = the_favorite} else {the_favo = {}};
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
+  - function isAdult(ageMin){var result=false;if(ageMin>=16){result=true}return result;}
 
 block content
   each act, index in activities
@@ -87,6 +88,10 @@ block content
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
               p.inline Engagements
+          .col-md-10.col-md-offset-1.col-sm-12.col-sm-offset-0.col-xs-10.col-xs-offset-1#age_filter(style='cursor: pointer;')
+            h5.text-center.btn-filter.btn-filter-age
+              i.inline.fa.fa-square-o#age_check
+              p.inline J'ai moins de 16 ans
         #offers-list.no-side-padding.scrollable.row
           ul.list-group.list-opportunity
             if error
@@ -94,7 +99,7 @@ block content
             if success
               p.alert.alert-success #{success}
             if (typeof the_favo !== 'undefined') && the_favo.days
-              li.list-group-item(id='the_favo', opp_type='activity')
+              li.list-group-item(id='the_favo', opp_type='activity', min_age=the_favo.min_age, adult='')
                   .panel.panel-default
                     .panel-heading
                       div.media-left.media-middle
@@ -130,7 +135,7 @@ block content
                             h6.inline <b>#{days_name[correctDate(the_favo.days[0].day).getDay()]  + ' ' + (correctDate(the_favo.days[0].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[0].day).getMonth()]  + ' ' + correctDate(the_favo.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(the_favo.days[1].day).getDay()]  + ' ' + (correctDate(the_favo.days[1].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[1].day).getMonth()]  + ' ' + correctDate(the_favo.days[1].day).getFullYear()}</b>, ...
             each act, index in activities
               if act._id != the_favo._id
-                li.list-group-item(id= act._id, opp_type='activity')
+                li.list-group-item(id= act._id, opp_type='activity', min_age= act.min_age, adult='')
                   .panel.panel-default
                     .panel-heading
                       div.media-left.media-middle
@@ -166,7 +171,7 @@ block content
                             h5.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
 
             each lt, index in longterms
-                li.list-group-item(id= lt.long_term._id, opp_type='longterm')
+                li.list-group-item(id= lt.long_term._id, opp_type='longterm', min_age=lt.long_term.min_age, adult='')
                   .panel.panel-default
                     .panel-heading
                       div.media-left.media-middle
@@ -221,6 +226,15 @@ block footscript
         $('html, body').animate({
           scrollTop: $('#map').offset().top - 70
         }, 500)
+      });
+      $('.list-group-item').attr('adult', function(i, val){
+        var minAge = $(this).attr('min_age');
+        var isAdult = false;
+        if (minAge >= 16){
+          isAdult = true;
+        };
+        console.log('isAdult : ' + isAdult);
+        return isAdult;
       });
     });
   script.

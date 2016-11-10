@@ -1,8 +1,11 @@
 function initMap() {
   var markers = [];
+  var adult_index = [];
   var infowindows = [];
   var lts_checked = true;
   var acts_checked = true;
+  var age_checked = false;
+  var age_printed = 'all';
   var printed = 'all'; //Markers currently onscreen
   let markerCluster = {};
 
@@ -27,6 +30,7 @@ function initMap() {
   function setMapIfExists(map, i) {
     if (markers[i]) {
       markers[i].setMap(map);
+      console.log('markers[i] : ' + markers[i]);
       //Remove the marker even if we zoom
       if (map === null){
         markerCluster.removeMarker(markers[i]);
@@ -41,6 +45,12 @@ function initMap() {
     if (type == 'acts') {
       for (i = 0; i < acts.length; i++) {
         setMapIfExists(map, i);
+      }
+    } else if ('adults'){
+      console.log(adult_index + '--> adult_index')
+      for (var x = 0; x<adult_index.length ; x++){
+        console.log('adult_index[x] : ' + adult_index[x]);
+        setMapIfExists(map, adult_index[x]);
       }
     } else {
       for (j = 0 + acts.length; j < lts.length + acts.length; j++) {
@@ -140,6 +150,12 @@ function initMap() {
       var lati = act.lat + 0.005 * (Math.random() - 0.5);
       var longi = act.lon + 0.005 * (Math.random() - 0.5);
       //infowindows[i] = {};
+      //Relève l'index si l'age minimal est supérieur à 16
+      console.log('act.min_age : ' + act.min_age);
+      if(act.min_age >= 16){
+        console.log('FOR ADULT : i : ' + i);
+        adult_index.push(i);
+      };
       infowindows[i] = new google.maps.InfoWindow({
         content: '<b>' + act.org_name + '</b>' + '<br>' + act.intitule,
         disableAutoPan: true
@@ -200,6 +216,12 @@ function initMap() {
         content: '<b>' + lt.org_name + '</b>' + '<br>' + lt.long_term.intitule,
         disableAutoPan: true
       });
+      console.log('lt.long_term.min_age : ' + lt.long_term.min_age);
+      if(lt.long_term.min_age >= 16){
+        console.log('FOR ADULT : j : ' + j);
+        adult_index.push(j);
+        console.log('adult_index : ' + adult_index);
+      };
       //choix du marqueur en fonction de la cause, changer avec le json
       if (lts[j - acts.length].cause == 'Nature') {
         mks[j] = new google.maps.Marker({
@@ -339,6 +361,28 @@ function initMap() {
       $("[opp_type='activity']").removeClass('hidden');
       setMapOnAll('acts', map);
       printed = 'all';
+    }
+  });
+  $('#age_filter').click(function() {
+    age_checked = !age_checked;
+    if (age_checked) {
+      $('#age_check').removeClass('fa-square-o');
+      $('#age_check').addClass('fa-check-square-o');
+    } else {
+      $('#age_check').removeClass('fa-check-square-o');
+      $('#age_check').addClass('fa-square-o');
+    }
+    if (age_printed == 'all') {
+      $("[adult='true']").addClass('hidden');
+      console.log('Filter by age');
+      setMapOnAll('adults', null);
+      age_printed = 'kids';
+    } else {
+      console.log($("[adult='true']"));
+      $("[adult='true']").removeClass('hidden');
+      console.log('Remove filter by age');
+      setMapOnAll('adults', map);
+      age_printed = 'all';
     }
   });
 
