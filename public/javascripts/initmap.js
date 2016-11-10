@@ -240,7 +240,7 @@ function initMap() {
   var options = {
     gridSize: 50,
     maxZoom: 13,
-    minimumClusterSize: 13,
+    minimumClusterSize: 17,
     imagePath: '/images/m'
   };
   var legend = document.createElement('div');
