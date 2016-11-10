@@ -4,7 +4,7 @@ function initMap() {
   var lts_checked = true;
   var acts_checked = true;
   var printed = 'all'; //Markers currently onscreen
-  
+  let markerCluster = {};
 
   function listStar(i) {
     listElement = document.getElementById("offers-list").childNodes[0].childNodes[i];
@@ -27,6 +27,12 @@ function initMap() {
   function setMapIfExists(map, i) {
     if (markers[i]) {
       markers[i].setMap(map);
+      //Remove the marker even if we zoom
+      if (map === null){
+        markerCluster.removeMarker(markers[i]);
+      } else {
+        markerCluster.addMarker(markers[i]);
+      }
     }
   }
   // Set all markers in the array of the type declared on the map.
@@ -95,20 +101,36 @@ function initMap() {
   function generateMarkers(map, mks) {
     //Generate markers
     //infowindows = [];
-    var imageSol = {
+    const imageSol = {
       url: '/images/Perso/blue-icon-marker.svg', // image is 512 x 512
       scaledSize: new google.maps.Size(30, 36)
     };
-    var imageEnv = {
+    const imageEnv = {
       url: '/images/Perso/green-icon-marker.svg', // image is 512 x 512
       scaledSize: new google.maps.Size(30, 36)
     };
-    var imageCul = {
+    const imageCul = {
       url: '/images/Perso/yellow-icon-marker.svg', // image is 512 x 512
       scaledSize: new google.maps.Size(30, 36)
     };
-    var imageEnf = {
+    const imageEnf = {
       url: '/images/Perso/red-icon-marker.svg', // image is 512 x 512
+      scaledSize: new google.maps.Size(30, 36)
+    };
+    const imageSolFlash = {
+      url: '/images/Perso/blue-icon-marker-flash.svg', // image is 512 x 512
+      scaledSize: new google.maps.Size(30, 36)
+    };
+    const imageEnvFlash = {
+      url: '/images/Perso/green-icon-marker-flash.svg', // image is 512 x 512
+      scaledSize: new google.maps.Size(30, 36)
+    };
+    const imageCulFlash = {
+      url: '/images/Perso/yellow-icon-marker-flash.svg', // image is 512 x 512
+      scaledSize: new google.maps.Size(30, 36)
+    };
+    const imageEnfFlash = {
+      url: '/images/Perso/red-icon-marker-flash.svg', // image is 512 x 512
       scaledSize: new google.maps.Size(30, 36)
     };
     //Attach marker to each acts
@@ -119,7 +141,8 @@ function initMap() {
       var longi = act.lon + 0.005 * (Math.random() - 0.5);
       //infowindows[i] = {};
       infowindows[i] = new google.maps.InfoWindow({
-        content: act.org_name + '<br>' + act.intitule
+        content: '<b>' + act.org_name + '</b>' + '<br>' + act.intitule,
+        disableAutoPan: true
       });
       console.log(acts[i].cause);
       if (acts[i].cause == 'Nature') {
@@ -129,7 +152,7 @@ function initMap() {
             lng: longi
           },
           map: map,
-          icon: imageEnv,
+          icon: imageEnvFlash,
           clickable: true
         });
       } else if (acts[i].cause == 'Solidarité') {
@@ -139,7 +162,7 @@ function initMap() {
             lng: longi
           },
           map: map,
-          icon: imageSol,
+          icon: imageSolFlash,
           clickable: true
         });
       } else if (acts[i].cause == 'Sport et Culture') {
@@ -149,7 +172,7 @@ function initMap() {
             lng: longi
           },
           map: map,
-          icon: imageCul,
+          icon: imageCulFlash,
           clickable: true
         });
       } else if (acts[i].cause == 'Enfance') {
@@ -159,7 +182,7 @@ function initMap() {
             lng: longi
           },
           map: map,
-          icon: imageEnf,
+          icon: imageEnfFlash,
           clickable: true
         });
       } else {
@@ -174,7 +197,8 @@ function initMap() {
       var longj = lt.long_term.lon + 0.005 * (Math.random() - 0.5);
       //infowindows[j] = {};
       infowindows[j] = new google.maps.InfoWindow({
-        content: lt.org_name + '<br>' + lt.long_term.intitule
+        content: '<b>' + lt.org_name + '</b>' + '<br>' + lt.long_term.intitule,
+        disableAutoPan: true
       });
       //choix du marqueur en fonction de la cause, changer avec le json
       if (lts[j - acts.length].cause == 'Nature') {
@@ -222,7 +246,7 @@ function initMap() {
       }
       attachInfoWindow(mks[j], infowindows[j], lt.long_term._id);
     };
-    var markerCluster = new MarkerClusterer(map, mks, options);
+    markerCluster = new MarkerClusterer(map, mks, options);
     return mks;
   };
 
@@ -240,7 +264,7 @@ function initMap() {
   var options = {
     gridSize: 50,
     maxZoom: 13,
-    minimumClusterSize: 17,
+    minimumClusterSize: 15,
     imagePath: '/images/m'
   };
   var legend = document.createElement('div');
