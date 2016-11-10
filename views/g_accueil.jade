@@ -64,25 +64,25 @@ block content
             a#link-btn-ref.btn.btn-default(href='login') Plus d'infos
   .container-fluid.degrade
     #first_section_entrance.row
-      .col-md-8.col-md-offset-2
-        .logo.text-center.center-block
+      .col-sm-5.col-xs-offset-1.col-xs-11
+        .logo
           div
-            img#logo_entrance(src='images/simplyk_log_text_v2.png', align='middle')
+            h1 AGIR <br> MAINTENANT <br>
           div
-            h1.text-center La plateforme de mise en relation entre organismes et bénévoles! <br><br>
-          div.text-center
-            button#find_vol.btn.btn-warning.btn-lg.center-block <b>TROUVE TON BÉNÉVOLAT</b>
-        if error
-          p.alert.alert-danger ERROR : #{error}
+            h4 Simplyk met en relation bénévoles et organismes <br><br>
+          div
+            button#find_vol.btn.btn-warning.btn-lg TROUVE TON BÉNÉVOLAT
+      .col-sm-6
+        img#landscape(src='images/happy_city.svg', align='middle')
   .container-fluid
     .row.fill
       .col-sm-4.col-xs-12
         #filter_div.row
-          .col-sd-6.col-md-5.col-md-offset-1.col-xs-10.col-xs-offset-1#acts_filter(style='cursor: pointer;')
+          .col-md-5.col-md-offset-1.col-sm-6.col-sm-offset-0.col-xs-10.col-xs-offset-1#acts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-acts
               i.inline.fa.fa-check-square-o#acts_check
               p.inline Ponctuels
-          .col-sd-6.col-md-5.col-md-offset-0.col-xs-10.col-xs-offset-1#lts_filter(style='cursor: pointer;')
+          .col-md-5.col-sm-6.col-sm-offset-0.col-xs-10.col-xs-offset-1#lts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
               p.inline Engagements
@@ -214,6 +214,14 @@ block content
 
 
 block footscript
+  script.
+    $( document ).ready(function() {
+      $('#find_vol, #find_vol_bis').click(function(){
+        $('html, body').animate({
+          scrollTop: $('#map').offset().top - 70
+        }, 500)
+      });
+    });
   script.
     var acts = !{JSON.stringify(activities)};
     var lts = !{JSON.stringify(longterms)};

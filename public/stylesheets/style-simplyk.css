@@ -302,7 +302,23 @@ body{
 }
 
 .logo{
+	margin-top: 25%;
 	max-height: 500px;
+	color: white;
+	margin-left: -40px;
+}
+
+.logo h1{
+	font-size: 4.5vw;
+	font-weight: 300;
+	letter-spacing: 10px;
+}
+
+.logo h4{
+	font-weight: 300;
+	letter-spacing: 3px;
+	margin-top: 0px;
+	margin-bottom: 40px;
 }
 
 #logo_entrance{
@@ -315,19 +331,31 @@ body{
 
 #find_vol {
 	background-color: transparent;
-	color: #333;
-	border: 3px solid #EEA90B;
+	color: white;
+	border: 2px solid white;
+	font-weight: 300;
 }
 
 #find_vol:hover{
 	background-color: #FFC518;
 	color: white;
-	border: 3px solid #EEA90B;
+	border: 2px solid #EEA90B;
 }
 
 #first_section_entrance{
-	height: 600px;
-	background-image: url('/images/congruent_pentagon.png');
+	min-height: 550px;
+	background-color: #4EBDC7;
+	border-bottom: 1px solid #bbb;
+}
+
+#landscape {
+	margin-top: 5%;
+	margin-bottom: 5%;
+	max-width: 100%;
+	max-height: 460px;
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
 }
 
 .background-stars {
