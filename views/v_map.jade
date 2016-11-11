@@ -97,7 +97,7 @@ block content
             a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = the_favo._id, href='/activity/'+the_favo._id) Plus d'infos
   .container-fluid
     .row.fill
-      .col-sm-4.col-xs-12
+      .col-sm-4.col-xs-12#map-left
         #filter_div.row
           .col-sd-6.col-md-5.col-md-offset-1.col-xs-10.col-xs-offset-1#acts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-acts
@@ -108,7 +108,7 @@ block content
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
               p.inline Engagements
-        #offers-list.no-side-padding.scrollable.row
+        #offers-list-logged.no-side-padding.scrollable.row
           ul.list-group.list-opportunity
             if error
               p.alert.alert-danger #{error}
