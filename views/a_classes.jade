@@ -14,40 +14,111 @@ block content
             h1.page-header.firstColor Mes étudiants
             div.table-responsive
               table.table.table-striped.table-bordered.table-hover.table-condensed
-                th Nom
-                th Prénom
-                th Heures effectués
-                th Dossier
+                th.text-center Nom
+                th.text-center Prénom
+                th.text-center Heures effectués
+                th.text-center Dossier
+                th.text-center Ajout d'heures
                 if classes_array.length > 1
                   each classe, classe_i in classes_array
                     tr.warning
-                      td= classe.toString()
+                      td.text-center= classe.toString()
+                      td
                       td
                       td
                       td
                     each vol, vol_i in volunteers
                       if vol.admin.class == classe
                         tr.success
-                          td= vol.lastname
-                          td= vol.firstname
-                          if vol.events.length || vol.long_terms.length || vol.extras.length 
-                            td= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
+                          td.text-center= vol.lastname
+                          td.text-center= vol.firstname
+                          if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
+                            td.text-center= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.manuals.filter(function(man){if(man.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
                           else
-                            td 0 h
+                            td.text-center 0 h
                           td
-                            a.btn-link(href="/admin/report"+vol._id) Accéder
+                            a.text-center.btn-link(href="/admin/report"+vol._id) Accéder
+                          td
+                            button.btn.btn-warning.center-block.btn-xs(data-toggle='modal' data-target='#manualHoursModal' + vol_i)
+                              i.fa.fa-plus
+                            .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal' + vol_i)
+                              div.modal-dialog(role='document')
+                                form.manualHoursForm(id='manualHoursForm' + vol_i, volunteer=vol._id, role='form', index=vol_i).modal-content
+                                  .modal-header
+                                    button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                      span(aria-hidden='true')
+                                      h4.modal-title Ajout d'heures manuel
+                                  div.modal-body
+                                    p.alert.alert-success.hidden(id='manual-success'+vol_i)
+                                    p.alert.alert-danger.hidden(id='manual-danger'+vol_i)
+                                    label(for='hours_done') Nombre d'heures
+                                    input.form-control(type='number', min='0.5', max='50', step='0.5' name='hours_done', required)
+                                    label(for='hours_description') Description
+                                    textarea.form-control(name="hours_description" id="hours_description" rows="6" required)
+                                  div.modal-footer
+                                    input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
+                                    a.btn.btn-default(data-dismiss='modal') Fermer
                 else
                   each vol, vol_i in volunteers
                     tr.success
                       td= vol.lastname
                       td= vol.firstname
-                      if vol.events.length || vol.long_terms.length || vol.extras.length 
-                        td= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
+                      if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
+                        td= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.manuals.filter(function(man){if(man.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
                       else
                         td 0 h
                       td
                         a.btn-link(href="/admin/report"+vol._id) Accéder
+                      td.text-center
+                        button.btn.btn-warning(data-toggle='modal' data-target='#manualHoursModal' + vol_i, style='margin-bottom: 20px;')
+                          i.fa.fa-plus
+                        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal' + vol_i)
+                          div.modal-dialog(role='document')
+                            form.manualHoursForm(id='manualHoursForm' + vol_i, role='form', volunteer=vol._id, index=vol_i).modal-content
+                              .modal-header
+                                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                  span(aria-hidden='true')
+                                  h4.modal-title Ajout d'heures manuel
+                              div.modal-body
+                                p.alert.alert-success.hidden(id='manual-success'+vol_i)
+                                p.alert.alert-danger.hidden(id='manual-danger'+vol_i)
+                                label(for='hours_done') Nombre d'heures
+                                input.form-control(type='number', min='0.5', max='50', step='0.5' name='hours_done', required)
+                                label(for='hours_description') Description
+                                textarea.form-control(name="hours_description" id="hours_description" rows="6" required)
+                              div.modal-footer
+                                input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
+                                a.btn.btn-default(data-dismiss='modal') Fermer
 
 block footscript
   // jQuery (necessary for Bootstrap's JavaScript plugins)
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+  script(type='text/javascript').
+    $(document).ready(function(){
+      $('.manualHoursForm').submit(function(event){
+        event.preventDefault();
+        console.log('Submit addManualHours form');
+        let datas = {};
+        const form_datas = $(this).serializeArray();
+        const index = $(this).attr('index');
+        datas.hours_done = form_datas[0].value;
+        datas.description = form_datas[1].value;
+        datas.volunteer_id = $(this).attr('volunteer');
+        $.post('/addmanualhours', datas)
+        .done(function(data){
+          console.log('On est dans le callback done !');
+          console.log('JSON.stringify(data) : ' + JSON.stringify(data));
+          console.log('Heures ajoutées');
+          $('#manual-success'+index).removeClass('hidden');
+          $('#manual-success'+index).html('Heures ajoutées avec succès au profil de l\'élève :) Rechargez la page si vous voulez voir le total d\'heures actualisé');
+        })
+        .fail(function(data){
+          console.log('On est dans le callback fail !');
+          console.log('Erreur !');
+          $('#manual-danger'+index).removeClass('hidden');
+          console.log(data.error);
+          $('#manual-danger'+index).html(' ' + data.responseJSON.error);
+          console.log('JSON.stringify(data) : ' + JSON.stringify(data));
+        });
+      });
+    });

@@ -12,8 +12,6 @@ block content
       .col-md-3.col-md-offset-1
         .page-header
           h3
-            | Profil de l'élève
-            small
           if error
             p.alert.alert-danger #{error}
         ul.list-group
@@ -29,9 +27,28 @@ block content
           li.list-group-item
             | Adresse mail: #{volunteer.email}
             small
+        p.alert.alert-success.hidden#manual-success
+        button.btn.btn-warning(data-toggle='modal' data-target='#manualHoursModal', style='margin-bottom: 20px;') Ajouter des heures manuellement
+        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal')
+          div.modal-dialog(role='document')
+            form(id='manualHoursForm', role='form').modal-content
+              .modal-header
+                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden='true')
+                  h4.modal-title Ajout d'heures manuel
+              div.modal-body
+                p.alert.alert-danger.hidden#manual-danger
+                label(for='hours_done') Nombre d'heures
+                input.form-control(type='number', min='0.5', max='50', step='0.5' name='hours_done', required)
+                label(for='hours_description') Description
+                textarea.form-control(name="hours_description" id="hours_description" rows="6" required)
+              div.modal-footer
+                input.btn.btn-warning(type='submit', form='manualHoursForm', value='Ajouter les heures')
+                a.btn.btn-default(data-dismiss='modal') Fermer
+
       .col-md-6.col-md-offset-1
         .page-header
-          h3 Bilan
+          h3
         table.table.table-stripped
           tr
             th
@@ -50,15 +67,15 @@ block content
           tr
             td.text-center(style="vertical-align:middle")  <strong>#{volunteer.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)}</strong>  heures confirmées
           tr
-            th(rowspan='2' style="vertical-align:middle").text-center Extras ajoutés par l'élève
-            td(rowspan='2' style="vertical-align:middle").text-center <strong> #{volunteer.extras.length} </strong>
+            th(rowspan='2' style="vertical-align:middle").text-center Extras ajoutés par l'élève ou l'administrateur
+            td(rowspan='2' style="vertical-align:middle").text-center <strong> #{volunteer.extras.length + volunteer.manuals.length} </strong>
             td.text-center <strong>#{volunteer.extras.filter(function(ev){if(ev.hours_pending){return true;}else{return false;}}).map(el => el.hours_pending).reduce(hours_count, 0)}</strong> heures à confirmer
           tr
-            td.text-center(style="vertical-align:middle")  <strong>#{volunteer.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)}</strong>  heures confirmées
+            td.text-center(style="vertical-align:middle")  <strong>#{volunteer.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.manuals.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)}</strong>  heures confirmées
           tr.success
             th.text-center Total
             td.text-center <strong> #{volunteer.events.length + volunteer.long_terms.length + volunteer.extras.length} </strong>
-            td.text-center <strong> #{volunteer.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.long_terms.filter(function(long){if(long.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.extras.filter(function(extra){if(extra.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)} heures totales confirmées</strong>
+            td.text-center <strong> #{volunteer.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.long_terms.filter(function(long){if(long.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.extras.filter(function(extra){if(extra.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.manuals.filter(function(man){if(man.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)} heures totales confirmées</strong>
 
 
     .row
@@ -170,55 +187,110 @@ block content
                                     h6= question
                                   div.panel-body
                                     h6= lt.organism_answers[q_I]
-    .row
-      .col-md-10.col-md-offset-1(style='border: 3px solid #E56252; margin-bottom:10px;')
-        .page-header
-          h3 Les extras ajoutés par l'élève
-        .no-side-padding
-          ul.list-group.list-opportunity
-            unless (volunteer.extras)
-              p.alert.alert-danger Aucune heure extra-Simplyk
-            if (volunteer.extras)
-              table.table.table-striped
-                tr
-                  th Informations
-                  th Retours
-                each ext, ext_i in volunteer.extras
-                  tr
-                    td
-                      if (ext.hours_pending > 0 || ext.hours_done > 0)
-                        if (ext.hours_pending > 0)
-                          span.badge(style='background-color: #E33831')= ext.hours_pending + ' heures à confirmer'
-                        if (ext.hours_done > 0)
-                          span.badge(style='background-color: #113A20')= ext.hours_done + ' heures réalisées'
-                      else 
-                        span.badge(style='background-color: #E33831')= 'Aucune heure enregistrée'
-                      h4= ext.intitule
-                      h6 pour <strong> #{ext.org_name} </strong>
-                      if (ext.hours_pending > 0 || ext.hours_done > 0)
-                        h6= ext.description
-                    td
-                      unless (ext.hours_pending > 0 || ext.hours_done > 0)
-                        h6= ext.description
-                      if ext.student_answers.length > 0
-                        div.panel.panel-default
-                          div.panel-heading
-                            h4 Retour de l’élève sur lui-même 
-                          div.panel-body
-                              each question, q_I in ext.student_questions
-                                div.panel.panel-warning
-                                  div.panel-heading
-                                    h6= question
-                                  div.panel-body
-                                    h6= ext.student_answers[q_I]
-                      if ext.organism_answers.length > 0
-                        div.panel.panel-default
-                          div.panel-heading
-                            h4 Retour de l'organisme sur l'élève
-                          div.panel-body
-                              each question, q_I in ext.organism_questions
-                                div.panel.panel-success
-                                  div.panel-heading
-                                    h6= question
-                                  div.panel-body
-                                    h6= ext.organism_answers[q_I]
+    if (volunteer.extras || volunteer.manuals)
+      .row
+        .col-md-10.col-md-offset-1(style='border: 3px solid #E56252; margin-bottom:10px;')
+          if (volunteer.extras)
+            if (volunteer.extras.length > 0)
+              .page-header
+                h3 EXTRAS AJOUTÉS PAR L'ÉLÈVE
+              .no-side-padding
+                ul.list-group.list-opportunity
+                  if (volunteer.extras)
+                    table.table.table-striped
+                      tr
+                        th Informations
+                        th Retours
+                      each ext, ext_i in volunteer.extras
+                        tr
+                          td
+                            if (ext.hours_pending > 0 || ext.hours_done > 0)
+                              if (ext.hours_pending > 0)
+                                span.badge(style='background-color: #E33831')= ext.hours_pending + ' heures à confirmer'
+                              if (ext.hours_done > 0)
+                                span.badge(style='background-color: #113A20')= ext.hours_done + ' heures réalisées'
+                            else 
+                              span.badge(style='background-color: #E33831')= 'Aucune heure enregistrée'
+                            h4= ext.intitule
+                            h6 pour <strong> #{ext.org_name} </strong>
+                            if (ext.hours_pending > 0 || ext.hours_done > 0)
+                              h6= ext.description
+                          td
+                            unless (ext.hours_pending > 0 || ext.hours_done > 0)
+                              h6= ext.description
+                            if ext.student_answers.length > 0
+                              div.panel.panel-default
+                                div.panel-heading
+                                  h4 Retour de l’élève sur lui-même 
+                                div.panel-body
+                                    each question, q_I in ext.student_questions
+                                      div.panel.panel-warning
+                                        div.panel-heading
+                                          h6= question
+                                        div.panel-body
+                                          h6= ext.student_answers[q_I]
+                            if ext.organism_answers.length > 0
+                              div.panel.panel-default
+                                div.panel-heading
+                                  h4 Retour de l'organisme sur l'élève
+                                div.panel-body
+                                    each question, q_I in ext.organism_questions
+                                      div.panel.panel-success
+                                        div.panel-heading
+                                          h6= question
+                                        div.panel-body
+                                          h6= ext.organism_answers[q_I]
+          if (volunteer.manuals)
+            if (volunteer.manuals.length > 0)
+              .page-header
+                h3 AJOUTÉES MANUELLEMENT
+              .no-side-padding
+                ul.list-group.list-opportunity
+                  table.table.table-striped
+                    tr
+                      th Informations
+                      th Description
+                    each man, ext_i in volunteer.manuals
+                      tr
+                        td
+                          if (man.hours_done > 0)
+                            span.badge(style='background-color: #113A20')= man.hours_done + ' heures réalisées'
+                          else 
+                            span.badge(style='background-color: #E33831')= 'Aucune heure enregistrée'
+                          h3
+                          p ajoutées par <b> #{man.admin_name} </b>
+                          if (man.added.toLocaleString())
+                            p le <b> #{man.added.toLocaleString()} </b>
+                        td
+                          p= man.description
+
+block footscript
+  script(type='text/javascript').
+      $(document).ready(function(){
+        $('#manualHoursForm').submit(function(event){
+          event.preventDefault();
+          console.log('Submit addManualHours form');
+          let datas = {};
+          const form_datas = $('#manualHoursForm').serializeArray();
+          datas.hours_done = form_datas[0].value;
+          datas.description = form_datas[1].value;
+          datas.volunteer_id = !{JSON.stringify(volunteer._id)};
+          $.post('/addmanualhours', datas)
+          .done(function(data){
+            console.log('On est dans le callback done !');
+            $('#manualHoursModal').modal('toggle');
+            console.log('JSON.stringify(data) : ' + JSON.stringify(data));
+            console.log('Heures ajoutées');
+            $('#manual-success').removeClass('hidden');
+            $('#manual-success').html('Heures ajoutées avec succès au profil de l\'élève :) Rechargez la page si vous voulez voir le total d\'heures actualisé');
+          })
+          .fail(function(data){
+            console.log('On est dans le callback fail !');
+            console.log('Erreur !');
+            $('#manual-danger').removeClass('hidden');
+            console.log(data.error);
+            $('#manual-danger').html(' ' + data.responseJSON.error);
+            console.log('JSON.stringify(data) : ' + JSON.stringify(data));
+          });
+        });
+      });

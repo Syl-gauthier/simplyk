@@ -101,6 +101,16 @@ var VolunteerSchema = new Schema({
     student_answers: [String],
     organism_questions: [String],
     organism_answers: [String]
+  }],
+  manuals: [{
+    hours_done: Number,
+    admin_name: String,
+    description: String,
+    admin_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'Admin'
+    },
+    added: Date
   }]
 });
 
