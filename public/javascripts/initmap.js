@@ -1,12 +1,14 @@
+'use strict;'
+
 function initMap() {
-  var markers = [];
-  var adult_index = [];
-  var infowindows = [];
-  var lts_checked = true;
-  var acts_checked = true;
-  var age_checked = false;
-  var age_printed = 'all';
-  var printed = 'all'; //Markers currently onscreen
+  let markers = [];
+  let adult_index = [];
+  let infowindows = [];
+  let lts_checked = true;
+  let acts_checked = true;
+  let age_checked = false;
+  let age_printed = 'all';
+  let printed = 'all'; //Markers currently onscreen
   let markerCluster = {};
 
   function listStar(i) {
@@ -35,7 +37,7 @@ function initMap() {
         markerCluster.removeMarker(markers[i]);
         markers[i].setMap(map);
       } else {
-       if ((adult_index.indexOf(i) != -1) && (((age_printed == 'kids') && (type != 'adults')) || ((((printed == 'acts') && (i >= acts.length)) || ((printed == 'lts') && (i < acts.length))) && (type == 'adults')))) {
+        if ((adult_index.indexOf(i) != -1) && (((age_printed == 'kids') && (type != 'adults')) || ((((printed == 'acts') && (i >= acts.length)) || ((printed == 'lts') && (i < acts.length))) && (type == 'adults')))) {
           console.log('Don\'t show this i : ' + i)
         } else {
           console.log('Restablish this i : ' + i)
@@ -152,9 +154,9 @@ function initMap() {
     //Attach marker to each acts
     for (i = 0; i < acts.length; i++) {
       console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].lat + acts[i].lon);
-      var act = acts[i];
-      var lati = act.lat + 0.005 * (Math.random() - 0.5);
-      var longi = act.lon + 0.005 * (Math.random() - 0.5);
+      const act = acts[i];
+      const lati = act.lat + 0.005 * (Math.random() - 0.5);
+      const longi = act.lon + 0.005 * (Math.random() - 0.5);
       //infowindows[i] = {};
       //Relève l'index si l'age minimal est supérieur à 16
       console.log('act.min_age : ' + act.min_age);
@@ -214,9 +216,9 @@ function initMap() {
     };
     //Attach marker to each longterms
     for (j = 0 + acts.length; j < lts.length + acts.length; j++) {
-      var lt = lts[j - acts.length];
-      var latj = lt.long_term.lat + 0.005 * (Math.random() - 0.5);
-      var longj = lt.long_term.lon + 0.005 * (Math.random() - 0.5);
+      const lt = lts[j - acts.length];
+      const latj = lt.long_term.lat + 0.005 * (Math.random() - 0.5);
+      const longj = lt.long_term.lon + 0.005 * (Math.random() - 0.5);
       //infowindows[j] = {};
       infowindows[j] = new google.maps.InfoWindow({
         content: '<b>' + lt.org_name + '</b>' + '<br>' + lt.long_term.intitule,
@@ -278,8 +280,8 @@ function initMap() {
     return mks;
   };
 
-  var mapDiv = document.getElementById('map');
-  var map = new google.maps.Map(mapDiv, {
+  const mapDiv = document.getElementById('map');
+  const map = new google.maps.Map(mapDiv, {
     center: {
       lat: 45.503,
       lng: -73.613
@@ -289,15 +291,15 @@ function initMap() {
     mapTypeControl: false,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   });
-  var options = {
+  const options = {
     gridSize: 50,
     maxZoom: 13,
     minimumClusterSize: 15,
     imagePath: '/images/m'
   };
-  var legend = document.createElement('div');
+  const legend = document.createElement('div');
   legend.id = 'legend';
-  var content = [];
+  let content = [];
   content.push('<h5 class="leaf" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-envira fa-lg fa-fw leaf"></i> Nature </h5><br>');
   content.push('<h5 class="soli" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-heart fa-lg fa-fw soli"></i> Solidarité </h5><br>');
   content.push('<h5 class="cult" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-institution fa-lg fa-fw cult"></i> Sport et culture </h5><br>');
@@ -318,7 +320,11 @@ function initMap() {
     }
     if (printed != 'acts') {
       if (printed == 'lts') {
-        $("[opp_type='activity']").removeClass('hidden');
+        if (age_printed == 'all') {
+          $("[opp_type='activity']").removeClass('hidden');
+        } else if (age_printed == 'kids') {
+          $("[opp_type='activity'][adult='false']").removeClass('hidden');
+        }
         setMapOnAll('acts', map);
         printed = 'all';
       } else {
@@ -333,7 +339,11 @@ function initMap() {
         }
       }
     } else {
-      $("[opp_type='longterm']").removeClass('hidden');
+      if (age_printed == 'all') {
+        $("[opp_type='longterm']").removeClass('hidden');
+      } else if (age_printed == 'kids') {
+        $("[opp_type='longterm'][adult='false']").removeClass('hidden');
+      }
       setMapOnAll('lts', map);
       printed = 'all';
     }
@@ -349,7 +359,11 @@ function initMap() {
     }
     if (printed != 'lts') {
       if (printed == 'acts') {
-        $("[opp_type='longterm']").removeClass('hidden');
+        if (age_printed == 'all') {
+          $("[opp_type='longterm']").removeClass('hidden');
+        } else if (age_printed == 'kids') {
+          $("[opp_type='longterm'][adult='false']").removeClass('hidden');
+        }
         setMapOnAll('lts', map);
         printed = 'all';
       } else {
@@ -364,7 +378,11 @@ function initMap() {
         }
       }
     } else {
-      $("[opp_type='activity']").removeClass('hidden');
+      if (age_printed == 'all') {
+        $("[opp_type='activity']").removeClass('hidden');
+      } else if (age_printed == 'kids') {
+        $("[opp_type='activity'][adult='false']").removeClass('hidden');
+      }
       setMapOnAll('acts', map);
       printed = 'all';
     }
@@ -380,12 +398,16 @@ function initMap() {
     }
     if (age_printed == 'all') {
       $("[adult='true']").addClass('hidden');
-      console.log('Filter by age');
       setMapOnAll('adults', null);
       age_printed = 'kids';
     } else {
-      $("[adult='true']").removeClass('hidden');
-      console.log('Remove filter by age');
+      if (printed == 'all') {
+        $("[adult='true']").removeClass('hidden');
+      } else if (printed == 'acts') {
+        $("[adult='true'][opp_type='activity']").removeClass('hidden');
+      } else if (printed == 'lts') {
+        $("[adult='true'][opp_type='longterm']").removeClass('hidden');
+      }
       setMapOnAll('adults', map);
       age_printed = 'all';
     }
