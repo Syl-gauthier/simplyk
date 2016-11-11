@@ -67,15 +67,15 @@ block content
           tr
             td.text-center(style="vertical-align:middle")  <strong>#{volunteer.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)}</strong>  heures confirmées
           tr
-            th(rowspan='2' style="vertical-align:middle").text-center Extras ajoutés par l'élève
-            td(rowspan='2' style="vertical-align:middle").text-center <strong> #{volunteer.extras.length} </strong>
+            th(rowspan='2' style="vertical-align:middle").text-center Extras ajoutés par l'élève ou l'administrateur
+            td(rowspan='2' style="vertical-align:middle").text-center <strong> #{volunteer.extras.length + volunteer.manuals.length} </strong>
             td.text-center <strong>#{volunteer.extras.filter(function(ev){if(ev.hours_pending){return true;}else{return false;}}).map(el => el.hours_pending).reduce(hours_count, 0)}</strong> heures à confirmer
           tr
-            td.text-center(style="vertical-align:middle")  <strong>#{volunteer.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)}</strong>  heures confirmées
+            td.text-center(style="vertical-align:middle")  <strong>#{volunteer.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.manuals.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)}</strong>  heures confirmées
           tr.success
             th.text-center Total
             td.text-center <strong> #{volunteer.events.length + volunteer.long_terms.length + volunteer.extras.length} </strong>
-            td.text-center <strong> #{volunteer.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.long_terms.filter(function(long){if(long.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.extras.filter(function(extra){if(extra.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)} heures totales confirmées</strong>
+            td.text-center <strong> #{volunteer.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.long_terms.filter(function(long){if(long.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.extras.filter(function(extra){if(extra.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.manuals.filter(function(man){if(man.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)} heures totales confirmées</strong>
 
 
     .row
@@ -282,7 +282,7 @@ block footscript
             console.log('JSON.stringify(data) : ' + JSON.stringify(data));
             console.log('Heures ajoutées');
             $('#manual-success').removeClass('hidden');
-            $('#manual-success').html('Heures ajoutées avec succès au profil de l\'élève :)');
+            $('#manual-success').html('Heures ajoutées avec succès au profil de l\'élève :) Rechargez la page si vous voulez voir le total d\'heures actualisé');
           })
           .fail(function(data){
             console.log('On est dans le callback fail !');
