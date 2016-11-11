@@ -28,15 +28,14 @@ function initMap() {
   }
 
   function setMapIfExists(map, i, type) {
+    console.log('markers[14] : ' + JSON.stringify(acts[14]));
     if (markers[i]) {
       //Remove the marker even if we zoom
       if (map === null) {
         markerCluster.removeMarker(markers[i]);
         markers[i].setMap(map);
       } else {
-        console.log('adult_index : ' + adult_index);
-        console.log('adult_index.indexOf(i) : ' + adult_index.indexOf(i));
-        if ((adult_index.indexOf(i) != -1) && (age_printed == 'kids') && (type != 'adults')) {
+       if ((adult_index.indexOf(i) != -1) && (((age_printed == 'kids') && (type != 'adults')) || ((((printed == 'acts') && (i >= acts.length)) || ((printed == 'lts') && (i < acts.length))) && (type == 'adults')))) {
           console.log('Don\'t show this i : ' + i)
         } else {
           console.log('Restablish this i : ' + i)
