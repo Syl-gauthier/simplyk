@@ -32,7 +32,7 @@ block content
                         tr.success
                           td.text-center= vol.lastname
                           td.text-center= vol.firstname
-                          if vol.events.length || vol.long_terms.length || vol.extras.length 
+                          if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
                             td.text-center= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.manuals.filter(function(man){if(man.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
                           else
                             td.text-center 0 h
@@ -63,8 +63,8 @@ block content
                     tr.success
                       td= vol.lastname
                       td= vol.firstname
-                      if vol.events.length || vol.long_terms.length || vol.extras.length 
-                        td= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
+                      if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
+                        td= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.manuals.filter(function(man){if(man.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
                       else
                         td 0 h
                       td
