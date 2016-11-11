@@ -31,12 +31,12 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
     } else {
       console.log('Students :' + String(volunteers));
       var classes_array = [];
-        volunteers.forEach(function(vol) {
-          var classe = vol.admin.class;
-          if (classes_array.indexOf(classe) > -1) {} else {
-            classes_array.push(classe);
-          }
-        });
+      volunteers.forEach(function(vol) {
+        var classe = vol.admin.class;
+        if (classes_array.indexOf(classe) > -1) {} else {
+          classes_array.push(classe);
+        }
+      });
       res.render('a_classes.jade', {
         volunteers: volunteers,
         session: req.session,
@@ -90,6 +90,41 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
     }
   });
 });
+
+router.post('/addmanualhours', permissions.requireGroup('admin'), function(req, res, next) {
+  const vol_id = req.body.volunteer_id;
+  const description = req.body.description;
+  const hours_done = req.body.hours_done;
+  const added = new Date();
+  const manual_to_add = {
+    admin_name: req.session.admin.firstname + ' ' + req.session.admin.lastname,
+    admin_id: req.session.admin._id,
+    hours_done,
+    description,
+    added
+  };
+
+  Volunteer.findOneAndUpdate({
+      _id: vol_id
+    }, {
+      '$push': {
+        'manuals': manual_to_add
+      }
+    },
+    function(err) {
+      if (err) {
+        console.error(err);
+        res.status(404).send({
+          error: err
+        });
+      } else {
+        res.status(200).send({
+          newManual: manual_to_add
+        });
+      };
+    });
+
+})
 
 router.get('/admin/internopps', permissions.requireGroup('admin'), function(req, res, next) {
   res.render('o_dashboard.jade', {
