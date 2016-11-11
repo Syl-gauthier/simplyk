@@ -27,15 +27,22 @@ function initMap() {
     console.log(listElement.childNodes[2]);
   }
 
-  function setMapIfExists(map, i) {
+  function setMapIfExists(map, i, type) {
     if (markers[i]) {
-      markers[i].setMap(map);
-      console.log('markers[i] : ' + markers[i]);
       //Remove the marker even if we zoom
-      if (map === null){
+      if (map === null) {
         markerCluster.removeMarker(markers[i]);
+        markers[i].setMap(map);
       } else {
-        markerCluster.addMarker(markers[i]);
+        console.log('adult_index : ' + adult_index);
+        console.log('adult_index.indexOf(i) : ' + adult_index.indexOf(i));
+        if ((adult_index.indexOf(i) != -1) && (age_printed == 'kids') && (type != 'adults')) {
+          console.log('Don\'t show this i : ' + i)
+        } else {
+          console.log('Restablish this i : ' + i)
+          markerCluster.addMarker(markers[i]);
+          markers[i].setMap(map);
+        }
       }
     }
   }
@@ -44,17 +51,17 @@ function initMap() {
     console.log('In setMapOnAll with markers : ' + String(markers));
     if (type == 'acts') {
       for (i = 0; i < acts.length; i++) {
-        setMapIfExists(map, i);
+        setMapIfExists(map, i, type);
       }
-    } else if ('adults'){
+    } else if (type == 'adults') {
       console.log(adult_index + '--> adult_index')
-      for (var x = 0; x<adult_index.length ; x++){
+      for (var x = 0; x < adult_index.length; x++) {
         console.log('adult_index[x] : ' + adult_index[x]);
-        setMapIfExists(map, adult_index[x]);
+        setMapIfExists(map, adult_index[x], type);
       }
     } else {
       for (j = 0 + acts.length; j < lts.length + acts.length; j++) {
-        setMapIfExists(map, j);
+        setMapIfExists(map, j, type);
       }
     }
   }
@@ -152,7 +159,7 @@ function initMap() {
       //infowindows[i] = {};
       //Relève l'index si l'age minimal est supérieur à 16
       console.log('act.min_age : ' + act.min_age);
-      if(act.min_age >= 16){
+      if (act.min_age >= 16) {
         console.log('FOR ADULT : i : ' + i);
         adult_index.push(i);
       };
@@ -217,7 +224,7 @@ function initMap() {
         disableAutoPan: true
       });
       console.log('lt.long_term.min_age : ' + lt.long_term.min_age);
-      if(lt.long_term.min_age >= 16){
+      if (lt.long_term.min_age >= 16) {
         console.log('FOR ADULT : j : ' + j);
         adult_index.push(j);
         console.log('adult_index : ' + adult_index);
@@ -378,7 +385,6 @@ function initMap() {
       setMapOnAll('adults', null);
       age_printed = 'kids';
     } else {
-      console.log($("[adult='true']"));
       $("[adult='true']").removeClass('hidden');
       console.log('Remove filter by age');
       setMapOnAll('adults', map);
