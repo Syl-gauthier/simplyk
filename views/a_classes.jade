@@ -33,7 +33,7 @@ block content
                           td.text-center= vol.lastname
                           td.text-center= vol.firstname
                           if vol.events.length || vol.long_terms.length || vol.extras.length 
-                            td.text-center= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
+                            td.text-center= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.manuals.filter(function(man){if(man.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
                           else
                             td.text-center 0 h
                           td
@@ -110,7 +110,7 @@ block footscript
           console.log('JSON.stringify(data) : ' + JSON.stringify(data));
           console.log('Heures ajoutées');
           $('#manual-success'+index).removeClass('hidden');
-          $('#manual-success'+index).html('Heures ajoutées avec succès au profil de l\'élève :)');
+          $('#manual-success'+index).html('Heures ajoutées avec succès au profil de l\'élève :) Rechargez la page si vous voulez voir le total d\'heures actualisé');
         })
         .fail(function(data){
           console.log('On est dans le callback fail !');
