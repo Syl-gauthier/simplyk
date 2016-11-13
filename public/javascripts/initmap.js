@@ -308,6 +308,9 @@ function initMap() {
   legend.index = 1;
   map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
   markers = generateMarkers(map, markers);
+  if (page == 'landing'){
+    filter_by_age();
+  };
 
   $('#acts_filter').click(function() {
     acts_checked = !acts_checked;
@@ -387,7 +390,7 @@ function initMap() {
       printed = 'all';
     }
   });
-  $('#age_filter').click(function() {
+  function filter_by_age() {
     age_checked = !age_checked;
     if (age_checked) {
       $('#age_check').removeClass('fa-square-o');
@@ -411,6 +414,9 @@ function initMap() {
       setMapOnAll('adults', map);
       age_printed = 'all';
     }
+  }
+  $('#age_filter').click(function() {
+    filter_by_age();
   });
 
 }
