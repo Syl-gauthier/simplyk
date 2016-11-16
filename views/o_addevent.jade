@@ -52,6 +52,12 @@ block content
 								label.radio-inline
 									input(type='radio', name='language', value='fr')
 									p Seulement Français
+							.checkbox		
+								.col-md-1		
+									input#min_age_check(type='checkbox')		
+								label.col-md-5		
+									p Ajouter un âge minimal		
+								input#min_age.form-control(type='number', name='min_age', placeholder='Âge minimal', style="display:none;")
 							h3 {{form.errorMessage}}
 							div(ng-repeat='activity in form.activitiesList')
 								h2.inline {{activity.activityTitle}}
@@ -70,7 +76,7 @@ block content
 										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_endTime', placeholder='Fin', ng-required='checkybox')
 									div.col-md-2
 										input(type='number', name='{{activity.activityName}}_{{day.name}}_vol_nb', placeholder='Nombre de bénévoles', ng-required='checkybox', oninvalid="setCustomValidity('Veuillez remplir les champs: heure de début, heure de fin et nombre de bénévoles souhaités')", onchange="try{setCustomValidity('')}catch(e){}")
-								.input-group.conn-input(ng-repeat='field in activity.activityUnnecessaryFields')
+								//.input-group.conn-input(ng-repeat='field in activity.activityUnnecessaryFields')
 									span#basic-addon1.input-group-addon {{field.title}}
 									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1')
 							button.btn.btn-default(ng-click='form.addActivity()') Ajouter une tâche
@@ -100,6 +106,15 @@ block footscript
 			});
 			var input = $('.timepicker');
 				input.pickatime({
+			});
+			$(window).keydown(function(event){
+				if(event.keyCode == 13) {
+					event.preventDefault();
+					return false;
+				}
+			 });
+			$('#min_age_check').click(function(){
+				$('#min_age').toggle(this.checked);
 			});
 			$('#creationeventform').submit(function(event){
 				let days_total = $('.datepicker').length;

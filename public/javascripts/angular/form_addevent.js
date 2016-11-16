@@ -35,7 +35,7 @@
 				'activityTitle': 'Tâche ' + nActivity,
 				'activityName': 'activity' + nActivity,
 				'activityRequiredFields': requiredActivityFields,
-				'activityUnnecessaryFields': unnecessaryActivityFields,
+				//'activityUnnecessaryFields': unnecessaryActivityFields,
 				'dayRequired': true
 			});
 		};
@@ -134,18 +134,13 @@
 			'type': 'text',
 			'id': 'activity_description'
 		}];
-		var unnecessaryActivityFields= [{
-			'title': 'Heures minimales à effectuer dans une journée',
-			'type': 'number',
-			'id': 'min_hours'
-		}];
 
 
 		var activitiesList = [{
 			'activityTitle': 'Tâche 1',
 			'activityName': 'activity1',
 			'activityRequiredFields': requiredActivityFields,
-			'activityUnnecessaryFields': unnecessaryActivityFields,
+			//'activityUnnecessaryFields': unnecessaryActivityFields,
 			'dayRequired': true
 		}];
 
