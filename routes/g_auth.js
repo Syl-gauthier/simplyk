@@ -211,6 +211,10 @@ router.post('/register_volunteer', function(req, res) {
         firstname: req.body.firstname,
         birthdate: req.body.birthdate,
         password: req.body.password,
+        events: [],
+        long_terms: [],
+        manuals: [],
+        extras: [],
         admin
       });
 
