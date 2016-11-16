@@ -64,7 +64,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       };
 
       const isNotTheFav = function(activity) {
-        if(the_favorite){
+        if (the_favorite) {
           return activity._id != the_favorite._id;
         } else {
           return true;
@@ -86,10 +86,28 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
 
       //If user is under 16, he can't see the activities of unverified organisms
       let acts = {};
+      let lt_filter = {};
       if (age < 16) {
         acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(justMySchool);
+        lt_filter = {
+          'validation': true,
+          'long_terms': {
+            '$exists': true,
+            '$not': {
+              '$size': 0
+            }
+          }
+        };
       } else {
         acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool);
+        lt_filter = {
+          'long_terms': {
+            '$exists': true,
+            '$not': {
+              '$size': 0
+            }
+          }
+        };
       };
       const favorites = acts.reduce(function(pre, cur, ind, arr) {
         console.log('cur.intitule ' + cur.intitule + ' & cur.favorite : ' + cur.favorite);
@@ -108,14 +126,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         the_favorite = favorites[fav_index];
       };
       //acts = acts.filter(isNotTheFav);
-      Organism.find({
-          'long_terms': {
-            '$exists': true,
-            '$not': {
-              '$size': 0
-            }
-          }
-        }, {
+      Organism.find(lt_filter, {
           'org_name': true,
           '_id': true,
           'cause': true,

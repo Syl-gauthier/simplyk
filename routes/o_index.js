@@ -63,7 +63,10 @@ router.get('/', function(req, res, next) {
                     var isNotASchool = function(activity) {
                         return !(activity.school_id);
                     };
-                    const acts = activities.filter(isNotPassed).filter(isNotASchool);
+                    const isVerified = function(activity) {
+                        return activity.validation;
+                    }
+                    const acts = activities.filter(isNotPassed).filter(isNotASchool).filter(isVerified);
                     const favorites = acts.reduce(function(pre, cur, ind, arr) {
                         console.info('cur.intitule ' + cur.intitule + ' & cur.favorite : ' + cur.favorite);
                         if (cur.favorite) {
@@ -83,6 +86,7 @@ router.get('/', function(req, res, next) {
                     console.log('The favorite is :' + the_favorite.intitule);
                     //Select organisms who have longterms and are not admin ones
                     Organism.find({
+                        'validation': true,
                         'long_terms': {
                             '$exists': true,
                             '$not': {
