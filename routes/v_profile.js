@@ -318,9 +318,9 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
     console.log('lt.hours_pending : ' + lt.hours_pending);
     if (lt.hours_pending > 0) {
       console.log('lt.hours_pending is positive');
-      var new_hours_pending = parseInt(lt.hours_pending) + parseInt(req.body.hours_pending);
+      var new_hours_pending = parseFloat(lt.hours_pending) + parseFloat(req.body.hours_pending);
     } else {
-      var new_hours_pending = parseInt(req.body.hours_pending);
+      var new_hours_pending = parseFloat(req.body.hours_pending);
       console.log('lt.hours_pending is not positive');
     };
     console.log('new_hours_pending : ' + new_hours_pending);

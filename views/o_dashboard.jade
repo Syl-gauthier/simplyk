@@ -186,7 +186,7 @@ block content
                                               p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
                                               div.form-group
                                                 label(for='correctionStudentHoursInput') Heures réellement réalisées 
-                                                input.form-control(type='Number' class='correctionStudentHoursInput', name='correct_hours' required)
+                                                input.form-control(type='Number', min='0.5', max='50', step='0.5' class='correctionStudentHoursInput', name='correct_hours' required)
                                               for question, q_i in todo.organism_questions
                                                 div.form-group
                                                   label(for='answer'+q_i)= question
@@ -211,7 +211,7 @@ block content
                                               p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
                                               div.form-group
                                                 label(for='correctionHoursInput') Heures réellement réalisées
-                                                input.form-control.correction_input(type='Number' id='correctionHoursInput', name='correct_hours' required)
+                                                input.form-control.correction_input(type='Number', min='0.5', max='50', step='0.5' id='correctionHoursInput', name='correct_hours' required)
                                             div.modal-footer
                                               a.btn.btn-default(data-dismiss='modal') Annuler
                                               button.btn.btn-warning(type='submit' form='correctHoursForm'+todo._id) Envoyer
@@ -262,7 +262,7 @@ block content
                                               p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
                                               div.form-group
                                                 label(for='correctionStudentHoursInput') Heures réellement réalisées 
-                                                input.form-control(type='Number' class='correctionStudentHoursInput', name='correct_hours' required)
+                                                input.form-control(type='Number', min='0.5', max='50', step='0.5' class='correctionStudentHoursInput', name='correct_hours' required)
                                               for question, q_i in todo.organism_questions
                                                 div.form-group
                                                   label(for='answer'+q_i)= question
@@ -287,7 +287,7 @@ block content
                                               p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
                                               div.form-group
                                                 label(for='correctionHoursInput') Heures réellement réalisées
-                                                input.form-control.correction_input(type='Number' id='correctionHoursInput', name='correct_hours' required)
+                                                input.form-control.correction_input(type='Number' id='correctionHoursInput', name='correct_hours', min='0.5', max='50', step='0.5' required)
                                             div.modal-footer
                                               a.btn.btn-default(data-dismiss='modal') Annuler
                                               button.btn.btn-warning(type='submit' form='correctHoursForm'+todo._id) Envoyer
@@ -337,7 +337,7 @@ block content
                                             p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
                                             div.form-group
                                               label(for='correctionStudentHoursInput') Heures réellement réalisées 
-                                              input.form-control(type='Number' class='correctionStudentHoursInput', name='correct_hours' required)
+                                              input.form-control(type='Number', min='0.5', max='50', step='0.5' class='correctionStudentHoursInput', name='correct_hours' required)
                                             for question, q_i in todo.organism_questions
                                               div.form-group
                                                 label(for='answer'+q_i)= question
