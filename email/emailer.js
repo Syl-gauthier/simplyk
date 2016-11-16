@@ -225,6 +225,32 @@ function sendAutomaticSubscriptionOrgEmail(content) {
   });
 };
 
+function sendManualHoursEmail(content){
+  content.subtitle = content.customMessage;
+  content.type = 'manualHours';
+  content.title = 'Heures ajoutées';
+  content.button = {
+    text: 'Voir mes heures',
+    link: 'platform.simplyk.org/volunteer/profile'
+  };
+  content.gif = 'http://i.giphy.com/l0O7P6qdCa1AKJRAY.gif';
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: content.admin_name + ' t\'a ajouté des heures', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
 
 module.exports = {
   sendSubscriptionOrgEmail: sendSubscriptionOrgEmail,
@@ -234,5 +260,6 @@ module.exports = {
   sendHoursPendingOrgEmail: sendHoursPendingOrgEmail,
   sendHoursConfirmedVolEmail: sendHoursConfirmedVolEmail,
   sendAutomaticSubscriptionOrgEmail,
-  sendForgottenPasswordEmail
+  sendForgottenPasswordEmail,
+  sendManualHoursEmail
 };

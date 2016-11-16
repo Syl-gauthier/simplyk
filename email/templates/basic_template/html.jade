@@ -43,6 +43,8 @@ html
             // COPY
             tr
               td(bgcolor='#ffffff', align='left', style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;")
+                if (gif)
+                  img(align='center', src=gif, style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
                 if (typeof subtitle == 'string')
                   p(style='margin: 0;') #{subtitle}
                 else if (typeof subtitle == 'object')
