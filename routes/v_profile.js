@@ -153,7 +153,7 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
           emailer.sendUnsubscriptionEmail(content);
           //Intercom create unsubscribe to longterm event
           client.events.create({
-            event_name: 'vol_longterm_subscribe',
+            event_name: 'vol_activity_unsubscribe',
             created_at: Math.round(Date.now() / 1000),
             user_id: req.session.volunteer._id,
             metadata: {
