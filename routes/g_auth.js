@@ -196,8 +196,15 @@ router.post('/register_volunteer', function(req, res) {
       //Chack if an admin has been selected
       console.info('req.body : ' + String(req.body));
       let admin = {};
+      let student = false;
+      let school_name = null;
+      let birthdate = new Date(req.body.birthdate).getTime();
+      birthdate = birthdate / 1000;
+
       if (req.body.admin_checkbox && req.body.admin) {
         console.info('Belongs to Admin : ' + req.body.admin_checkbox);
+        student = true;
+        school_name = req.body.admin;
         admin = {
           school_name: req.body.admin
         }
@@ -215,7 +222,8 @@ router.post('/register_volunteer', function(req, res) {
         long_terms: [],
         manuals: [],
         extras: [],
-        admin
+        admin,
+        student
       });
 
       newVolunteer.password = newVolunteer.generateHash(req.body.password);
@@ -292,9 +300,11 @@ router.post('/register_volunteer', function(req, res) {
             signed_up_at: Math.round(Date.now() / 1000),
             last_request_at: Math.round(Date.now() / 1000),
             custom_attributes: {
+              birthdate_at: birthdate,
               firstname: vol.firstname,
               group: 'volunteer',
-              school_name: req.body.admin
+              school_name: school_name,
+              student: student
             }
           });
           res.redirect('/waitforverifying?recipient=' + req.body.email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);
