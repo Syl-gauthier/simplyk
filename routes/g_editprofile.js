@@ -1,10 +1,14 @@
 'use strict';
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const Intercom = require('intercom-client');
+const client = new Intercom.Client({
+	token: process.env.INTERCOM_TOKEN
+});
 
-var permissions = require('../middlewares/permissions.js');
-var Volunteer = require('../models/volunteer_model.js');
-var Organism = require('../models/organism_model.js');
+const permissions = require('../middlewares/permissions.js');
+const Volunteer = require('../models/volunteer_model.js');
+const Organism = require('../models/organism_model.js');
 
 router.post('*/edit-phone', permissions.requireGroup('volunteer', 'organism'), function(req, res) {
 	console.info('IN edit-form');
@@ -33,8 +37,13 @@ router.post('*/edit-phone', permissions.requireGroup('volunteer', 'organism'), f
 					res.status(200).send({
 						newPhone: newVolunteer.phone
 					});
+					client.users.update({
+						user_id: req.session.volunteer._id,
+						phone: newVolunteer.phone,
+						update_last_request_at: true
+					});
 				}
-			})
+			});
 		}
 	} else if (req.session.group == 'organism') {
 
