@@ -51,17 +51,17 @@ function initMap() {
   function setMapOnAll(type, map) {
     console.log('In setMapOnAll with markers : ' + String(markers));
     if (type == 'acts') {
-      for (i = 0; i < acts.length; i++) {
+      for (let i = 0; i < acts.length; i++) {
         setMapIfExists(map, i, type);
       }
     } else if (type == 'adults') {
       console.log(adult_index + '--> adult_index')
-      for (var x = 0; x < adult_index.length; x++) {
+      for (let x = 0; x < adult_index.length; x++) {
         console.log('adult_index[x] : ' + adult_index[x]);
         setMapIfExists(map, adult_index[x], type);
       }
     } else {
-      for (j = 0 + acts.length; j < lts.length + acts.length; j++) {
+      for (let j = 0 + acts.length; j < lts.length + acts.length; j++) {
         setMapIfExists(map, j, type);
       }
     }
@@ -152,7 +152,7 @@ function initMap() {
       scaledSize: new google.maps.Size(30, 36)
     };
     //Attach marker to each acts
-    for (i = 0; i < acts.length; i++) {
+    for (let i = 0; i < acts.length; i++) {
       console.log(acts[i].intitule + " marker generated with lat and lon : " + acts[i].lat + acts[i].lon);
       const act = acts[i];
       const lati = act.lat + 0.005 * (Math.random() - 0.5);
@@ -215,7 +215,7 @@ function initMap() {
       attachInfoWindow(mks[i], infowindows[i], act._id);
     };
     //Attach marker to each longterms
-    for (j = 0 + acts.length; j < lts.length + acts.length; j++) {
+    for (let j = 0 + acts.length; j < lts.length + acts.length; j++) {
       const lt = lts[j - acts.length];
       const latj = lt.long_term.lat + 0.005 * (Math.random() - 0.5);
       const longj = lt.long_term.lon + 0.005 * (Math.random() - 0.5);
