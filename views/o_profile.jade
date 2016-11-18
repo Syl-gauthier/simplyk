@@ -20,47 +20,98 @@ block content
                   a(href='http://www.'+organism.website)= organism.website
                   h4
                     i.fa.fa-phone
-                    p.inline #{organism.phone}
+                    p.inline.phone #{organism.phone}
                   h4
                     i.fa.fa-envelope
                     p.inline #{organism.email}
                   br
         .row
           .col-md-6.col-md-offset-1
+            p#edit-alert-danger.alert.alert-danger.hidden
+            p#edit-alert-success.alert.alert-success.hidden
             ul.list-group
               li.list-group-item
-                | <b>Description:</b> #{organism.description}
-                small
+                h5.text-center
+                  i.inline.fa.fa-align-left(aria-hidden="true") 
+                  p.inline <b>Description :</b> #{organism.description}
               li.list-group-item
-                | <b>Prénom du contact:</b> #{organism.firstname}
-                small
+                h5.text-center
+                  i.inline.fa.fa-user-circle(aria-hidden="true") 
+                  p.inline #{organism.firstname} #{organism.lastname}
               li.list-group-item
-                | <b>Nom du contact:</b> #{organism.lastname}
-                small
+                h5.text-center
+                  i.inline.fa.fa-heart(aria-hidden="true") 
+                  p.inline <b>Cause :</b> #{organism.cause}
+              if organism.phone
+                li.list-group-item
+                  h5.text-center
+                    i.inline.fa.fa-mobile(aria-hidden="true") 
+                    p.inline#phone #{organism.phone}
+                    a.inline.btn(data-toggle='modal' data-target='#phone_edit_modal')
+                      i.fa.fa-pencil
+              else
+                li.list-group-item
+                  h5.text-center
+                    i.inline.fa.fa-mobile(aria-hidden="true") 
+                    p.inline.phone Ajouter mon numéro de téléphone
+                    a.inline.btn(data-toggle='modal' data-target='#phone_edit_modal')
+                      i.fa.fa-plus
+              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='phone_edit_modal')
+                div.modal-dialog(role='document')
+                  .modal-content
+                    form.edit-form#phone-edit-form
+                      .modal-header
+                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                          span(aria-hidden='true')
+                          h4.modal-title Édition de mon numéro de téléphone
+                      div.modal-body
+                          label(for='phone') Nouveau numéro de téléphone
+                          input.form-control(type='text', name='phone')
+                      .modal-footer
+                        input.btn.btn-warning(type='submit', form='phone-edit-form', value='Valider')
+                        a.btn.btn-default(data-dismiss='modal') Fermer
               li.list-group-item
-                | <b>Cause:</b> #{organism.cause}
-                small
+                h5.text-center
+                  i.inline.fa.fa-at(aria-hidden="true") 
+                  p.inline.email #{organism.email}
+                  a.inline.btn(data-toggle='modal' data-target='#email_edit_modal')
+                    i.fa.fa-pencil
+              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='email_edit_modal')
+                div.modal-dialog(role='document')
+                  .modal-content
+                    form.edit-form#email-edit-form
+                      .modal-header
+                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                          span(aria-hidden='true')
+                          h4.modal-title Édition de mon adresse email
+                      div.modal-body
+                          label(for='email') Nouvelle adresse email
+                          input.form-control(type='email', name='email')
+                      .modal-footer
+                        input.btn.btn-warning(type='submit', form='email-edit-form', value='Valider')
+                        a.btn.btn-default(data-dismiss='modal') Fermer
               li.list-group-item
-                | <b>Adresse mail:</b> #{organism.email}
-                small
-              li.list-group-item
-                | <b>Site web:</b> #{organism.website}
-                small
-              li.list-group-item#password-group
-                p <b>Mot de passe:</b> #[span.display ******]
-                form#edit-password-form.form-horizontal.hidden.editing
-                  .input-group.conn-input
-                    p#password-error.alert.alert-danger.hidden Wrong password
+                h5.text-center
+                  i.inline.fa.fa-globe(aria-hidden="true") 
+                  p.inline #{organism.website}
+              li.list-group-item#password-group(style='margin-bottom: 60px')
+                h5.text-center
+                  i.inline.fa.fa-key(aria-hidden="true")
+                  p.inline Mot de passe: #[span.display ******]
+                  a.inline.btn#edit-password-button.display
+                    i.fa.fa-pencil
+                  form#edit-password-form.form-horizontal.hidden.editing
                     .input-group.conn-input
-                      input.form-control(name="current-password", type="password", placeholder="Mot de passe actuel")
-                    .input-group.conn-input
-                      input.form-control(name="new-password", type="password", placeholder="Nouveau mot de passe")
-                    .input-group.conn-input
-                      input.form-control(name="confirm-password", type="password", placeholder="Confirmer le nouveau mot de passe")
-                div.btn-toolbar
-                  button.btn.btn-default#edit-password-button.display Edit
-                  button.btn.btn-default#cancel-password-button.editing.hidden Cancel
-                  button.btn.btn-default#save-password-button.editing.hidden Save
+                      p#password-error.alert.alert-danger.hidden Wrong password
+                      .input-group.conn-input
+                        input.form-control(name="current-password", type="password", placeholder="Mot de passe actuel")
+                      .input-group.conn-input
+                        input.form-control(name="new-password", type="password", placeholder="Nouveau mot de passe")
+                      .input-group.conn-input
+                        input.form-control(name="confirm-password", type="password", placeholder="Confirmer le nouveau mot de passe")
+                  div.btn-toolbar
+                    button.btn.btn-default#cancel-password-button.editing.hidden Cancel
+                    button.btn.btn-default#save-password-button.editing.hidden Save
 
 block footscript
   script.
@@ -72,3 +123,68 @@ block footscript
       ga('send', 'pageview');
   script(src='/javascripts/edit-password.js')
   script(src='/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.js')
+  script(type='text/javascript').
+    $(document).ready(function(){
+
+
+
+      $('.edit-form').submit(function(event){
+        console.log('Submit an edit-form');
+        console.log('$(this).attr("id) : ' + $(this).attr('id'))
+        event.preventDefault();
+        var form = $(this); 
+        const form_datas = $(this).serializeArray();
+        let datas = {};
+        const modal = $(this).closest('.modal');
+        if ($(this).attr('id') == 'phone-edit-form'){
+          console.log('The edit-form submit is a phone one');
+          datas.phone = form_datas[0].value;
+          $.post('/edit-profile', datas)
+          .done(function(data){
+            modal.modal('toggle');
+            $('#edit-alert-success').removeClass('hidden');
+            $('#edit-alert-success').html(' Numéro de téléphone modifié avec succès pour : ' + data.newPhone);
+            $('.phone').html('' + data.newPhone);
+          })
+          .fail(function(data){
+            modal.modal('toggle');
+            $('#edit-alert-danger').removeClass('hidden');
+            $('#edit-alert-danger').html(' ' + data.responseJSON.error);
+            console.log(data.error);
+          });
+        } else if ($(this).attr('id') == 'email-edit-form'){
+          $.ajax({
+            type: 'POST',
+            url: 'register_check', 
+            data: form.serialize(),
+            success: onSuccess
+          });
+          function onSuccess(response) {
+            if(response.exists) {
+              console.log('Email already exists'); 
+              $('#edit-alert-danger').removeClass('hidden');
+              $('#edit-alert-danger').html('Cet adresse email est déjà attribuée ! ');
+              window.scrollTo(0,0);
+              modal.modal('toggle');
+            }
+            else{
+              console.log('The edit-form submit is an email one');
+              datas.email = form_datas[0].value;
+              $.post('/edit-profile', datas)
+              .done(function(data){
+                modal.modal('toggle');
+                $('#edit-alert-success').removeClass('hidden');
+                $('#edit-alert-success').html(' Adresse email modifié avec succès pour : ' + data.newEmail);
+                $('.email').html('' + data.newEmail);
+              })
+              .fail(function(data){
+                modal.modal('toggle');
+                $('#edit-alert-danger').removeClass('hidden');
+                $('#edit-alert-danger').html(' ' + data.responseJSON.error);
+                console.log(data.error);
+              });
+            }
+          }
+        }
+      });
+    });

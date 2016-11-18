@@ -314,63 +314,49 @@ block content
                     p.inline#phone #{volunteer.phone}
                     a.inline.btn(data-toggle='modal' data-target='#phone_edit_modal')
                       i.fa.fa-pencil
-                  .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='phone_edit_modal')
-                    div.modal-dialog(role='document')
-                      .modal-content
-                        form.edit-form#phone-edit-form
-                          .modal-header
-                            button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                              span(aria-hidden='true')
-                              h4.modal-title Édition de mon numéro de téléphone
-                          div.modal-body
-                              label(for='phone') Nouveau numéro de téléphone
-                              input.form-control(type='text', name='phone')
-                          .modal-footer
-                            input.btn.btn-warning(type='submit', form='phone-edit-form', value='Valider')
-                            a.btn.btn-default(data-dismiss='modal') Fermer
               else
                 li.list-group-item
                   h5.text-center
                     i.inline.fa.fa-mobile(aria-hidden="true") 
-                    p.inline Ajouter mon numéro de téléphone
-                    a.inline.btn
+                    p.inline#phone Ajouter mon numéro de téléphone
+                    a.inline.btn(data-toggle='modal' data-target='#phone_edit_modal')
                       i.fa.fa-plus
-                  .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='phone_edit_modal')
+              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='phone_edit_modal')
+                div.modal-dialog(role='document')
+                  .modal-content
+                    form.edit-form#phone-edit-form
+                      .modal-header
+                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                          span(aria-hidden='true')
+                          h4.modal-title Édition de mon numéro de téléphone
+                      div.modal-body
+                          label(for='phone') Nouveau numéro de téléphone
+                          input.form-control(type='text', name='phone')
+                      .modal-footer
+                        input.btn.btn-warning(type='submit', form='phone-edit-form', value='Valider')
+                        a.btn.btn-default(data-dismiss='modal') Fermer
               li.list-group-item
                   h5.text-center
                     i.inline.fa.fa-at(aria-hidden="true") 
                     p.inline #{volunteer.email}
-                    a.inline.btn(data-toggle='modal' data-target='#phone_edit_modal')
-                      i.fa.fa-pencil
-                  .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='phone_edit_modal')
-                    div.modal-dialog(role='document')
-                      .modal-content
-                        .modal-header
-                          button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                            span(aria-hidden='true')
-                            h4.modal-title Édition de l'adresse email
-                        div.modal-body
-                          form.edit-form#email-edit-form
-                            label(for='email') Nouvelle adresse email
-                            input.form-control(type='email', name='email')
               li.list-group-item#password-group(style='margin-bottom: 60px')
-                  h5.text-center
-                    i.inline.fa.fa-key(aria-hidden="true")
-                    p.inline Mot de passe: #[span.display ******]
-                    a.inline.btn#edit-password-button.display
-                      i.fa.fa-pencil
-                    form#edit-password-form.form-horizontal.hidden.editing
+                h5.text-center
+                  i.inline.fa.fa-key(aria-hidden="true")
+                  p.inline Mot de passe: #[span.display ******]
+                  a.inline.btn#edit-password-button.display
+                    i.fa.fa-pencil
+                  form#edit-password-form.form-horizontal.hidden.editing
+                    .input-group.conn-input
+                      p#password-error.alert.alert-danger.hidden Mot de passe incorrect
                       .input-group.conn-input
-                        p#password-error.alert.alert-danger.hidden Mot de passe incorrect
-                        .input-group.conn-input
-                          input.form-control(name="current-password", type="password", placeholder="Mot de passe actuel")
-                        .input-group.conn-input
-                          input.form-control(name="new-password", type="password", placeholder="Nouveau mot de passe")
-                        .input-group.conn-input
-                          input.form-control(name="confirm-password", type="password", placeholder="Confirmer mot de passe")
-                    div.btn-toolbar
-                        button.btn.btn-default#cancel-password-button.editing.hidden Annuler
-                        button.btn.btn-default#save-password-button.editing.hidden Enregistrer
+                        input.form-control(name="current-password", type="password", placeholder="Mot de passe actuel")
+                      .input-group.conn-input
+                        input.form-control(name="new-password", type="password", placeholder="Nouveau mot de passe")
+                      .input-group.conn-input
+                        input.form-control(name="confirm-password", type="password", placeholder="Confirmer mot de passe")
+                  div.btn-toolbar
+                      button.btn.btn-default#cancel-password-button.editing.hidden Annuler
+                      button.btn.btn-default#save-password-button.editing.hidden Enregistrer
         #extras.tab-pane.fade(role='tabpanel')
           .col-md-4.col-md-offset-1
             .page-header
@@ -483,25 +469,10 @@ block footscript
         const form_datas = $(this).serializeArray();
         let datas = {};
         const modal = $(this).closest('.modal');
-        if($(this).attr('id') == 'edit-password-form'){
-          console.log('The edit-form submit is a password one');
-          datas.email = form_datas[0].value;
-          $.post('/edit-email', datas)
-          .done(function(data){
-            modal.modal('toggle');
-            $('#edit-alert-success').removeClass('hidden');
-            $('#edit-alert-success').html(' ' + data.responseJSON.error);
-          })
-          .fail(function(data){
-            modal.modal('toggle');
-            $('#edit-alert-danger').removeClass('hidden');
-            $('#edit-alert-danger').html(' ' + data.responseJSON.error);
-            console.log(data.error);
-          })
-        } else if ($(this).attr('id') == 'phone-edit-form'){
+        if ($(this).attr('id') == 'phone-edit-form'){
           console.log('The edit-form submit is a phone one');
           datas.phone = form_datas[0].value;
-          $.post('/edit-phone', datas)
+          $.post('/edit-profile', datas)
           .done(function(data){
             modal.modal('toggle');
             $('#edit-alert-success').removeClass('hidden');

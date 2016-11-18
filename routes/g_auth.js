@@ -404,7 +404,7 @@ router.post('/register_admin', function(req, res) {
   res.redirect('/');
 });
 
-router.post('/register_check', function(req, res) {
+router.post('*/register_check', function(req, res) {
 
   function handleCheck(exists) {
     res.json({
@@ -602,7 +602,15 @@ function userExists(email, handler) {
         if (organism) {
           handler(true);
         } else {
-          handler(false);
+          Admin.findOne({
+            email: email
+          }, function(err, admin) {
+            if (admin) {
+              handler(true);
+            } else {
+              handler(false);
+            }
+          });
         }
       });
     }

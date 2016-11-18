@@ -16,8 +16,6 @@ var Volunteer = require('../models/volunteer_model.js');
 var Activity = require('../models/activity_model.js');
 
 var permissions = require('../middlewares/permissions.js');
-var subscribe = require('../middlewares/subscribe.js');
-var finder = require('../middlewares/mongo_finder.js');
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
 var update_intercom = require('../lib/intercom/update_intercom.js');
