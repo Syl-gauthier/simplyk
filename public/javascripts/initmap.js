@@ -1,6 +1,6 @@
-'use strict;'
 
 function initMap() {
+  'use strict';
   let markers = [];
   let adult_index = [];
   let infowindows = [];
