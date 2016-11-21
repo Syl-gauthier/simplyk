@@ -4,6 +4,7 @@ var router = express.Router();
 var emailer = require('../email/emailer.js');
 var Intercom = require('intercom-client');
 var randomstring = require('randomstring');
+var school_list = require('../lib/ressources/school_list.js');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
@@ -79,19 +80,28 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   console.log('events_confirmed.length :  ' + events_confirmed.length);
   console.log('lt_hours_done :  ' + lt_hours_done);
   console.log('Volunteer level is : ' + vol_level);
-  res.render('v_profile.jade', {
-    session: req.session,
-    events_subscribed: events_subscribed,
-    events_confirmed: events_confirmed,
-    events_pending: events_pending,
-    events_past: events_past,
-    volunteer: req.session.volunteer,
-    error: error,
-    group: req.session.group,
-    vol_level: vol_level,
-    events_hours_done: events_hours_done,
-    lt_hours_done: lt_hours_done
+  //Get schools_list
+  school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
+    if (err) {
+      console.error('ERR : ' + err);
+    };
+    res.render('v_profile.jade', {
+      session: req.session,
+      volunteer: req.session.volunteer,
+      group: req.session.group,
+      error: error,
+      error: err,
+      schools_list,
+      vol_level: vol_level,
+      events_subscribed,
+      events_confirmed,
+      events_pending,
+      events_past,
+      events_hours_done,
+      lt_hours_done
+    });
   });
+
 });
 
 //Unsubscribe from an event

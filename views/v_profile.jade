@@ -99,9 +99,14 @@ block content
           if volunteer.student
             li(role='navigation')
               a(href='#extras' aria-controls='extras' role='tab' data-toggle='tab') 
-                h4 Mon école 
-                  if volunteer.extras && volunteer.manuals
-                    span.badge= volunteer.extras.length + volunteer.manuals.length
+                if volunteer.admin.school_name
+                  h4.school_name #{volunteer.admin.school_name} 
+                    if volunteer.extras && volunteer.manuals
+                      span.badge= volunteer.extras.length + volunteer.manuals.length
+                else 
+                  h4 Mon école 
+                    if volunteer.extras && volunteer.manuals
+                      span.badge= volunteer.extras.length + volunteer.manuals.length
 
     .row
       .tab-content
@@ -296,40 +301,112 @@ block content
         #profile.tab-pane.fade(role='tabpanel')
           .col-md-6.col-md-offset-3
             .page-header
-              h3
-                | Mon profil
+              h3.text-center
+                p #{volunteer.firstname} <strong>#{volunteer.lastname}</strong>
               if error
                 p.alert.alert-danger #{error}
+              p#edit-alert-danger.alert.alert-danger.hidden.text-center
+              p#edit-alert-success.alert.alert-success.hidden.text-center
             ul.list-group
               li.list-group-item
-                | Prénom: #{volunteer.firstname}
-                small
-              li.list-group-item
-                | Nom: #{volunteer.lastname}
-                small
-              li.list-group-item= 'Date de naissance: ' + moment(volunteer.birthdate).format("DD/MM/YYYY")
-                small
+                h5.text-center
+                  i.inline.fa.fa-birthday-cake(aria-hidden="true") 
+                  p.inline= ' ' + moment(volunteer.birthdate).format("DD/MM/YYYY")
               if volunteer.phone
                 li.list-group-item
-                  | Téléphone: #{volunteer.phone}
-                  small
+                  h5.text-center
+                    i.inline.fa.fa-mobile(aria-hidden="true") 
+                    p.inline#phone #{volunteer.phone}
+                    a.inline.btn(data-toggle='modal' data-target='#phone_edit_modal')
+                      i.fa.fa-pencil
+              else
+                li.list-group-item
+                  h5.text-center
+                    i.inline.fa.fa-mobile(aria-hidden="true") 
+                    p.inline#phone Ajouter mon numéro de téléphone
+                    a.inline.btn(data-toggle='modal' data-target='#phone_edit_modal')
+                      i.fa.fa-plus
+              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='phone_edit_modal')
+                div.modal-dialog(role='document')
+                  .modal-content
+                    form.edit-form#phone-edit-form
+                      .modal-header
+                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                          span(aria-hidden='true')
+                          h4.modal-title Édition de mon numéro de téléphone
+                      div.modal-body
+                          label(for='phone') Nouveau numéro de téléphone
+                          input.form-control(type='text', name='phone')
+                      .modal-footer
+                        input.btn.btn-warning(type='submit', form='phone-edit-form', value='Valider')
+                        a.btn.btn-default(data-dismiss='modal') Fermer
+              if volunteer.admin.school_name
+                li.list-group-item
+                  h5.text-center
+                    i.inline.fa.fa-university(aria-hidden="true") 
+                    p.inline.school_name #{volunteer.admin.school_name}
+                    a.inline.btn(data-toggle='modal' data-target='#school_edit_modal')
+                      i.fa.fa-pencil
+              else
+                li.list-group-item
+                  h5.text-center
+                    i.inline.fa.fa-university(aria-hidden="true") 
+                    p.inline#school_name Ajouter mon établissement scolaire
+                    a.inline.btn(data-toggle='modal' data-target='#school_edit_modal')
+                      i.fa.fa-plus
+              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='school_edit_modal')
+                div.modal-dialog(role='document')
+                  .modal-content
+                    form.edit-form#school-edit-form
+                      .modal-header
+                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                          span(aria-hidden='true')
+                          h4.modal-title Édition de mon établissement scolaire
+                      if !volunteer.admin.school_name
+                        div.modal-body
+                          label(for='school_name') Mon établissement scolaire
+                          select#school_name.form-control(placeholder='', name='school_name', aria-describedby='basic-addon1')
+                            each school, school_i in schools_list
+                              option= school
+                        .modal-footer
+                          input.btn.btn-warning(type='submit', form='school-edit-form', value='Valider')
+                          a.btn.btn-default(data-dismiss='modal') Fermer
+                      else if ['École secondaire Père-Marquette', 'École Louis-Riel'].indexOf(volunteer.admin.school_name) == -1
+                        div.modal-body
+                          label(for='school_name') Changer mon établissement scolaire
+                          select#school_name.form-control(placeholder='', name='school_name', aria-describedby='basic-addon1')
+                            each school, school_i in schools_list
+                              option= school
+                        .modal-footer
+                          input.btn.btn-warning(type='submit', form='school-edit-form', value='Valider')
+                          a.btn.btn-default(data-dismiss='modal') Fermer
+                      else
+                        div.modal-body
+                          h4.text-center Comme tu as la chance d'être élève dans un établissement scolaire client de Simplyk, tu ne peux pas changer ton établissement scolaire :)
+                        .modal-footer
+                          a.btn.btn-default(data-dismiss='modal') Fermer
               li.list-group-item
-                | Adresse mail: #{volunteer.email}
-              li.list-group-item#password-group
-                p Mot de passe: #[span.display ******]
-                form#edit-password-form.form-horizontal.hidden.editing
-                  .input-group.conn-input
-                    p#password-error.alert.alert-danger.hidden Mot de passe incorrect
+                  h5.text-center
+                    i.inline.fa.fa-at(aria-hidden="true") 
+                    p.inline #{volunteer.email}
+              li.list-group-item#password-group(style='margin-bottom: 60px')
+                h5.text-center
+                  i.inline.fa.fa-key(aria-hidden="true")
+                  p.inline Mot de passe: #[span.display ******]
+                  a.inline.btn#edit-password-button.display
+                    i.fa.fa-pencil
+                  form#edit-password-form.form-horizontal.hidden.editing
                     .input-group.conn-input
-                      input.form-control(name="current-password", type="password", placeholder="Mot de passe actuel")
-                    .input-group.conn-input
-                      input.form-control(name="new-password", type="password", placeholder="Nouveau mot de passe")
-                    .input-group.conn-input
-                      input.form-control(name="confirm-password", type="password", placeholder="Confirmer mot de passe")
-                div.btn-toolbar
-                    button.btn.btn-default#edit-password-button.display Éditer
-                    button.btn.btn-default#cancel-password-button.editing.hidden Annuler
-                    button.btn.btn-default#save-password-button.editing.hidden Enregistrer
+                      p#password-error.alert.alert-danger.hidden Mot de passe incorrect
+                      .input-group.conn-input
+                        input.form-control(name="current-password", type="password", placeholder="Mot de passe actuel")
+                      .input-group.conn-input
+                        input.form-control(name="new-password", type="password", placeholder="Nouveau mot de passe")
+                      .input-group.conn-input
+                        input.form-control(name="confirm-password", type="password", placeholder="Confirmer mot de passe")
+                  div.btn-toolbar
+                      button.btn.btn-default#cancel-password-button.editing.hidden Annuler
+                      button.btn.btn-default#save-password-button.editing.hidden Enregistrer
         #extras.tab-pane.fade(role='tabpanel')
           .col-md-4.col-md-offset-1
             .page-header
@@ -432,4 +509,48 @@ block footscript
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
       $('#myInput').focus();
+    });
+  script(type='text/javascript').
+    $(document).ready(function(){
+      $('.edit-form').submit(function(event){
+        console.log('Submit an edit-form');
+        console.log('$(this).attr("id) : ' + $(this).attr('id'))
+        event.preventDefault();
+        const form_datas = $(this).serializeArray();
+        let datas = {};
+        const modal = $(this).closest('.modal');
+        if ($(this).attr('id') == 'phone-edit-form'){
+          console.log('The edit-form submit is a phone one');
+          datas.phone = form_datas[0].value;
+          $.post('/edit-profile', datas)
+          .done(function(data){
+            modal.modal('toggle');
+            $('#edit-alert-success').removeClass('hidden');
+            $('#edit-alert-success').html(' Numéro de téléphone modifié avec succès pour : ' + data.newPhone);
+            $('#phone').html('' + data.newPhone);
+          })
+          .fail(function(data){
+            modal.modal('toggle');
+            $('#edit-alert-danger').removeClass('hidden');
+            $('#edit-alert-danger').html(' ' + data.responseJSON.error);
+            console.log(data.error);
+          })
+        } else if ($(this).attr('id') == 'school-edit-form'){
+          console.log('The edit-form submit is a school one');
+          datas.school_name = form_datas[0].value;
+          $.post('/edit-profile', datas)
+          .done(function(data){
+            modal.modal('toggle');
+            $('#edit-alert-success').removeClass('hidden');
+            $('#edit-alert-success').html(' Établissement scolaire modifié avec succès pour : ' + data.newSchool);
+            $('.school_name').html('' + data.newSchool);
+          })
+          .fail(function(data){
+            modal.modal('toggle');
+            $('#edit-alert-danger').removeClass('hidden');
+            $('#edit-alert-danger').html(' ' + data.responseJSON.error);
+            console.log(data.error);
+          })
+        }
+      })
     });
