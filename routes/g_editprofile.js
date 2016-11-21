@@ -44,6 +44,37 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 					});
 				}
 			});
+		} else if (typeof req.body.school_name != 'undefined') {
+			console.log('A volunteer (' + req.session.volunteer.email + ') is changing his phone to ' + req.body.school_name);
+			console.log('req.body.school_name : ' + req.body.school_name);
+			Volunteer.findOneAndUpdate({
+				'_id': req.session.volunteer._id
+			}, {
+				'$set': {
+					'admin.school_name': req.body.school_name
+				}
+			}, {
+				new: true
+			}, function(err, newVolunteer) {
+				if (err) {
+					console.error(err);
+					res.status(404).send({
+						error: err
+					});
+
+				} else {
+					console.info('Volunteer school_name updated ' + newVolunteer.school_name);
+					req.session.volunteer = newVolunteer;
+					res.status(200).send({
+						newSchool: newVolunteer.admin.school_name
+					});
+					client.users.update({
+						user_id: req.session.volunteer._id,
+						school_name: newVolunteer.admin.school_name,
+						update_last_request_at: true
+					});
+				}
+			});
 		}
 	} else if (req.session.group == 'organism') {
 		if (typeof req.body.phone != 'undefined') {
@@ -76,7 +107,7 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 					});
 				}
 			});
-		} else if (typeof req.body.email != 'undefined'){
+		} else if (typeof req.body.email != 'undefined') {
 			console.log('An organism (' + req.session.organism.email + ') is changing his email to ' + req.body.email);
 			console.log('req.body.email : ' + req.body.email);
 			let alreadyExists = false;
