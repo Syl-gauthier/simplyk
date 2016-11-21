@@ -340,7 +340,7 @@ block content
                       .modal-footer
                         input.btn.btn-warning(type='submit', form='phone-edit-form', value='Valider')
                         a.btn.btn-default(data-dismiss='modal') Fermer
-              if volunteer.admin.school_name
+              if (volunteer.admin && volunteer.admin.school_name)
                 li.list-group-item
                   h5.text-center
                     i.inline.fa.fa-university(aria-hidden="true") 
@@ -351,8 +351,8 @@ block content
                 li.list-group-item
                   h5.text-center
                     i.inline.fa.fa-university(aria-hidden="true") 
-                    p.inline#school_name Ajouter mon établissement scolaire
-                    a.inline.btn(data-toggle='modal' data-target='#school_edit_modal')
+                    p.inline.school_name Ajouter mon établissement scolaire
+                    a.inline.btn#add_a_school(data-toggle='modal' data-target='#school_edit_modal')
                       i.fa.fa-plus
               .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='school_edit_modal')
                 div.modal-dialog(role='document')
@@ -362,7 +362,7 @@ block content
                         button(type='button' class="close" data-dismiss="modal" aria-label="Close")
                           span(aria-hidden='true')
                           h4.modal-title Édition de mon établissement scolaire
-                      if !volunteer.admin.school_name
+                      if !(volunteer.admin && volunteer.admin.school_name)
                         div.modal-body
                           label(for='school_name') Mon établissement scolaire
                           select#school_name.form-control(placeholder='', name='school_name', aria-describedby='basic-addon1')
@@ -544,6 +544,7 @@ block footscript
             $('#edit-alert-success').removeClass('hidden');
             $('#edit-alert-success').html(' Établissement scolaire modifié avec succès pour : ' + data.newSchool);
             $('.school_name').html('' + data.newSchool);
+            $('#add_a_school').addClass('hidden');
           })
           .fail(function(data){
             modal.modal('toggle');

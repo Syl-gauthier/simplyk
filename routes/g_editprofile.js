@@ -70,8 +70,10 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 					});
 					client.users.update({
 						user_id: req.session.volunteer._id,
-						school_name: newVolunteer.admin.school_name,
-						update_last_request_at: true
+						update_last_request_at: true,
+						custom_attributes: {
+							school_name: newVolunteer.admin.school_name
+						}
 					});
 				}
 			});
