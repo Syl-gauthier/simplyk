@@ -457,7 +457,17 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
   var alreadyExists = req.session.volunteer.long_terms.find(isLongterm);
   console.log('alreadyExists : ' + alreadyExists + typeof alreadyExists);
   if (typeof alreadyExists === 'undefined') {
-    ltSubs.subscribe(req.session.volunteer, req.params.lt_id, req.headers.host, function(err, results) {
+    let phone ={};
+    if (req.session.volunteer.phone) {
+      phone = req.session.volunteer.phone;
+    } else if (req.body.phone) {
+      phone = req.body.phone;
+    } else {
+      phone = null;
+    };
+    console.log('phone : ' + phone);
+
+    ltSubs.subscribe(req.session.volunteer, req.params.lt_id, req.headers.host, phone, function(err, results) {
       if (err) {
         console.log(err);
         res.redirect('/volunteer/map?error=' + err);

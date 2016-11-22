@@ -203,13 +203,29 @@ block content
           .modal.fade(id='longterm-modal' tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
             .modal-dialog(role='document')
               .modal-content
-                .modal-header
-                  button.close(type='button' data-dismiss="modal" aria-label="Close")
-                    span(aria-hidden='true')&times;
-                  h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cet engagement ?
-                .modal-footer
-                  a.btn.btn-warning(data-dismiss='modal') Annuler
-                  form.inline(action='/volunteer/longterm/subscribe/'+longterm._id, method='post')
+                form.inline(action='/volunteer/longterm/subscribe/'+longterm._id, method='post', onsubmit='return validatePhone()')
+                  .modal-header
+                    button.close(type='button' data-dismiss="modal" aria-label="Close")
+                      span(aria-hidden='true')&times;
+                    h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cet engagement ?
+                    if !volunteer.phone
+                      .modal-body
+                        h6 Afin que l'organisme puisse t'appeller s'il y a un changement, il est souvent préférable qu'il soit informé de ton numéro de téléphone
+                        p.alert.alert-danger.hidden(class='phone_alert') Entrer un numéro de téléphone
+                        .form-group.conn-input
+                          label.control-label Téléphone
+                          input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone')
+                  .modal-footer
+                    a.btn.btn-warning(data-dismiss='modal') Annuler
                     input.btn.btn-default(type='submit' value='Oui' role='button')
 
 block footscript
+  script(type='text/javascript').
+    function validatePhone(){
+      const phone_number = $('#phone').val();
+      console.log('phone_number.length : ' + phone_number.length);
+      if(phone_number.length < 10){
+        $('.phone_alert').removeClass('hidden');
+        return false;
+      };
+    };
