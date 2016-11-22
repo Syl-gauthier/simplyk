@@ -82,11 +82,11 @@ body{
 }
 
 #map{
-	height: 85vh;
+	height: calc(100vh - 50px);
 }
 
 #map-left{
-	height: 85vh;
+	height: calc(100vh - 50px);
 }
 
 .text-shadowed {
