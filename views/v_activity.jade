@@ -31,9 +31,11 @@ block content
                 if day.day > Date.now()
                   if day.applicants.find(function(applicant){return applicant==volunteer._id})
                     h4 Inscrit
+                  else if ((day.vol_nb-day.applicants.length) < 1)
+                    h4 Complet
                   else
-                    input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal')
-                    .modal.fade(id='activity-modal' tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
+                    input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal'+index)
+                    .modal.fade(id='activity-modal'+index, tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
                       .modal-dialog(role='document')
                         .modal-content
                           form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone('+day.day.getTime()+')')

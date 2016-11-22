@@ -1,6 +1,8 @@
 extends ./g_layout.jade
 block vars
   - var page = 'postsubscription'
+  - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+  - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
 block head
   title Confirmation
   meta(name='description', content='Ton inscription est confirmée')
@@ -15,7 +17,7 @@ block content
           h2.text-center Tu es prêt à changer le monde ?!
           //It means this is an event
           if day
-            h4.text-center <br>L'organisme <b>#{org_name}</b>  va être mis au courant de ton inscription.<br> Tu peux les contacter grâce à leur adresse courriel si tu as besoin d'infos supplémentaires. <br> En tout cas, on t'attend le <b>#{day}</b> de <b>#{start_time}</b>  à <b>#{end_time}</b> . Rendez-vous à : <b>#{address}</b>
+            h4.text-center <br>L'organisme <b>#{org_name}</b>  va être mis au courant de ton inscription.<br> Tu peux les contacter grâce à leur adresse courriel si tu as besoin d'infos supplémentaires. <br> En tout cas, on t'attend le <b>#{days_name[day.getDay()]  + ' ' + (day.getDate()) + ' ' + months_name[day.getMonth()]}</b> de <b>#{start_time}</b>  à <b>#{end_time}</b> . Rendez-vous à : <b>#{address}</b>
             //It means this is a longterm
           else
             h4.text-center <br>L'organisme <b>#{org_name}</b> va être mis au courant de ton inscription.<br> Tu peux les contacter grâce à leur adresse courriel pour avoir des infos supplémentaires: <b>#{email}</b>. N'oublie pas d'enregistrer sur ton profil les heures de bénévolat effectuées !

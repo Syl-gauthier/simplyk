@@ -363,8 +363,18 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               console.log('**********************************');
               console.log('New Volunteer modified : ' + JSON.stringify(newVolunteer));
               console.log('**********************************');
-              const dayString = new Date(req.params.activity_day).toLocaleDateString();
+
+              function correctDate(date) {
+                var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;
+                var corrected_datetime = new Date(new Date(date).getTime() + tz_offset);
+                return corrected_datetime
+              };
+
+
+
+              const dayString = correctDate(req.params.activity_day);
               console.log('day String ' + dayString);
+              console.log('req.params.activity_day ' + req.params.activity_day);
               console.log('**********************************');
               //UPDATING REQ.SESSION.VOLUNTEER
               req.session.volunteer = newVolunteer;
