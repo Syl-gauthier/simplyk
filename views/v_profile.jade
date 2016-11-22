@@ -6,6 +6,10 @@ block vars
   - var client_schools = ['École secondaire Père-Marquette', 'École Louis-Riel'];
   - /* parse a date in yyyy-mm-dd format*/ function parseDate(input) {var parts = input.match(/(\d+)/g);/* new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])*/return new Date(parts[0], parts[1]-1, parts[2]); /* months are 0-based*/}
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(parseDate(date).getTime() + tz_offset);return corrected_datetime}
+  - function addHoursIfExists(arr){return arr.reduce(function(acc, curV, curI) {if(curV > 0 ){return acc + curV;} else {return acc;}})}
+
+
+
 block head
   title Profil de bénévole
   meta(name='description', content='Accède à tes informations personnelles')
@@ -18,8 +22,8 @@ block content
           p <i class='fa fa-2x fa-link fa-pull-left fa-border'></i> <b>Engagements</b> <br> #{lt_hours_done} heures confirmées
         else 
           p <i class='fa fa-2x fa-link fa-pull-left fa-border'></i> <b>Engagements</b> <br> 0 heures confirmées
-        if events_hours_done
-          p <i class='fa fa-2x fa-trophy fa-pull-left fa-border'></i> <b>Évènements</b> <br> #{events_hours_done} heures confirmées
+        if events_hours_done || extras_hours_done || manuals_hours_done
+          p <i class='fa fa-2x fa-trophy fa-pull-left fa-border'></i> <b>Évènements</b> <br> #{addHoursIfExists([events_hours_done, extras_hours_done, manuals_hours_done])} heures confirmées
         else 
           p <i class='fa fa-2x fa-trophy fa-pull-left fa-border'></i> <b>Évènements</b> <br> 0 heures confirmées
       if vol_level

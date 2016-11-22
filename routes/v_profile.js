@@ -52,6 +52,8 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
     }
     return pre;
   }, lt_hours_done);
+
+
   const events_hours_done = events_confirmed.reduce(function(pre, cur, ind, arr) {
     if (arr[ind].hours_done) {
       console.log('pre + arr[ind].hours_done : ' + (pre + arr[ind].hours_done));
@@ -60,6 +62,26 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       return pre;
     }
   }, 0);
+
+  const extras_hours_done = volunteer.extras.reduce(function(pre, cur, ind, arr) {
+    if (arr[ind].hours_done) {
+      console.log('pre + arr[ind].hours_done : ' + (pre + arr[ind].hours_done));
+      return pre + arr[ind].hours_done;
+    } else {
+      return pre;
+    }
+  }, 0);
+
+  const manuals_hours_done = volunteer.manuals.reduce(function(pre, cur, ind, arr) {
+    if (arr[ind].hours_done) {
+      console.log('pre + arr[ind].hours_done : ' + (pre + arr[ind].hours_done));
+      return pre + arr[ind].hours_done;
+    } else {
+      return pre;
+    }
+  }, 0);
+
+
   //VOLUNTEERING_LEVEL
   var vol_level;
   if (volunteer.events.length == 0 && lt_nb == 0) {
@@ -78,6 +100,8 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
     vol_level = 0;
   };
   console.log('events_confirmed.length :  ' + events_confirmed.length);
+  console.log('extras_hours_done :  ' + extras_hours_done);
+  console.log('manuals_hours_done :  ' + manuals_hours_done);
   console.log('lt_hours_done :  ' + lt_hours_done);
   console.log('Volunteer level is : ' + vol_level);
   //Get schools_list
@@ -98,7 +122,9 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       events_pending,
       events_past,
       events_hours_done,
-      lt_hours_done
+      lt_hours_done,
+      manuals_hours_done,
+      extras_hours_done
     });
   });
 
