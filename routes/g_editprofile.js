@@ -12,136 +12,184 @@ const Organism = require('../models/organism_model.js');
 
 router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'), function(req, res) {
 	console.info('IN edit-form');
+	//VARIABLES
+	let find = {};
+	let update = {
+		'$set': {}
+	};
+	let type = {};
+	let new_object = {};
+	let path_to_new_object = {};
+	let path_to_new_object2 = {};
+	let send = {};
+	let update_intercom = {};
+	let intercom_custom = {};
+	let intercom_main = {};
+	let new_value = {};
+	let ok = true;
+	update_intercom.update_last_request_at = true;
+	update_intercom.custom_attributes = {};
+
 	if (req.session.group == 'volunteer') {
+		find._id = req.session.volunteer._id;
+		update_intercom.user_id = req.session.volunteer._id;
 		if (typeof req.body.phone != 'undefined') {
-			console.log('A volunteer (' + req.session.volunteer.email + ') is changing his phone to ' + req.body.phone);
-			console.log('req.body.phone : ' + req.body.phone);
-			Volunteer.findOneAndUpdate({
-				'_id': req.session.volunteer._id
-			}, {
-				'$set': {
-					'phone': req.body.phone
-				}
-			}, {
-				new: true
-			}, function(err, newVolunteer) {
-				if (err) {
-					console.error(err);
-					res.status(404).send({
-						error: err
-					});
-
-				} else {
-					console.info('Volunteer phone updated ' + newVolunteer.phone);
-					req.session.volunteer = newVolunteer;
-					res.status(200).send({
-						newPhone: newVolunteer.phone
-					});
-					client.users.update({
-						user_id: req.session.volunteer._id,
-						phone: newVolunteer.phone,
-						update_last_request_at: true
-					});
-				}
-			});
+			type = 'phone';
+			new_object = 'newPhone';
+			update.$set = {
+				phone: req.body.phone
+			};
+			intercom_main = 'phone';
+			path_to_new_object = type;
 		} else if (typeof req.body.school_name != 'undefined') {
-			console.log('A volunteer (' + req.session.volunteer.email + ') is changing his phone to ' + req.body.school_name);
-			console.log('req.body.school_name : ' + req.body.school_name);
-			Volunteer.findOneAndUpdate({
-				'_id': req.session.volunteer._id
-			}, {
-				'$set': {
-					'admin.school_name': req.body.school_name
-				}
-			}, {
+			type = 'school_name';
+			new_object = 'newSchool';
+			update.$set = {
+				'admin.school_name': req.body.school_name
+			};
+			intercom_custom = 'school_name';
+			path_to_new_object = 'admin';
+			path_to_new_object2 = 'school_name';
+		} else {
+			let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)'
+			console.error(err);
+			res.status(404).send({
+				error: err
+			});
+		};
+		console.log('A volunteer (' + req.session.volunteer.email + ') is changing his ' + type + ' to ' + req.body[type]);
+		console.log('req.body.' + type + ' : ' + req.body[type]);
+		Volunteer.findOneAndUpdate(find, update, {
 				new: true
-			}, function(err, newVolunteer) {
+			},
+			function(err, newVolunteer) {
 				if (err) {
 					console.error(err);
 					res.status(404).send({
 						error: err
 					});
-
 				} else {
-					console.info('Volunteer school_name updated ' + newVolunteer.school_name);
+					if (path_to_new_object2.length > 0) {
+						new_value = newVolunteer[path_to_new_object][path_to_new_object2];
+					} else {
+						new_value = newVolunteer[path_to_new_object];
+					};
+
+					send[new_object] = new_value;
+
+					if (intercom_custom.length > 0) {
+						update_intercom.custom_attributes[intercom_custom] = new_value;
+					};
+					if (intercom_main.length > 0) {
+						update_intercom[intercom_main] = new_value;
+					}
+
+					console.info('Volunteer ' + type + ' updated ' + new_value);
+
 					req.session.volunteer = newVolunteer;
-					res.status(200).send({
-						newSchool: newVolunteer.admin.school_name
-					});
-					client.users.update({
-						user_id: req.session.volunteer._id,
-						update_last_request_at: true,
-						custom_attributes: {
-							school_name: newVolunteer.admin.school_name
-						}
-					});
+					res.status(200).send(send);
+					client.users.update(update_intercom);
 				}
 			});
-		}
 	} else if (req.session.group == 'organism') {
+		find._id = req.session.organism._id;
+		update_intercom.user_id = req.session.organism._id;
 		if (typeof req.body.phone != 'undefined') {
-			console.log('An organism (' + req.session.organism.email + ') is changing his phone to ' + req.body.phone);
-			console.log('req.body.phone : ' + req.body.phone);
-			Organism.findOneAndUpdate({
-				'_id': req.session.organism._id
-			}, {
-				'$set': {
-					'phone': req.body.phone
-				}
-			}, {
-				new: true
-			}, function(err, newOrganism) {
-				if (err) {
-					console.error(err);
-					res.status(404).send({
-						error: err
-					});
-				} else {
-					console.info('Organism phone updated ' + newOrganism.phone);
-					req.session.organism = newOrganism;
-					res.status(200).send({
-						newPhone: newOrganism.phone
-					});
-					client.users.update({
-						user_id: req.session.organism._id,
-						phone: newOrganism.phone,
-						update_last_request_at: true
-					});
-				}
-			});
+			type = 'phone';
+			new_object = 'newPhone';
+			update.$set = {
+				phone: req.body.phone
+			};
+			intercom_main = 'phone';
+			path_to_new_object = type;
 		} else if (typeof req.body.email != 'undefined') {
-			console.log('An organism (' + req.session.organism.email + ') is changing his email to ' + req.body.email);
-			console.log('req.body.email : ' + req.body.email);
-			let alreadyExists = false;
-
-			Organism.findOneAndUpdate({
-				'_id': req.session.organism._id
-			}, {
-				'$set': {
-					'email': req.body.email
-				}
-			}, {
-				new: true
-			}, function(err, newOrganism) {
-				if (err) {
-					console.error(err);
-					res.status(404).send({
-						error: err
-					});
-				} else {
-					console.info('Organism email updated ' + newOrganism.email);
-					req.session.organism = newOrganism;
-					res.status(200).send({
-						newEmail: newOrganism.email
-					});
-					client.users.update({
-						user_id: req.session.organism._id,
-						email: newOrganism.email,
-						update_last_request_at: true
-					});
-				}
+			type = 'email';
+			new_object = 'newEmail';
+			update.$set = {
+				email: req.body.email
+			};
+			intercom_main = 'email';
+			path_to_new_object = type;
+		} else if (typeof req.body.website != 'undefined') {
+			type = 'website';
+			new_object = 'newWebsite';
+			update.$set = {
+				website: req.body.website
+			};
+			intercom_custom = 'website';
+			path_to_new_object = type;
+		} else if (typeof req.body.cause != 'undefined') {
+			type = 'cause';
+			new_object = 'newCause';
+			update.$set = {
+				cause: req.body.cause
+			};
+			intercom_custom = 'cause';
+			path_to_new_object = type;
+		} else if (typeof req.body.description != 'undefined') {
+			type = 'description';
+			new_object = 'newDescription';
+			update.$set = {
+				description: req.body.description
+			};
+			intercom_custom = 'description';
+			path_to_new_object = type;
+		} else if (typeof req.body.firstname != 'undefined') {
+			console.log(req.body.lastname);
+			type = 'name';
+			new_object = 'newName';
+			update.$set = {
+				firstname: req.body.firstname,
+				lastname: req.body.lastname
+			};
+			intercom_custom = 'description';
+			path_to_new_object = type;
+		} else {
+			let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)'
+			console.error(err);
+			ok = false;
+			res.status(404).send({
+				error: err
 			});
+		};
+		if (ok) {
+			Organism.findOneAndUpdate(find, update, {
+					new: true
+				},
+				function(err, newOrganism) {
+					if (err) {
+						console.error(err);
+						res.status(404).send({
+							error: err
+						});
+					} else {
+						if (path_to_new_object2.length > 0) {
+							new_value = newOrganism[path_to_new_object][path_to_new_object2];
+						} else if (typeof req.body.firstname != 'undefined') {
+							new_value = newOrganism.firstname + ' ' + newOrganism.lastname;
+						} else {
+							new_value = newOrganism[path_to_new_object];
+						};
+						send[new_object] = new_value;
+						if (intercom_custom.length > 0) {
+							update_intercom.custom_attributes[intercom_custom] = new_value;
+						};
+						if (intercom_main.length > 0) {
+							update_intercom[intercom_main] = new_value;
+						}
+						console.info('Organism ' + type + ' updated ' + new_value);
+						req.session.organism = newOrganism;
+						res.status(200).send(send);
+						client.users.update(update_intercom);
+					}
+				});
 		}
+	} else {
+		let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)'
+		console.error(err);
+		res.status(404).send({
+			error: err
+		});
 	}
 })
 

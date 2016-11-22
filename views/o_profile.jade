@@ -8,10 +8,10 @@ block head
 block content
       .container-fluid
         .row
-          .col-md-offset-1
+          .col-md-offset-3
             h2.pull-left Profil de l'organisme
         .row
-          .col-md-6.col-md-offset-1
+          .col-md-6.col-md-offset-3
             .media
               .media-left.media-middle
                 img.media-object.img-profile(src='/images/rocket.png')
@@ -26,27 +26,81 @@ block content
                     p.inline #{organism.email}
                   br
         .row
-          .col-md-6.col-md-offset-1
+          .col-md-6.col-md-offset-3
             p#edit-alert-danger.alert.alert-danger.hidden
             p#edit-alert-success.alert.alert-success.hidden
             ul.list-group
               li.list-group-item
                 h5.text-center
                   i.inline.fa.fa-align-left(aria-hidden="true") 
-                  p.inline <b>Description :</b> #{organism.description}
+                  p.inline.description <b>Mission :</b> #{organism.description}
+                  a.inline.btn(data-toggle='modal' data-target='#description_edit_modal')
+                      i.fa.fa-pencil
+              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='description_edit_modal')
+                div.modal-dialog(role='document')
+                  .modal-content
+                    form.edit-form#description-edit-form
+                      .modal-header
+                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                          span(aria-hidden='true')
+                          h4.modal-title Édition de ma mission
+                      div.modal-body
+                          label(for='description') Nouvelle mission
+                          textarea.form-control(type='text', name='description', aria-describedby='basic-addon1',rows="3",maxlength="300",required) 
+                      .modal-footer
+                        input.btn.btn-warning(type='submit', form='description-edit-form', value='Valider')
+                        a.btn.btn-default(data-dismiss='modal') Fermer
               li.list-group-item
                 h5.text-center
                   i.inline.fa.fa-user-circle(aria-hidden="true") 
-                  p.inline #{organism.firstname} #{organism.lastname}
+                  p.inline.name #{organism.firstname} #{organism.lastname}
+                  a.inline.btn(data-toggle='modal' data-target='#name_edit_modal')
+                      i.fa.fa-pencil
+              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='name_edit_modal')
+                div.modal-dialog(role='document')
+                  .modal-content
+                    form.edit-form#name-edit-form
+                      .modal-header
+                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                          span(aria-hidden='true')
+                          h4.modal-title Édition du nom du responsable
+                      div.modal-body
+                          label(for='firstname') Prénom du responsable
+                          input.form-control(type='text', name='firstname', aria-describedby='basic-addon1' required) 
+                          label(for='lastname') Nom du responsable
+                          input.form-control(type='text', name='lastname', aria-describedby='basic-addon1' required) 
+                      .modal-footer
+                        input.btn.btn-warning(type='submit', form='name-edit-form', value='Valider')
+                        a.btn.btn-default(data-dismiss='modal') Fermer
               li.list-group-item
                 h5.text-center
                   i.inline.fa.fa-heart(aria-hidden="true") 
-                  p.inline <b>Cause :</b> #{organism.cause}
+                  p.inline.cause <b>Cause :</b> #{organism.cause}
+                  a.inline.btn(data-toggle='modal' data-target='#cause_edit_modal')
+                      i.fa.fa-pencil
+              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='cause_edit_modal')
+                div.modal-dialog(role='document')
+                  .modal-content
+                    form.edit-form#cause-edit-form
+                      .modal-header
+                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                          span(aria-hidden='true')
+                          h4.modal-title Édition de ma cause
+                      div.modal-body
+                          label(for='cause') Nouvelle cause
+                          select#cause.form-control(placeholder='', name='cause', aria-describedby='basic-addon1')
+                            option Nature
+                            option Solidarité
+                            option Sport et Culture
+                            option Enfance
+                      .modal-footer
+                        input.btn.btn-warning(type='submit', form='cause-edit-form', value='Valider')
+                        a.btn.btn-default(data-dismiss='modal') Fermer
               if organism.phone
                 li.list-group-item
                   h5.text-center
                     i.inline.fa.fa-mobile(aria-hidden="true") 
-                    p.inline#phone #{organism.phone}
+                    p.inline.phone #{organism.phone}
                     a.inline.btn(data-toggle='modal' data-target='#phone_edit_modal')
                       i.fa.fa-pencil
               else
@@ -93,7 +147,23 @@ block content
               li.list-group-item
                 h5.text-center
                   i.inline.fa.fa-globe(aria-hidden="true") 
-                  p.inline #{organism.website}
+                  p.inline.website #{organism.website}
+                  a.inline.btn(data-toggle='modal' data-target='#website_edit_modal')
+                      i.fa.fa-pencil
+              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='website_edit_modal')
+                div.modal-dialog(role='document')
+                  .modal-content
+                    form.edit-form#website-edit-form
+                      .modal-header
+                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                          span(aria-hidden='true')
+                          h4.modal-title Édition de mon site web
+                      div.modal-body
+                          label(for='website') Nouveau site web
+                          input.form-control(type='text', name='website', aria-describedby='basic-addon1' required) 
+                      .modal-footer
+                        input.btn.btn-warning(type='submit', form='website-edit-form', value='Valider')
+                        a.btn.btn-default(data-dismiss='modal') Fermer
               li.list-group-item#password-group(style='margin-bottom: 60px')
                 h5.text-center
                   i.inline.fa.fa-key(aria-hidden="true")
@@ -125,9 +195,7 @@ block footscript
   script(src='/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.js')
   script(type='text/javascript').
     $(document).ready(function(){
-
-
-
+      "use strict";
       $('.edit-form').submit(function(event){
         console.log('Submit an edit-form');
         console.log('$(this).attr("id) : ' + $(this).attr('id'))
@@ -135,24 +203,11 @@ block footscript
         var form = $(this); 
         const form_datas = $(this).serializeArray();
         let datas = {};
+        let string_success = "";
+        let new_data_key = "";
+        let class_to_modify = "";
         const modal = $(this).closest('.modal');
-        if ($(this).attr('id') == 'phone-edit-form'){
-          console.log('The edit-form submit is a phone one');
-          datas.phone = form_datas[0].value;
-          $.post('/edit-profile', datas)
-          .done(function(data){
-            modal.modal('toggle');
-            $('#edit-alert-success').removeClass('hidden');
-            $('#edit-alert-success').html(' Numéro de téléphone modifié avec succès pour : ' + data.newPhone);
-            $('.phone').html('' + data.newPhone);
-          })
-          .fail(function(data){
-            modal.modal('toggle');
-            $('#edit-alert-danger').removeClass('hidden');
-            $('#edit-alert-danger').html(' ' + data.responseJSON.error);
-            console.log(data.error);
-          });
-        } else if ($(this).attr('id') == 'email-edit-form'){
+        if ($(this).attr('id') == 'email-edit-form'){
           $.ajax({
             type: 'POST',
             url: 'register_check', 
@@ -185,6 +240,53 @@ block footscript
               });
             }
           }
+        } else{
+          if ($(this).attr('id') == 'phone-edit-form'){
+            console.log('The edit-form submit is a phone one');
+            datas.phone = form_datas[0].value;
+            string_success = ' Numéro de téléphone modifié avec succès pour : ';
+            new_data_key = "newPhone";
+            class_to_modify = '.phone';
+          } else if ($(this).attr('id') == 'cause-edit-form'){
+            console.log('The edit-form submit is a cause one');
+            datas.cause = form_datas[0].value;
+            string_success = ' Cause modifiée avec succès pour : ';
+            new_data_key = "newCause";
+            class_to_modify = '.cause';
+          } else if ($(this).attr('id') == 'website-edit-form'){
+            console.log('The edit-form submit is a website one');
+            datas.website = form_datas[0].value;
+            string_success = ' Site web modifié avec succès pour : ';
+            new_data_key = "newWebsite";
+            class_to_modify = '.website';
+          } else if ($(this).attr('id') == 'description-edit-form'){
+            console.log('The edit-form submit is a description one');
+            datas.description = form_datas[0].value;
+            string_success = ' Description modifiée avec succès pour : ';
+            new_data_key = "newDescription";
+            class_to_modify = '.description';
+          } else if ($(this).attr('id') == 'name-edit-form'){
+            console.log('The edit-form submit is a name one');
+            console.log('form_datas : ' + JSON.stringify(form_datas));
+            datas.firstname = form_datas[0].value;
+            datas.lastname = form_datas[1].value;
+            string_success = ' Nom du responsable modifiée avec succès pour : ';
+            new_data_key = "newName";
+            class_to_modify = '.name';
+          };
+          $.post('/edit-profile', datas)
+            .done(function(data){
+              modal.modal('toggle');
+              $('#edit-alert-success').removeClass('hidden');
+              $('#edit-alert-success').html(string_success + data[new_data_key]);
+              $(class_to_modify).html('' + data[new_data_key]);
+            })
+            .fail(function(data){
+              modal.modal('toggle');
+              $('#edit-alert-danger').removeClass('hidden');
+              $('#edit-alert-danger').html(' ' + data.responseJSON.error);
+              console.log(data.error);
+            });
         }
       });
     });
