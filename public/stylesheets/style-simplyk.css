@@ -188,12 +188,89 @@ body{
 
 }
 
+.landing-section {
+	min-height: 80vh;
+	border-bottom: 1px solid #bbb;
+}
+
+#type-section{
+	background-color: #5BCF8F;
+}
+
+#age-section{
+	background-color: #FF4F3C;
+}
+
+.section__sentence{
+	color: white;
+	margin-left: -40px;
+}
+
+.section__sentence h1{
+	font-size: 4.5vw;
+	font-weight: 300;
+	letter-spacing: 10px;
+}
+
+.section__sentence h4{
+	font-weight: 300;
+	letter-spacing: 3px;
+	margin-top: 0px;
+	margin-bottom: 40px;
+}
+
+.section__sentence--grouped{
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.section-div{
+	height: 80vh;
+}
+
+.landing-buttons{
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 100%;
+}
+
+
+.landing-buttons__item--grouped {
+	margin-top: 5vh;
+	margin-bottom: 5vh;
+}
+
+.landing-buttons__item {
+	background-color: transparent;
+	color: white;
+	border: 2px solid white;
+	font-weight: 300;
+}
+
+.landing-buttons__item:hover{
+	background-color: #FFC518;
+	color: white;
+	border: 2px solid #EEA90B;
+}
 
 #offers_list li.panel{
 	margin-bottom: 0px;
 }
 .btn-landing{
 	border-radius: 0px;
+}
+
+#more{
+	background-color: #FFC518;
+	margin-left: 70px;
+	border-color: #FFC518;
+}
+
+#more:hover{
+	background-color: #FFA510;
+	border-color: #FFC518;
 }
 
 #filter_div {
@@ -206,22 +283,30 @@ body{
 	margin-bottom: 4px;
 	padding-top: 10px;
 	padding-bottom: 10px;
+	color: #fff;
+	font-weight: 700;
 }
 
 .btn-filter-lts{
-	border: 1px solid #359B9C;
+	border: 1px solid #43A2AB;
+	background-color: #43A2AB;
 }
 
 .btn-filter-acts{
-	border: 1px solid #8BE78F;
+	border: 1px solid #5BCF8F;
+	background-color: #5BCF8F;
 }
 
 .btn-filter-age{
 	border: 1px solid #FFC518;
+	background-color: #FFC518;
+}
+
+.btn-filter:hover {
+	color: black;
 }
 
 .btn-filter-lts:hover{
-	border: 1px solid #359B9C;
 	background-color: #eee;
 	font-weight: 700;
 }
@@ -326,20 +411,10 @@ body{
 	max-height: 500px;
 	color: white;
 	margin-left: -40px;
+	height: 100%;
 }
 
-.logo h1{
-	font-size: 4.5vw;
-	font-weight: 300;
-	letter-spacing: 10px;
-}
 
-.logo h4{
-	font-weight: 300;
-	letter-spacing: 3px;
-	margin-top: 0px;
-	margin-bottom: 40px;
-}
 
 #logo_entrance{
 	max-width: 70vw;
@@ -347,19 +422,6 @@ body{
 	display: block;
 	margin-right: auto;
 	margin-left: auto;
-}
-
-#find_vol {
-	background-color: transparent;
-	color: white;
-	border: 2px solid white;
-	font-weight: 300;
-}
-
-#find_vol:hover{
-	background-color: #FFC518;
-	color: white;
-	border: 2px solid #EEA90B;
 }
 
 #first_section_entrance{

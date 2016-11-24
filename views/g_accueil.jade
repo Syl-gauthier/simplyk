@@ -63,18 +63,44 @@ block content
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
             a#link-btn-ref.btn.btn-default(href='login') S'inscrire
             a#link-btn-ref.btn.btn-default(href='login') Plus d'infos
-  .container-fluid.degrade
+  .container-fluid
     #first_section_entrance.row
       .col-sm-5.col-xs-offset-1.col-xs-11
-        .logo
+        .logo.section__sentence
           div
             h1 TROUVE TON <br> BÉNÉVOLAT <br>
           div
             h4 Simplyk te connecte avec l'organisme qui te correspond <br><br>
-          div
-            button#find_vol.btn.btn-warning.btn-lg C'EST PARTI
+          div.hidden-xs
+            button.landing-buttons__item.btn.btn-warning.btn-lg#letsgo JE CONNAIS
+            button.landing-buttons__item.btn.btn-warning.btn-lg#more GUIDE MOI
       .col-sm-6
         img#landscape(src='images/happy_city.svg', align='middle')
+    #type-section.row.landing-section.hidden-xs
+      .col-sm-5.col-sm-offset-1.col-xs-offset-1.col-xs-10.section-div
+        .section__sentence.section__sentence--grouped
+          div
+            h1 CHOISIS TON TYPE <br> D'ENGAGEMENT <br>
+          div
+            h4
+      .col-sm-3.col-sm-offset-2.col-xs-offset-1.col-xs-10.section-div
+        div.landing-buttons
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button#type-button--ev
+              p.inline PONCTUEL
+              i.inline.fa.fa-bolt(style='color: yellow;')
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button#type-button--lt LONG TERME
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button#type-button--all PEU IMPORTE
+    #age-section.landing-section.row.hidden-xs
+      .col-sm-5.col-sm-offset-1.col-xs-offset-1.col-xs-10.section-div
+        .section__sentence.section__sentence--grouped
+          div
+            h1 FILTRE SELON <br> TON ÂGE <br>
+          div
+            h4 
+      .col-sm-3.col-sm-offset-2.col-xs-offset-1.col-xs-10.section-div
+        div.landing-buttons
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button#age-button--plus J'ai plus de 16 ans
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button#age-button--less J'ai moins de 16 ans
   .container-fluid
     .row.fill
       .col-sm-4.col-xs-12#map-left.hidden-xs
@@ -82,16 +108,16 @@ block content
           .col-md-5.col-md-offset-1.col-sm-6.col-sm-offset-0.col-xs-10.col-xs-offset-1#acts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-acts
               i.inline.fa.fa-check-square-o#acts_check
-              p.inline Ponctuels
+              p.inline PONCTUEL
               i.inline.fa.fa-bolt
           .col-md-5.col-sm-6.col-sm-offset-0.col-xs-10.col-xs-offset-1#lts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
-              p.inline Engagements
+              p.inline LONG TERME
           .col-md-10.col-md-offset-1.col-sm-12.col-sm-offset-0.col-xs-10.col-xs-offset-1#age_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-age
               i.inline.fa.fa-square-o#age_check
-              p.inline J'ai moins de 16 ans
+              p.inline J'AI MOINS DE 16 ANS
         #offers-list.no-side-padding.scrollable.row
           ul.list-group.list-opportunity
             if error
@@ -222,9 +248,28 @@ block content
 block footscript
   script.
     $( document ).ready(function() {
-      $('#find_vol, #find_vol_bis').click(function(){
+      $('#letsgo, .age-button').click(function(){
         $('html, body').animate({
           scrollTop: $('#map').offset().top - 70
+        }, 500)
+      });
+      $('.type-button').click(function(){
+        $('html, body').animate({
+          scrollTop: $('#age-section').offset().top - 70
+        }, 500)
+      });
+      $('#age-button--plus').click(function(){
+        $('.btn-filter-age').trigger("click");
+      });
+      $('#type-button--lt').click(function(){
+        $('.btn-filter-acts').trigger("click");
+      });
+      $('#type-button--ev').click(function(){
+        $('.btn-filter-lts').trigger("click");
+      });
+      $('#more').click(function(){
+        $('html, body').animate({
+          scrollTop: $('#type-section').offset().top - 70
         }, 500)
       });
       $('.list-group-item').attr('adult', function(i, val){
