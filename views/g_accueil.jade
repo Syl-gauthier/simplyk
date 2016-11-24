@@ -64,8 +64,8 @@ block content
             a#link-btn-ref.btn.btn-default(href='login') S'inscrire
             a#link-btn-ref.btn.btn-default(href='login') Plus d'infos
   .container-fluid
-    #first_section_entrance.row
-      .col-sm-5.col-xs-offset-1.col-xs-11
+    #first_section.landing-section.row
+      .col-sm-5.col-xs-offset-1.col-xs-11.section-div
         .logo.section__sentence
           div
             h1 TROUVE TON <br> BÉNÉVOLAT <br>
@@ -73,8 +73,8 @@ block content
             h4 Simplyk te connecte avec l'organisme qui te correspond <br><br>
           div.hidden-xs
             button.landing-buttons__item.btn.btn-warning.btn-lg#letsgo JE CONNAIS
-            button.landing-buttons__item.btn.btn-warning.btn-lg#more GUIDE MOI
-      .col-sm-6
+            button.landing-buttons__item.btn.btn-warning.btn-lg#more <b>C'EST PARTI !</b>
+      .col-sm-6.col-sm-offset-0.col-xs-offset-1.col-xs-11.section-div.hidden-xs
         img#landscape(src='images/happy_city.svg', align='middle')
     #type-section.row.landing-section.hidden-xs
       .col-sm-5.col-sm-offset-1.col-xs-offset-1.col-xs-10.section-div
@@ -250,12 +250,12 @@ block footscript
     $( document ).ready(function() {
       $('#letsgo, .age-button').click(function(){
         $('html, body').animate({
-          scrollTop: $('#map').offset().top - 70
+          scrollTop: $('#map').offset().top - 50
         }, 500)
       });
       $('.type-button').click(function(){
         $('html, body').animate({
-          scrollTop: $('#age-section').offset().top - 70
+          scrollTop: $('#age-section').offset().top - 50
         }, 500)
       });
       $('#age-button--plus').click(function(){
@@ -269,7 +269,7 @@ block footscript
       });
       $('#more').click(function(){
         $('html, body').animate({
-          scrollTop: $('#type-section').offset().top - 70
+          scrollTop: $('#type-section').offset().top - 50
         }, 500)
       });
       $('.list-group-item').attr('adult', function(i, val){
