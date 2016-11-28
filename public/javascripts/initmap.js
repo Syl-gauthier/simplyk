@@ -279,7 +279,11 @@ function initMap() {
     markerCluster = new MarkerClusterer(map, mks, options);
     return mks;
   };
+  let scrollable = true;
 
+  if (page == 'landing'){
+    scrollable = false;
+  };  
   const mapDiv = document.getElementById('map');
   const map = new google.maps.Map(mapDiv, {
     center: {
@@ -287,6 +291,7 @@ function initMap() {
       lng: -73.613
     },
     zoom: 12,
+    scrollwheel: scrollable,
     streetViewControl: false,
     mapTypeControl: false,
     mapTypeId: google.maps.MapTypeId.ROADMAP

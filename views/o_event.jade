@@ -52,9 +52,14 @@ block content
 																	h6
 																		i.fa.fa-phone
 																		p.inline #{vol.phone}
-																h6
-																	i.fa.fa-birthday-cake
-																	p.inline #{days_name[correctDate(vol.birthdate).getDay()]  + ' ' + (correctDate(vol.birthdate).getDate()) + ' ' + months_name[correctDate(vol.birthdate).getMonth()]  + ' ' + correctDate(vol.birthdate).getFullYear()}
+																else
+																	h6
+																if vol.birthdate
+																	h6
+																		i.fa.fa-birthday-cake
+																		p.inline #{days_name[correctDate(vol.birthdate).getDay()]  + ' ' + (correctDate(vol.birthdate).getDate()) + ' ' + months_name[correctDate(vol.birthdate).getMonth()]  + ' ' + correctDate(vol.birthdate).getFullYear()}
+																else
+																	h6
 															each event, event_i in vol.events
 																if ((Date.parse(event.day) == Date.parse(day.day)) && (act._id.toString() == event.activity_id.toString()))
 																	if Date.parse(day.day)<Date.now()

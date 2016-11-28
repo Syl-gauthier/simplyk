@@ -168,7 +168,10 @@ block content
                     td.text-center= vol_i
                     td.text-center= vol.lastname
                     td.text-center= vol.firstname
-                    td.text-center #{(correctDate(vol.birthdate).getDate()) + ' ' + months_name[correctDate(vol.birthdate).getMonth()]  + ' ' + correctDate(vol.birthdate).getFullYear()}
+                    if vol.birthdate
+                      td.text-center #{(correctDate(vol.birthdate).getDate()) + ' ' + months_name[correctDate(vol.birthdate).getMonth()]  + ' ' + correctDate(vol.birthdate).getFullYear()}
+                    else
+                      td
                     if vol.phone
                       td.text-center= vol.phone
                     else 
