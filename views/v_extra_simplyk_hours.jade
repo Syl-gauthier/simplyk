@@ -46,7 +46,7 @@ block content
                         .col-md-6
                             .form-group.conn-input
                                 label(for='hours_pending') Nombres d'heures réalisées
-                                input.form-control(id='hours_pending', type='number', name='hours_pending', min="0", max="40", required)
+                                input.form-control(id='hours_pending', type='number', name='hours_pending', step='0.5', min="0", max="40", required)
                     h3 Questions sur l'activité
                     each question, q_i in student_questions
                         .form-group.conn-input
