@@ -7,7 +7,7 @@ block head
 block content
       #map-section.container-fluid
         .row
-          .col-md-6.col-md-offset-3
+          .col-md-4.col-md-offset-4
             .page-header
               h1 Inscription
               .alert.alert-danger.hidden#email-exists
@@ -22,24 +22,22 @@ block content
               h4 Ou si vous avez déjà un compte
             a.btn.btn-default(href='/login') Se connecter
         .row
-          .col-md-6.col-md-offset-3
+          .col-md-4.col-md-offset-4
             form#registerform(action="/register_#{type}", method="post", role='form')
               if type == 'volunteer'
-                .col-md-6
-                  .form-group.conn-input
-                    label.control-label Adresse courriel
-                    input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='email', aria-describedby='basic-addon1', required)
-                  .form-group.conn-input
-                    label.control-label Nom
-                    input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', required)
-                .col-md-6
-                  .form-group.conn-input
-                    label.control-label Prénom
-                    input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', required)
-                  .form-group.conn-input
-                    label.control-label Date de naissance
-                    input#birthdate.form-control(type='date', placeholder='', name='birthdate', aria-describedby='basic-addon1')
-                .col-md-12
+                .form-group.conn-input
+                  label.control-label Adresse courriel
+                  input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='email', aria-describedby='basic-addon1', required)
+                .form-group.conn-input
+                  label.control-label Prénom
+                  input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', required)
+                .form-group.conn-input
+                  label.control-label Nom
+                  input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', required)
+                .form-group.conn-input
+                  label.control-label Date de naissance
+                  input#birthdate.form-control(type='date', placeholder='', name='birthdate', aria-describedby='basic-addon1')
+                .form-group.conn-input
                   input#admin_checkbox(type='checkbox' name='admin_checkbox') 
                   |   Je suis actuellement inscrit dans un établissement scolaire
                   br
@@ -69,14 +67,12 @@ block content
                     option Sport et Culture
                     option Enfance
                 h2 Informations du responsable des bénévoles
-                .col-md-6
-                  .form-group.conn-input
-                    label.control-label Nom
-                    input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', required)
-                .col-md-6
-                  .form-group.conn-input
-                    label.control-label Prénom
-                    input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', required)
+                .form-group.conn-input
+                  label.control-label Prénom
+                  input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', required)
+                .form-group.conn-input
+                  label.control-label Nom
+                  input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', required)
                 .form-group.conn-input
                     label.control-label Adresse courriel
                     input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='email', aria-describedby='basic-addon1', required)
@@ -95,18 +91,13 @@ block content
                   select#type.form-control(placeholder='', name='type', aria-describedby='basic-addon1')
                     option Entreprise
                     option École
-              .col-md-6
-                .form-group.conn-input
-                  label.control-label Mot de passe
-                  input#password.form-control(type='password', placeholder='', name='password', aria-describedby='basic-addon1', required)
-              .col-md-6
-                .form-group.conn-input
-                  label.control-label Confirmation de mot de passe
-                  input#confirmPassword.form-control(type='password', placeholder='', name='password_confirm', aria-describedby='basic-addon1', required)
-              .row
+              .form-group.conn-input
+                label.control-label Mot de passe
+                input#password.form-control(type='password', placeholder='', name='password', aria-describedby='basic-addon1', required)
+              .form-group.conn-input
                 p.
                   En cliquant sur le bouton "s'inscrire", j'accepte les <a href="\legal">conditions générales d'utilisation </a>. Si je suis mineur je dois prévenir un responsable avant de me rendre à une activité.
-              .row
+              .form-group.conn-input
                 input.btn.btn-default#submit-button(type='submit', form='registerform', value='S \'inscrire', style='margin-bottom: 50px;')
 block footscript
   script(src="/bower_components/jquery-ui/ui/widgets/datepicker.js")
