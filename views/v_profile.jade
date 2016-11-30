@@ -85,7 +85,7 @@ block content
                 h3
                   span.label.label-danger Expert
                 p.text-info <strong>Conseil : </strong> Maintenant que tu es un expert, continue de t'impliquer afin de relever les challenges à venir sur la plateforme !
-            if (volunteer.student && (client_schools.indexOf(volunteer.admin.school_name) != -1))
+            if (client_schools.indexOf(volunteer.admin.school_name) != -1)
               a.btn.btn-default.pull-right(href='/volunteer/extra_simplyk_hours', role='button', style='background-color: transparent; color: black;') Ajouter des heures extra-Simplyk
                 i.fa.fa-plus
 
@@ -101,10 +101,10 @@ block content
           li(role='navigation')
             a(href='#profile' aria-controls='profile' role='tab' data-toggle='tab') 
               h4 Mes informations
-          if volunteer.student
+          if volunteer.admin.school_name
             li(role='navigation')
               a(href='#extras' aria-controls='extras' role='tab' data-toggle='tab') 
-                if volunteer.admin.school_name
+                if (client_schools.indexOf(volunteer.admin.school_name) != -1)
                   h4.school_name #{volunteer.admin.school_name} 
                     if volunteer.extras && volunteer.manuals
                       span.badge= volunteer.extras.length + volunteer.manuals.length
