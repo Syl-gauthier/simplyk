@@ -198,6 +198,8 @@ passport.deserializeUser(function(req, id, done) {
   }
 });
 
+
+app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
