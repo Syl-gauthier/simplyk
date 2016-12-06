@@ -28,43 +28,44 @@ block content
 							.panel-body
 								h5 <b>Description : </b> #{activity.description}
 								each day, day_i in activity.days
-									div.media
-										div.media-left.media-middle
-											i.fa.fa-calendar
-										div.media-body
-											h4
-												h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-												h6.inline
-													i.fa.fa-user
-													p.inline= (day.vol_nb - day.applicants.length)+' places restantes'
-												h6 De #{day.start_time} à #{day.end_time}
-										if day.applicants.find(function(applicant){return applicant==volunteer._id})
-											div.media-right.media-middle
-												h4 <b>Inscrit</b>
-										else if day.day > Date.now()
-											div.media-right.media-middle
-												input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal'+activity._id+day_i)
-												.modal.fade(id='activity-modal'+activity._id+day_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+activity._id+day_i)
-													.modal-dialog(role='document')
-														.modal-content
-															form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone1('+day_i+');')
-																.modal-header
-																	button.close(type='button' data-dismiss="modal" aria-label="Close")
-																		span(aria-hidden='true') &times;
-																	h4.modal-title(id='myModalLabel'+activity._id+day_i) Es-tu sûr de vouloir t'inscrire à cette activité ?
-																if !volunteer.phone
-																	.modal-body
-																		h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
-																		p.alert.alert-danger.hidden(class='phone_alerta'+day_i) Entrer un numéro de téléphone
-																		.form-group.conn-input
-																			label.control-label Téléphone
-																			input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phonea'+day_i)
-																.modal-footer
-																	a.btn.btn-warning(data-dismiss='modal') Annuler
-																	input.btn.btn-default(type='submit' value='Oui' role='button')
-										else
-											div.media-right.media-middle
-												h4 <b>Passé</b>
+									if day.day
+										div.media
+											div.media-left.media-middle
+												i.fa.fa-calendar
+											div.media-body
+												h4
+													h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+													h6.inline
+														i.fa.fa-user
+														p.inline= (day.vol_nb - day.applicants.length)+' places restantes'
+													h6 De #{day.start_time} à #{day.end_time}
+											if day.applicants.find(function(applicant){return applicant==volunteer._id})
+												div.media-right.media-middle
+													h4 <b>Inscrit</b>
+											else if day.day > Date.now()
+												div.media-right.media-middle
+													input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal'+activity._id+day_i)
+													.modal.fade(id='activity-modal'+activity._id+day_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+activity._id+day_i)
+														.modal-dialog(role='document')
+															.modal-content
+																form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone1('+day_i+');')
+																	.modal-header
+																		button.close(type='button' data-dismiss="modal" aria-label="Close")
+																			span(aria-hidden='true') &times;
+																		h4.modal-title(id='myModalLabel'+activity._id+day_i) Es-tu sûr de vouloir t'inscrire à cette activité ?
+																	if !volunteer.phone
+																		.modal-body
+																			h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
+																			p.alert.alert-danger.hidden(class='phone_alerta'+day_i) Entrer un numéro de téléphone
+																			.form-group.conn-input
+																				label.control-label Téléphone
+																				input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phonea'+day_i)
+																	.modal-footer
+																		a.btn.btn-warning(data-dismiss='modal') Annuler
+																		input.btn.btn-default(type='submit' value='Oui' role='button')
+											else
+												div.media-right.media-middle
+													h4 <b>Passé</b>
 				if other_activities.length > 0
 					h3 Autres activités de l'évènement
 					each act, act_i in other_activities
@@ -82,47 +83,48 @@ block content
 								.panel-body
 									h5 <b>Description : </b> #{act.description}
 									each other_day, other_day_i in act.days
-										div.media
-											div.media-left.media-middle
-												i.fa.fa-calendar
-											div.media-body
-												h4
-													h5.inline <b>#{days_name[correctDate(other_day.day).getDay()]  + ' ' + (correctDate(other_day.day).getDate()) + ' ' + months_name[correctDate(other_day.day).getMonth()]  + ' ' + correctDate(other_day.day).getFullYear()} : </b>
-													h6.inline
-														i.fa.fa-user
-														p.inline= (other_day.vol_nb - other_day.applicants.length)+' places restantes'
-													h6 De #{other_day.start_time} à #{other_day.end_time}
-											if other_day.applicants.find(function(applicant){return applicant==volunteer._id})
-												if other_day.day > Date.now()
+										if other_day.day
+											div.media
+												div.media-left.media-middle
+													i.fa.fa-calendar
+												div.media-body
+													h4
+														h5.inline <b>#{days_name[correctDate(other_day.day).getDay()]  + ' ' + (correctDate(other_day.day).getDate()) + ' ' + months_name[correctDate(other_day.day).getMonth()]  + ' ' + correctDate(other_day.day).getFullYear()} : </b>
+														h6.inline
+															i.fa.fa-user
+															p.inline= (other_day.vol_nb - other_day.applicants.length)+' places restantes'
+														h6 De #{other_day.start_time} à #{other_day.end_time}
+												if other_day.applicants.find(function(applicant){return applicant==volunteer._id})
+													if other_day.day > Date.now()
+														div.media-right.media-middle
+															h4 <b>Inscrit</b>
+													else
+														div.media-right.media-middle
+															h4 <b>Participé</b>
+												else if other_day.day > Date.now()
 													div.media-right.media-middle
-														h4 <b>Inscrit</b>
+														input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal'+act_i+other_day_i)
+														.modal.fade(tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+act_i+other_day_i, id='activity-modal'+act_i+other_day_i)
+															.modal-dialog(role='document')
+																form.inline(action='/volunteer/event/subscribe/'+act._id+'-'+other_day.day, method='post', onsubmit='return validatePhone2('+other_day_i+');')
+																	.modal-content
+																		.modal-header
+																			button.close(type='button' data-dismiss="modal" aria-label="Close")
+																				span(aria-hidden='true') &times;
+																			h4.modal-title(id='myModalLabel'+act_i+other_day_i) Es-tu sûr de vouloir t'inscrire à cette activité ?
+																		if !volunteer.phone
+																			.modal-body
+																				h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
+																				p.alert.alert-danger.hidden(class='phone_alertb'+other_day_i) Entrer un numéro de téléphone
+																				.form-group.conn-input
+																					label.control-label Téléphone
+																					input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phoneb'+other_day_i)
+																		.modal-footer
+																			a.btn.btn-warning(data-dismiss='modal') Annuler
+																			input.btn.btn-default(type='submit' value='Oui' role='button')
 												else
 													div.media-right.media-middle
-														h4 <b>Participé</b>
-											else if other_day.day > Date.now()
-												div.media-right.media-middle
-													input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal'+act_i+other_day_i)
-													.modal.fade(tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+act_i+other_day_i, id='activity-modal'+act_i+other_day_i)
-														.modal-dialog(role='document')
-															form.inline(action='/volunteer/event/subscribe/'+act._id+'-'+other_day.day, method='post', onsubmit='return validatePhone2('+other_day_i+');')
-																.modal-content
-																	.modal-header
-																		button.close(type='button' data-dismiss="modal" aria-label="Close")
-																			span(aria-hidden='true') &times;
-																		h4.modal-title(id='myModalLabel'+act_i+other_day_i) Es-tu sûr de vouloir t'inscrire à cette activité ?
-																	if !volunteer.phone
-																		.modal-body
-																			h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
-																			p.alert.alert-danger.hidden(class='phone_alertb'+other_day_i) Entrer un numéro de téléphone
-																			.form-group.conn-input
-																				label.control-label Téléphone
-																				input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phoneb'+other_day_i)
-																	.modal-footer
-																		a.btn.btn-warning(data-dismiss='modal') Annuler
-																		input.btn.btn-default(type='submit' value='Oui' role='button')
-											else
-												div.media-right.media-middle
-													h4 <b>Passé</b>
+														h4 <b>Passé</b>
 			.col-md-3.col-md-offset-1.no-side-padding
 				h4 L'organisme <b> #{organism.org_name} </b>
 				h5 <b>Mission : </b> #{organism.description}

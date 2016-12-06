@@ -62,15 +62,33 @@ block footscript
 			    	$('#address_container').addClass('has-success');
 			    }
 			});
-			$('#address').blur(function(){
-			    var place = autocomplete.getPlace();
-			    if (!place || (!place.geometry)) {
-			      $('#address_container').removeClass('has-success');
-			      $('#address_container').addClass('has-error');
-			    } else {
-			      $('#address_container').removeClass('has-error');
-			      $('#address_container').addClass('has-success');
-			    }
+			$('#creationeventform').submit(function(event){
+				let days_total = $('.datepicker').length;
+				let days_defined = 0;
+				$('.datepicker').each(function(){
+					console.info('$(this).val() : ' + $(this).val().length);
+					if ($(this).val().length < 4){
+					} else {
+						days_defined ++;
+						console.info('days_defined : ' + days_defined);
+						console.info('days_total : ' + days_total);
+					}
+				});
+				if(days_defined != days_total) {
+					$('html,body').animate({
+						scrollTop: 0
+					},'slow');
+					$('#day-alert').removeClass('hidden');
+					event.preventDefault();
+				} else {
+					console.log('Before submitting');
+					console.log($('.datepicker').attr('aria-readonly'));
+					$('.datepicker').attr('aria-readonly', false);
+					console.log($('.datepicker').attr('aria-readonly'));
+					console.log($('.datepicker').attr('readonly'));
+					$('.datepicker').attr('readonly', false);
+					console.log($('.datepicker').attr('readonly'));
+				}
 			});
 		};
 	script(src='/javascripts/bundle.js')

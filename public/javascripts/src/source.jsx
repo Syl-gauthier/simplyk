@@ -78,7 +78,7 @@ class DatePicker extends React.Component {
 	
 		render() {
 			return (
-				<input type="date" ref="datepicker" name={this.props.name} value={this.state.value} className="datepicker form-control" placeholder="Choisis un jour" /*onBlur={this.props.validate(this.state.value)}*/ required/>);
+				<input type="date" ref="datepicker" key={this.props.name} name={this.props.name} value={this.state.value} className="datepicker form-control" placeholder="Choisis un jour (yyyy-mm-dd)" /*onBlur={this.props.validate(this.state.value)}*/ required/>);
 		}
 }
 
@@ -122,14 +122,14 @@ class TimePicker extends React.Component {
 			if (this.props.required == 'true'){
 				if (this.props.checked == 'true'){
 					return (
-						<input type="text" ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ required/>);
+						<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ required/>);
 				} else {
 					return (
-						<input type="text" ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ disabled/>);
+						<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ disabled/>);
 				}
 			} else {
 				return (
-					<input type="text" ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*//>);
+					<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*//>);
 			}
 		}
 }
@@ -143,10 +143,10 @@ class DayInActivity extends React.Component {
 	isDisabled() {
 		if(this.props.checked == 'true'){
 			console.log('Checked')
-			return(<input type="number" name={this.props.activity + '_' + this.props.day + '_vol_nb'} className='form-control' id='min_age' min='1' max='10000' required/>)
+			return(<input type="number" key={this.props.activity + '_' + this.props.day + '_vol_nb'} name={this.props.activity + '_' + this.props.day + '_vol_nb'} className='form-control' id='min_age' min='1' max='10000' required/>)
 		} else {
 			console.log('Not checked')
-				return(<input type="number" name={this.props.activity + '_' + this.props.day + '_vol_nb'} className='form-control' id='min_age' min='1' max='10000' disabled/>)
+				return(<input type="number" key={this.props.activity + '_' + this.props.day + '_vol_nb'} name={this.props.activity + '_' + this.props.day + '_vol_nb'} className='form-control' id='min_age' min='1' max='10000' disabled/>)
 		}
 	}
 
@@ -156,14 +156,14 @@ class DayInActivity extends React.Component {
 				<div className="row" >
 					<div className="col-md-3">
 						<label >
-							<input type="checkbox" value='on' name={this.props.activity + '_' + this.props.day} onChange={()=>this.props.onChange()} required/> {'Jour ' + (this.props.i + 1)}
+							<input type="checkbox" value='on' key={this.props.activity + '_' + this.props.day} name={this.props.activity + '_' + this.props.day} onChange={()=>this.props.onChange()} required/> {'Jour ' + (this.props.i + 1)}
 						</label>
 					</div>
 					<div className="col-md-3">
-						<TimePicker placeholder='Début' name={this.props.activity + '_' + this.props.day + '_startTime'} required='true' checked={this.props.checked}/>
+						<TimePicker placeholder='Début' key={this.props.activity + '_' + this.props.day + '_startTime'} name={this.props.activity + '_' + this.props.day + '_startTime'} required='true' checked={this.props.checked}/>
 					</div>
 					<div className="col-md-3">
-						<TimePicker placeholder='Fin' name={this.props.activity + '_' + this.props.day + '_endTime'} required='true' checked={this.props.checked}/>
+						<TimePicker placeholder='Fin' key={this.props.activity + '_' + this.props.day + '_endTime'} name={this.props.activity + '_' + this.props.day + '_endTime'} required='true' checked={this.props.checked}/>
 					</div>
 					<div className="col-md-3">
 						{this.isDisabled()}
@@ -174,14 +174,14 @@ class DayInActivity extends React.Component {
 				<div className="row" >
 					<div className="col-md-3">
 						<label >
-							<input type="checkbox" value='on' name={this.props.activity + '_' + this.props.day} onChange={()=>this.props.onChange()}/> {'Jour ' + (this.props.i + 1)}
+							<input type="checkbox" value='on' key={this.props.activity + '_' + this.props.day} name={this.props.activity + '_' + this.props.day} onChange={()=>this.props.onChange()}/> {'Jour ' + (this.props.i + 1)}
 						</label>
 					</div>
 					<div className="col-md-3">
-						<TimePicker placeholder='Début' name={this.props.activity + '_' + this.props.day + '_startTime'} required='false' checked={this.props.checked}/>
+						<TimePicker placeholder='Début' key={this.props.activity + '_' + this.props.day + '_startTime'} name={this.props.activity + '_' + this.props.day + '_startTime'} required='false' checked={this.props.checked}/>
 					</div>
 					<div className="col-md-3">
-						<TimePicker placeholder='Fin' name={this.props.activity + '_' + this.props.day + '_endTime'} required='false' checked={this.props.checked}/>
+						<TimePicker placeholder='Fin' key={this.props.activity + '_' + this.props.day + '_endTime'} name={this.props.activity + '_' + this.props.day + '_endTime'} required='false' checked={this.props.checked}/>
 					</div>
 					<div className="col-md-3">
 						{this.isDisabled()}

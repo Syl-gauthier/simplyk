@@ -4,6 +4,8 @@ block vars
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
+  - function isOk(event){if (event.dates.indexOf(null) != -1){console.log(event.dates + ' false');return false;} else {console.log(event.dates + ' true');return true}}
+
 block head
   title Tableau de bord
   meta(name='description', content='Gérer ses bénévoles et ses demandes de bénévoles')
@@ -60,54 +62,56 @@ block content
                   if ev_to_come.length
                     h3 À venir
                   each event, event_i in ev_to_come
-                    li.list-group-item(id= event._id)
-                      .panel.panel-default
-                        .panel-heading
-                          div.media-left.media-top
-                            a(href='profile')
-                              img.media-object.little-img(src='/images/clouds.jpg')
-                          div.media-body
-                            h4.media-heading <b>#{event.intitule}</b>
-                            h6
-                              i.fa.fa-map-marker
-                              p.inline Adresse : #{event.address}
-                        .panel-body
-                          each act, act_i in event.acts
-                            h4 <b>#{act.intitule}</b>
-                            each day, day_i in act.days
-                              h4
-                                h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                                h6.inline
-                                  i.fa.fa-user
-                                  p.inline= day.applicants.length+' bénévoles se sont inscrits'
-                            div.media-right.media-middle
-                        .panel-footer
-                          a.btn.btn-default.infos-button-event(id= event._id, href='/organism/event/'+event._id) Informations
+                    if isOk(event)
+                      li.list-group-item(id= event._id)
+                        .panel.panel-default
+                          .panel-heading
+                            div.media-left.media-top
+                              a(href='profile')
+                                img.media-object.little-img(src='/images/clouds.jpg')
+                            div.media-body
+                              h4.media-heading <b>#{event.intitule}</b>
+                              h6
+                                i.fa.fa-map-marker
+                                p.inline Adresse : #{event.address}
+                          .panel-body
+                            each act, act_i in event.acts
+                              h4 <b>#{act.intitule}</b>
+                              each day, day_i in act.days
+                                h4
+                                  h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                                  h6.inline
+                                    i.fa.fa-user
+                                    p.inline= day.applicants.length+' bénévoles se sont inscrits'
+                              div.media-right.media-middle
+                          .panel-footer
+                            a.btn.btn-default.infos-button-event(id= event._id, href='/organism/event/'+event._id) Informations
                   if ev_past.length
                     h3 Terminés
                   each event, event_i in ev_past
-                    li.list-group-item(id= event._id)
-                      .panel.panel-default
-                        .panel-heading
-                          div.media-left.media-top
-                            a(href='profile')
-                              img.media-object.little-img(src='/images/clouds.jpg')
-                          div.media-body
-                            h4.media-heading <b>#{event.intitule}</b>
-                            h6
-                              i.fa.fa-map-marker
-                              p.inline Adresse : #{event.address}
-                        .panel-body
-                          each act, act_i in event.acts
-                            h4 <b>#{act.intitule}</b>
-                            each day, day_i in act.days
-                              h4
-                                h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                                h6.inline
-                                  i.fa.fa-user
-                                  p.inline= day.applicants.length+' bénévoles se sont inscrits'
-                        .panel-footer
-                          a.btn.btn-default.infos-button-event(id= event._id, href='/organism/event/'+event._id) Informations
+                    if isOk(event)
+                      li.list-group-item(id= event._id)
+                        .panel.panel-default
+                          .panel-heading
+                            div.media-left.media-top
+                              a(href='profile')
+                                img.media-object.little-img(src='/images/clouds.jpg')
+                            div.media-body
+                              h4.media-heading <b>#{event.intitule}</b>
+                              h6
+                                i.fa.fa-map-marker
+                                p.inline Adresse : #{event.address}
+                          .panel-body
+                            each act, act_i in event.acts
+                              h4 <b>#{act.intitule}</b>
+                              each day, day_i in act.days
+                                h4
+                                  h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                                  h6.inline
+                                    i.fa.fa-user
+                                    p.inline= day.applicants.length+' bénévoles se sont inscrits'
+                          .panel-footer
+                            a.btn.btn-default.infos-button-event(id= event._id, href='/organism/event/'+event._id) Informations
               .col-md-4.col-md-offset-2.no-side-padding
                 h2.page-header Mes bénévoles long terme
                 h4 Besoin de bénévoles sur du long terme ?
