@@ -124,26 +124,32 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 							}
 						}, {
 							new: true
-						}, function(err) {
+						}, function(err, admins_updated) {
 							if (err) {
 								console.error(err);
+								res.status(404).send({
+									error: err
+								});
 							}
-							console.log('The volunteer has a school : ' + req.body.admin + ', and the number of admins updated is : ' + JSON.stringify(admins_updated));
+							console.log('The volunteer has a school : ' + req.body.school_name + ', and the number of admins updated is : ' + JSON.stringify(admins_updated));
 							//Add school_id to the student
 							Admin.findOne({
-								'name': req.body.admin,
+								'name': req.body.school_name,
 								'type': 'school-coordinator'
 							}, function(err, admin_coordinator) {
 								if (err) {
 									console.error(err);
+									res.status(404).send({
+										error: err
+									});
 								};
 								if (admin_coordinator != null) {
-									admin = {
+									const admin = {
 										school_name: admin_coordinator.name,
 										school_id: admin_coordinator._id
 									};
 									Volunteer.update({
-										'_id': vol._id
+										'_id': newVolunteer._id
 									}, {
 										'$set': {
 											'admin': admin,
@@ -152,6 +158,9 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 									}, function(err) {
 										if (err) {
 											console.error(err);
+											res.status(404).send({
+												error: err
+											});
 										}
 										res.status(200).send(send);
 										client.users.update(update_intercom);
@@ -160,7 +169,7 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 							});
 						});
 
-						
+
 					} else {
 						res.status(200).send(send);
 						client.users.update(update_intercom);
