@@ -38,6 +38,40 @@ block footscript
 			input = (document.getElementById('address'));
 			console.log(input);
 			var autocomplete = new google.maps.places.Autocomplete(input,options);
+			autocomplete.addListener('place_changed', function() {
+			    var place = autocomplete.getPlace();
+			    console.log('place : ' + JSON.stringify(place));
+			    if (!place.geometry) {
+			      $('#address_container').removeClass('has-success');
+			      $('#address_container').addClass('has-error');
+			    } else {
+			      $('#address_container').removeClass('has-error');
+			      $('#address_container').addClass('has-success');
+			    }
+			});
+			$('#address').on('focusout', function(){
+				console.log('GET OUT !')
+			    var place = autocomplete.getPlace();
+			    if (!place || (!place.geometry)) {
+					console.log('NO place or place.geometry !')
+			      $('#address_container').removeClass('has-success');
+			      $('#address_container').addClass('has-error');
+			    } else {
+					console.log('There is a place.geometry !')
+			    	$('#address_container').removeClass('has-error');
+			    	$('#address_container').addClass('has-success');
+			    }
+			});
+			$('#address').blur(function(){
+			    var place = autocomplete.getPlace();
+			    if (!place || (!place.geometry)) {
+			      $('#address_container').removeClass('has-success');
+			      $('#address_container').addClass('has-error');
+			    } else {
+			      $('#address_container').removeClass('has-error');
+			      $('#address_container').addClass('has-success');
+			    }
+			});
 		};
 	script(src='/javascripts/bundle.js')
 

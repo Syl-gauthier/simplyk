@@ -182,7 +182,11 @@ var TimePicker = function (_React$Component3) {
 		key: 'render',
 		value: function render() {
 			if (this.props.required == 'true') {
-				return _react2.default.createElement('input', { type: 'text', ref: 'timepicker', name: this.props.name, value: this.state.value, className: 'timepicker form-control', placeholder: this.props.placeholder /*onBlur={this.props.validate(this.state.value)}*/, required: true });
+				if (this.props.checked == 'true') {
+					return _react2.default.createElement('input', { type: 'text', ref: 'timepicker', name: this.props.name, value: this.state.value, className: 'timepicker form-control', placeholder: this.props.placeholder /*onBlur={this.props.validate(this.state.value)}*/, required: true });
+				} else {
+					return _react2.default.createElement('input', { type: 'text', ref: 'timepicker', name: this.props.name, value: this.state.value, className: 'timepicker form-control', placeholder: this.props.placeholder /*onBlur={this.props.validate(this.state.value)}*/, disabled: true });
+				}
 			} else {
 				return _react2.default.createElement('input', { type: 'text', ref: 'timepicker', name: this.props.name, value: this.state.value, className: 'timepicker form-control', placeholder: this.props.placeholder /*onBlur={this.props.validate(this.state.value)}*/ });
 			}
@@ -192,88 +196,116 @@ var TimePicker = function (_React$Component3) {
 	return TimePicker;
 }(_react2.default.Component);
 
-function DayInActivity(props) {
-	if (props.required == 'true') {
-		return _react2.default.createElement(
-			'div',
-			{ className: 'row' },
-			_react2.default.createElement(
-				'div',
-				{ className: 'col-md-3' },
-				_react2.default.createElement(
-					'label',
-					null,
-					_react2.default.createElement('input', { type: 'checkbox', value: 'on', name: props.activity + '_' + props.day, onChange: function onChange() {
-							return props.onChange();
-						} }),
-					' ',
-					'Jour ' + (props.i + 1)
-				)
-			),
-			_react2.default.createElement(
-				'div',
-				{ className: 'col-md-3' },
-				_react2.default.createElement(TimePicker, { placeholder: 'D\xE9but', name: props.activity + '_' + props.day + '_startTime', required: 'true' })
-			),
-			_react2.default.createElement(
-				'div',
-				{ className: 'col-md-3' },
-				_react2.default.createElement(TimePicker, { placeholder: 'Fin', name: props.activity + '_' + props.day + '_endTime', required: 'true' })
-			),
-			_react2.default.createElement(
-				'div',
-				{ className: 'col-md-3' },
-				_react2.default.createElement('input', { type: 'number', name: props.activity + '_' + props.day + '_vol_nb', className: 'form-control', id: 'min_age', min: '1', max: '10000', required: true })
-			)
-		);
-	} else {
-		return _react2.default.createElement(
-			'div',
-			{ className: 'row' },
-			_react2.default.createElement(
-				'div',
-				{ className: 'col-md-3' },
-				_react2.default.createElement(
-					'label',
-					null,
-					_react2.default.createElement('input', { type: 'checkbox', value: 'on', name: props.activity + '_' + props.day, onChange: function onChange() {
-							return props.onChange();
-						} }),
-					' ',
-					'Jour ' + (props.i + 1)
-				)
-			),
-			_react2.default.createElement(
-				'div',
-				{ className: 'col-md-3' },
-				_react2.default.createElement(TimePicker, { placeholder: 'D\xE9but', name: props.activity + '_' + props.day + '_startTime', required: 'false' })
-			),
-			_react2.default.createElement(
-				'div',
-				{ className: 'col-md-3' },
-				_react2.default.createElement(TimePicker, { placeholder: 'Fin', name: props.activity + '_' + props.day + '_endTime', required: 'false' })
-			),
-			_react2.default.createElement(
-				'div',
-				{ className: 'col-md-3' },
-				_react2.default.createElement('input', { type: 'number', name: props.activity + '_' + props.day + '_vol_nb', className: 'form-control', id: 'min_age', min: '1', max: '10000' })
-			)
-		);
-	}
-}
+var DayInActivity = function (_React$Component4) {
+	_inherits(DayInActivity, _React$Component4);
 
-var AgeItem = function (_React$Component4) {
-	_inherits(AgeItem, _React$Component4);
+	function DayInActivity(props) {
+		_classCallCheck(this, DayInActivity);
+
+		return _possibleConstructorReturn(this, (DayInActivity.__proto__ || Object.getPrototypeOf(DayInActivity)).call(this, props));
+	}
+
+	_createClass(DayInActivity, [{
+		key: 'isDisabled',
+		value: function isDisabled() {
+			if (this.props.checked == 'true') {
+				console.log('Checked');
+				return _react2.default.createElement('input', { type: 'number', name: this.props.activity + '_' + this.props.day + '_vol_nb', className: 'form-control', id: 'min_age', min: '1', max: '10000', required: true });
+			} else {
+				console.log('Not checked');
+				return _react2.default.createElement('input', { type: 'number', name: this.props.activity + '_' + this.props.day + '_vol_nb', className: 'form-control', id: 'min_age', min: '1', max: '10000', disabled: true });
+			}
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this5 = this;
+
+			if (this.props.required == 'true') {
+				return _react2.default.createElement(
+					'div',
+					{ className: 'row' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'col-md-3' },
+						_react2.default.createElement(
+							'label',
+							null,
+							_react2.default.createElement('input', { type: 'checkbox', value: 'on', name: this.props.activity + '_' + this.props.day, onChange: function onChange() {
+									return _this5.props.onChange();
+								}, required: true }),
+							' ',
+							'Jour ' + (this.props.i + 1)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'col-md-3' },
+						_react2.default.createElement(TimePicker, { placeholder: 'D\xE9but', name: this.props.activity + '_' + this.props.day + '_startTime', required: 'true', checked: this.props.checked })
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'col-md-3' },
+						_react2.default.createElement(TimePicker, { placeholder: 'Fin', name: this.props.activity + '_' + this.props.day + '_endTime', required: 'true', checked: this.props.checked })
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'col-md-3' },
+						this.isDisabled()
+					)
+				);
+			} else {
+				return _react2.default.createElement(
+					'div',
+					{ className: 'row' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'col-md-3' },
+						_react2.default.createElement(
+							'label',
+							null,
+							_react2.default.createElement('input', { type: 'checkbox', value: 'on', name: this.props.activity + '_' + this.props.day, onChange: function onChange() {
+									return _this5.props.onChange();
+								} }),
+							' ',
+							'Jour ' + (this.props.i + 1)
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'col-md-3' },
+						_react2.default.createElement(TimePicker, { placeholder: 'D\xE9but', name: this.props.activity + '_' + this.props.day + '_startTime', required: 'false', checked: this.props.checked })
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'col-md-3' },
+						_react2.default.createElement(TimePicker, { placeholder: 'Fin', name: this.props.activity + '_' + this.props.day + '_endTime', required: 'false', checked: this.props.checked })
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'col-md-3' },
+						this.isDisabled()
+					)
+				);
+			}
+		}
+	}]);
+
+	return DayInActivity;
+}(_react2.default.Component);
+
+var AgeItem = function (_React$Component5) {
+	_inherits(AgeItem, _React$Component5);
 
 	function AgeItem() {
 		_classCallCheck(this, AgeItem);
 
-		var _this4 = _possibleConstructorReturn(this, (AgeItem.__proto__ || Object.getPrototypeOf(AgeItem)).call(this));
+		var _this6 = _possibleConstructorReturn(this, (AgeItem.__proto__ || Object.getPrototypeOf(AgeItem)).call(this));
 
-		_this4.state = {
+		_this6.state = {
 			isChecked: false
 		};
-		return _this4;
+		return _this6;
 	}
 
 	_createClass(AgeItem, [{
@@ -286,7 +318,7 @@ var AgeItem = function (_React$Component4) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this5 = this;
+			var _this7 = this;
 
 			return _react2.default.createElement(
 				'div',
@@ -295,7 +327,7 @@ var AgeItem = function (_React$Component4) {
 					'label',
 					null,
 					_react2.default.createElement('input', { type: 'checkbox', value: 'on', checked: this.state.isChecked, onChange: function onChange() {
-							return _this5.onChange();
+							return _this7.onChange();
 						} }),
 					' Ajouter un \xE2ge minimal'
 				),
@@ -320,20 +352,20 @@ var AgeItem = function (_React$Component4) {
 	return AgeItem;
 }(_react2.default.Component);
 
-var ActivityItem = function (_React$Component5) {
-	_inherits(ActivityItem, _React$Component5);
+var ActivityItem = function (_React$Component6) {
+	_inherits(ActivityItem, _React$Component6);
 
 	function ActivityItem(props) {
 		_classCallCheck(this, ActivityItem);
 
-		var _this6 = _possibleConstructorReturn(this, (ActivityItem.__proto__ || Object.getPrototypeOf(ActivityItem)).call(this, props));
+		var _this8 = _possibleConstructorReturn(this, (ActivityItem.__proto__ || Object.getPrototypeOf(ActivityItem)).call(this, props));
 
 		console.info('In activity constructor');
-		console.info('this.props.days : ' + _this6.props.days);
-		_this6.state = {
-			days_list: new Array(_this6.props.days.length).fill(false)
+		console.info('this.props.days : ' + _this8.props.days);
+		_this8.state = {
+			days_list: new Array(_this8.props.days.length).fill(false)
 		};
-		return _this6;
+		return _this8;
 	}
 
 	_createClass(ActivityItem, [{
@@ -364,7 +396,7 @@ var ActivityItem = function (_React$Component5) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this7 = this;
+			var _this9 = this;
 
 			console.log('In activity render');
 			return _react2.default.createElement(
@@ -378,7 +410,7 @@ var ActivityItem = function (_React$Component5) {
 				_react2.default.createElement(
 					'div',
 					{ type: 'button', className: 'btn btn-default', onClick: function onClick() {
-							return _this7.props.removeActivity();
+							return _this9.props.removeActivity();
 						} },
 					'Supprimer la t\xE2che'
 				),
@@ -446,22 +478,22 @@ var ActivityItem = function (_React$Component5) {
 					)
 				),
 				this.props.days.map(function (day, i) {
-					var _this8 = this;
+					var _this10 = this;
 
 					if (this.state.days_list.indexOf(true) != -1) {
 						if (this.state.days_list[i]) {
 							return _react2.default.createElement(DayInActivity, { i: i, onChange: function onChange() {
-									return _this8.onChange(i);
-								}, activity: 'activity' + (this.props.n + 1), day: 'day' + (i + 1), required: 'true' });
+									return _this10.onChange(i);
+								}, activity: 'activity' + (this.props.n + 1), day: 'day' + (i + 1), required: 'true', checked: 'true' });
 						} else {
 							return _react2.default.createElement(DayInActivity, { i: i, onChange: function onChange() {
-									return _this8.onChange(i);
-								}, activity: 'activity' + (this.props.n + 1), day: 'day' + (i + 1), required: 'false' });
+									return _this10.onChange(i);
+								}, activity: 'activity' + (this.props.n + 1), day: 'day' + (i + 1), required: 'false', checked: 'false' });
 						}
 					} else {
 						return _react2.default.createElement(DayInActivity, { i: i, onChange: function onChange() {
-								return _this8.onChange(i);
-							}, activity: 'activity' + (this.props.n + 1), day: 'day' + (i + 1), required: 'true' });
+								return _this10.onChange(i);
+							}, activity: 'activity' + (this.props.n + 1), day: 'day' + (i + 1), required: 'true', checked: 'false' });
 					}
 				}, this)
 			);
@@ -471,8 +503,8 @@ var ActivityItem = function (_React$Component5) {
 	return ActivityItem;
 }(_react2.default.Component);
 
-var BasicInfos = function (_React$Component6) {
-	_inherits(BasicInfos, _React$Component6);
+var BasicInfos = function (_React$Component7) {
+	_inherits(BasicInfos, _React$Component7);
 
 	function BasicInfos() {
 		_classCallCheck(this, BasicInfos);
@@ -498,7 +530,7 @@ var BasicInfos = function (_React$Component6) {
 				),
 				_react2.default.createElement(
 					'div',
-					{ className: 'input-group conn-input' },
+					{ className: 'input-group conn-input', id: 'address_container' },
 					_react2.default.createElement(
 						'span',
 						{ className: 'input-group-addon' },
@@ -523,13 +555,13 @@ var BasicInfos = function (_React$Component6) {
 	return BasicInfos;
 }(_react2.default.Component);
 
-var EventForm = function (_React$Component7) {
-	_inherits(EventForm, _React$Component7);
+var EventForm = function (_React$Component8) {
+	_inherits(EventForm, _React$Component8);
 
 	function EventForm(props) {
 		_classCallCheck(this, EventForm);
 
-		var _this10 = _possibleConstructorReturn(this, (EventForm.__proto__ || Object.getPrototypeOf(EventForm)).call(this, props));
+		var _this12 = _possibleConstructorReturn(this, (EventForm.__proto__ || Object.getPrototypeOf(EventForm)).call(this, props));
 
 		var days = [];
 		var first_day = {};
@@ -537,13 +569,13 @@ var EventForm = function (_React$Component7) {
 		first_day.title = 'Jour 1';
 		first_day.name = 'day1';
 		days.push(first_day);
-		_this10.state = {
+		_this12.state = {
 			nbActivities: 1,
 			days: days,
 			blob: ''
 		};
-		console.log('this.state.days ' + JSON.stringify(_this10.state.days));
-		return _this10;
+		console.log('this.state.days ' + JSON.stringify(_this12.state.days));
+		return _this12;
 	}
 
 	_createClass(EventForm, [{
@@ -595,7 +627,7 @@ var EventForm = function (_React$Component7) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this11 = this;
+			var _this13 = this;
 
 			return _react2.default.createElement(
 				'div',
@@ -629,7 +661,7 @@ var EventForm = function (_React$Component7) {
 					_react2.default.createElement(
 						'div',
 						{ className: 'btn btn-default', onClick: function onClick() {
-								_this11.addADay();
+								_this13.addADay();
 							}, id: 'addADay' },
 						' Ajouter un jour'
 					),
@@ -638,17 +670,17 @@ var EventForm = function (_React$Component7) {
 						'div',
 						null,
 						new Array(this.state.nbActivities).fill(1).map(function (d, i) {
-							var _this12 = this;
+							var _this14 = this;
 
 							return _react2.default.createElement(ActivityItem, { n: i, key: i, days: this.getDaysToRender(), removeActivity: function removeActivity() {
-									_this12.removeActivity();
+									_this14.removeActivity();
 								} });
 						}, this)
 					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'btn btn-default', onClick: function onClick() {
-								_this11.addAnActivity();
+								_this13.addAnActivity();
 							}, id: 'addAnActivity' },
 						' Ajouter une t\xE2che'
 					),

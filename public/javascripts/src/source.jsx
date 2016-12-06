@@ -120,8 +120,13 @@ class TimePicker extends React.Component {
 	
 		render() {
 			if (this.props.required == 'true'){
-				return (
-					<input type="text" ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ required/>);
+				if (this.props.checked == 'true'){
+					return (
+						<input type="text" ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ required/>);
+				} else {
+					return (
+						<input type="text" ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ disabled/>);
+				}
 			} else {
 				return (
 					<input type="text" ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*//>);
@@ -130,43 +135,59 @@ class TimePicker extends React.Component {
 }
 
 
-function DayInActivity(props){
-	if (props.required == 'true'){
-		return(
-			<div className="row" >
-				<div className="col-md-3">
-					<label >
-						<input type="checkbox" value='on' name={props.activity + '_' + props.day} onChange={()=>props.onChange()}/> {'Jour ' + (props.i + 1)}
-					</label>
-				</div>
-				<div className="col-md-3">
-					<TimePicker placeholder='Début' name={props.activity + '_' + props.day + '_startTime'} required='true'/>
-				</div>
-				<div className="col-md-3">
-					<TimePicker placeholder='Fin' name={props.activity + '_' + props.day + '_endTime'} required='true'/>
-				</div>
-				<div className="col-md-3">
-					<input type="number" name={props.activity + '_' + props.day + '_vol_nb'} className="form-control" id='min_age' min='1' max='10000' required/>
-				</div>
-			</div>)
-	} else {
-		return(
-			<div className="row" >
-				<div className="col-md-3">
-					<label >
-						<input type="checkbox" value='on' name={props.activity + '_' + props.day} onChange={()=>props.onChange()}/> {'Jour ' + (props.i + 1)}
-					</label>
-				</div>
-				<div className="col-md-3">
-					<TimePicker placeholder='Début' name={props.activity + '_' + props.day + '_startTime'} required='false'/>
-				</div>
-				<div className="col-md-3">
-					<TimePicker placeholder='Fin' name={props.activity + '_' + props.day + '_endTime'} required='false'/>
-				</div>
-				<div className="col-md-3">
-					<input type="number" name={props.activity + '_' + props.day + '_vol_nb'} className="form-control" id='min_age' min='1' max='10000'/>
-				</div>
-			</div>)}
+class DayInActivity extends React.Component {
+	constructor(props) {
+		super(props);
+	};
+
+	isDisabled() {
+		if(this.props.checked == 'true'){
+			console.log('Checked')
+			return(<input type="number" name={this.props.activity + '_' + this.props.day + '_vol_nb'} className='form-control' id='min_age' min='1' max='10000' required/>)
+		} else {
+			console.log('Not checked')
+				return(<input type="number" name={this.props.activity + '_' + this.props.day + '_vol_nb'} className='form-control' id='min_age' min='1' max='10000' disabled/>)
+		}
+	}
+
+	render(){
+		if (this.props.required == 'true'){
+			return(
+				<div className="row" >
+					<div className="col-md-3">
+						<label >
+							<input type="checkbox" value='on' name={this.props.activity + '_' + this.props.day} onChange={()=>this.props.onChange()} required/> {'Jour ' + (this.props.i + 1)}
+						</label>
+					</div>
+					<div className="col-md-3">
+						<TimePicker placeholder='Début' name={this.props.activity + '_' + this.props.day + '_startTime'} required='true' checked={this.props.checked}/>
+					</div>
+					<div className="col-md-3">
+						<TimePicker placeholder='Fin' name={this.props.activity + '_' + this.props.day + '_endTime'} required='true' checked={this.props.checked}/>
+					</div>
+					<div className="col-md-3">
+						{this.isDisabled()}
+					</div>
+				</div>)
+		} else {
+			return(
+				<div className="row" >
+					<div className="col-md-3">
+						<label >
+							<input type="checkbox" value='on' name={this.props.activity + '_' + this.props.day} onChange={()=>this.props.onChange()}/> {'Jour ' + (this.props.i + 1)}
+						</label>
+					</div>
+					<div className="col-md-3">
+						<TimePicker placeholder='Début' name={this.props.activity + '_' + this.props.day + '_startTime'} required='false' checked={this.props.checked}/>
+					</div>
+					<div className="col-md-3">
+						<TimePicker placeholder='Fin' name={this.props.activity + '_' + this.props.day + '_endTime'} required='false' checked={this.props.checked}/>
+					</div>
+					<div className="col-md-3">
+						{this.isDisabled()}
+					</div>
+				</div>)}
+	}
 }
 
 class AgeItem extends React.Component {
@@ -233,6 +254,7 @@ class ActivityItem extends React.Component {
 		})
 	}
 
+
 	render() {
 		console.log('In activity render');
 		return(
@@ -256,16 +278,16 @@ class ActivityItem extends React.Component {
 					if (this.state.days_list.indexOf(true) != -1){
 						if (this.state.days_list[i]){
 							return(
-								<DayInActivity i={i} onChange={()=>this.onChange(i)} activity={'activity' + (this.props.n+1)} day={'day'+(i+1)} required='true'/>
+								<DayInActivity i={i} onChange={()=>this.onChange(i)} activity={'activity' + (this.props.n+1)} day={'day'+(i+1)} required='true' checked='true'/>
 							)
 						} else {
 							return(
-								<DayInActivity i={i} onChange={()=>this.onChange(i)} activity={'activity' + (this.props.n+1)} day={'day'+(i+1)} required='false'/>
+								<DayInActivity i={i} onChange={()=>this.onChange(i)}  activity={'activity' + (this.props.n+1)} day={'day'+(i+1)} required='false' checked='false'/>
 							)
 						}
 					} else {
 						return(
-							<DayInActivity i={i} onChange={()=>this.onChange(i)} activity={'activity' + (this.props.n+1)} day={'day'+(i+1)} required='true'/>
+							<DayInActivity i={i} onChange={()=>this.onChange(i)} activity={'activity' + (this.props.n+1)} day={'day'+(i+1)} required='true' checked='false'/>
 						)
 					}
 				}, this)}
@@ -287,7 +309,7 @@ class BasicInfos extends React.Component {
 					<span className="input-group-addon">Titre de l'évènement</span>
 					<input type="text" className="form-control" id="intitule_event" name="intitule_event" required/>
 				</div>
-				<div className="input-group conn-input">
+				<div className="input-group conn-input" id='address_container'>
 					<span className="input-group-addon">Adresse de l'évènement</span>
 					<input type="address" className="form-control" id="address" name="address" required/>
 				</div>
