@@ -282,7 +282,7 @@ router.post('/register_volunteer', function(req, res) {
                       'admin': admin,
                       'student': true
                     }
-                  }, function(err, vol_updated) {
+                  }, function(err) {
                     if (err) {
                       console.error(err);
                     }

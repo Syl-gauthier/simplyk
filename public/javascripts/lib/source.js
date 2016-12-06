@@ -639,7 +639,7 @@ var EventForm = function (_React$Component8) {
 				),
 				_react2.default.createElement(
 					'form',
-					{ action: 'addevent', method: 'post', id: 'creationeventform', name: 'creationeventform' },
+					{ action: 'addevent', method: 'post', id: 'creationeventform', name: 'creationeventform', style: { paddingBottom: '100px' } },
 					_react2.default.createElement(BasicInfos, null),
 					_react2.default.createElement(
 						'h4',
@@ -668,7 +668,7 @@ var EventForm = function (_React$Component8) {
 					_react2.default.createElement(AgeItem, null),
 					_react2.default.createElement(
 						'div',
-						null,
+						{ style: { paddingBottom: '40px' } },
 						new Array(this.state.nbActivities).fill(1).map(function (d, i) {
 							var _this14 = this;
 

@@ -386,7 +386,7 @@ class EventForm extends React.Component {
 		return (
 			<div>
 				<h1>Mon évènement</h1>
-				<form action="addevent" method="post" id="creationeventform" name="creationeventform">
+				<form action="addevent" method="post" id="creationeventform" name="creationeventform" style={{paddingBottom: '100px'}}>
 					<BasicInfos />
 					<h4>Dates de l'évènement</h4>
 					<p className="alert alert-danger hidden" id="day-alert">Chaque jour doit être défini par une date</p>
@@ -397,7 +397,7 @@ class EventForm extends React.Component {
 					</div>
 					<div className="btn btn-default" onClick={() => {this.addADay()}} id="addADay"> Ajouter un jour</div>
 					<AgeItem />
-					<div>
+					<div style={{paddingBottom: '40px'}}>
 						{(new Array(this.state.nbActivities)).fill(1).map(function(d, i){
 							return <ActivityItem n={i} key={i} days={this.getDaysToRender()} removeActivity={()=>{this.removeActivity()}}/>
 						}, this)}

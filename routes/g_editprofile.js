@@ -50,7 +50,8 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 			let school_id = {};
 			type = 'school_name';
 			update.$set = {
-				'admin.school_name': req.body.school_name
+				'admin.school_name': req.body.school_name,
+				student: true
 			};
 
 			//If school_name is a client school, find the school_id
@@ -113,7 +114,7 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 					if (type == 'school_name') {
 						Admin.update({
 							'name': req.body.school_name,
-                			'type': 'school-coordinator'
+							'type': 'school-coordinator'
 						}, {
 							'$push': {
 								'students': {
@@ -127,10 +128,43 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 							if (err) {
 								console.error(err);
 							}
+							console.log('The volunteer has a school : ' + req.body.admin + ', and the number of admins updated is : ' + JSON.stringify(admins_updated));
+							//Add school_id to the student
+							Admin.findOne({
+								'name': req.body.admin,
+								'type': 'school-coordinator'
+							}, function(err, admin_coordinator) {
+								if (err) {
+									console.error(err);
+								};
+								if (admin_coordinator != null) {
+									admin = {
+										school_name: admin_coordinator.name,
+										school_id: admin_coordinator._id
+									};
+									Volunteer.update({
+										'_id': vol._id
+									}, {
+										'$set': {
+											'admin': admin,
+											'student': true
+										}
+									}, function(err) {
+										if (err) {
+											console.error(err);
+										}
+										res.status(200).send(send);
+										client.users.update(update_intercom);
+									})
+								};
+							});
 						});
+
+						
+					} else {
+						res.status(200).send(send);
+						client.users.update(update_intercom);
 					}
-					res.status(200).send(send);
-					client.users.update(update_intercom);
 				}
 			});
 	} else if (req.session.group == 'organism') {

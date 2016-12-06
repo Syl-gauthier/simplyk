@@ -358,6 +358,7 @@ block content
 block footscript
   script.
     $(document).ready(function(){
+      'use strict';
       $('.correctHoursForm').submit(function(){
         let vol_id = $(this).attr('vol');
         let todo_id = $(this).attr('todo');
