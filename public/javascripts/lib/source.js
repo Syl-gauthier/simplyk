@@ -400,7 +400,7 @@ var ActivityItem = function (_React$Component5) {
 						{ className: 'input-group-addon' },
 						'Description de la t\xE2che'
 					),
-					_react2.default.createElement('input', { type: 'text', className: 'form-control', id: "activity" + (this.props.n + 1) + "_description_activity", name: "activity" + (this.props.n + 1) + "_description_activity", required: true })
+					_react2.default.createElement('input', { type: 'text', className: 'form-control', id: "activity" + (this.props.n + 1) + "_activity_description", name: "activity" + (this.props.n + 1) + "_description_activity", required: true })
 				),
 				_react2.default.createElement(
 					'div',

@@ -245,7 +245,7 @@ class ActivityItem extends React.Component {
 				</div>
 				<div className="input-group conn-input">
 					<span className="input-group-addon">Description de la tâche</span>
-					<input type="text" className="form-control" id={"activity" + (this.props.n + 1) + "_description_activity"} name={"activity" + (this.props.n + 1) + "_description_activity"} required/>
+					<input type="text" className="form-control" id={"activity" + (this.props.n + 1) + "_activity_description"} name={"activity" + (this.props.n + 1) + "_description_activity"} required/>
 				</div>
 				<div className="row">
 					<div className="col-md-3 col-md-offset-3"><p><strong>Heure de début</strong></p></div>
