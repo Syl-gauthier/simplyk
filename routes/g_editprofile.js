@@ -11,8 +11,8 @@ const permissions = require('../middlewares/permissions.js');
 const Volunteer = require('../models/volunteer_model.js');
 const Organism = require('../models/organism_model.js');
 
-const client_schools = ['École Père-Marquette', 'École Louis-Riel'];
-const client_schools_id = ['57e99d153d062714a2fa65e0', '581696f317afb6294243f786'];
+const client_schools = ['École Père-Marquette', 'École Louis-Riel', 'École La Dauversière'];
+const client_schools_id = ['57e99d153d062714a2fa65e0', '581696f317afb6294243f786', '583f554990d8511b0bcfb0dd'];
 
 router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'), function(req, res) {
 	console.info('IN edit-form');
