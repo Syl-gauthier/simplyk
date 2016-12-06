@@ -69,6 +69,10 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         }
       };
 
+      const isNotAnExtra = function(activity) {
+        return !activity.extra;
+      };
+
       var justMySchool = function(activity) {
         if (activity.school_id) {
           if (my_school) {
@@ -86,7 +90,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       let acts = {};
       let lt_filter = {};
       if (age < 16) {
-        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(justMySchool);
+        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(justMySchool).filter(isNotAnExtra);
         lt_filter = {
           'validation': true,
           'long_terms': {
@@ -97,7 +101,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           }
         };
       } else {
-        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool);
+        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isNotAnExtra).filter(justMySchool);
         lt_filter = {
           'long_terms': {
             '$exists': true,

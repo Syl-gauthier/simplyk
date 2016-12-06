@@ -3,7 +3,7 @@ block vars
   - var page = 'profile'
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
-  - var client_schools = ['École secondaire Père-Marquette', 'École Louis-Riel'];
+  - var client_schools = ['École Père-Marquette', 'École Louis-Riel'];
   - /* parse a date in yyyy-mm-dd format*/ function parseDate(input) {var parts = input.match(/(\d+)/g);/* new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])*/return new Date(parts[0], parts[1]-1, parts[2]); /* months are 0-based*/}
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(parseDate(date).getTime() + tz_offset);return corrected_datetime}
   - function addHoursIfExists(arr){return arr.reduce(function(acc, curV, curI) {if(curV > 0 ){return acc + curV;} else {return acc;}})}
@@ -85,9 +85,10 @@ block content
                 h3
                   span.label.label-danger Expert
                 p.text-info <strong>Conseil : </strong> Maintenant que tu es un expert, continue de t'impliquer afin de relever les challenges à venir sur la plateforme !
-            if (volunteer.student && (client_schools.indexOf(volunteer.admin.school_name) != -1))
-              a.btn.btn-default.pull-right(href='/volunteer/extra_simplyk_hours', role='button', style='background-color: transparent; color: black;') Ajouter des heures extra-Simplyk
-                i.fa.fa-plus
+            if (volunteer.admin)
+              if (client_schools.indexOf(volunteer.admin.school_name) != -1)
+                a.btn.btn-default.pull-right(href='/volunteer/extra_simplyk_hours', role='button', style='background-color: transparent; color: black;') Ajouter des heures extra-Simplyk
+                  i.fa.fa-plus
 
 
 
@@ -101,17 +102,18 @@ block content
           li(role='navigation')
             a(href='#profile' aria-controls='profile' role='tab' data-toggle='tab') 
               h4 Mes informations
-          if volunteer.student
-            li(role='navigation')
-              a(href='#extras' aria-controls='extras' role='tab' data-toggle='tab') 
-                if volunteer.admin.school_name
-                  h4.school_name #{volunteer.admin.school_name} 
-                    if volunteer.extras && volunteer.manuals
-                      span.badge= volunteer.extras.length + volunteer.manuals.length
-                else 
-                  h4 Mon école 
-                    if volunteer.extras && volunteer.manuals
-                      span.badge= volunteer.extras.length + volunteer.manuals.length
+          if volunteer.admin
+            if (volunteer.admin.school_name && (client_schools.indexOf(volunteer.admin.school_name) != -1))
+              li(role='navigation')
+                a(href='#extras' aria-controls='extras' role='tab' data-toggle='tab') 
+                  if (client_schools.indexOf(volunteer.admin.school_name) != -1)
+                    h4.school_name #{volunteer.admin.school_name} 
+                      if volunteer.extras && volunteer.manuals
+                        span.badge= volunteer.extras.length + volunteer.manuals.length
+                  else 
+                    h4 Mon école 
+                      if volunteer.extras && volunteer.manuals
+                        span.badge= volunteer.extras.length + volunteer.manuals.length
 
     .row
       .tab-content
@@ -345,13 +347,14 @@ block content
                       .modal-footer
                         input.btn.btn-warning(type='submit', form='phone-edit-form', value='Valider')
                         a.btn.btn-default(data-dismiss='modal') Fermer
-              if (volunteer.admin && volunteer.admin.school_name)
-                li.list-group-item
-                  h5.text-center
-                    i.inline.fa.fa-university(aria-hidden="true") 
-                    p.inline.school_name #{volunteer.admin.school_name}
-                    a.inline.btn(data-toggle='modal' data-target='#school_edit_modal')
-                      i.fa.fa-pencil
+              if volunteer.admin
+                if volunteer.admin.school_name
+                  li.list-group-item
+                    h5.text-center
+                      i.inline.fa.fa-university(aria-hidden="true") 
+                      p.inline.school_name #{volunteer.admin.school_name}
+                      a.inline.btn(data-toggle='modal' data-target='#school_edit_modal')
+                        i.fa.fa-pencil
               else
                 li.list-group-item
                   h5.text-center

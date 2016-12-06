@@ -5,10 +5,14 @@ const Intercom = require('intercom-client');
 const client = new Intercom.Client({
 	token: process.env.INTERCOM_TOKEN
 });
+const mongoose = require('mongoose');
 
 const permissions = require('../middlewares/permissions.js');
 const Volunteer = require('../models/volunteer_model.js');
 const Organism = require('../models/organism_model.js');
+
+const client_schools = ['École Père-Marquette', 'École Louis-Riel'];
+const client_schools_id = ['57e99d153d062714a2fa65e0', '581696f317afb6294243f786'];
 
 router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'), function(req, res) {
 	console.info('IN edit-form');
@@ -42,11 +46,27 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 			intercom_main = 'phone';
 			path_to_new_object = type;
 		} else if (typeof req.body.school_name != 'undefined') {
+			let school_id = {};
 			type = 'school_name';
-			new_object = 'newSchool';
 			update.$set = {
 				'admin.school_name': req.body.school_name
 			};
+
+			//If school_name is a client school, find the school_id
+			console.info('client_schools.indexOf(req.body.school_name) : ' + (client_schools.indexOf(req.body.school_name)));
+			console.info('client_schools.indexOf(req.body.school_name) != -1 : ' + (client_schools.indexOf(req.body.school_name) != -1));
+			if (client_schools.indexOf(req.body.school_name) != -1) {
+				try {
+					console.log('JSON.stringify(update) : ' + JSON.stringify(update));
+					school_id = mongoose.Types.ObjectId(client_schools_id[client_schools.indexOf(req.body.school_name)]);
+					console.log('school_id : ' + school_id);
+					update.$set['admin.school_id'] = school_id;
+					console.log('JSON.stringify(update) : ' + JSON.stringify(update));
+				} catch (err) {
+					console.error(err);
+				}
+			}
+			new_object = 'newSchool';
 			intercom_custom = 'school_name';
 			path_to_new_object = 'admin';
 			path_to_new_object2 = 'school_name';

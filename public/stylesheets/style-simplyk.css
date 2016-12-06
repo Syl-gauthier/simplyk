@@ -188,12 +188,114 @@ body{
 
 }
 
+#first_section{
+	background-color: #4EBDC7;
+	border-bottom: 1px solid #bbb;
+}
+
+.logo{
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	color: white;
+	margin-left: -40px;
+}
+
+#landscape {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	max-width: 90%;
+	max-height: 90%;
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.landing-section {
+	height: calc(100vh - 50px);
+	border-bottom: 1px solid #bbb;
+}
+
+.section-div{
+	height: 100%;
+}
+
+#type-section{
+	background-color: #5BCF8F;
+}
+
+#age-section{
+	background-color: #FF4F3C;
+}
+
+.section__sentence{
+	color: white;
+	margin-left: -40px;
+}
+
+.section__sentence h1{
+	font-size: 4.5vw;
+	font-weight: 300;
+	letter-spacing: 10px;
+}
+
+.section__sentence h4{
+	font-weight: 300;
+	letter-spacing: 3px;
+	margin-top: 0px;
+	margin-bottom: 40px;
+}
+
+.section__sentence--grouped{
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.landing-buttons{
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 100%;
+}
+
+
+.landing-buttons__item--grouped {
+	margin-top: 5vh;
+	margin-bottom: 5vh;
+}
+
+.landing-buttons__item {
+	background-color: transparent;
+	color: white;
+	border: 2px solid white;
+	font-weight: 300;
+}
+
+.landing-buttons__item:hover{
+	background-color: #FFC518;
+	color: white;
+	border: 2px solid #EEA90B;
+}
 
 #offers_list li.panel{
 	margin-bottom: 0px;
 }
 .btn-landing{
 	border-radius: 0px;
+}
+
+#more{
+	background-color: #FFC518;
+	margin-left: 70px;
+	border-color: #FFC518;
+	color: black;
+}
+
+#more:hover{
+	background-color: #FFA510;
+	border-color: #FFC518;
 }
 
 #filter_div {
@@ -206,22 +308,30 @@ body{
 	margin-bottom: 4px;
 	padding-top: 10px;
 	padding-bottom: 10px;
+	color: #fff;
+	font-weight: 700;
 }
 
 .btn-filter-lts{
-	border: 1px solid #359B9C;
+	border: 1px solid #43A2AB;
+	background-color: #43A2AB;
 }
 
 .btn-filter-acts{
-	border: 1px solid #8BE78F;
+	border: 1px solid #5BCF8F;
+	background-color: #5BCF8F;
 }
 
 .btn-filter-age{
 	border: 1px solid #FFC518;
+	background-color: #FFC518;
+}
+
+.btn-filter:hover {
+	color: black;
 }
 
 .btn-filter-lts:hover{
-	border: 1px solid #359B9C;
 	background-color: #eee;
 	font-weight: 700;
 }
@@ -319,63 +429,6 @@ body{
     background-color: #8BE78F;
     padding-right: 0px;
 	padding-left: 0px;
-}
-
-.logo{
-	margin-top: 25%;
-	max-height: 500px;
-	color: white;
-	margin-left: -40px;
-}
-
-.logo h1{
-	font-size: 4.5vw;
-	font-weight: 300;
-	letter-spacing: 10px;
-}
-
-.logo h4{
-	font-weight: 300;
-	letter-spacing: 3px;
-	margin-top: 0px;
-	margin-bottom: 40px;
-}
-
-#logo_entrance{
-	max-width: 70vw;
-	max-height: 300px;
-	display: block;
-	margin-right: auto;
-	margin-left: auto;
-}
-
-#find_vol {
-	background-color: transparent;
-	color: white;
-	border: 2px solid white;
-	font-weight: 300;
-}
-
-#find_vol:hover{
-	background-color: #FFC518;
-	color: white;
-	border: 2px solid #EEA90B;
-}
-
-#first_section_entrance{
-	min-height: 550px;
-	background-color: #4EBDC7;
-	border-bottom: 1px solid #bbb;
-}
-
-#landscape {
-	margin-top: 5%;
-	margin-bottom: 5%;
-	max-width: 100%;
-	max-height: 460px;
-	display: block;
-	margin-right: auto;
-	margin-left: auto;
 }
 
 .background-stars {
