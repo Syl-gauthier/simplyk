@@ -246,7 +246,8 @@ router.post('/register_volunteer', function(req, res) {
           };
           if (admin) {
             Admin.update({
-              'name': req.body.admin
+              'name': req.body.admin,
+              'type': 'school-coordinator'
             }, {
               '$push': {
                 'students': {

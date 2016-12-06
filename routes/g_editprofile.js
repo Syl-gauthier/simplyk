@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const permissions = require('../middlewares/permissions.js');
 const Volunteer = require('../models/volunteer_model.js');
 const Organism = require('../models/organism_model.js');
+const Admin = require('../models/admin_model.js');
 
 const client_schools = ['École Père-Marquette', 'École Louis-Riel', 'École La Dauversière'];
 const client_schools_id = ['57e99d153d062714a2fa65e0', '581696f317afb6294243f786', '583f554990d8511b0bcfb0dd'];
@@ -107,6 +108,27 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 					console.info('Volunteer ' + type + ' updated ' + new_value);
 
 					req.session.volunteer = newVolunteer;
+
+					//If school, we have to add student to the admin admin account
+					if (type == 'school_name') {
+						Admin.update({
+							'name': req.body.school_name,
+                			'type': 'school-coordinator'
+						}, {
+							'$push': {
+								'students': {
+									'_id': newVolunteer._id,
+									'status': 'automatic_subscription'
+								}
+							}
+						}, {
+							new: true
+						}, function(err) {
+							if (err) {
+								console.error(err);
+							}
+						});
+					}
 					res.status(200).send(send);
 					client.users.update(update_intercom);
 				}
