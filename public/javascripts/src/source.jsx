@@ -1,22 +1,172 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Moment from 'moment';
 
 class DayItem extends React.Component {
 	constructor(){
 		super();
+		this.state = {
+			valid: 'u'
+		}
 	}
+	/*
+	validate(value) {
+		console.log('Input date val : ' + value);
+		if (Moment(value).isValid()){
+			this.setState({
+				valid: 'y'
+			});
+		} else {
+			this.setState({
+				valid: 'n'
+			});
+		}
+	};*/
 
 	render(){
 		return(
 			<div key={this.props.day.name}>
 				<div className="pickadatediv input-group conn-input">
 					<span className="input-group-addon">{this.props.day.title}</span>
-					<input type="text" name={this.props.day.name} className="datepicker form-control" placeholder="Choisis un jour" id={this.props.day.name} required/>
+					<DatePicker name={this.props.day.name} placeholder="Choisis un jour (yyyy-mm-dd)" id={this.props.day.name} /*validate={this.validate}*/ required/>
 				</div>
 			</div>
 		)
 
 	}
+}
+
+
+class DatePicker extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = { 
+			value: null,
+			valid: 'u'
+		};
+	}
+
+	componentDidMount() {
+		this.setupDatepicker();
+	}
+
+	componentDidUpdate() {
+		this.setupDatepicker();
+	}
+
+	setupDatepicker() {
+		// cache this so we can reference it inside the datepicker
+		var comp = this;
+		// the element
+		var el = this.refs.datepicker;
+		$(el).pickadate({
+			format: 'yyyy-mm-dd',
+			formatSubmit: 'yyyy-mm-dd',
+			selectMonths: true,
+			selectYears: 5,
+			onSet: function(e) {   
+				// you can use any of the pickadate options here
+				var val = this.get('select', 'yyyy-mm-dd');
+				comp.onDateChange({target: {value: val}});
+			}
+		});
+	}
+
+		onDateChange(event) {
+			this.setState({operand: event.target.value});
+		};
+	
+		render() {
+			return (
+				<input type="date" ref="datepicker" name={this.props.name} value={this.state.value} className="datepicker form-control" placeholder="Choisis un jour" /*onBlur={this.props.validate(this.state.value)}*/ required/>);
+		}
+}
+
+
+class TimePicker extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			value: null,
+			valid: 'u'
+		};
+	}
+
+	componentDidMount() {
+		this.setupTimepicker();
+	}
+
+	componentDidUpdate() {
+		this.setupTimepicker();
+	}
+
+	setupTimepicker() {
+		// cache this so we can reference it inside the timepicker
+		var comp = this;
+		// the element
+		var el = this.refs.timepicker;
+		$(el).pickatime({
+			onSet: function(e) {   
+				// you can use any of the pickatime options here
+				var val = this.get('select');
+				comp.onDateChange({target: {value: val}});
+			}
+		});
+	}
+
+		onDateChange(event) {
+			this.setState({operand: event.target.value});
+		};
+	
+		render() {
+			if (this.props.required == 'true'){
+				return (
+					<input type="text" ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ required/>);
+			} else {
+				return (
+					<input type="text" ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*//>);
+			}
+		}
+}
+
+
+function DayInActivity(props){
+	if (props.required == 'true'){
+		return(
+			<div className="row" >
+				<div className="col-md-3">
+					<label >
+						<input type="checkbox" value='on' name={props.activity + '_' + props.day} onChange={()=>props.onChange()}/> {'Jour ' + (props.i + 1)}
+					</label>
+				</div>
+				<div className="col-md-3">
+					<TimePicker placeholder='Début' name={props.activity + '_' + props.day + '_startTime'} required='true'/>
+				</div>
+				<div className="col-md-3">
+					<TimePicker placeholder='Fin' name={props.activity + '_' + props.day + '_endTime'} required='true'/>
+				</div>
+				<div className="col-md-3">
+					<input type="number" name={props.activity + '_' + props.day + '_vol_nb'} className="form-control" id='min_age' min='1' max='10000' required/>
+				</div>
+			</div>)
+	} else {
+		return(
+			<div className="row" >
+				<div className="col-md-3">
+					<label >
+						<input type="checkbox" value='on' name={props.activity + '_' + props.day} onChange={()=>props.onChange()}/> {'Jour ' + (props.i + 1)}
+					</label>
+				</div>
+				<div className="col-md-3">
+					<TimePicker placeholder='Début' name={props.activity + '_' + props.day + '_startTime'} required='false'/>
+				</div>
+				<div className="col-md-3">
+					<TimePicker placeholder='Fin' name={props.activity + '_' + props.day + '_endTime'} required='false'/>
+				</div>
+				<div className="col-md-3">
+					<input type="number" name={props.activity + '_' + props.day + '_vol_nb'} className="form-control" id='min_age' min='1' max='10000'/>
+				</div>
+			</div>)}
 }
 
 class AgeItem extends React.Component {
@@ -37,7 +187,7 @@ class AgeItem extends React.Component {
 		return(
 			<div className="age__container">
 				<label >
-					<input type="checkbox" checked={this.state.isChecked} onChange={()=>this.onChange()}/> Ajouter un âge minimal
+					<input type="checkbox" value='on' checked={this.state.isChecked} onChange={()=>this.onChange()}/> Ajouter un âge minimal
 				</label>
 				<div className={this.state.isChecked ? '' : 'hidden'}>
 					<div className="input-group conn-input">
@@ -54,12 +204,24 @@ class ActivityItem extends React.Component {
 	constructor(props){
 		super(props);
 		console.info('In activity constructor');
-		const days_array = [];
-		days_array.push(this.props.days);
-		console.info('days_array : ' + days_array);
+		console.info('this.props.days : ' + this.props.days);
 		this.state = {
-			days: days_array,
 			days_list: new Array(this.props.days.length).fill(false)
+		}
+	}
+
+	componentWillReceiveProps(nextProps){
+		if (this.props.days.length < nextProps.days.length){
+			console.log('typeof this.state.days_list : ' + typeof this.state.days_list);
+			console.log('this.state.days_list : ' + JSON.stringify(this.state.days_list));
+			this.state.days_list.push(false);
+			console.log('this.state.days_list : ' + JSON.stringify(this.state.days_list));
+			const days_pushed = this.state.days_list;
+			console.log('this.state.days_list : ' + JSON.stringify(this.state.days_list));
+			this.setState({
+				days_list: days_pushed
+			});
+			console.log('Had just push false in days_list and new days_list : ' + this.state.days_list);
 		}
 	}
 
@@ -75,15 +237,15 @@ class ActivityItem extends React.Component {
 		console.log('In activity render');
 		return(
 			<div className="activity__container">
-				<h2>{'Tâche ' + (this.props.n + 1)}</h2>
-				<button type='button' onClick={() => this.props.removeActivity()}>Supprimer la tâche</button>
+				<h2 className='text-center'>{'Tâche ' + (this.props.n + 1)}</h2>
+				<div type='button' className='btn btn-default' onClick={() => this.props.removeActivity()}>Supprimer la tâche</div>
 				<div className="input-group conn-input">
 					<span className="input-group-addon">Titre de la tâche</span>
-					<input type="text" className="form-control" id={"activity" + this.props.n + "_intitule_activity"} name={"activity" + this.props.n + "_intitule_activity"} required/>
+					<input type="text" className="form-control" id={"activity" + (this.props.n + 1) + "_intitule_activity"} name={"activity" + (this.props.n + 1) + "_intitule_activity"} required/>
 				</div>
 				<div className="input-group conn-input">
 					<span className="input-group-addon">Description de la tâche</span>
-					<input type="text" className="form-control" id={"activity" + this.props.n + "_description_activity"} name={"activity" + this.props.n + "_description_activity"} required/>
+					<input type="text" className="form-control" id={"activity" + (this.props.n + 1) + "_description_activity"} name={"activity" + (this.props.n + 1) + "_description_activity"} required/>
 				</div>
 				<div className="row">
 					<div className="col-md-3 col-md-offset-3"><p><strong>Heure de début</strong></p></div>
@@ -91,23 +253,22 @@ class ActivityItem extends React.Component {
 					<div className="col-md-3"><p><strong>Nombres de bénévoles</strong></p></div>
 				</div>
 				{this.props.days.map(function(day, i){
-					<div className="row">
-						<div className="col-md-3">
-							<label >
-								<input type="checkbox" checked='false' onChange={()=>this.onChange(i)}/> gfiek
-							</label>
-						</div>
-						<div className="col-md-3">
-							<input type="number" name='min_age' className="form-control" id='min_age' min='5' max='10000'/>
-						</div>
-						<div className="col-md-3">
-							<input type="number" name='min_age' className="form-control" id='min_age' min='5' max='10000'/>
-						</div>
-						<div className="col-md-3">
-							<input type="number" name='min_age' className="form-control" id='min_age' min='1' max='10000'/>
-						</div>
-					</div>
-				}), this}
+					if (this.state.days_list.indexOf(true) != -1){
+						if (this.state.days_list[i]){
+							return(
+								<DayInActivity i={i} onChange={()=>this.onChange(i)} activity={'activity' + (this.props.n+1)} day={'day'+(i+1)} required='true'/>
+							)
+						} else {
+							return(
+								<DayInActivity i={i} onChange={()=>this.onChange(i)} activity={'activity' + (this.props.n+1)} day={'day'+(i+1)} required='false'/>
+							)
+						}
+					} else {
+						return(
+							<DayInActivity i={i} onChange={()=>this.onChange(i)} activity={'activity' + (this.props.n+1)} day={'day'+(i+1)} required='true'/>
+						)
+					}
+				}, this)}
 			</div>
 		)
 	}
@@ -132,7 +293,7 @@ class BasicInfos extends React.Component {
 				</div>
 				<div className="input-group">
 					<span className="input-group-addon">Description de l'évènement</span>
-					<textarea className="form-control" id="description" name="description" rows="6" required/>
+					<textarea className="form-control" id="description" name="event_description" rows="6" required/>
 				</div>
 			</div>
 		)
@@ -153,7 +314,8 @@ class EventForm extends React.Component {
 			nbActivities: 1,
 			days: days,
 			blob: ''
-		}
+		};
+		console.log('this.state.days ' + JSON.stringify(this.state.days));
 	}
 
 	addADay(){
@@ -168,6 +330,7 @@ class EventForm extends React.Component {
 		this.setState({
 			days: new_days
 		})
+		console.log('this.state.days ' + JSON.stringify(this.state.days));
 	}
 
 	addAnActivity() {
@@ -189,6 +352,14 @@ class EventForm extends React.Component {
 		}
 	}
 
+	getDaysToRender() {
+		const to_render = this.state.days.map(function(day){
+			console.log('day.name : ' + day.name);
+			return day.name;
+		});
+		return to_render;
+	}
+
 	render() {
 		return (
 			<div>
@@ -197,19 +368,20 @@ class EventForm extends React.Component {
 					<BasicInfos />
 					<h4>Dates de l'évènement</h4>
 					<p className="alert alert-danger hidden" id="day-alert">Chaque jour doit être défini par une date</p>
-					<ul>
+					<div>
 						{this.state.days.map(function(day){
-							return <DayItem day={day} key={day.nb}/>
+							return <DayItem day={day} key={day.name}/>
 						})}
-					</ul>
+					</div>
 					<div className="btn btn-default" onClick={() => {this.addADay()}} id="addADay"> Ajouter un jour</div>
 					<AgeItem />
-					<ul>
+					<div>
 						{(new Array(this.state.nbActivities)).fill(1).map(function(d, i){
-							return <ActivityItem n={i} key={i} days={this.state.days} removeActivity={()=>{this.removeActivity()}}/>
+							return <ActivityItem n={i} key={i} days={this.getDaysToRender()} removeActivity={()=>{this.removeActivity()}}/>
 						}, this)}
-					</ul>
+					</div>
 					<div className="btn btn-default" onClick={() => {this.addAnActivity()}} id="addAnActivity"> Ajouter une tâche</div>
+					<input className="btn btn-default" type='Submit' id="submit" value='Terminer'></input>
 				</form>
 			</div>
 		)
@@ -222,3 +394,15 @@ ReactDOM.render(
 	<EventForm />,
     	document.getElementById('form-container')
 );
+
+ActivityItem.propTypes = {
+	n: React.PropTypes.number,
+	key: React.PropTypes.number,
+	removeActivity: React.PropTypes.func,
+	days: React.PropTypes.arrayOf(React.PropTypes.string)
+}
+
+DayItem.propTypes = {
+	key: React.PropTypes.number,
+	day: React.PropTypes.object
+}

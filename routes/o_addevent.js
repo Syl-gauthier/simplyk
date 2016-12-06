@@ -19,13 +19,6 @@ router.get('/organism/addevent', permissions.requireGroup('organism', 'admin'), 
   });
 });
 
-router.get('/organism/addevent-r', permissions.requireGroup('organism', 'admin'), function(req, res) {
-  res.render('o_addevent_react.jade', {
-    session: req.session,
-    organism: req.session.organism,
-    group: req.session.group
-  });
-});
 
 router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'), function(req, res) {
   //Transform address into lon/lat

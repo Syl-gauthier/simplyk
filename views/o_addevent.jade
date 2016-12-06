@@ -13,74 +13,16 @@ block head
 	title Trouver des bénévoles
 	meta(name='description', content='Ajoute une opportunité de bénévolat à court terme')
 block content
-			script(src="/javascripts/angular/form_addevent.js", type="text/javascript")
-			#map-section.container-fluid(ng-app='form')
-				.row
-					.col-md-6.col-md-offset-3
-						.page-header
-							h1 Ajoute un évènement
-							if error
-								p.alert.alert-danger #{error}
-				.row
-					.col-md-6.col-md-offset-3(ng-controller='FormController as form')
-						h2 Mon évènement
-						form#creationeventform.form-horizontal(action='addevent', method='post', ng-submit="creationeventform.$valid && submit()", name='creationeventform')
-							.input-group.conn-input(ng-repeat='field in form.requiredEventFields')
-								span#basic-addon1.input-group-addon {{field.title}}
-								input.form-control(id='{{field.id}}',type='{{field.type}}',class="{{field.class}}", placeholder='{{field.placeholder}}', name='{{field.id}}', aria-describedby='basic-addon1', required)
-							.input-group
-								.input-group-addon
-									p Description l'évènement
-								textarea.form-control(name="event_description" id="event_description" rows="6" required)
-							.input-group.conn-input(ng-repeat='field in form.unnecessaryEventFields')
-								span#basic-addon1.input-group-addon {{field.title}}
-								input.form-control(id='{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{field.id}}', aria-describedby='basic-addon1')
+	.container-fluid(ng-app='form')
+		.row
+			.col-md-6.col-md-offset-3
+				.page-header
+					h1 Ajoute un évènement
+					if error
+						p.alert.alert-danger #{error}
+		.row
+			.col-md-6.col-md-offset-3#form-container
 
-							h4 Dates de l'évènement
-							p.alert.alert-danger.hidden#day-alert Chaque jour doit être défini par une date
-							div.pickadatediv.input-group.conn-input(ng-repeat='day in form.daysList' on-last-repeat)
-								span#basic-addon1.input-group-addon {{day.title}}
-								input.datepicker.form-control(id='day{{day.nb}}', type='text', name='day{{day.nb}}', placeholder='Choisis un jour', required)
-							button.btn.btn-default(ng-click='form.addDay()', type='button', id='addADay') Ajouter un jour
-							.input-group.conn-input.form-group
-								label.radio-inline
-									input(type='radio', name='language', value='enfr', checked)
-									p  Français/English
-								label.radio-inline
-									input(type='radio', name='language', value='en')
-									p English only
-								label.radio-inline
-									input(type='radio', name='language', value='fr')
-									p Seulement Français
-							.checkbox		
-								.col-md-1		
-									input#min_age_check(type='checkbox')		
-								label.col-md-5		
-									p Ajouter un âge minimal		
-								input#min_age.form-control(type='number', name='min_age', placeholder='Âge minimal', style="display:none;")
-							h3 {{form.errorMessage}}
-							div(ng-repeat='activity in form.activitiesList')
-								h2.inline {{activity.activityTitle}}
-								a.inline.cursor(ng-click='form.delete(activity.activityName)') Supprimer la tâche
-								.input-group.conn-input(ng-repeat='field in activity.activityRequiredFields')
-									span#basic-addon1.input-group-addon {{field.title}}
-									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1', required)
-								.row.form-group(ng-repeat = 'day in form.daysList' on-last-repeat)
-									label.col-md-1
-										input(type='checkbox', name='{{activity.activityName}}_{{day.name}}', ng-click='form.checkRequired(day, activity)', ng-required='activity.dayRequired', class='day-checkbox', ng-model='checkybox', oninvalid="setCustomValidity('Veuillez choisir au moins un jour par activité, en vous assurant de choisir une date pour chaque jour ajouté')", onchange="try{setCustomValidity('')}catch(e){}") 
-									div.col-md-2
-										p Jour {{day.nb}}
-									div.col-md-2
-										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_startTime', placeholder='Début', ng-required='checkybox')
-									div.col-md-2
-										input.timepicker(type='text', name='{{activity.activityName}}_{{day.name}}_endTime', placeholder='Fin', ng-required='checkybox')
-									div.col-md-2
-										input(type='number', name='{{activity.activityName}}_{{day.name}}_vol_nb', placeholder='Nombre de bénévoles', ng-required='checkybox', oninvalid="setCustomValidity('Veuillez remplir les champs: heure de début, heure de fin et nombre de bénévoles souhaités')", onchange="try{setCustomValidity('')}catch(e){}")
-								//.input-group.conn-input(ng-repeat='field in activity.activityUnnecessaryFields')
-									span#basic-addon1.input-group-addon {{field.title}}
-									input.form-control(id='{{activity.activityName}}_{{field.id}}',type='{{field.type}}', placeholder='{{field.placeholder}}', name='{{activity.activityName}}_{{field.id}}', aria-describedby='basic-addon1')
-							button.btn.btn-default(ng-click='form.addActivity()') Ajouter une tâche
-							input.btn.btn-default(type='submit', form='creationeventform', value='Terminer')
 block footscript
 	script.
 		var input;
@@ -97,53 +39,6 @@ block footscript
 			console.log(input);
 			var autocomplete = new google.maps.places.Autocomplete(input,options);
 		};
-	script.
-		$( document ).ready(function() {
-			var input = $('.datepicker');
-			input.pickadate({
-				firstDay: 1,
-				formatSubmit: 'yyyy-mm-dd'
-			});
-			var input = $('.timepicker');
-				input.pickatime({
-			});
-			$(window).keydown(function(event){
-				if(event.keyCode == 13) {
-					event.preventDefault();
-					return false;
-				}
-			 });
-			$('#min_age_check').click(function(){
-				$('#min_age').toggle(this.checked);
-			});
-			$('#creationeventform').submit(function(event){
-				let days_total = $('.datepicker').length;
-				let days_defined = 0;
-				$('.datepicker').each(function(){
-					console.info('$(this).val() : ' + $(this).val().length);
-					if ($(this).val().length < 4){
-					} else {
-						days_defined ++;
-						console.info('days_defined : ' + days_defined);
-						console.info('days_total : ' + days_total);
-					}
-				});
-				if(days_defined != days_total) {
-					$('html,body').animate({
-						scrollTop: $('#event_description').offset().top
-					},'slow');
-					$('#day-alert').removeClass('hidden');
-					event.preventDefault();
-				} else {
-					console.log('Before submitting');
-					console.log($('.datepicker').attr('aria-readonly'));
-					$('.datepicker').attr('aria-readonly', false);
-					console.log($('.datepicker').attr('aria-readonly'));
-					console.log($('.datepicker').attr('readonly'));
-					$('.datepicker').attr('readonly', false);
-					console.log($('.datepicker').attr('readonly'));
-				}
-			});
-		});
+	script(src='/javascripts/bundle.js')
 
 	script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&signed_in=true&libraries=places&callback=initAutocomplete" async defer)
