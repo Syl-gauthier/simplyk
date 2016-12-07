@@ -88,11 +88,11 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
     vol_level = 1;
   } else if ((volunteer.events.length > 0 || lt_nb > 0) && events_confirmed.length == 0 && lt_hours_done == 0) {
     vol_level = 2;
-  } else if ((events_confirmed.length == 1 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_nb > 0 && lt_hours_done > 0 && lt_hours_done < 5)) {
+  } else if ((events_confirmed.length == 1 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 0 && lt_hours_done < 5)) {
     vol_level = 3;
-  } else if ((events_confirmed.length == 1 && lt_hours_done > 0 && lt_hours_done < 5) || (events_confirmed.length == 2 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 4 && lt_hours_done < 25)) {
+  } else if ((events_confirmed.length == 1 && lt_hours_done > 0 && lt_hours_done < 5) || (events_confirmed.length < 4 && events_confirmed.length > 1 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 4 && lt_hours_done < 25)) {
     vol_level = 4;
-  } else if ((events_confirmed.length == 1 && lt_hours_done > 4 && lt_hours_done < 25) || (events_confirmed.length > 3 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 24) || (events_confirmed.length > 1 && lt_hours_done < 5 && lt_hours_done > 0)) {
+  } else if ((events_confirmed.length > 0 && events_confirmed.length < 4 && lt_hours_done > 4 && lt_hours_done < 25) || (events_confirmed.length > 3 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 24) || (events_confirmed.length > 1 && events_confirmed.length < 4 && lt_hours_done < 5 && lt_hours_done > 0)) {
     vol_level = 5;
   } else if ((events_confirmed.length > 0 && lt_hours_done > 24) || (events_confirmed.length > 3 && lt_hours_done > 0)) {
     vol_level = 6;
