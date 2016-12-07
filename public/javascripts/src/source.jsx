@@ -227,7 +227,7 @@ class ActivityItem extends React.Component {
 		console.info('In activity constructor');
 		console.info('this.props.days : ' + this.props.days);
 		this.state = {
-			days_list: new Array(this.props.days.length).fill(false)
+			days_list: new Array(this.props.days.length).map(() => {return false;})
 		}
 	}
 

@@ -363,7 +363,9 @@ var ActivityItem = function (_React$Component6) {
 		console.info('In activity constructor');
 		console.info('this.props.days : ' + _this8.props.days);
 		_this8.state = {
-			days_list: new Array(_this8.props.days.length).fill(false)
+			days_list: new Array(_this8.props.days.length).map(function () {
+				return false;
+			})
 		};
 		return _this8;
 	}
