@@ -40,7 +40,7 @@ function sendVerifyEmail(content) {
     };
 
     var mailOptions = {
-      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
       to: content.recipient,
       subject: content.firstname + ', vérifie ton courriel', // Subject line
       text: '', // plaintext body
@@ -65,7 +65,7 @@ function sendSubscriptionOrgEmail(content) {
       return console.log(err);
     }
     var mailOptions = {
-      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sener address
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sener address
       to: content.recipient,
       subject: content.event + ': un nouveau bénévole inscrit !', // Subject line
       text: '', // plaintext body
@@ -91,7 +91,7 @@ function sendSubscriptionVolEmail(content) {
     };
 
     var mailOptions = {
-      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
       to: content.recipient,
       subject: 'Nouvelle inscription sur Simplyk !', // Subject line
       text: '', // plaintext body
@@ -116,7 +116,7 @@ function sendForgottenPasswordEmail(content) {
     };
 
     var mailOptions = {
-      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
       to: content.recipient,
       subject: 'Mot de passe réinitialisé sur Simplyk !', // Subject line
       text: '', // plaintext body
@@ -141,7 +141,7 @@ function sendUnsubscriptionEmail(content) {
     };
 
     var mailOptions = {
-      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
       to: content.recipient,
       subject: content.activity_name + ': désinscription d\'un bénévole :( ', // Subject line
       text: '', // plaintext body
@@ -166,7 +166,7 @@ function sendHoursPendingOrgEmail(content) {
     };
 
     var mailOptions = {
-      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
       to: content.recipient,
       subject: content.firstname + ' ' + content.lastname + ': validation de la participation !', // Subject line
       text: '', // plaintext body
@@ -191,7 +191,7 @@ function sendHoursConfirmedVolEmail(content) {
     };
 
     var mailOptions = {
-      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
       to: content.recipient,
       subject: content.activity_name + ': participation validée !', // Subject line
       text: '', // plaintext body
@@ -214,7 +214,7 @@ function sendAutomaticSubscriptionOrgEmail(content) {
     };
 
     var mailOptions = {
-      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
       to: content.recipient,
       subject: 'Bénévolat de ' + content.firstname + ' ' + content.lastname + ' !', // Subject line
       text: '', // plaintext body
@@ -240,7 +240,7 @@ function sendManualHoursEmail(content){
     };
 
     var mailOptions = {
-      from: '"Alex @ Simplyk" <contact@simplyk.org>', // sender address
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
       to: content.recipient,
       subject: content.admin_name + ' t\'a ajouté des heures', // Subject line
       text: '', // plaintext body
