@@ -538,7 +538,7 @@ var BasicInfos = function (_React$Component7) {
 						{ className: 'input-group-addon' },
 						'Adresse de l\'\xE9v\xE8nement'
 					),
-					_react2.default.createElement('input', { type: 'address', className: 'form-control', id: 'address', name: 'address', required: true })
+					_react2.default.createElement('input', { type: 'address', className: 'form-control', id: 'address', name: 'address', placeholder: 'Indiquez un lieu UNIQUE (format: n\xB0 de rue, nom de rue, ville)', required: true })
 				),
 				_react2.default.createElement(
 					'div',

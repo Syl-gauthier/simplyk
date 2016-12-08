@@ -311,7 +311,7 @@ class BasicInfos extends React.Component {
 				</div>
 				<div className="input-group conn-input" id='address_container'>
 					<span className="input-group-addon">Adresse de l'évènement</span>
-					<input type="address" className="form-control" id="address" name="address" required/>
+					<input type="address" className="form-control" id="address" name="address" placeholder="Indiquez un lieu UNIQUE (format: n° de rue, nom de rue, ville)" required/>
 				</div>
 				<div className="input-group">
 					<span className="input-group-addon">Description de l'évènement</span>
