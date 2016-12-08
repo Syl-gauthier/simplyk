@@ -5,13 +5,14 @@ const gulp = require('gulp');
 const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const uglify = require('gulp-uglify');
+const tap = require('gulp-tap');
 const sourcemaps = require('gulp-sourcemaps');
 const gutil = require('gulp-util');
 const babel = require('gulp-babel');
  
  //BABEL TASK
 gulp.task('babel', () => {
-    return gulp.src('./public/javascripts/src/source.jsx')
+    return gulp.src('./public/javascripts/src/**/*.jsx', {read: true})
         .pipe(babel({
             presets: ['react', 'es2015']
         }))
@@ -20,14 +21,13 @@ gulp.task('babel', () => {
 
  //BROWSERIFY TASK
 gulp.task('browserify', ['babel'], function () {
-  // set up the browserify instance on a task basis
-  const b = browserify({
-    entries: './public/javascripts/lib/source.js',
-    debug: true
-  });
 
-  return b.bundle()
-    .pipe(source('bundle.js'))
+  return gulp.src('./public/javascripts/lib/**/*.js', {read: false})
+    .pipe(tap(function(file){
+      gutil.log('bundling ' + file.path);
+      // replace file contents with browserify's bundle stream
+      file.contents = browserify(file.path, {debug: true}).bundle();
+    }))
     .pipe(buffer())
     .pipe(sourcemaps.init({loadMaps: true}))
         // Add transformation tasks to the pipeline here.
@@ -39,7 +39,7 @@ gulp.task('browserify', ['babel'], function () {
 
 //WATCH TASKS
 gulp.task('watch', () => {
-  gulp.watch('./public/javascripts/src/source.jsx', ['browserify']);
+  gulp.watch('./public/javascripts/src/**/*.jsx', ['browserify']);
 })
 
 //DEFAULT TASK

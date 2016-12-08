@@ -588,7 +588,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
       }]
     }, function(err, theOrg) {
       if (err) {
-        const err = 'ERROR: Il te faut être un élève pour accéder à cette page d\'ajout d\'heures extra-Simplyk';
+        const err = 'Une erreur est survenu lors de la recherche de l\'organisme mentionné dans le formulaire';
         console.error(err);
         res.redirect('/volunteer/map?error=' + err);
       } else {

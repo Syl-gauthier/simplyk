@@ -665,7 +665,7 @@ var EventForm = function (_React$Component8) {
 						{ className: 'btn btn-default', onClick: function onClick() {
 								_this13.addADay();
 							}, id: 'addADay' },
-						' Ajouter un dgulpg'
+						' Ajouter un jour'
 					),
 					_react2.default.createElement(AgeItem, null),
 					_react2.default.createElement(
