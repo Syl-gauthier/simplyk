@@ -23,7 +23,7 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
   }, function(err, volunteers) {
     if (err) {
       console.error('There is an error to access /listorganisms and get all the volunteers, the error is : ' + err);
-      res.status(404).send({
+      res.render('a_classes.jade', {
         error: err,
         session: req.session,
         admin: req.session.admin,
