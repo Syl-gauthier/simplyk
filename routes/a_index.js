@@ -23,7 +23,7 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
   }, function(err, volunteers) {
     if (err) {
       console.error('There is an error to access /listorganisms and get all the volunteers, the error is : ' + err);
-      res.render('a_classes.jade', {
+      res.status(404).send({
         error: err,
         session: req.session,
         admin: req.session.admin,
@@ -38,16 +38,25 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
           classes_array.push(classe);
         }
       });
-      res.render('a_classes.jade', {
+      const datas = {};
+      datas['volunteers'] = volunteers;
+      datas['session'] = req.session;
+      datas['admin'] = req.session.admin;
+      datas['classes_array'] = classes_array;
+      datas['group'] = req.session.group;
+      res.status(200).render('a_classes.jade', {
         volunteers: volunteers,
         session: req.session,
         admin: req.session.admin,
         classes_array: classes_array,
-        group: req.session.group
+        group: req.session.group,
+        datas
       });
     }
   });
 });
+
+
 
 router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(req, res, next) {
   Volunteer.findById(req.params.vol_id, function(err, volunteer) {

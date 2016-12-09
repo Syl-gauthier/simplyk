@@ -671,7 +671,9 @@ var EventForm = function (_React$Component8) {
 					_react2.default.createElement(
 						'div',
 						{ style: { paddingBottom: '40px' } },
-						new Array(this.state.nbActivities).fill(1).map(function (d, i) {
+						new Array(this.state.nbActivities).map(function () {
+							return 1;
+						}).map(function (d, i) {
 							var _this14 = this;
 
 							return _react2.default.createElement(ActivityItem, { n: i, key: i, days: this.getDaysToRender(), removeActivity: function removeActivity() {

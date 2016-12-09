@@ -2,6 +2,10 @@ extends ./g_layout.jade
 block vars
   - var page = 'students'
   - var hours_count = function(previousValue, currentValue, currentIndex, array) {if(currentValue) {return previousValue + currentValue;} else {return currentValue;} };
+  - var getHoursDone = function(vol){return vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.manuals.filter(function(man){if(man.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'}
+  - var getSubscriptions = function(vol){return (vol.events.filter(function(ev){if(ev.hours_done || ev.hours_pending){return false;}else{return true;}}).length + vol.long_terms.filter(function(lt){if(lt.hours_done || lt.hours_pending){return false;}else{return true;}}).length)}
+  - var getWaiting = function(vol){return (vol.events.filter(function(ev){if(ev.hours_pending > 0){return true;}else{return false;}}).length + vol.long_terms.filter(function(lt){if(lt.hours_pending > 0){return true;}else{return false;}}).length + vol.extras.filter(function(ex){if(ex.hours_pending > 0){return true;}else{return false;}}).length) + ' (' + (vol.events.filter(function(ev){if(ev.hours_pending > 0){return true;}else{return false;}}).map(el => el.hours_pending).reduce(hours_count, 0) + vol.long_terms.filter(function(lt){if(lt.hours_pending > 0){return true;}else{return false;}}).map(el => el.hours_pending).reduce(hours_count, 0) + vol.extras.filter(function(ex){if(ex.hours_pending > 0){return true;}else{return false;}}).map(el => el.hours_pending).reduce(hours_count, 0)) + 'h)'}
+  - var getConfirmed = function(vol){return (vol.events.filter(function(ev){if(ev.hours_done > 0){return true;}else{return false;}}).length + vol.long_terms.filter(function(lt){if(lt.hours_done > 0){return true;}else{return false;}}).length + vol.extras.filter(function(ex){if(ex.hours_done > 0){return true;}else{return false;}}).length  + vol.manuals.filter(function(man){if(man.hours_done > 0){return true;}else{return false;}}).length) + ' (' + (vol.events.filter(function(ev){if(ev.hours_done > 0){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(lt){if(lt.hours_done > 0){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(lt){if(lt.hours_done > 0){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.manuals.filter(function(lt){if(lt.hours_done > 0){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)) + 'h)'}
 
 
 block head
@@ -12,83 +16,111 @@ block content
         .row.fill
           .col-md-10.col-md-offset-1
             h1.page-header.firstColor Mes étudiants
-            div.table-responsive
+            div.table-responsive#table__container
               table.table.table-striped.table-bordered.table-hover.table-condensed
-                th.text-center Nom
-                th.text-center Prénom
-                th.text-center Heures effectués
-                th.text-center Dossier
-                th.text-center Ajout d'heures
-                if classes_array.length > 1
-                  each classe, classe_i in classes_array
-                    tr.warning
-                      td.text-center= classe.toString()
-                      td
-                      td
-                      td
-                      td
+                tr
+                  th.text-center(rowspan='2') Nom
+                  th.text-center(rowspan='2') Prénom
+                  th.text-center(colspan='3') Heures effectués
+                  th.text-center(rowspan='2') Dossier
+                  th.text-center(rowspan='2') Ajout d'heures
+                tr
+                  th.text-center
+                    span.badge(style='background-color: #E33831') Inscriptions
+                  th.text-center 
+                    span.badge(style='background-color: #CF7C00') En attente
+                  th.text-center 
+                    span.badge(style='background-color: #197500') Confirmés
+                  if classes_array.length > 1
+                    each classe, classe_i in classes_array
+                      tr.warning
+                        td.text-center= classe.toString()
+                        td
+                        td
+                        td
+                        td
+                      each vol, vol_i in volunteers
+                        if vol.admin.class == classe
+                          tr.success
+                            td.text-center= vol.lastname
+                            td.text-center= vol.firstname
+                            if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
+                              td.text-center 
+                                span.badge(style='background-color: #E33831')= getSubscriptions(vol)
+                              td.text-center 
+                                span.badge(style='background-color: #CF7C00')= getWaiting(vol)
+                              td.text-center 
+                                span.badge(style='background-color: #197500')= getConfirmed(vol)
+                            else
+                              td.text-center 
+                                span.badge 0
+                              td.text-center  
+                                  span.badge 0
+                              td.text-center  
+                                  span.badge 0
+                            td.text-center
+                              a.text-center.btn-link(href="/admin/report"+vol._id) Accéder
+                            td.text-center
+                              button.btn.btn-warning.center-block.btn-xs(data-toggle='modal' data-target='#manualHoursModal' + vol_i)
+                                i.fa.fa-plus
+                              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal' + vol_i)
+                                div.modal-dialog(role='document')
+                                  form.manualHoursForm(id='manualHoursForm' + vol_i, volunteer=vol._id, role='form', index=vol_i).modal-content
+                                    .modal-header
+                                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                        span(aria-hidden='true')
+                                        h4.modal-title Ajout d'heures manuel
+                                    div.modal-body
+                                      p.alert.alert-success.hidden(id='manual-success'+vol_i)
+                                      p.alert.alert-danger.hidden(id='manual-danger'+vol_i)
+                                      label(for='hours_done') Nombre d'heures
+                                      input.form-control(type='number', min='0.5', max='50', step='0.5' name='hours_done', required)
+                                      label(for='hours_description') Description
+                                      textarea.form-control(name="hours_description" id="hours_description" rows="6" required)
+                                    div.modal-footer
+                                      input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
+                                      a.btn.btn-default(data-dismiss='modal') Fermer
+                  else
                     each vol, vol_i in volunteers
-                      if vol.admin.class == classe
-                        tr.success
-                          td.text-center= vol.lastname
-                          td.text-center= vol.firstname
-                          if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
-                            td.text-center= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.manuals.filter(function(man){if(man.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
-                          else
-                            td.text-center 0 h
-                          td
-                            a.text-center.btn-link(href="/admin/report"+vol._id) Accéder
-                          td
-                            button.btn.btn-warning.center-block.btn-xs(data-toggle='modal' data-target='#manualHoursModal' + vol_i)
-                              i.fa.fa-plus
-                            .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal' + vol_i)
-                              div.modal-dialog(role='document')
-                                form.manualHoursForm(id='manualHoursForm' + vol_i, volunteer=vol._id, role='form', index=vol_i).modal-content
-                                  .modal-header
-                                    button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                                      span(aria-hidden='true')
-                                      h4.modal-title Ajout d'heures manuel
-                                  div.modal-body
-                                    p.alert.alert-success.hidden(id='manual-success'+vol_i)
-                                    p.alert.alert-danger.hidden(id='manual-danger'+vol_i)
-                                    label(for='hours_done') Nombre d'heures
-                                    input.form-control(type='number', min='0.5', max='50', step='0.5' name='hours_done', required)
-                                    label(for='hours_description') Description
-                                    textarea.form-control(name="hours_description" id="hours_description" rows="6" required)
-                                  div.modal-footer
-                                    input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
-                                    a.btn.btn-default(data-dismiss='modal') Fermer
-                else
-                  each vol, vol_i in volunteers
-                    tr.success
-                      td= vol.lastname
-                      td= vol.firstname
-                      if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
-                        td= vol.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.long_terms.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.extras.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + vol.manuals.filter(function(man){if(man.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + ' h'
-                      else
-                        td 0 h
-                      td
-                        a.btn-link(href="/admin/report"+vol._id) Accéder
-                      td.text-center
-                        button.btn.btn-warning(data-toggle='modal' data-target='#manualHoursModal' + vol_i, style='margin-bottom: 20px;')
-                          i.fa.fa-plus
-                        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal' + vol_i)
-                          div.modal-dialog(role='document')
-                            form.manualHoursForm(id='manualHoursForm' + vol_i, role='form', volunteer=vol._id, index=vol_i).modal-content
-                              .modal-header
-                                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                                  span(aria-hidden='true')
-                                  h4.modal-title Ajout d'heures manuel
-                              div.modal-body
-                                p.alert.alert-success.hidden(id='manual-success'+vol_i)
-                                p.alert.alert-danger.hidden(id='manual-danger'+vol_i)
-                                label(for='hours_done') Nombre d'heures
-                                input.form-control(type='number', min='0.5', max='50', step='0.5' name='hours_done', required)
-                                label(for='hours_description') Description
-                                textarea.form-control(name="hours_description" id="hours_description" rows="6" required)
-                              div.modal-footer
-                                input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
-                                a.btn.btn-default(data-dismiss='modal') Fermer
+                      tr.success
+                        td.text-center= vol.lastname
+                        td.text-center= vol.firstname
+                        if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
+                          td.text-center 
+                            span.badge(style='background-color: #E33831')= getSubscriptions(vol)
+                          td.text-center 
+                            span.badge(style='background-color: #CF7C00')= getWaiting(vol)
+                          td.text-center 
+                            span.badge(style='background-color: #197500')= getConfirmed(vol)
+                        else
+                          td.text-center 
+                            span.badge 0
+                          td.text-center  
+                              span.badge 0
+                          td.text-center  
+                              span.badge 0
+                        td.text-center
+                          a.btn-link(href="/admin/report"+vol._id) Accéder
+                        td.text-center
+                          button.btn.btn-warning(data-toggle='modal' data-target='#manualHoursModal' + vol_i, style='margin-bottom: 20px;')
+                            i.fa.fa-plus
+                          .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal' + vol_i)
+                            div.modal-dialog(role='document')
+                              form.manualHoursForm(id='manualHoursForm' + vol_i, role='form', volunteer=vol._id, index=vol_i).modal-content
+                                .modal-header
+                                  button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                    span(aria-hidden='true')
+                                    h4.modal-title Ajout d'heures manuel
+                                div.modal-body
+                                  p.alert.alert-success.hidden(id='manual-success'+vol_i)
+                                  p.alert.alert-danger.hidden(id='manual-danger'+vol_i)
+                                  label(for='hours_done') Nombre d'heures
+                                  input.form-control(type='number', min='0.5', max='50', step='0.5' name='hours_done', required)
+                                  label(for='hours_description') Description
+                                  textarea.form-control(name="hours_description" id="hours_description" rows="6" required)
+                                div.modal-footer
+                                  input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
+                                  a.btn.btn-default(data-dismiss='modal') Fermer
 
 block footscript
   // jQuery (necessary for Bootstrap's JavaScript plugins)
