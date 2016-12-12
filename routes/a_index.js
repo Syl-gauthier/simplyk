@@ -32,12 +32,18 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
     } else {
       console.info('Students :' + String(volunteers));
       var classes_array = [];
+      console.log(JSON.stringify(classes_array));
       volunteers.forEach(function(vol) {
-        var classe = vol.admin.class;
-        if (classes_array.indexOf(classe) == -1) {
-          classes_array.push(classe);
+        if (typeof vol.admin.class != undefined && vol.admin.class != null) {
+          var classe = vol.admin.class;
+          if (classes_array.indexOf(classe) == -1) {
+            classes_array.push(classe);
+          }
         }
       });
+      if (classes_array.length > 0) {
+        classes_array.push('Sans classe');
+      }
       console.log(JSON.stringify(classes_array));
       console.log(classes_array.length);
       const datas = {};
