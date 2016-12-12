@@ -34,10 +34,12 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
       var classes_array = [];
       volunteers.forEach(function(vol) {
         var classe = vol.admin.class;
-        if (classes_array.indexOf(classe) > -1) {} else {
+        if (classes_array.indexOf(classe) == -1) {
           classes_array.push(classe);
         }
       });
+      console.log(JSON.stringify(classes_array));
+      console.log(classes_array.length);
       const datas = {};
       datas['volunteers'] = volunteers;
       datas['session'] = req.session;
