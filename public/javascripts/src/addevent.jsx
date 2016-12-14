@@ -227,7 +227,7 @@ class ActivityItem extends React.Component {
 		console.info('In activity constructor');
 		console.info('this.props.days : ' + this.props.days);
 		this.state = {
-			days_list: new Array(this.props.days.length).map(() => {return false;})
+			days_list: Array.apply(null, Array(this.props.days.length)).map(() => {return false;})
 		}
 	}
 
@@ -398,7 +398,8 @@ class EventForm extends React.Component {
 					<div className="btn btn-default" onClick={() => {this.addADay()}} id="addADay"> Ajouter un jour</div>
 					<AgeItem />
 					<div style={{paddingBottom: '40px'}}>
-						{(new Array(this.state.nbActivities)).map(() => {return 1;}).map(function(d, i){
+						{Array.apply(null, Array(this.state.nbActivities)).map(function(){return 1;}).map(function(d, i){
+							console.log('activité : ' + i);
 							return <ActivityItem n={i} key={i} days={this.getDaysToRender()} removeActivity={()=>{this.removeActivity()}}/>
 						}, this)}
 					</div>

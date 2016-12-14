@@ -363,7 +363,7 @@ var ActivityItem = function (_React$Component6) {
 		console.info('In activity constructor');
 		console.info('this.props.days : ' + _this8.props.days);
 		_this8.state = {
-			days_list: new Array(_this8.props.days.length).map(function () {
+			days_list: Array.apply(null, Array(_this8.props.days.length)).map(function () {
 				return false;
 			})
 		};
@@ -671,11 +671,12 @@ var EventForm = function (_React$Component8) {
 					_react2.default.createElement(
 						'div',
 						{ style: { paddingBottom: '40px' } },
-						new Array(this.state.nbActivities).map(function () {
+						Array.apply(null, Array(this.state.nbActivities)).map(function () {
 							return 1;
 						}).map(function (d, i) {
 							var _this14 = this;
 
+							console.log('activité : ' + i);
 							return _react2.default.createElement(ActivityItem, { n: i, key: i, days: this.getDaysToRender(), removeActivity: function removeActivity() {
 									_this14.removeActivity();
 								} });
