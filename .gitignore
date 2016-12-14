@@ -22,6 +22,9 @@ node_modules/
 
 bower_components/
 
+# React output
+public/javascripts/lib
+public/javascripts/*.js.map
 
 # =========================
 # Operating System Files
