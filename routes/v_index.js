@@ -8,6 +8,7 @@ var Intercom = require('intercom-client');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
+var moment =  require('moment');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -397,13 +398,13 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                   recipient: organism.email,
                   name: organism.firstname + ' ' + organism.lastname,
                   link: 'http://' + req.headers.host + '/organism/event/' + theEvent._id,
-                  customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !', 'Maintenant, tu peux le contacter par courriel : ' + newVolunteer.email, 'Ou par téléphone : ' + newVolunteer.phone]
+                  customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !', 'Contactez le au plus vite au ' + newVolunteer.phone + ' ou par courriel à ' + newVolunteer.email, 'Attention, sans nouvelles rapidement de votre part, ' + newVolunteer.firstname + ' risque de se décourager et de ne pas venir !']
                 };
                 emailer.sendSubscriptionOrgEmail(org_content);
                 var vol_content = {
                   recipient: newVolunteer.email,
                   firstname: newVolunteer.firstname,
-                  customMessage: ['Tu t\' es inscrit à l\'évènement de ' + organism.org_name + ' : ' + newActivity.event_intitule + ' !', ' N\'oublie pas d\'enregistrer tes heures de participation à cet évènement !', 'Cela bénéficiera à la fois à ' + organism.org_name + ' et à toi pour passer aux échelons supérieurs de l\'engagement !'],
+                  customMessage: ['Tu es inscrit le ' +  dayString + ' à : ' + newActivity.address, 'L\'organisme ' + organism.org_name + ' va être au mis au courant de ton inscription. Entre en contact avec ' + organism.firstname + ' ' + organism.lastname + ' au ' + organism.phone + ' pour parler des détails de l\'activité !', 'Après l\'évènement, tu pourras ajouter des heures d\'engagement à ton profil pour faire progresser ton profil de citoyen engagé :)'],
                 };
                 emailer.sendSubscriptionVolEmail(vol_content);
                 //Intercom create addlongterm event

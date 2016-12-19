@@ -17,10 +17,9 @@ block content
           h2.text-center Tu es prêt à changer le monde ?!
           //It means this is an event
           if day
-            h4.text-center <br>L'organisme <b>#{org_name}</b>  va être mis au courant de ton inscription.<br> Tu peux les contacter grâce à leur adresse courriel si tu as besoin d'infos supplémentaires. <br> En tout cas, on t'attend le <b>#{days_name[day.getDay()]  + ' ' + (day.getDate()) + ' ' + months_name[day.getMonth()]}</b> de <b>#{start_time}</b>  à <b>#{end_time}</b> . Rendez-vous à : <b>#{address}</b>
-            //It means this is a longterm
+            h4.text-center <br>L'organisme <b>#{org_name}</b>  va être mis au courant de ton inscription.<br> Entre en contact avec eux en appelant le <b>#{org_phone}</b> pour confirmer ta venue et prévoir les détails. <br> Après l'évènement, tu pourras ajouter des heures d'engagement à ton profil pour faire valoir ton travail dans la communauté.
           else
-            h4.text-center <br>L'organisme <b>#{org_name}</b> va être mis au courant de ton inscription.<br> Tu peux les contacter grâce à leur adresse courriel pour avoir des infos supplémentaires: <b>#{email}</b>. N'oublie pas d'enregistrer sur ton profil les heures de bénévolat effectuées !
+            h4.text-center <br>L'organisme <b>#{org_name}</b> a reçu un courriel pour être prévenu de ton inscription.<br> S'il ne te contacte pas, appelle-le au <b>#{org_phone}</b> ou envoie un courriel à <b>#{email}</b>. Après tes actions bénévoles, tu pourras enregistrer tes heures de bénévolat à ton profil pour garder une trace de ton action !
           a.btn.btn-default.icon-center(href='/volunteer/profile') C'est parti !
 
 

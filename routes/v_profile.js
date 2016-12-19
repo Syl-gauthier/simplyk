@@ -9,6 +9,7 @@ var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
 
+var moment = require('moment');
 
 var permissions = require('../middlewares/permissions.js');
 var Volunteer = require('../models/volunteer_model.js');
@@ -104,6 +105,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   console.log('manuals_hours_done :  ' + manuals_hours_done);
   console.log('lt_hours_done :  ' + lt_hours_done);
   console.log('Volunteer level is : ' + vol_level);
+  lt_hours_done = moment('Fri Dec 30 2016 00:00:00 GMT-0500 (EST)');
   //Get schools_list
   school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
     if (err) {
@@ -206,6 +208,7 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
           res.render('v_postunsubscription.jade', {
             session: req.session,
             org_name: newActivity.org_name,
+            org_phone: newActivity.org_phone,
             day: dayString,
             volunteer: req.session.volunteer,
             group: req.session.group
