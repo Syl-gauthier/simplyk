@@ -19,6 +19,7 @@ var Activity = require('../models/activity_model.js');
 var permissions = require('../middlewares/permissions.js');
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
+var date = require('../lib/dates/date_browser.js');
 var update_intercom = require('../lib/intercom/update_intercom.js');
 var ltSubs = require('../lib/subscribe/longterm_subs.js');
 const schools_res = require('../res/schools_res.js');
@@ -369,15 +370,8 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               console.log('New Volunteer modified : ' + JSON.stringify(newVolunteer));
               console.log('**********************************');
 
-              function correctDate(date) {
-                var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;
-                var corrected_datetime = new Date(new Date(date).getTime() + tz_offset);
-                return corrected_datetime
-              };
+              const dayString = date.printDate(req.params.activity_day);
 
-
-
-              const dayString = correctDate(req.params.activity_day);
               console.log('day String ' + dayString);
               console.log('req.params.activity_day ' + req.params.activity_day);
               console.log('**********************************');
