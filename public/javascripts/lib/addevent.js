@@ -540,6 +540,7 @@ var BasicInfos = function (_React$Component7) {
 					),
 					_react2.default.createElement('input', { type: 'address', className: 'form-control', id: 'address', name: 'address', placeholder: 'Indiquez un lieu UNIQUE (format: n\xB0 de rue, nom de rue, ville)', required: true })
 				),
+				_react2.default.createElement('p', { id: 'address_result', 'class': 'hidden' }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'input-group' },

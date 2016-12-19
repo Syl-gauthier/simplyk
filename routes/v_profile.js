@@ -9,6 +9,7 @@ var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
 
+var moment = require('moment');
 
 var permissions = require('../middlewares/permissions.js');
 var Volunteer = require('../models/volunteer_model.js');
@@ -206,6 +207,7 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
           res.render('v_postunsubscription.jade', {
             session: req.session,
             org_name: newActivity.org_name,
+            org_phone: newActivity.org_phone,
             day: dayString,
             volunteer: req.session.volunteer,
             group: req.session.group

@@ -237,6 +237,7 @@ router.post('/register_volunteer', function(req, res) {
             console.log('Verify url sent: ' + verifyUrl);
 
             emailer.sendVerifyEmail({
+              group: 'vol',
               recipient: req.body.email,
               button: {
                 link: verifyUrl
@@ -353,6 +354,7 @@ router.post('/register_organism', function(req, res) {
 
             console.log('Verify url sent: ' + verifyUrl);
             emailer.sendVerifyEmail({
+              group: 'org',
               recipient: email,
               button: {
                 link: verifyUrl

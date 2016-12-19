@@ -30,7 +30,17 @@ function callSendMail(mailOptions) {
 
 //Send email with verify url
 function sendVerifyEmail(content) {
-  content.subtitle = 'On est ravi que tu sois maintenant sur la plateforme Simplyk. Tout d\'abord, confirme ton compte grâce au bouton ci-dessous';
+  console.log('content.group : ' + content.group);
+  if (content.group == 'vol') {
+    console.log('content.group : vol');
+    content.subtitle = 'Simplyk vise à t\'aider à t\'impliquer dans ta communauté. Tout d\'abord, confirme ton compte grâce au bouton ci-dessous';
+  } else if (content.group == 'org') {
+    console.log('content.group : org');
+    content.subtitle = 'Simplyk est la plateforme qui t\'aide à trouver des bénévoles facilement, afin d\'avoir plus d\'impact. Avant de poster tes besoins, confirme ton compte grâce au bouton ci-dessous';
+  } else {
+    console.log('content.group : nothing');
+    content.subtitle = 'On est ravi que tu sois maintenant sur la plateforme Simplyk. Tout d\'abord, confirme ton compte grâce au bouton ci-dessous';
+  }
   content.type = 'verify';
   content.button.text = 'Vérifier mon compte';
   content.title = 'Bienvenue ' + content.firstname + ' !';
@@ -67,7 +77,7 @@ function sendSubscriptionOrgEmail(content) {
     var mailOptions = {
       from: '"François @ Simplyk" <francois@simplyk.org>', // sener address
       to: content.recipient,
-      subject: content.event + ': un nouveau bénévole inscrit !', // Subject line
+      subject: 'Bénévole inscrit à contacter !', // Subject line
       text: '', // plaintext body
       html: results.html
     };
@@ -93,7 +103,7 @@ function sendSubscriptionVolEmail(content) {
     var mailOptions = {
       from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
       to: content.recipient,
-      subject: 'Nouvelle inscription sur Simplyk !', // Subject line
+      subject: 'Bravo de ton inscription :) !', // Subject line
       text: '', // plaintext body
       html: results.html
     };
@@ -225,7 +235,7 @@ function sendAutomaticSubscriptionOrgEmail(content) {
   });
 };
 
-function sendManualHoursEmail(content){
+function sendManualHoursEmail(content) {
   content.subtitle = content.customMessage;
   content.type = 'manualHours';
   content.title = 'Heures ajoutées';

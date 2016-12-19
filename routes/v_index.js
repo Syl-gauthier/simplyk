@@ -8,6 +8,7 @@ var Intercom = require('intercom-client');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
+var moment =  require('moment');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -18,6 +19,7 @@ var Activity = require('../models/activity_model.js');
 var permissions = require('../middlewares/permissions.js');
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
+var date = require('../lib/dates/date_browser.js');
 var update_intercom = require('../lib/intercom/update_intercom.js');
 var ltSubs = require('../lib/subscribe/longterm_subs.js');
 const schools_res = require('../res/schools_res.js');
@@ -368,15 +370,8 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               console.log('New Volunteer modified : ' + JSON.stringify(newVolunteer));
               console.log('**********************************');
 
-              function correctDate(date) {
-                var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;
-                var corrected_datetime = new Date(new Date(date).getTime() + tz_offset);
-                return corrected_datetime
-              };
+              const dayString = date.printDate(req.params.activity_day);
 
-
-
-              const dayString = correctDate(req.params.activity_day);
               console.log('day String ' + dayString);
               console.log('req.params.activity_day ' + req.params.activity_day);
               console.log('**********************************');
@@ -392,18 +387,29 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                   });
                   return goodEvent;
                 });
+                res.render('v_postsubscription.jade', {
+                  session: req.session,
+                  org_phone: organism.phone,
+                  org_name: newActivity.org_name,
+                  day: dayString,
+                  start_time: newActivity.days.find(isGoodDay).start_time,
+                  end_time: newActivity.days.find(isGoodDay).end_time,
+                  address: newActivity.address,
+                  volunteer: req.session.volunteer,
+                  group: req.session.group
+                });
                 var org_content = {
                   event: newActivity.event_intitule,
                   recipient: organism.email,
                   name: organism.firstname + ' ' + organism.lastname,
                   link: 'http://' + req.headers.host + '/organism/event/' + theEvent._id,
-                  customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !', 'Maintenant, tu peux le contacter par courriel : ' + newVolunteer.email, 'Ou par téléphone : ' + newVolunteer.phone]
+                  customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !', 'Contactez le au plus vite au ' + newVolunteer.phone + ' ou par courriel à ' + newVolunteer.email, 'Attention, sans nouvelles rapidement de votre part, ' + newVolunteer.firstname + ' risque de se décourager et de ne pas venir !']
                 };
                 emailer.sendSubscriptionOrgEmail(org_content);
                 var vol_content = {
                   recipient: newVolunteer.email,
                   firstname: newVolunteer.firstname,
-                  customMessage: ['Tu t\' es inscrit à l\'évènement de ' + organism.org_name + ' : ' + newActivity.event_intitule + ' !', ' N\'oublie pas d\'enregistrer tes heures de participation à cet évènement !', 'Cela bénéficiera à la fois à ' + organism.org_name + ' et à toi pour passer aux échelons supérieurs de l\'engagement !'],
+                  customMessage: ['Tu es inscrit le ' +  dayString + ' à : ' + newActivity.address, 'L\'organisme ' + organism.org_name + ' va être au mis au courant de ton inscription. Entre en contact avec ' + organism.firstname + ' ' + organism.lastname + ' au ' + organism.phone + ' pour parler des détails de l\'activité !', 'Après l\'évènement, tu pourras ajouter des heures d\'engagement à ton profil pour faire progresser ton profil de citoyen engagé :)'],
                 };
                 emailer.sendSubscriptionVolEmail(vol_content);
                 //Intercom create addlongterm event
@@ -423,17 +429,6 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                   };
                 });
               });
-              res.render('v_postsubscription.jade', {
-                session: req.session,
-                org_name: newActivity.org_name,
-                day: dayString,
-                start_time: newActivity.days.find(isGoodDay).start_time,
-                end_time: newActivity.days.find(isGoodDay).end_time,
-                address: newActivity.address,
-                volunteer: req.session.volunteer,
-                group: req.session.group
-              });
-              res.end();
             }
           })
         }
@@ -502,6 +497,7 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
           };
         });
         res.render('v_postsubscription.jade', {
+          org_phone: results.newOrganism.phone,
           session: req.session,
           org_name: results.newOrganism.org_name,
           email: results.newOrganism.email,

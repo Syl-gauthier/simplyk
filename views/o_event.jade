@@ -1,13 +1,13 @@
 extends ./g_layout.jade
 block vars
 	- var page = 'event'
-	- var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
-	- var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
-	- /* parse a date in yyyy-mm-dd format*/ function parseDate(input) {var parts = input.match(/(\d+)/g);/* new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])*/return new Date(parts[0], parts[1]-1, parts[2]); /* months are 0-based*/}
-	- function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
+
+
 block head
 	title Bénévoles à court terme
 	meta(name='description', content='Gère tes bénévoles inscrits à court terme')
+
+		
 block content
 	.container-fluid
 		.row.fill
@@ -30,7 +30,7 @@ block content
 							.panel-body
 								each day, day_i in act.days
 									h4
-										h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+										h5.inline <b>#{date.printDate(day.day)} : </b>
 										h6.inline
 											i.fa.fa-user
 											p.inline= day.applicants.length+' bénévoles se sont inscrits'
@@ -96,6 +96,7 @@ block content
 
 
 block footscript
+	script(type='text/javascript', src='/javascripts/date_browser.js')
 	script(type='text/javascript').
 		$(document).ready(function(){
 			$('#correctionModal').on('shown.bs.modal', function () {

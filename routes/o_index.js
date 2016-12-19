@@ -15,6 +15,7 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
+var date = require('../lib/dates/date_browser.js');
 
 var permissions = require('../middlewares/permissions.js');
 var Volunteer = require('../models/volunteer_model.js');
@@ -323,7 +324,8 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
                             session: req.session,
                             event: event,
                             organism: req.session.organism,
-                            group: req.session.group
+                            group: req.session.group,
+                            date
                         });
                     }
                 });
