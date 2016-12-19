@@ -387,6 +387,17 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                   });
                   return goodEvent;
                 });
+                res.render('v_postsubscription.jade', {
+                  session: req.session,
+                  org_phone: organism.phone,
+                  org_name: newActivity.org_name,
+                  day: dayString,
+                  start_time: newActivity.days.find(isGoodDay).start_time,
+                  end_time: newActivity.days.find(isGoodDay).end_time,
+                  address: newActivity.address,
+                  volunteer: req.session.volunteer,
+                  group: req.session.group
+                });
                 var org_content = {
                   event: newActivity.event_intitule,
                   recipient: organism.email,
@@ -418,17 +429,6 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                   };
                 });
               });
-              res.render('v_postsubscription.jade', {
-                session: req.session,
-                org_name: newActivity.org_name,
-                day: dayString,
-                start_time: newActivity.days.find(isGoodDay).start_time,
-                end_time: newActivity.days.find(isGoodDay).end_time,
-                address: newActivity.address,
-                volunteer: req.session.volunteer,
-                group: req.session.group
-              });
-              res.end();
             }
           })
         }
@@ -497,6 +497,7 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
           };
         });
         res.render('v_postsubscription.jade', {
+          org_phone: results.newOrganism.phone,
           session: req.session,
           org_name: results.newOrganism.org_name,
           email: results.newOrganism.email,
