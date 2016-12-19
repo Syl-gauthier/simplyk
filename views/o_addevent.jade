@@ -38,22 +38,26 @@ block footscript
 		function initAutocomplete(){
 			input = (document.getElementById('address'));
 			console.log(input);
+			var autocomplete_is_loading = false;
 			var autocomplete = new google.maps.places.Autocomplete(input,options);
 			autocomplete.addListener('place_changed', function() {
+				autocomplete_is_loading = true;
 				console.log('In the place_Changed listener !')
 				var place = autocomplete.getPlace();
 				console.log('place : ' + JSON.stringify(place));
 				if (!place.geometry) {
 					$('#address_container').removeClass('has-success');
 					$('#address_container').addClass('has-error');
+					autocomplete_is_loading = false;
 				} else {
 					$('#address_container').removeClass('has-error');
 					$('#address_container').addClass('has-success');
+					autocomplete_is_loading = false;
 					testAddress();
 				}
 			});
 
-			function testAddress(){
+			var testAddress = function(){
 				var place = autocomplete.getPlace();
 				var address_string = $('#address').val();
 				console.info('POST to test_address and place : ' + JSON.stringify(place));
@@ -64,24 +68,28 @@ block footscript
 					})
 					.done(function(data){
 						console.log('There is a place.geometry !' + JSON.stringify(data));
-						$('#address_container').removeClass('has-error');
-						$('#address_container').addClass('has-success');
-						$('#alert-maps').addClass('hidden');
-						$('#address_result').empty();
-						$('#address_result').append('Sur la carte, l\'adresse sera : ' + data.string);
+						if (!autocomplete_is_loading){
+							$('#address_container').removeClass('has-error');
+							$('#address_container').addClass('has-success');
+							$('#alert-maps').addClass('hidden');
+							$('#address_result').empty();
+							$('#address_result').append('Sur la carte, l\'adresse sera : ' + data.string);
+						}
 					})
 					.fail(function(data){
 						console.log('NO place or place.geometry !' + JSON.stringify(data));
-						$('#address_container').removeClass('has-success');
-						$('#address_container').addClass('has-error');
-						$('#address_result').empty();
-						$('#alert-maps').removeClass('hidden');
+						if (!autocomplete_is_loading){
+							$('#address_container').removeClass('has-success');
+							$('#address_container').addClass('has-error');
+							$('#address_result').empty();
+							$('#alert-maps').removeClass('hidden');
+						}
 					})
 			};
 
 			$('#address').on('focusout', function(){
 				console.log('GET OUT !')
-				testAddress();
+				window.setTimeout(testAddress(), 1000);
 			});
 			$('#address').on('focusin', function(){
 				$('#address_result').empty();
