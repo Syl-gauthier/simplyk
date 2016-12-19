@@ -1,3 +1,4 @@
+'use strict';
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
@@ -141,7 +142,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
             };
           };
           //Create activity in Mongo
-          newActivity = new Activity(activity);
+          const newActivity = new Activity(activity);
           newActivity.save(function(err, act) {
             if (err) {
               console.log(err);
@@ -187,6 +188,27 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
       });
     }
   });
+});
+
+router.post('/test_address', function(req, res){
+  //Transform address into lon/lat
+  console.log('address sent to gmaps: ' + req.body.address);
+  const error = 'La position de l\'adresse que vous avez mentionné n\'a pas été trouvé par Google Maps';
+
+  gmaps.codeAddress(req.body.address, function(lat, lon, string) {
+    let response = {};
+    if (lat == 'ZERO_RESULTS') {
+      response.error = error;
+      res.status(404).send(response);
+      res.end();
+    } else {
+      response.ok = true;
+      response.string = string;
+      res.status(200).send(response);
+      res.end();
+    }
+  });
+
 });
 
 module.exports = router;

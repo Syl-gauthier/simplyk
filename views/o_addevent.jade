@@ -18,6 +18,7 @@ block content
 			.col-md-6.col-md-offset-3
 				.page-header
 					h1 Ajoute un évènement
+					p.alert.alert-danger.hidden#alert-maps La position de l'adresse que vous avez mentionné n'a pas été trouvé par Google Maps
 					if error
 						p.alert.alert-danger #{error}
 		.row
@@ -31,36 +32,59 @@ block footscript
 		//- new google.maps.LatLng(45.25,-74.26));
 
 		var options = {
-		types: ['address'],
-		componentRestrictions: {country: 'ca'}
+			types: ['address'],
+			componentRestrictions: {country: 'ca'}
 		};
 		function initAutocomplete(){
 			input = (document.getElementById('address'));
 			console.log(input);
 			var autocomplete = new google.maps.places.Autocomplete(input,options);
 			autocomplete.addListener('place_changed', function() {
-			    var place = autocomplete.getPlace();
-			    console.log('place : ' + JSON.stringify(place));
-			    if (!place.geometry) {
-			      $('#address_container').removeClass('has-success');
-			      $('#address_container').addClass('has-error');
-			    } else {
-			      $('#address_container').removeClass('has-error');
-			      $('#address_container').addClass('has-success');
-			    }
+				console.log('In the place_Changed listener !')
+				var place = autocomplete.getPlace();
+				console.log('place : ' + JSON.stringify(place));
+				if (!place.geometry) {
+					$('#address_container').removeClass('has-success');
+					$('#address_container').addClass('has-error');
+				} else {
+					$('#address_container').removeClass('has-error');
+					$('#address_container').addClass('has-success');
+					testAddress();
+				}
 			});
+
+			function testAddress(){
+				var place = autocomplete.getPlace();
+				var address_string = $('#address').val();
+				console.info('POST to test_address and place : ' + JSON.stringify(place));
+				console.info('POST to test_address and address_string : ' + JSON.stringify(address_string));
+					$.post('/test_address', {address: address_string}, function(data){
+						console.info('POST to test_address sent with datas : ' + JSON.stringify(address_string));
+						$('#address_result').removeClass('hidden');
+					})
+					.done(function(data){
+						console.log('There is a place.geometry !' + JSON.stringify(data));
+						$('#address_container').removeClass('has-error');
+						$('#address_container').addClass('has-success');
+						$('#alert-maps').addClass('hidden');
+						$('#address_result').empty();
+						$('#address_result').append('Sur la carte, l\'adresse sera : ' + data.string);
+					})
+					.fail(function(data){
+						console.log('NO place or place.geometry !' + JSON.stringify(data));
+						$('#address_container').removeClass('has-success');
+						$('#address_container').addClass('has-error');
+						$('#address_result').empty();
+						$('#alert-maps').removeClass('hidden');
+					})
+			};
+
 			$('#address').on('focusout', function(){
 				console.log('GET OUT !')
-			    var place = autocomplete.getPlace();
-			    if (!place || (!place.geometry)) {
-					console.log('NO place or place.geometry !')
-			      $('#address_container').removeClass('has-success');
-			      $('#address_container').addClass('has-error');
-			    } else {
-					console.log('There is a place.geometry !')
-			    	$('#address_container').removeClass('has-error');
-			    	$('#address_container').addClass('has-success');
-			    }
+				testAddress();
+			});
+			$('#address').on('focusin', function(){
+				$('#address_result').empty();
 			});
 			$('#creationeventform').submit(function(event){
 				let days_total = $('.datepicker').length;

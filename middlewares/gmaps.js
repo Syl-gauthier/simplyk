@@ -21,14 +21,15 @@ var codeAddress = function(address, done) {
 			console.log('result : ' + JSON.stringify(result));
 			console.log('result.results[0] : ' + result.results[0]);
 			if(result.status == 'ZERO_RESULTS'){
-				return done('ZERO_RESULTS', 'ZERO_RESULTS');
+				return done('ZERO_RESULTS', 'ZERO_RESULTS', 'ZERO_RESULTS');
 			}
 			else{
 				console.log(result.results[0].geometry.location);
 				var lat = result.results[0].geometry.location.lat;
 				var lon = result.results[0].geometry.location.lng;
+				var string = result.results[0].formatted_address;
 				console.log('latitude result: ' + lat);
-				return done(lat, lon);
+				return done(lat, lon, string);
 			}
 		}
 	});
