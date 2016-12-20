@@ -110,6 +110,10 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
     if (err) {
       console.error('ERR : ' + err);
     };
+    const hash = require('intercom-client').SecureMode.userHash({
+      secretKey: process.env.INTERCOM_SECRET_KEY,
+      identifier: req.session.volunteer.email
+    });
     res.render('v_profile.jade', {
       session: req.session,
       volunteer: req.session.volunteer,
@@ -125,7 +129,8 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       events_hours_done,
       lt_hours_done,
       manuals_hours_done,
-      extras_hours_done
+      extras_hours_done,
+      hash
     });
   });
 
