@@ -6,14 +6,12 @@ const client = new Intercom.Client({
 	token: process.env.INTERCOM_TOKEN
 });
 const mongoose = require('mongoose');
+const getClientSchools = require('../lib/ressources/client_school_list.js').getClientSchools;
 
 const permissions = require('../middlewares/permissions.js');
 const Volunteer = require('../models/volunteer_model.js');
 const Organism = require('../models/organism_model.js');
 const Admin = require('../models/admin_model.js');
-
-const client_schools = ['École Père-Marquette', 'École Louis-Riel', 'École La Dauversière', 'Simplyk', 'École d\'éducation internationale de Laval'];
-const client_schools_id = ['57e99d153d062714a2fa65e0', '581696f317afb6294243f786', '583f554990d8511b0bcfb0dd', '584eee184ed1ec2ad30b947b'];
 
 router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'), function(req, res) {
 	console.info('IN edit-form');
@@ -47,31 +45,39 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 			intercom_main = 'phone';
 			path_to_new_object = type;
 		} else if (typeof req.body.school_name != 'undefined') {
-			let school_id = {};
-			type = 'school_name';
-			update.$set = {
-				'admin.school_name': req.body.school_name,
-				student: true
-			};
-
-			//If school_name is a client school, find the school_id
-			console.info('client_schools.indexOf(req.body.school_name) : ' + (client_schools.indexOf(req.body.school_name)));
-			console.info('client_schools.indexOf(req.body.school_name) != -1 : ' + (client_schools.indexOf(req.body.school_name) != -1));
-			if (client_schools.indexOf(req.body.school_name) != -1) {
-				try {
-					console.log('JSON.stringify(update) : ' + JSON.stringify(update));
-					school_id = mongoose.Types.ObjectId(client_schools_id[client_schools.indexOf(req.body.school_name)]);
-					console.log('school_id : ' + school_id);
-					update.$set['admin.school_id'] = school_id;
-					console.log('JSON.stringify(update) : ' + JSON.stringify(update));
-				} catch (err) {
+			getClientSchools(function(err, clients) {
+				if(err){
 					console.error(err);
 				}
-			}
-			new_object = 'newSchool';
-			intercom_custom = 'school_name';
-			path_to_new_object = 'admin';
-			path_to_new_object2 = 'school_name';
+				let school_id = {};
+				type = 'school_name';
+				update.$set = {
+					'admin.school_name': req.body.school_name,
+					student: true
+				};
+
+				console.log('clients : ' + JSON.stringify(clients));
+
+				//If school_name is a client school, find the school_id
+				console.info('clients.indexOf(req.body.school_name) : ' + (clients.indexOf(req.body.school_name)));
+				console.info('clients.indexOf(req.body.school_name) != -1 : ' + (clients.indexOf(req.body.school_name) != -1));
+				if (clients.map(c => c.name).indexOf(req.body.school_name) != -1) {
+					try {
+						console.log('JSON.stringify(update) : ' + JSON.stringify(update));
+						school_id = mongoose.Types.ObjectId(clients[clients.map(c => c.name).indexOf(req.body.school_name)].id);
+						console.log('school_id : ' + school_id);
+						update.$set['admin.school_id'] = school_id;
+						console.log('JSON.stringify(update) : ' + JSON.stringify(update));
+					} catch (err) {
+						console.error(err);
+					}
+				}
+
+				new_object = 'newSchool';
+				intercom_custom = 'school_name';
+				path_to_new_object = 'admin';
+				path_to_new_object2 = 'school_name';
+			});
 		} else {
 			let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)'
 			console.error(err);
