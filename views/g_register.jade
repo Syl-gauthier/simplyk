@@ -49,7 +49,7 @@ block content
                   .form-group.conn-input.hidden#classes_dropdown
                     label.control-label Classe
                     each client, client_i in clients
-                      select.form-control.hidden(placeholder='', name='classes', aria-describedby='basic-addon1', id=client.id, class='client_classes_item')
+                      select.form-control.hidden(placeholder='', aria-describedby='basic-addon1', id=client.id, class='client_classes_item')
                         each classe, classe_i in client.classes
                           option= classe
               if type == 'organism'
@@ -124,6 +124,7 @@ block footscript
       $('#admin').change(function(){
         $('#classes_dropdown').addClass('hidden');
         $('.client_classes_item').addClass('hidden');
+        $('.client_classes_item').removeAttr('name');
         console.info('Admin changed');
         var school = $('#admin').val();
         var school_index = clients.map(function(c){return c.name;}).indexOf(school);
@@ -133,6 +134,7 @@ block footscript
             var client_selected_id = clients[school_index].id;
             $('#classes_dropdown').removeClass('hidden');
             $('#'+client_selected_id).removeClass('hidden');
+            $('#'+client_selected_id).attr('name', 'classe');
             console.info('Admin changed and this is a client school');
           }
         }
