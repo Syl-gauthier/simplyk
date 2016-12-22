@@ -57,7 +57,7 @@ block content
 																if vol.birthdate
 																	h6
 																		i.fa.fa-birthday-cake
-																		p.inline #{days_name[correctDate(vol.birthdate).getDay()]  + ' ' + (correctDate(vol.birthdate).getDate()) + ' ' + months_name[correctDate(vol.birthdate).getMonth()]  + ' ' + correctDate(vol.birthdate).getFullYear()}
+																		p.inline #{date.printDate(vol.birthdate)}
 																else
 																	h6
 															each event, event_i in vol.events
