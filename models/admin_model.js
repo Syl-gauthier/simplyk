@@ -13,6 +13,7 @@ var AdminSchema = new Schema({
 	firstname: String,
     password: String,
     class: String,
+    classes: [String],
 	lat: Number,
 	lon: Number,
 	email: String,
