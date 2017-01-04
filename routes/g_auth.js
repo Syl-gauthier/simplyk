@@ -4,6 +4,7 @@ var router = express.Router();
 var passport = require('passport');
 var Intercom = require('intercom-client');
 var school_list = require('../lib/ressources/school_list.js');
+var client_school_list = require('../lib/ressources/client_school_list.js');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
@@ -167,13 +168,19 @@ router.get('/register_volunteer', function(req, res) {
   //Get schools_list
   school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
     if (err) {
-      console.error('ERR : ' + err);
+      console.error('ERROR : ' + err);
     };
-    res.render('g_register.jade', {
-      type: 'volunteer',
-      error: err,
-      schools_list
-    });
+    client_school_list.getClientSchools(function(err, clients){
+      if (err) {
+        console.error('ERROR : ' + err);
+      };
+      res.render('g_register.jade', {
+        type: 'volunteer',
+        error: err,
+        schools_list,
+        clients
+      });
+    });    
   });
 });
 
@@ -204,7 +211,7 @@ router.post('/register_volunteer', function(req, res) {
         student = true;
         school_name = req.body.admin;
         admin = {
-          school_name: req.body.admin
+          school_name
         }
       };
 
@@ -272,9 +279,19 @@ router.post('/register_volunteer', function(req, res) {
                   console.error(err);
                 };
                 if (admin_coordinator != null) {
-                  admin = {
-                    school_name: admin_coordinator.name,
-                    school_id: admin_coordinator._id
+                  if (req.body.classe) {
+                    console.log('This volunteer has a class');
+                    admin = {
+                      class: req.body.classe,
+                      school_name: admin_coordinator.name,
+                      school_id: admin_coordinator._id
+                    }
+                  } else {
+                    console.log('This volunteer has no class');
+                    admin = {
+                      school_name: admin_coordinator.name,
+                      school_id: admin_coordinator._id
+                    };
                   };
                   Volunteer.update({
                     '_id': vol._id

@@ -2,7 +2,7 @@ extends ./g_layout.jade
 block vars
   - var page = 'register'
 block head
-  title S'inscrire'
+  title S'inscrire
   meta(name='description', content='Inscrivez-vous pour trouver du bénévolat, ou recruter des bénévoles')
 block content
       #map-section.container-fluid
@@ -46,6 +46,12 @@ block content
                     select#admin.form-control(placeholder='', name='admin', aria-describedby='basic-addon1')
                       each school, school_i in schools_list
                         option= school
+                  .form-group.conn-input.hidden#classes_dropdown
+                    label.control-label Classe
+                    each client, client_i in clients
+                      select.form-control.hidden(placeholder='', aria-describedby='basic-addon1', id=client.id, class='client_classes_item')
+                        each classe, classe_i in client.classes
+                          option= classe
               if type == 'organism'
                 .form-group.conn-input
                   label.control-label Nom de l'organisme
@@ -103,6 +109,7 @@ block footscript
   script(src="/bower_components/jquery-ui/ui/widgets/datepicker.js")
   script.
     $(document).ready(function(){
+      var clients = !{JSON.stringify(clients)};
       if ( $('#birthdate').prop('type') != 'date' ) {
         $('#birthdate').datepicker({
           changeMonth: true,
@@ -114,18 +121,26 @@ block footscript
         $('#admin_dropdown').removeClass('hidden');
         $('#admin_dropdown').toggle(this.checked);
       });
+      $('#admin').change(function(){
+        $('#classes_dropdown').addClass('hidden');
+        $('.client_classes_item').addClass('hidden');
+        $('.client_classes_item').removeAttr('name');
+        console.info('Admin changed');
+        var school = $('#admin').val();
+        var school_index = clients.map(function(c){return c.name;}).indexOf(school);
+        if (school_index != -1){
+          var classes_number = clients[school_index].classes.length;
+          if(classes_number>0){
+            var client_selected_id = clients[school_index].id;
+            $('#classes_dropdown').removeClass('hidden');
+            $('#'+client_selected_id).removeClass('hidden');
+            $('#'+client_selected_id).attr('name', 'classe');
+            console.info('Admin changed and this is a client school');
+          }
+        }
+      });
     })
-    var password = document.getElementById('password'),
-    confirm_password = document.getElementById('confirmPassword');
-    function validatePassword(){
-      if(password.value != confirm_password.value) {
-        confirm_password.setCustomValidity("Les mots de passe sont différents");
-      } else {
-        confirm_password.setCustomValidity('');
-      }
-    }
-      password.onchange = validatePassword;
-      confirm_password.onkeyup = validatePassword;
+    var password = document.getElementById('password');
   script.
     $('form#registerform').submit(function(e) {
         e.preventDefault(); // Prevent default post

@@ -17,6 +17,7 @@ var Organism = require('../models/organism_model.js');
 var Activity = require('../models/activity_model.js');
 var OrgTodo = require('../models/o_todo_model.js');
 const schools_res = require('../res/schools_res.js');
+const getClientSchools = require('../lib/ressources/client_school_list.js').getClientSchools;
 
 
 
@@ -114,23 +115,29 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       secretKey: process.env.INTERCOM_SECRET_KEY,
       identifier: req.session.volunteer.email
     });
-    res.render('v_profile.jade', {
-      session: req.session,
-      volunteer: req.session.volunteer,
-      group: req.session.group,
-      error: error,
-      error: err,
-      schools_list,
-      vol_level: vol_level,
-      events_subscribed,
-      events_confirmed,
-      events_pending,
-      events_past,
-      events_hours_done,
-      lt_hours_done,
-      manuals_hours_done,
-      extras_hours_done,
-      hash
+    getClientSchools(function(err, client_schools) {
+      if (err) {
+        console.error(err);
+      }
+      res.render('v_profile.jade', {
+        session: req.session,
+        volunteer: req.session.volunteer,
+        group: req.session.group,
+        error,
+        err,
+        schools_list,
+        vol_level,
+        events_subscribed,
+        events_confirmed,
+        events_pending,
+        events_past,
+        events_hours_done,
+        lt_hours_done,
+        manuals_hours_done,
+        extras_hours_done,
+        hash,
+        client_schools
+      });
     });
   });
 
