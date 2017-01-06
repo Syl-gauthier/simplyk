@@ -170,17 +170,17 @@ router.get('/register_volunteer', function(req, res) {
     if (err) {
       console.error('ERROR : ' + err);
     };
-    client_school_list.getClientSchools(function(err, clients){
+    client_school_list.getClientSchools(function(err, clients) {
       if (err) {
         console.error('ERROR : ' + err);
       };
       res.render('g_register.jade', {
         type: 'volunteer',
-        error: err,
+        error: err + req.query.error,
         schools_list,
         clients
       });
-    });    
+    });
   });
 });
 
@@ -210,8 +210,15 @@ router.post('/register_volunteer', function(req, res) {
         console.info('Belongs to Admin : ' + req.body.admin_checkbox);
         student = true;
         school_name = req.body.admin;
-        admin = {
-          school_name
+        if (req.body.classe) {
+          admin = {
+            class: req.body.classe,
+            school_name
+          }
+        } else {
+          admin = {
+            school_name
+          }
         }
       };
 
@@ -235,7 +242,7 @@ router.post('/register_volunteer', function(req, res) {
 
       newVolunteer.save(function(err, vol) {
         if (err) {
-          res.redirect('/?error=' + err);
+          res.redirect('/register_volunteer?error=' + err);
         } else {
           if (emailCredentials) {
             var hostname = req.headers.host;
@@ -253,10 +260,23 @@ router.post('/register_volunteer', function(req, res) {
             });
           };
           if (admin) {
-            Admin.update({
-              'name': req.body.admin,
-              'type': 'school-coordinator'
-            }, {
+            //Update admin corresponding to student class
+            let update = {};
+            console.info('req.body.classe : ' + req.body.classe);
+            if (req.body.classe) {
+              console.info('In req.body.classe IF with : ' + req.body.classe);
+              update = {
+                'name': req.body.admin,
+                'classes': req.body.classe
+              }
+            } else {
+              console.info('In NO req.body.classe ELSE with : ' + req.body.classe);
+              update = {
+                'name': req.body.admin,
+                'type': 'school-coordinator'
+              };
+            }
+            Admin.update(update, {
               '$push': {
                 'students': {
                   '_id': vol._id,
@@ -264,50 +284,48 @@ router.post('/register_volunteer', function(req, res) {
                 }
               }
             }, {
-              new: true
+              multi: true
             }, function(err, admins_updated) {
               if (err) {
-                console.log(err);
-              }
-              console.log('The volunteer has a school : ' + req.body.admin + ', and the number of admins updated is : ' + JSON.stringify(admins_updated));
-              //Add school_id to the student
-              Admin.findOne({
-                'name': req.body.admin,
-                'type': 'school-coordinator'
-              }, function(err, admin_coordinator) {
-                if (err) {
-                  console.error(err);
-                };
-                if (admin_coordinator != null) {
-                  if (req.body.classe) {
-                    console.log('This volunteer has a class');
-                    admin = {
-                      class: req.body.classe,
-                      school_name: admin_coordinator.name,
-                      school_id: admin_coordinator._id
-                    }
+                console.error(err);
+                res.redirect('/register_volunteer?error=' + err);
+              } else {
+                console.log('The volunteer has a school : ' + req.body.admin + ', and the number of admins updated is : ' + JSON.stringify(admins_updated));
+                //Add school_id to the student
+                Admin.findOne({
+                  'name': req.body.admin,
+                  'type': 'school-coordinator'
+                }, function(err, admin_coordinator) {
+                  if (err) {
+                    console.error(err);
+                    res.redirect('/register_volunteer?error=' + err);
                   } else {
-                    console.log('This volunteer has no class');
-                    admin = {
-                      school_name: admin_coordinator.name,
-                      school_id: admin_coordinator._id
+                    if (admin_coordinator != null) {
+                      Volunteer.update({
+                        '_id': vol._id
+                      }, {
+                        '$set': {
+                          'admin.school_id': admin_coordinator._id,
+                          'student': true
+                        }
+                      }, function(err) {
+                        if (err) {
+                          console.error(err);
+                          res.redirect('/register_volunteer?error=' + err);
+                        } else {
+                          res.redirect('/waitforverifying?recipient=' + req.body.email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);
+                        }
+                      })
+                    } else {
+                      console.error('ERROR: No admin_coordinator found !');
+                      res.redirect('/waitforverifying?recipient=' + req.body.email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);
                     };
-                  };
-                  Volunteer.update({
-                    '_id': vol._id
-                  }, {
-                    '$set': {
-                      'admin': admin,
-                      'student': true
-                    }
-                  }, function(err) {
-                    if (err) {
-                      console.error(err);
-                    }
-                  })
-                };
-              });
+                  }
+                });
+              }
             });
+          } else {
+            res.redirect('/waitforverifying?recipient=' + req.body.email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);
           };
           // Intercom creates volunteers
           client.users.create({
@@ -324,7 +342,6 @@ router.post('/register_volunteer', function(req, res) {
               student: student
             }
           });
-          res.redirect('/waitforverifying?recipient=' + req.body.email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);
         }
       });
     }

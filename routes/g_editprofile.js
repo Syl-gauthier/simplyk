@@ -33,6 +33,81 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 	update_intercom.update_last_request_at = true;
 	update_intercom.custom_attributes = {};
 
+	const updateVolunteer = function(type, new_object, intercom_custom, path_to_new_object, path_to_new_object2, update_intercom, new_value, find, update, callback) {
+		console.log('A volunteer (' + req.session.volunteer.email + ') is changing his ' + type + ' to ' + req.body[type]);
+		console.log('req.body.' + type + ' : ' + req.body[type]);
+		console.log('req.body : ' + JSON.stringify(req.body));
+		console.log('update : ' + JSON.stringify(update));
+		Volunteer.findOneAndUpdate(find, update, {
+			new: true
+		}, function(err, newVolunteer) {
+			if (err) {
+				console.error(err);
+				return callback(err, null);
+			} else {
+				if (path_to_new_object2.length > 0) {
+					new_value = newVolunteer[path_to_new_object][path_to_new_object2];
+				} else {
+					new_value = newVolunteer[path_to_new_object];
+				};
+
+				send[new_object] = new_value;
+
+				if (intercom_custom.length > 0) {
+					update_intercom.custom_attributes[intercom_custom] = new_value;
+				};
+				if (intercom_main.length > 0) {
+					update_intercom[intercom_main] = new_value;
+				}
+
+				console.info('Volunteer ' + type + ' updated ' + new_value);
+
+				req.session.volunteer = newVolunteer;
+
+				//If school, we have to add student to the admin account
+				if (type == 'school_name') {
+					console.info('Add student to admins');
+					let admins_update = {};
+					if (req.body.classe) {
+						console.info('There is a class');
+						admins_update = {
+							'name': req.body.school_name,
+							'classes': req.body.classe
+						};
+					} else {
+						console.info('There is no class');
+						admins_update = {
+							'name': req.body.school_name,
+							'type': 'school-coordinator'
+						};
+					}
+					Admin.update(admins_update, {
+						'$push': {
+							'students': {
+								'_id': newVolunteer._id,
+								'status': 'automatic_subscription'
+							}
+						}
+					}, {
+						multi: true
+					}, function(err, admins_updated) {
+						if (err) {
+							console.error(err);
+							return callback(err, null);
+						} else {
+							console.info('admins_updated : ' + JSON.stringify(admins_updated));
+							client.users.update(update_intercom);
+							return callback(null, send);
+						}
+					});
+				} else {
+					client.users.update(update_intercom);
+					return callback(null, send);
+				}
+			}
+		});
+	}
+
 	if (req.session.group == 'volunteer') {
 		find._id = req.session.volunteer._id;
 		update_intercom.user_id = req.session.volunteer._id;
@@ -44,14 +119,25 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 			};
 			intercom_main = 'phone';
 			path_to_new_object = type;
+
+			updateVolunteer(type, new_object, intercom_custom, path_to_new_object, path_to_new_object2, update_intercom, new_value, find, update, function(err, send) {
+				if (err) {
+					res.status(404).send({
+						error: err
+					});
+				} else {
+					res.status(200).send(send);
+				}
+			});
+
 		} else if (typeof req.body.school_name != 'undefined') {
 			getClientSchools(function(err, clients) {
-				if(err){
+				if (err) {
 					console.error(err);
 				}
 				let school_id = {};
 				type = 'school_name';
-				update.$set = {
+				update = {
 					'admin.school_name': req.body.school_name,
 					student: true
 				};
@@ -59,6 +145,7 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 				console.log('clients : ' + JSON.stringify(clients));
 
 				//If school_name is a client school, find the school_id
+				console.info('req.body.school_name : ' + req.body.school_name);
 				console.info('clients.indexOf(req.body.school_name) : ' + (clients.indexOf(req.body.school_name)));
 				console.info('clients.indexOf(req.body.school_name) != -1 : ' + (clients.indexOf(req.body.school_name) != -1));
 				if (clients.map(c => c.name).indexOf(req.body.school_name) != -1) {
@@ -66,7 +153,10 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 						console.log('JSON.stringify(update) : ' + JSON.stringify(update));
 						school_id = mongoose.Types.ObjectId(clients[clients.map(c => c.name).indexOf(req.body.school_name)].id);
 						console.log('school_id : ' + school_id);
-						update.$set['admin.school_id'] = school_id;
+						update['admin.school_id'] = school_id;
+						if (req.body.classe) {
+							update['admin.class'] = req.body.classe;
+						};
 						console.log('JSON.stringify(update) : ' + JSON.stringify(update));
 					} catch (err) {
 						console.error(err);
@@ -77,6 +167,16 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 				intercom_custom = 'school_name';
 				path_to_new_object = 'admin';
 				path_to_new_object2 = 'school_name';
+
+				updateVolunteer(type, new_object, intercom_custom, path_to_new_object, path_to_new_object2, update_intercom, new_value, find, update, function(err, send) {
+					if (err) {
+						res.status(404).send({
+							error: err
+						});
+					} else {
+						res.status(200).send(send);
+					}
+				});
 			});
 		} else {
 			let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)'
@@ -85,103 +185,7 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 				error: err
 			});
 		};
-		console.log('A volunteer (' + req.session.volunteer.email + ') is changing his ' + type + ' to ' + req.body[type]);
-		console.log('req.body.' + type + ' : ' + req.body[type]);
-		Volunteer.findOneAndUpdate(find, update, {
-				new: true
-			},
-			function(err, newVolunteer) {
-				if (err) {
-					console.error(err);
-					res.status(404).send({
-						error: err
-					});
-				} else {
-					if (path_to_new_object2.length > 0) {
-						new_value = newVolunteer[path_to_new_object][path_to_new_object2];
-					} else {
-						new_value = newVolunteer[path_to_new_object];
-					};
 
-					send[new_object] = new_value;
-
-					if (intercom_custom.length > 0) {
-						update_intercom.custom_attributes[intercom_custom] = new_value;
-					};
-					if (intercom_main.length > 0) {
-						update_intercom[intercom_main] = new_value;
-					}
-
-					console.info('Volunteer ' + type + ' updated ' + new_value);
-
-					req.session.volunteer = newVolunteer;
-
-					//If school, we have to add student to the admin admin account
-					if (type == 'school_name') {
-						Admin.update({
-							'name': req.body.school_name,
-							'type': 'school-coordinator'
-						}, {
-							'$push': {
-								'students': {
-									'_id': newVolunteer._id,
-									'status': 'automatic_subscription'
-								}
-							}
-						}, {
-							new: true
-						}, function(err, admins_updated) {
-							if (err) {
-								console.error(err);
-								res.status(404).send({
-									error: err
-								});
-							}
-							console.log('The volunteer has a school : ' + req.body.school_name + ', and the number of admins updated is : ' + JSON.stringify(admins_updated));
-							//Add school_id to the student
-							Admin.findOne({
-								'name': req.body.school_name,
-								'type': 'school-coordinator'
-							}, function(err, admin_coordinator) {
-								if (err) {
-									console.error(err);
-									res.status(404).send({
-										error: err
-									});
-								};
-								if (admin_coordinator != null) {
-									const admin = {
-										school_name: admin_coordinator.name,
-										school_id: admin_coordinator._id
-									};
-									Volunteer.update({
-										'_id': newVolunteer._id
-									}, {
-										'$set': {
-											'admin': admin,
-											'student': true
-										}
-									}, function(err) {
-										if (err) {
-											console.error(err);
-											res.status(404).send({
-												error: err
-											});
-										}
-										res.status(200).send(send);
-										client.users.update(update_intercom);
-									})
-								};
-							});
-						});
-
-
-					} else {
-						res.status(200).send(send);
-						client.users.update(update_intercom);
-					}
-				}
-			});
 	} else if (req.session.group == 'organism') {
 		find._id = req.session.organism._id;
 		update_intercom.user_id = req.session.organism._id;

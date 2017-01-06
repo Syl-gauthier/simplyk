@@ -371,19 +371,33 @@ block content
                           h4.modal-title Édition de mon établissement scolaire
                       if !(volunteer.admin && volunteer.admin.school_name)
                         div.modal-body
-                          label(for='school_name') Mon établissement scolaire
-                          select#school_name.form-control(placeholder='', name='school_name', aria-describedby='basic-addon1')
-                            each school, school_i in schools_list
-                              option= school
+                          .form-group.conn-input
+                            label(for='school_name') Mon établissement scolaire
+                            select#school_name.form-control(placeholder='', name='school_name', aria-describedby='basic-addon1')
+                              each school, school_i in schools_list
+                                option= school
+                          .form-group.conn-input.hidden#classes_dropdown
+                            label.control-label Classe
+                            each client, client_i in client_schools
+                              select.form-control.hidden(placeholder='', aria-describedby='basic-addon1', id=client.id, class='client_classes_item')
+                                each classe, classe_i in client.classes
+                                  option= classe
                         .modal-footer
                           input.btn.btn-warning(type='submit', form='school-edit-form', value='Valider')
                           a.btn.btn-default(data-dismiss='modal') Fermer
                       else if client_schools.map(c => c.name).indexOf(volunteer.admin.school_name) == -1
                         div.modal-body
-                          label(for='school_name') Changer mon établissement scolaire
-                          select#school_name.form-control(placeholder='', name='school_name', aria-describedby='basic-addon1')
-                            each school, school_i in schools_list
-                              option= school
+                          .form-group.conn-input
+                            label(for='school_name') Changer mon établissement scolaire
+                            select#school_name.form-control(placeholder='', name='school_name', aria-describedby='basic-addon1')
+                              each school, school_i in schools_list
+                                option= school
+                          .form-group.conn-input.hidden#classes_dropdown
+                            label.control-label Classe
+                            each client, client_i in  client_schools
+                              select.form-control.hidden(placeholder='', aria-describedby='basic-addon1', id=client.id, class='client_classes_item')
+                                each classe, classe_i in client.classes
+                                  option= classe
                         .modal-footer
                           input.btn.btn-warning(type='submit', form='school-edit-form', value='Valider')
                           a.btn.btn-default(data-dismiss='modal') Fermer
@@ -519,6 +533,7 @@ block footscript
     });
   script(type='text/javascript').
     $(document).ready(function(){
+      var clients = !{JSON.stringify(client_schools)};
       $('.edit-form').submit(function(event){
         console.log('Submit an edit-form');
         console.log('$(this).attr("id) : ' + $(this).attr('id'))
@@ -526,6 +541,7 @@ block footscript
         const form_datas = $(this).serializeArray();
         let datas = {};
         const modal = $(this).closest('.modal');
+        console.log('form_datas : ' + JSON.stringify(form_datas));
         if ($(this).attr('id') == 'phone-edit-form'){
           console.log('The edit-form submit is a phone one');
           datas.phone = form_datas[0].value;
@@ -545,6 +561,9 @@ block footscript
         } else if ($(this).attr('id') == 'school-edit-form'){
           console.log('The edit-form submit is a school one');
           datas.school_name = form_datas[0].value;
+          if (form_datas[1]){
+            datas.classe = form_datas[1].value;
+          }
           $.post('/edit-profile', datas)
           .done(function(data){
             modal.modal('toggle');
@@ -561,4 +580,22 @@ block footscript
           })
         }
       })
+      $('#school_name').change(function(){
+        $('#classes_dropdown').addClass('hidden');
+        $('.client_classes_item').addClass('hidden');
+        $('.client_classes_item').removeAttr('name');
+        console.info('Admin changed');
+        var school = $('#school_name').val();
+        var school_index = clients.map(function(c){return c.name;}).indexOf(school);
+        if (school_index != -1){
+          var classes_number = clients[school_index].classes.length;
+          if(classes_number>0){
+            var client_selected_id = clients[school_index].id;
+            $('#classes_dropdown').removeClass('hidden');
+            $('#'+client_selected_id).removeClass('hidden');
+            $('#'+client_selected_id).attr('name', 'classe');
+            console.info('Admin changed and this is a client school');
+          }
+        }
+      });
     });
