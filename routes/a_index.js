@@ -9,6 +9,7 @@ var emailer = require('../email/emailer.js');
 var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
 var Volunteer = require('../models/volunteer_model.js');
+var Admin = require('../models/admin_model.js');
 
 
 router.get('/admin/classes', permissions.requireGroup('admin'), function(req, res, next) {
@@ -17,8 +18,9 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
   });
   console.info('Import students to classes page ! ');
   Volunteer.find({
-    '_id': {
-      '$in': student_ids
+    'admin.school_name': req.session.admin.name,
+    'admin.class': {
+      '$in': req.session.admin.classes
     }
   }, function(err, volunteers) {
     if (err) {
@@ -30,35 +32,16 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
         group: req.session.group
       });
     } else {
-      console.info('Students :' + String(volunteers));
-      var classes_array = [];
-      console.log(JSON.stringify(classes_array));
-      volunteers.forEach(function(vol) {
-        if (typeof vol.admin.class != undefined && vol.admin.class != null) {
-          var classe = vol.admin.class;
-          if (classes_array.indexOf(classe) == -1) {
-            classes_array.push(classe);
-          }
-        }
-      });
-      if (classes_array.length > 0) {
-        classes_array.push('Sans classe');
-      }
-      console.log(JSON.stringify(classes_array));
-      console.log(classes_array.length);
-      const datas = {};
-      datas['volunteers'] = volunteers;
-      datas['session'] = req.session;
-      datas['admin'] = req.session.admin;
-      datas['classes_array'] = classes_array;
-      datas['group'] = req.session.group;
+      let classes_array = [];
+      classes_array = req.session.admin.classes;
+      console.log('Classes array : ' + JSON.stringify(classes_array));
+
       res.status(200).render('a_classes.jade', {
-        volunteers: volunteers,
         session: req.session,
         admin: req.session.admin,
-        classes_array: classes_array,
         group: req.session.group,
-        datas
+        volunteers,
+        classes_array
       });
     }
   });
@@ -143,7 +126,69 @@ router.post('/addmanualhours', permissions.requireGroup('admin'), function(req, 
       };
     });
 
-})
+});
+
+router.post('/changeclass', permissions.requireGroup('admin'), function(req, res, next) {
+  Volunteer.update({
+    '_id': req.body.volunteer
+  }, {
+    $set: {
+      'admin.class': req.body.new_class
+    }
+  }, function(err) {
+    if (err) {
+      console.error(err);
+      res.status(404).send(err);
+    } else {
+      console.info('SUCCESS : Change class to ' + req.body.new_class + ' for the volunteer ' + req.body.volunteer);
+      Admin.update({
+        'name': req.session.admin,
+        'type': 'school-teacher',
+        'classes': {
+          $ne: req.body.new_class
+        }
+      }, {
+        $pull: {
+          'students': {
+            '_id': req.body.volunteer
+          }
+        }
+      }, {
+        multi: true
+      }, function(err, report0) {
+        if (err) {
+          console.error(err);
+          res.status(404).send(err);
+        } else {
+          console.info('SUCCESS : Remove the student volunteer to ancient admins. Report :' + report0);
+          const student_to_add = {
+            '_id': req.body.volunteer,
+            'status': 'automatic_subscription'
+          };
+          Admin.update({
+            'name': req.session.admin,
+            'type': 'school-teacher',
+            'classes': req.body.new_class
+          }, {
+            $push: {
+              'students': student_to_add
+            }
+          }, {
+            multi: true
+          }, function(err, report1) {
+            if (err) {
+              console.error(err);
+              res.status(404).send(err);
+            } else {
+              console.info('SUCCESS : Add the student volunteer to new admins. Report :' + report1);
+              res.status(200).end();
+            }
+          });
+        }
+      });
+    }
+  });
+});
 
 router.get('/admin/internopps', permissions.requireGroup('admin'), function(req, res, next) {
   res.render('o_dashboard.jade', {
