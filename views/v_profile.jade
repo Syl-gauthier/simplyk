@@ -35,7 +35,7 @@ block content
                 h3.media-heading <strong>Mon niveau d'engagement</strong>
                 h3
                   span.label.label-default Débutant
-                p.text-info <strong>Conseil : </strong> Inscris-toi à une activité bénévole pour augmenter ton niveau d'engagement !
+                p.text-info <strong>Conseil : </strong> Inscris-toi à un engagement bénévole pour augmenter ton niveau d'engagement !
             if (vol_level == 2)
               .media-left.media-middle(style='width: 40vw')
                 img.media-object(src='/images/grade_25.png' width='100')
@@ -474,7 +474,7 @@ block content
                                 h4.modal-title Détails de l'extra
                             div.modal-body
                               if ext.student_questions && ext.student_answers
-                                h4 <b>Tes feedbacks</b>
+                                h4 <b>Tes retours</b>
                                 each question, question_i in ext.student_questions
                                   div.panel.panel-warning
                                     div.panel-heading
@@ -482,7 +482,7 @@ block content
                                     div.panel-body
                                       h6= ext.student_answers[question_i]
                               if ext.organism_questions.length && ext.organism_answers.length
-                                h4 <b>Les feedbacks de l'organisme</b>
+                                h4 <b>Les retours de l'organisme</b>
                                 each question, question_i in ext.organism_questions
                                   div.panel.panel-warning
                                     div.panel-heading
@@ -490,7 +490,7 @@ block content
                                     div.panel-body
                                       h6= ext.organism_answers[question_i]
                               else
-                                h4 <b>En attente des feedbacks de l'organisme...</b>
+                                h4 <b>En attente des retours de l'organisme...</b>
                             div.modal-footer
                                 a.btn.btn-default(data-dismiss='modal') Fermer
           .col-md-4.col-md-offset-2
