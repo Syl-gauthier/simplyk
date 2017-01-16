@@ -94,6 +94,15 @@ block footscript
 			$('#address').on('focusin', function(){
 				$('#address_result').empty();
 			});
+
+			$('#creationeventform').on('keyup keypress', function(e) {
+				var keyCode = e.keyCode || e.which;
+				if (keyCode === 13) { 
+					e.preventDefault();
+					return false;
+				}
+			});
+
 			$('#creationeventform').submit(function(event){
 				let days_total = $('.datepicker').length;
 				let days_defined = 0;

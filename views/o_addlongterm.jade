@@ -148,6 +148,15 @@ block footscript
       });
       var input = $('.timepicker');
       input.pickatime({});
+
+      $('#creationlongtermform').on('keyup keypress', function(e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13) { 
+          e.preventDefault();
+          return false;
+        }
+      });
+      
       $('#age-checkbox').click(function(){
         if($(':checked').length > 1){
           console.log($(':checked').length);
