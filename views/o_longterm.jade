@@ -193,3 +193,16 @@ block content
                         span.badge.inline(style='background-color: #E33831')= vol.long_terms[0].hours_pending + 'h'
                       else
                         span.badge.inline(style='background-color: #E33831')= '0h'
+
+block footscript
+  script(type='text/javascript').
+    'use strict';
+    $(document).ready(function(){
+      $('.edit').click(function(){
+        let datas = {};
+        datas.type = $(this).attr('type');
+        console.info('In POST to change event infos whith datas : ' +JSON.stringify(datas));
+        let div = $(this).parent();
+        div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Nombre de bénévoles recherchés</p><input type='number' min='1' max='400' name='vol_nb'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+      })
+    });
