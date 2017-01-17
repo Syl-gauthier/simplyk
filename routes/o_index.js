@@ -380,7 +380,8 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
                     longterm: longterm,
                     slotJSON: slotJSON,
                     volunteers: volunteers,
-                    group: req.session.group
+                    group: req.session.group,
+                    date
                 });
                 res.end();
             }
