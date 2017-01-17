@@ -60,10 +60,11 @@ block content
         .page-header
           h4 L'organisme :
           h2= organism.org_name
-          p='Mission: ' + organism.description
-          p= 'Courriel: ' + organism.email
+          p <b>Mission:</b> #{organism.description}
+          p <b>Courriel:</b> #{organism.email}
+          p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
           if organism.phone
-            p= 'Téléphone: ' + organism.phone
+            p <b>Téléphone:</b> #{organism.phone}
 
 block footscript
   script(type="text/javascript").

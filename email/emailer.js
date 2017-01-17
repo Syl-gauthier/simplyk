@@ -30,10 +30,11 @@ function callSendMail(mailOptions) {
 
 //Send email with verify url
 function sendVerifyEmail(content) {
+  console.log('content.group : ' + JSON.stringify(content));
   console.log('content.group : ' + content.group);
   if (content.group == 'vol') {
     console.log('content.group : vol');
-    content.subtitle = 'Simplyk vise à t\'aider à t\'impliquer dans ta communauté. Tout d\'abord, confirme ton compte grâce au bouton ci-dessous';
+    content.subtitle = 'Simplyk vise à t\'aider à t\'impliquer dans ta communauté en te trouvant des opportunités de bénévolat qui te correspondent.Tout d\'abord, confirme ton compte grâce au bouton ci-dessous';
   } else if (content.group == 'org') {
     console.log('content.group : org');
     content.subtitle = 'Simplyk est la plateforme qui t\'aide à trouver des bénévoles facilement, afin d\'avoir plus d\'impact. Avant de poster tes besoins, confirme ton compte grâce au bouton ci-dessous';
