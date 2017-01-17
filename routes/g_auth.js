@@ -271,8 +271,8 @@ router.post('/register_volunteer', function(req, res) {
               birthdate_at: birthdate,
               firstname: vol.firstname,
               group: 'volunteer',
-              school_name: school_name,
-              student: student
+              school_name,
+              student
             }
           });
         }

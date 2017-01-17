@@ -17,12 +17,15 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
     return el._id;
   });
   console.info('Import students to classes page ! ');
-  Volunteer.find({
-    'admin.school_name': req.session.admin.name,
-    'admin.class': {
-      '$in': req.session.admin.classes
-    }
-  }, function(err, volunteers) {
+  let find_query = {};
+  find_query['admin.school_name'] = req.session.admin.name;
+  if (req.session.admin.type != 'school-coordinator') {
+    let in_query = {};
+    in_query['$in'] = req.session.admin.classes;
+    find_query['admin.class'] = in_query;
+  }
+  console.info(JSON.stringify(find_query));
+  Volunteer.find(find_query, function(err, volunteers) {
     if (err) {
       console.error('There is an error to access /listorganisms and get all the volunteers, the error is : ' + err);
       res.render('a_classes.jade', {
@@ -33,7 +36,10 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
       });
     } else {
       let classes_array = [];
-      classes_array = req.session.admin.classes;
+      classes_array = JSON.parse(JSON.stringify(req.session.admin.classes));
+      if (req.session.admin.type == 'school-coordinator') {
+        classes_array.push('Sans classe');
+      }
       console.log('Classes array : ' + JSON.stringify(classes_array));
 
       res.status(200).render('a_classes.jade', {
