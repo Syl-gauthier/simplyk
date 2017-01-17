@@ -18,9 +18,9 @@ block content
       .col-md-5.col-md-offset-1
         h3.page-header <strong> #{volunteer.firstname} #{volunteer.lastname}  </strong>
         if lt_hours_done
-          p <i class='fa fa-2x fa-link fa-pull-left fa-border'></i> <b>Engagements</b> <br> #{lt_hours_done} heures confirmées
+          p <i class='fa fa-2x fa-link fa-pull-left fa-border'></i> <b>Engagements long terme</b> <br> #{lt_hours_done} heures confirmées
         else 
-          p <i class='fa fa-2x fa-link fa-pull-left fa-border'></i> <b>Engagements</b> <br> 0 heures confirmées
+          p <i class='fa fa-2x fa-link fa-pull-left fa-border'></i> <b>Engagements long terme</b> <br> 0 heures confirmées
         if events_hours_done || extras_hours_done || manuals_hours_done
           p <i class='fa fa-2x fa-trophy fa-pull-left fa-border'></i> <b>Évènements</b> <br> #{addHoursIfExists([events_hours_done, extras_hours_done, manuals_hours_done])} heures confirmées
         else 
@@ -119,7 +119,7 @@ block content
         #participations.tab-pane.fade.active.in(role='tabpanel')
           .col-md-4.col-md-offset-1
             .page-header
-              h2 Participations ponctuelles
+              h2 Évènements
             #offers-list.no-side-padding
                 ul.list-group.list-opportunity
                   unless (events_past || events_confirmed || events_pending || events_subscribed)

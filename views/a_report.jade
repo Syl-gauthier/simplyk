@@ -55,7 +55,7 @@ block content
             th.text-center Inscriptions
             th.text-center Heures
           tr
-            th(rowspan='2' style="vertical-align:middle").text-center Engagements
+            th(rowspan='2' style="vertical-align:middle").text-center Engagements long terme
             td(rowspan='2' style="vertical-align:middle").text-center <strong> #{volunteer.long_terms.length} </strong>
             td.text-center <strong>#{volunteer.long_terms.filter(function(long){if(long.hours_pending){return true;}else{return false;}}).map(el => el.hours_pending).reduce(hours_count, 0)}</strong> heures à confirmer
           tr
@@ -138,7 +138,7 @@ block content
     .row
       .col-md-10.col-md-offset-1(style='border: 3px solid #359B9C; margin-bottom:10px;')
         .page-header
-          h3 ENGAGEMENTS
+          h3 ENGAGEMENTS LONG TERME
         .no-side-padding
           ul.list-group.list-opportunity
             unless (volunteer.long_terms)
