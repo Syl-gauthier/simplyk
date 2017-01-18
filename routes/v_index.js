@@ -8,7 +8,7 @@ var Intercom = require('intercom-client');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
-var moment =  require('moment');
+var moment = require('moment');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -409,7 +409,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                 var vol_content = {
                   recipient: newVolunteer.email,
                   firstname: newVolunteer.firstname,
-                  customMessage: ['Tu es inscrit le ' +  dayString + ' à : ' + newActivity.address, 'L\'organisme ' + organism.org_name + ' va être au mis au courant de ton inscription. Entre en contact avec ' + organism.firstname + ' ' + organism.lastname + ' au ' + organism.phone + ' pour parler des détails de l\'activité !', 'Après l\'évènement, tu pourras ajouter des heures d\'engagement à ton profil pour faire progresser ton profil de citoyen engagé :)'],
+                  customMessage: ['Tu es inscrit le ' + dayString + ' à : ' + newActivity.address, 'L\'organisme ' + organism.org_name + ' va être au mis au courant de ton inscription. Entre en contact avec ' + organism.firstname + ' ' + organism.lastname + ' au ' + organism.phone + ' pour parler des détails de l\'activité !', 'Après l\'évènement, tu pourras ajouter des heures d\'engagement à ton profil pour faire progresser ton profil de citoyen engagé :)'],
                 };
                 emailer.sendSubscriptionVolEmail(vol_content);
                 //Intercom create addlongterm event
@@ -441,7 +441,9 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
     }
   };
   if (req.session.volunteer.student) {
-    subscribeToActivity(schools_res.getQuestions(req.session.volunteer.admin).student_questions, schools_res.getQuestions(req.session.volunteer.admin).organism_questions);
+    schools_res.getQuestions(req.session.volunteer.admin, function(questions) {
+      subscribeToActivity(questions.student_questions, questions.organism_questions);
+    });
   } else {
     subscribeToActivity(null, null);
   }
@@ -456,7 +458,7 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
   var alreadyExists = req.session.volunteer.long_terms.find(isLongterm);
   console.log('alreadyExists : ' + alreadyExists + typeof alreadyExists);
   if (typeof alreadyExists === 'undefined') {
-    let phone ={};
+    let phone = {};
     if (req.session.volunteer.phone) {
       phone = req.session.volunteer.phone;
     } else if (req.body.phone) {

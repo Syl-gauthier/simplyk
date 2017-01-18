@@ -50,7 +50,7 @@ block content
                     h3 Questions sur l'activité
                     each question, q_i in student_questions
                         .form-group.conn-input
-                            label(for='answer'+q_i)= question
+                            label(for='answer'+q_i) !{question.replace(/\n/g, '<br/>')}
                             textarea.form-control(id='answer'+q_i, name='answer'+q_i, rows="6" required)
                     .row
                         input.btn.btn-default.form-control(type='submit', form='addextrahours', style="margin-bottom: 100px;")
