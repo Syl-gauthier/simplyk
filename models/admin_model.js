@@ -21,7 +21,8 @@ var AdminSchema = new Schema({
 	students: [{
 		id: { type: Schema.Types.ObjectId, ref: 'Volunteer' },
 		status: String //'update_subscription' if it is the vol who claim that he belongs to the school
-	}]//mails des utilisateurs qui ont mis l'Adminortunité en favori
+	}],//mails des utilisateurs qui ont mis l'Adminortunité en favori
+	questions: [String]
 });
 
 AdminSchema.methods.generateHash = crypt.generateHash;
