@@ -341,6 +341,10 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
 
 router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
     console.info('In GET to a longterm page with lt_id:' + req.params.lt_id);
+    let error = null;
+    if(req.query.error){
+        error = req.query.error;
+    };
     var organism = req.session.organism;
 
     function isRightLongterm(long) {
@@ -381,9 +385,9 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
                     slotJSON: slotJSON,
                     volunteers: volunteers,
                     group: req.session.group,
-                    date
+                    date,
+                    error
                 });
-                res.end();
             }
         });
     } else {
