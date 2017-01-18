@@ -554,7 +554,7 @@ router.get('/volunteer/extra_simplyk_hours', permissions.requireGroup('volunteer
       session: req.session,
       volunteer: req.session.volunteer,
       group: req.session.group,
-      student_questions: schools_res.student_questions
+      student_questions: schools_res.getQuestions(req.session.volunteer.admin).student_questions
     });
   } else {
     const err = 'ERROR: Il te faut être un élève pour accéder à cette page d\'ajout d\'heures extra-Simplyk';
@@ -617,7 +617,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
           day: req.body.activity_date,
           hours: req.body.hours_pending,
           student: true,
-          organism_questions: ['Quel point positif pouvez-vous mettre en avant sur l’élève, et qu’est-ce que l’élève pourrait améliorer ?'],
+          organism_questions: schools_res.getQuestions(req.session.volunteer.admin).organism_questions,
           activity_id: newActivity._id
         }); //////TO SAVE !
         if (theOrg) {
@@ -653,8 +653,8 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
               days: activity_saved.days,
               hours_pending: req.body.hours_pending,
               extra: true,
-              student_questions: schools_res.student_questions,
-              organism_questions: schools_res.organism_questions,
+              student_questions: schools_res.getQuestions(req.session.volunteer.admin).student_questions,
+              organism_questions: schools_res.getQuestions(req.session.volunteer.admin).organism_questions,
               student_answers
             };
             console.log('extra_to_add : ' + JSON.stringify(extra_to_add));
@@ -739,8 +739,8 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 days: activity_saved.days,
                 hours_pending: req.body.hours_pending,
                 extra: true,
-                student_questions: schools_res.student_questions,
-                organism_questions: schools_res.organism_questions,
+                student_questions: schools_res.getQuestions(req.session.volunteer.admin).student_questions,
+                organism_questions: schools_res.getQuestions(req.session.volunteer.admin).organism_questions,
                 student_answers
               };
               console.log('extra_to_add : ' + JSON.stringify(extra_to_add));

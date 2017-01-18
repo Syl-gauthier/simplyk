@@ -441,7 +441,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
     }
   };
   if (req.session.volunteer.student) {
-    subscribeToActivity(schools_res.student_questions, schools_res.organism_questions);
+    subscribeToActivity(schools_res.getQuestions(req.session.volunteer.admin).student_questions, schools_res.getQuestions(req.session.volunteer.admin).organism_questions);
   } else {
     subscribeToActivity(null, null);
   }
