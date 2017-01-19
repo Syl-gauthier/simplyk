@@ -12,9 +12,8 @@ block content
     .row
       .col-md-6.col-md-offset-3
         .page-header
-          p
-            h1.inline #{longterm.intitule}
-            i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='intitule')
+          h1.inline.intitule #{longterm.intitule}
+          i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='intitule')
           if (error)
             p.alert.alert-danger= error
           p #{longterm.description} <i class="fa fa-pencil edit" type='description' style="cursor: pointer"></i>
@@ -208,6 +207,9 @@ block footscript
         } else if (type == 'description'){
           let div = $(this).parent();
           div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Nouvelle description</p><textarea rows='6' name='description'></textarea><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+        } else if (type == 'intitule'){
+          let div = $('h1.intitule');
+          div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Nouveau titre</p><input type='text' name='intitule'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
         }
       })
     });

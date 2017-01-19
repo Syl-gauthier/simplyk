@@ -32,15 +32,24 @@ router.post('/edit-longterm', permissions.requireGroup('organism'), function(req
         console.info('SUCCESS : we have updated long_term for organism ' + organism_updated.org_name);
         req.session.organism = organism_updated;
         req.session.save(function() {
+          let volunteer_update = {};
           res.redirect(req.body.url);
-          if (req.body.description) {
+          if (req.body.description || req.body.intitule) {
+            if (req.body.description) {
+              volunteer_update = {
+                'long_terms.$.description': req.body.description
+              };
+            } else if (req.body.intitule) {
+              volunteer_update = {
+                'long_terms.$.intitule': req.body.intitule
+              };
+            }
+
             Volunteer.update({
               'long_terms._id': lt_id
-            }, {
-              'long_terms.$.description': req.body.description
-            }, function(err, response) {
+            }, volunteer_update, function(err, response) {
               if (err) {
-              console.error('ERROR when updating volunteer, but organism update was ok with update : ' + update + ' and the error is ' + err);
+                console.error('ERROR when updating volunteer, but organism update was ok, with update : ' + volunteer_update + ' and the error is ' + err);
               } else {
                 console.info('SUCCESS : we have updated long_term for organism ' + organism_updated.org_name + ' and volunteers with response : ' + JSON.stringify(response));
                 res.end();
@@ -71,6 +80,11 @@ router.post('/edit-longterm', permissions.requireGroup('organism'), function(req
   } else if (req.body.description) {
     update = {
       'long_terms.$.description': req.body.description
+    };
+    mongoOrganismUpdate(update);
+  } else if (req.body.intitule) {
+    update = {
+      'long_terms.$.intitule': req.body.intitule
     };
     mongoOrganismUpdate(update);
   }
