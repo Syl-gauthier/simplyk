@@ -17,7 +17,7 @@ router.post('/edit-longterm', permissions.requireGroup('organism'), function(req
   console.log('lt_id to update : ' + lt_id);
   let update = {};
 
-  function mongoUpdate(update) {
+  function mongoOrganismUpdate(update) {
     Organism.findOneAndUpdate({
       '_id': req.session.organism._id,
       'long_terms._id': lt_id
@@ -33,6 +33,20 @@ router.post('/edit-longterm', permissions.requireGroup('organism'), function(req
         req.session.organism = organism_updated;
         req.session.save(function() {
           res.redirect(req.body.url);
+          if (req.body.description) {
+            Volunteer.update({
+              'long_terms._id': lt_id
+            }, {
+              'long_terms.$.description': req.body.description
+            }, function(err, response) {
+              if (err) {
+              console.error('ERROR when updating volunteer, but organism update was ok with update : ' + update + ' and the error is ' + err);
+              } else {
+                console.info('SUCCESS : we have updated long_term for organism ' + organism_updated.org_name + ' and volunteers with response : ' + JSON.stringify(response));
+                res.end();
+              }
+            })
+          }
         });
       }
     })
@@ -52,13 +66,13 @@ router.post('/edit-longterm', permissions.requireGroup('organism'), function(req
       update = {
         'long_terms.$.vol_nb': req.body.vol_nb
       };
-      mongoUpdate(update);
+      mongoOrganismUpdate(update);
     }
   } else if (req.body.description) {
     update = {
       'long_terms.$.description': req.body.description
     };
-    mongoUpdate(update);
+    mongoOrganismUpdate(update);
   }
 });
 
