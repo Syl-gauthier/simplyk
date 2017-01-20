@@ -120,6 +120,7 @@ block footscript
       $('#admin_checkbox').click(function(){
         $('#admin_dropdown').removeClass('hidden');
         $('#admin_dropdown').toggle(this.checked);
+        $('#classes_dropdown').toggle(this.checked);
       });
       $('#admin').change(function(){
         $('#classes_dropdown').addClass('hidden');
