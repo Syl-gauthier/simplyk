@@ -203,6 +203,7 @@ router.post('/register_volunteer', function(req, res) {
       let admin = {};
       let student = false;
       let school_name = null;
+      let phone = req.body.phone;
       let birthdate = new Date(req.body.birthdate).getTime();
       birthdate = birthdate / 1000;
 
@@ -219,6 +220,7 @@ router.post('/register_volunteer', function(req, res) {
           long_terms: [],
           manuals: [],
           extras: [],
+          phone,
           admin,
           student
         });
@@ -251,6 +253,7 @@ router.post('/register_volunteer', function(req, res) {
               name: vol.firstname + ' ' + vol.lastname,
               user_id: vol._id,
               signed_up_at: Math.round(Date.now() / 1000),
+              phone: req.body.phone,
               last_request_at: Math.round(Date.now() / 1000),
               custom_attributes: {
                 birthdate_at: birthdate,
