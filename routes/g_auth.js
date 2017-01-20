@@ -144,11 +144,13 @@ router.post('/login', function(req, res, next) {
 
 router.post('*/logout', function(req, res, next) {
   //Intercom create logout event
-  client.events.create({
-    event_name: 'logout',
-    created_at: Math.round(Date.now() / 1000),
-    user_id: req.session[req.session.group]._id
-  });
+  if (req.session[req.session.group]) {
+    client.events.create({
+      event_name: 'logout',
+      created_at: Math.round(Date.now() / 1000),
+      user_id: req.session[req.session.group]._id
+    });
+  }
   req.session.destroy(function(err) {
     if (err) {
       return next(err);
