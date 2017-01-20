@@ -70,8 +70,8 @@ block content
 																	if ((Date.parse(event.day) == Date.parse(day.day)) && (act._id.toString() == event.activity_id.toString()))
 																		if Date.parse(day.day)<Date.now()
 																			if event.hours_pending > event.hours_done
-																				div.media-right(id=act._id day=event.day)
-																					p= '***** Participation de ' + event.hours_pending + ' h ?'
+																				div.media-right(id=act._id, day=event.day)
+																					p <b> Participation de #{event.hours_pending} h ? </b>
 																					button.btn.btn-default(class='confirmHoursButton' id=vol._id) Confirmer
 																					button.btn.btn-warning(id='correctionModalButton' type= 'button' data-toggle='modal' data-target='#correctionModal') Non
 																					#correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
