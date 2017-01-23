@@ -38,6 +38,9 @@ block content
 										h6.inline
 											i.fa.fa-user
 											p.inline= day.applicants.length+' bénévoles se sont inscrits'
+											p.inline= ' (' + day.vol_nb +' places disponibles'
+											i.fa.fa-pencil.fa-xs.edit.inline(style="cursor: pointer" type='vol_nb' vol_nb=day.vol_nb)
+											p.inline )
 										h6 De #{day.start_time} à #{day.end_time}
 									if day.vols.length
 										h5 <b> Liste des bénévoles </b>
@@ -90,7 +93,23 @@ block content
 
 block footscript
 	script('type'='text/javascript').
+    'use strict';
 		$(document).ready(function(){
+			$('.edit').click(function(){
+				const type = $(this).attr('type');
+				if(type == 'vol_nb'){
+					let div = $(this).parent();
+					div.html("<form name='edit-form' method='post' action='/edit-event'><p>Nombre de bénévoles recherchés</p><input type='number' min='1' max='400' placeholder='"+$(this).attr('vol_nb')+"' name='vol_nb'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+				} else if (type == 'description'){
+					let div = $(this).parent();
+					div.html("<form name='edit-form' method='post' action='/edit-event'><p>Nouvelle description</p><textarea rows='6' name='description'></textarea><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+				} else if (type == 'intitule'){
+					let div = $('h1.intitule');
+					console.info(JSON.stringify(div));
+					console.info(div.text());
+					div.html("<form name='edit-form' method='post' action='/edit-event'><input type='text' placeholder='"+div.text()+"' name='intitule'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+				}
+			})
 			$(function () {
 				$('[data-toggle="tooltip"]').tooltip()
 			})
