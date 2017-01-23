@@ -12,14 +12,18 @@ block content
 	.container-fluid
 		.row.fill
 			.col-md-8.col-md-offset-2.no-side-padding
-				h1= event.intitule
+				p
+					h1.inline.intitule= event.intitule
+					i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='intitule')
 				p Adresse: #{event.address}
-				p Description: #{event.description}
+				p #{event.description}
+				if (error && (error.length > 0))
+					p.alert.alert-danger= error
 				each act, act_i in event.acts
 					li.list-group-item(id= event._id)
 						.panel.panel-default
 							.panel-heading
-								div.media-left.media-top
+								div.media-left.media-middle
 									a(href='profile')
 										img.media-object.little-img(src='/images/clouds.jpg')
 								div.media-body

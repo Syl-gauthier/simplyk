@@ -583,7 +583,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
 
     console.log('student_answers : ' + student_answers);
     let newActivity = new Activity({
-      email: req.body.org_email,
+      email: req.body.org_email.toLowerCase(),
       org_name: req.body.org_name,
       org_phone: req.body.org_phone,
       intitule: req.body.intitule,
@@ -599,7 +599,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
       //Ajouter organism s'il n'existe pas
       Organism.findOne({
         '$or': [{
-          'email': req.body.org_email
+          'email': req.body.org_email.toLowerCase()
         }, {
           'org_name': req.body.org_name
         }, {
@@ -638,7 +638,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
             emailer.sendHoursPendingOrgEmail({
               firstname: req.session.volunteer.firstname,
               lastname: req.session.volunteer.lastname,
-              recipient: req.body.org_email,
+              recipient: req.body.org_email.toLowerCase(),
               customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'En tant qu\'élève dans une école où le bénévolat est encouragé, il a besoin que vous lui validiez ces heures s\'il les a réellement fait. Sinon, il est utile aussi que vous signaliez qu\'il y a une erreur ! :)', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
             });
             console.info('INFO: student add extra hours to an organism which ALREADY exists : ' + req.body.org_name);
@@ -689,7 +689,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
             const randomString = randomstring.generate();
 
             organism = new Organism({
-              email: req.body.org_email,
+              email: req.body.org_email.toLowerCase(),
               org_name: req.body.org_name,
               email_verified: false,
               email_verify_string: randomString,
@@ -720,11 +720,11 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
               console.log('Verify url sent: ' + verifyUrl);
 
               emailer.sendAutomaticSubscriptionOrgEmail({
-                recipient: req.body.org_email,
+                recipient: req.body.org_email.toLowerCase(),
                 button: {
                   link: verifyUrl
                 },
-                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name + '.', 'Vous recevez ce message car cet élève mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Si c\'est bel et bien le cas, venez valider ses heures sur la plateforme Simplyk afin qu\'elles soient comptabiliser par ses professeurs !', 'S\'il n\'a pas fait les heures mentionnées, connectez-vous pour corriger la situation. :) ', 'Vos identifiants de connexion sont les suivants :', 'Email: ' + req.body.org_email, 'Mot de passe: ' + passToChange],
+                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name + '.', 'Vous recevez ce message car cet élève mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Si c\'est bel et bien le cas, venez valider ses heures sur la plateforme Simplyk afin qu\'elles soient comptabiliser par ses professeurs !', 'S\'il n\'a pas fait les heures mentionnées, connectez-vous pour corriger la situation. :) ', 'Vos identifiants de connexion sont les suivants :', 'Email: ' + req.body.org_email.toLowerCase(), 'Mot de passe: ' + passToChange],
                 firstname: req.session.volunteer.firstname,
                 lastname: req.session.volunteer.lastname
               });
