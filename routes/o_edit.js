@@ -132,6 +132,7 @@ router.post('/edit-event', permissions.requireGroup('organism'), function(req, r
               activity_update = {
                 'event_intitule': req.body.intitule
               }
+              //A PROBLEM IS LEFT FOR NOW, BUT NOT URGENT (PEOPLE WHO ARE ALREADY SUBSCRIBED TO MULTIPLE ACTIVTY OF THE EVENT HAVE ONLY ONE ACIVITY UPDATED WITH THE NEW EVENT_INTITULE)
             }
 
             Volunteer.update({
