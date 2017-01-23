@@ -290,42 +290,37 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
                             for (var daysI = activities_list[actI].days.length - 1; daysI >= 0; daysI--) {
                                 activities_list[actI].days[daysI].vols = [];
                                 var vols = [];
-                                console.info('activities_list[actI] : ' + activities_list[actI].days[daysI]);
-                                console.info('**************');
 
                                 function goodEvent(event) {
-                                    console.info('blop');
-                                    console.info('event.activity_id : ' + event.activity_id.toString());
-                                    console.info('activities_list[actI]._id : ' + activities_list[actI]._id.toString());
-                                    console.info('event.activity_id === activities_list[actI]._id : ' + (event.activity_id.toString() === activities_list[actI]._id.toString()));
                                     return ((event.activity_id.toString() === activities_list[actI]._id.toString()) && (Date.parse(event.day) === Date.parse(activities_list[actI].days[daysI].day)));
                                 }
 
                                 function isParticipating(volunteer) {
-                                    console.info('volunteer.events : ' + volunteer.events);
                                     var result = volunteer.events.find(goodEvent);
-                                    console.info('result : ' + result);
                                     return typeof result !== 'undefined';
                                 }
                                 var these_volunteers = volunteers.filter(isParticipating);
-                                console.info('these_volunteers : ' + these_volunteers);
 
 
                                 Array.prototype.push.apply(activities_list[actI].days[daysI].vols, these_volunteers);
-                                console.info('activities_list[actI] avec vols : ' + activities_list[actI]);
-                                console.info('activities_list[actI].vols : ' + activities_list[actI].days[daysI].vols);
                             }
                         }
 
 
                         Array.prototype.push.apply(event.acts, activities_list);
+                        let error = {};
+                        if (req.query.error) {
+                            error = req.query.error;
+
+                        };
                         //res.json(event);
                         res.render('o_event.jade', {
                             session: req.session,
                             event: event,
                             organism: req.session.organism,
                             group: req.session.group,
-                            date
+                            date,
+                            error
                         });
                     }
                 });
@@ -341,6 +336,10 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
 
 router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
     console.info('In GET to a longterm page with lt_id:' + req.params.lt_id);
+    let error = null;
+    if (req.query.error) {
+        error = req.query.error;
+    };
     var organism = req.session.organism;
 
     function isRightLongterm(long) {
@@ -380,9 +379,10 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
                     longterm: longterm,
                     slotJSON: slotJSON,
                     volunteers: volunteers,
-                    group: req.session.group
+                    group: req.session.group,
+                    date,
+                    error
                 });
-                res.end();
             }
         });
     } else {
