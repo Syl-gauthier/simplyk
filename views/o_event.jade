@@ -42,99 +42,56 @@ block content
 									if day.vols.length
 										h5 <b> Liste des bénévoles </b>
 										ul.list-group
-											each vol, vol_i in day.vols
-												li.list-group-item
-													div.media
-														div.media-left.media-middle
-															a(href='/volunteer/profile')
-															div.media-body
-																h4.media-heading <b>#{vol.firstname} #{vol.lastname}</b>
-																h6
-																	i.fa.fa-at
-																	p.inline #{vol.email}
-																if vol.phone
-																	h6
-																		i.fa.fa-phone
-																		p.inline #{vol.phone}
-																else
-																	h6
-																if vol.birthdate
-																	h6
-																		i.fa.fa-birthday-cake
-																		p.inline #{date.printDate(vol.birthdate)}
-																else
-																	h6
-															each event, event_i in vol.events
-																if ((Date.parse(event.day) == Date.parse(day.day)) && (act._id.toString() == event.activity_id.toString()))
-																	if Date.parse(day.day)<Date.now()
-																		if event.hours_pending > event.hours_done
-																			div.media-right(id=act._id day=event.day)
-																				p= '***** Participation de ' + event.hours_pending + ' h ?'
-																				button.btn.btn-default(class='confirmHoursButton' id=vol._id) Confirmer
-																				button.btn.btn-warning(id='correctionModalButton' type= 'button' data-toggle='modal' data-target='#correctionModal') Non
-																				#correctionModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="correctionModalLabel")
-																					div.modal-dialog(role='document')
-																						form.modal-content(action='/organism/correcthours' method='post' id='correctHoursForm')
-																							.modal-header
-																								button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-																									span(aria-hidden='true')
-																									h4.modal-title Correction d'horaires
-																								div.modal-body
-																									p Les heures mentionnées par le bénévole ne reflètent pas la réalité ?
-																									div.form-group
-																										label(for='correctionHoursInput') Heures réellement réalisées 
-																										input.form-control(type='Number' id='correctionHoursInput' required)
-																								div.modal-footer
-																									button.btn.btn-default(data-dismiss='modal') Annuler
-																									button.btn.btn-warning(type='submit' form='correctHoursForm') Envoyer
-																		if (event.hours_done > event.hours_pending) && event.hours_done != 0
-																			div.media-right
-																				p= ' Participation de ' + event.hours_done + ' h'
-																		if (event.hours_done == event.hours_pending) && event.hours_done == 0
-																			div.media-right
-																				p= 'Participation non-confirmée'
-																	else
-																		div.media-right
-																			button.btn.btn-default(type='button')
-																				a(href='mailto:'+vol.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
-
+											table.table.table-striped(id='subscribers')
+												thead
+													tr
+														th.text-center #
+														th.text-center Nom
+														th.text-center Prénom
+														th.text-center
+															i.fa.fa-birthday-cake
+														th.text-center
+															i.fa.fa-phone
+														th.text-center Courriel
+														th.text-center Status
+												tbody
+													each vol, vol_i in day.vols
+														tr
+															td.text-center= vol_i
+															td.text-center= vol.lastname
+															td.text-center= vol.firstname
+															if vol.birthdate
+																td.text-center #{date.printDate(vol.birthdate)}
+															else
+																td
+															if vol.phone
+																td.text-center= vol.phone
+															else 
+																td.text-center
+															td.text-center= vol.email
+															td.text-center
+																each event, event_i in vol.events
+																	if ((Date.parse(event.day) == Date.parse(day.day)) && (act._id.toString() == event.activity_id.toString()))
+																		if Date.parse(day.day)<Date.now()
+																			if event.hours_pending > event.hours_done
+																				div.text-center(id=act._id, day=event.day)
+																					p.inline <b> Participation de #{event.hours_pending} h ? </b>
+																					i(data-toggle="tooltip" data-placement="bottom" title="Pour valider ces heures, va sur le tableau de bord, dans la section 'À faire'").fa.fa-question-circle
+																			if (event.hours_done > event.hours_pending) && event.hours_done != 0
+																				div.text-center
+																					p Participation de <b>#{event.hours_done} h</b>
+																			if (event.hours_done == event.hours_pending) && event.hours_done == 0
+																				div.text-center
+																					p Participation <b>non-confirmée</b>
+																		else
+																			div.text-center
+																				button.btn.btn-default(type='button')
+																					a(href='mailto:'+vol.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
 
 block footscript
-	script(type='text/javascript', src='/javascripts/date_browser.js')
-	script(type='text/javascript').
+	script('type'='text/javascript').
 		$(document).ready(function(){
-			$('#correctionModal').on('shown.bs.modal', function () {
-				$('#correctionModalButton').focus()
-			});
-			$('.confirmHoursButton').click(function(){
-				var vol_id = $(this).attr('id');
-				var act_id = $(this).parent().attr('id');
-				var day = $(this).parent().attr('day');
-				var input = $(this);
-				$.post('/organism/confirmhours', {vol_id: vol_id, act_id: act_id, day: day}).done(function(data, status){
-					if(data.error){
-						console.log("Remarque: " + data.error);
-						input.replaceWith('<p>Il y a une erreur</p>');
-					}
-					else {
-						console.log("Post request done.");
-						input.replaceWith('<p>Heures confirmées</p>');
-					}
-				});
-			});
-			$('.edit').click(function(){
-				const type = $(this).attr('type');
-				if(type == 'vol_nb'){
-					let div = $(this).parent();
-					div.html("<form name='edit-form' method='post' action='/edit-event'><p>Nombre de bénévoles recherchés</p><input type='number' min='1' max='400' name='vol_nb'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
-				} else if (type == 'description'){
-					let div = $(this).parent();
-					div.html("<form name='edit-form' method='post' action='/edit-event'><p>Nouvelle description</p><textarea rows='6' name='description'></textarea><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
-				} else if (type == 'intitule'){
-					let div = $('h1.intitule');
-					console.info(JSON.stringify(div));
-					console.info(div.text());
-					div.html("<form name='edit-form' method='post' action='/edit-event'><input type='text' placeholder='"+div.text()+"'name='intitule'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
-				}
+			$(function () {
+				$('[data-toggle="tooltip"]').tooltip()
 			})
-		});
+		})
