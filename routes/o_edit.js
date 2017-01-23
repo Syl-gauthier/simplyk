@@ -90,4 +90,114 @@ router.post('/edit-longterm', permissions.requireGroup('organism'), function(req
   }
 });
 
+
+router.post('/edit-event', permissions.requireGroup('organism'), function(req, res) {
+  console.info('req.body : ' + JSON.stringify(req.body));
+  const event_id = req.body.url.substring(req.body.url.length - 24);
+  console.log('event_id to update : ' + event_id);
+  let update = {};
+
+  function mongoOrganismUpdate(update) {
+    Organism.findOneAndUpdate({
+      '_id': req.session.organism._id,
+      'events._id': event_id
+    }, update, {
+      new: true
+    }, function(err, organism_updated) {
+      if (err) {
+        console.error('ERROR when updating with update : ' + update + ' and the error is ' + err);
+        const err_string = encodeURIComponent('Une erreur est survenue. Essaye de nouveau ou sinon, contacte nous par téléphone ou courriel :)')
+        res.redirect(req.body.url + '?error=' + err_string);
+      } else {
+        console.info('SUCCESS : we have updated event for organism ' + organism_updated.org_name);
+        req.session.organism = organism_updated;
+        req.session.save(function() {
+          let volunteer_update = {};
+          let activity_update = {};
+          res.redirect(req.body.url);
+          const event_in_organism = req.session.organism.events.find(function(event) {
+            return event._id == event_id
+          });
+
+          const activities_volunteers_to_update = event_in_organism.activities;
+          if (req.body.description || req.body.intitule) {
+            if (req.body.description) {
+              volunteer_update = {
+                'events.$.description': req.body.description
+              };
+            } else if (req.body.intitule) {
+              volunteer_update = {
+                'events.$.intitule': req.body.intitule
+              };
+              activity_update = {
+                'event_intitule': req.body.intitule
+              }
+            }
+
+            Volunteer.update({
+              'events': {
+                '$elemMatch': {
+                  'activity_id': {
+                    '$in': activities_volunteers_to_update
+                  }
+                }
+              }
+            }, volunteer_update, {
+              multi: true
+            }, function(err, response) {
+              if (err) {
+                console.error('ERROR when updating volunteer, but organism update was ok, with update : ' + volunteer_update + ' and the error is ' + err);
+              } else {
+                console.info('SUCCESS : we have updated event for organism ' + organism_updated.org_name + ' and volunteers with response : ' + JSON.stringify(response));
+                Activity.update({
+                  '_id': {
+                    '$in': activities_volunteers_to_update
+                  }
+                }, activity_update, {
+                  multi: true
+                }, function(err, response) {
+                  if (err) {
+                    console.error('ERROR when updating volunteer, but organism update was ok, with update : ' + volunteer_update + ' and the error is ' + err);
+                  } else {
+                    console.info('SUCCESS : we have updated event for organism ' + organism_updated.org_name + ' and activities with response : ' + JSON.stringify(response));
+                    res.end();
+                  };
+                })
+              }
+            })
+          }
+        });
+      }
+    })
+  };
+
+  if (req.body.vol_nb) {
+    //Edit vol_nb
+    //Check if req.body.vol_nb < numbre of applicants
+    const event_in_session = req.session.organism.events.find(function(lt) {
+      return lt._id == event_id;
+    });
+
+    if (event_in_session.applicants.length > req.body.vol_nb) {
+      const err_string = encodeURIComponent('Il ne peut pas y avoir moins de places disponibles que de bénévoles déjà inscrits.');
+      res.redirect(req.body.url + '?error=' + err_string);
+    } else {
+      update = {
+        'events.$.vol_nb': req.body.vol_nb
+      };
+      mongoOrganismUpdate(update);
+    }
+  } else if (req.body.description) {
+    update = {
+      'events.$.description': req.body.description
+    };
+    mongoOrganismUpdate(update);
+  } else if (req.body.intitule) {
+    update = {
+      'events.$.intitule': req.body.intitule
+    };
+    mongoOrganismUpdate(update);
+  }
+});
+
 module.exports = router;
