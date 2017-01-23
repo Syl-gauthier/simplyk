@@ -144,11 +144,13 @@ router.post('/login', function(req, res, next) {
 
 router.post('*/logout', function(req, res, next) {
   //Intercom create logout event
-  client.events.create({
-    event_name: 'logout',
-    created_at: Math.round(Date.now() / 1000),
-    user_id: req.session[req.session.group]._id
-  });
+  if (req.session[req.session.group]) {
+    client.events.create({
+      event_name: 'logout',
+      created_at: Math.round(Date.now() / 1000),
+      user_id: req.session[req.session.group]._id
+    });
+  }
   req.session.destroy(function(err) {
     if (err) {
       return next(err);
@@ -203,8 +205,69 @@ router.post('/register_volunteer', function(req, res) {
       let admin = {};
       let student = false;
       let school_name = null;
+      let phone = req.body.phone;
       let birthdate = new Date(req.body.birthdate).getTime();
       birthdate = birthdate / 1000;
+
+      function createVolunteer(student, admin) {
+        let newVolunteer = new Volunteer({
+          email: req.body.email,
+          email_verified: false,
+          email_verify_string: randomString,
+          lastname: req.body.lastname,
+          firstname: req.body.firstname,
+          birthdate: req.body.birthdate,
+          password: req.body.password,
+          events: [],
+          long_terms: [],
+          manuals: [],
+          extras: [],
+          phone,
+          admin,
+          student
+        });
+
+        newVolunteer.password = newVolunteer.generateHash(req.body.password);
+
+        newVolunteer.save(function(err, vol) {
+          if (err) {
+            res.redirect('/register_volunteer?error=' + err);
+          } else {
+            if (emailCredentials) {
+              var hostname = req.headers.host;
+              var verifyUrl = 'http://' + hostname + '/verifyV/' + randomString;
+
+              console.log('Verify url sent: ' + verifyUrl);
+
+              emailer.sendVerifyEmail({
+                group: 'vol',
+                recipient: req.body.email,
+                button: {
+                  link: verifyUrl
+                },
+                firstname: req.body.firstname
+              });
+            };
+            res.redirect('/waitforverifying?recipient=' + req.body.email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);
+            // Intercom creates volunteers
+            client.users.create({
+              email: vol.email,
+              name: vol.firstname + ' ' + vol.lastname,
+              user_id: vol._id,
+              signed_up_at: Math.round(Date.now() / 1000),
+              phone: req.body.phone,
+              last_request_at: Math.round(Date.now() / 1000),
+              custom_attributes: {
+                birthdate_at: birthdate,
+                firstname: vol.firstname,
+                group: 'volunteer',
+                school_name,
+                student
+              }
+            });
+          }
+        });
+      };
 
       if (req.body.admin_checkbox && req.body.admin) {
         console.info('Belongs to Admin : ' + req.body.admin_checkbox);
@@ -219,64 +282,26 @@ router.post('/register_volunteer', function(req, res) {
           admin = {
             school_name
           }
-        }
+        };
+
+        Admin.findOne({
+          'type': 'school-coordinator',
+          'name': school_name
+        }, function(err, coordinator) {
+          if (err) {
+            console.error('ERROR : ' + err);
+          }
+
+          if (coordinator) {
+            admin['school_id'] = coordinator._id;
+          }
+
+          createVolunteer(student, admin);
+        });
+      } else {
+        createVolunteer(student, admin);
       };
 
-      let newVolunteer = new Volunteer({
-        email: req.body.email,
-        email_verified: false,
-        email_verify_string: randomString,
-        lastname: req.body.lastname,
-        firstname: req.body.firstname,
-        birthdate: req.body.birthdate,
-        password: req.body.password,
-        events: [],
-        long_terms: [],
-        manuals: [],
-        extras: [],
-        admin,
-        student
-      });
-
-      newVolunteer.password = newVolunteer.generateHash(req.body.password);
-
-      newVolunteer.save(function(err, vol) {
-        if (err) {
-          res.redirect('/register_volunteer?error=' + err);
-        } else {
-          if (emailCredentials) {
-            var hostname = req.headers.host;
-            var verifyUrl = 'http://' + hostname + '/verifyV/' + randomString;
-
-            console.log('Verify url sent: ' + verifyUrl);
-
-            emailer.sendVerifyEmail({
-              group: 'vol',
-              recipient: req.body.email,
-              button: {
-                link: verifyUrl
-              },
-              firstname: req.body.firstname
-            });
-          };
-          res.redirect('/waitforverifying?recipient=' + req.body.email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);
-          // Intercom creates volunteers
-          client.users.create({
-            email: vol.email,
-            name: vol.firstname + ' ' + vol.lastname,
-            user_id: vol._id,
-            signed_up_at: Math.round(Date.now() / 1000),
-            last_request_at: Math.round(Date.now() / 1000),
-            custom_attributes: {
-              birthdate_at: birthdate,
-              firstname: vol.firstname,
-              group: 'volunteer',
-              school_name,
-              student
-            }
-          });
-        }
-      });
     }
   }
   userExists(email, handleVolunteerCreation);

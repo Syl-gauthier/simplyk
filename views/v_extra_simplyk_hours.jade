@@ -27,7 +27,7 @@ block content
                         label(for='org_name') Nom de l'organisme
                         input.form-control(id='org_name', type='text', placeholder='Ex: Équiterre', name='org_name', required)
                     .form-group.conn-input
-                        label(for='org_email') Courriel de l'organisme
+                        label(for='org_email') Courriel de l'organisme <br> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <small>Vérifie bien l'adresse courriel, sinon l'organisme ne pourra pas valider tes heures</small>
                         input.form-control(id='org_email', name='org_email', type='email' required)
                     .form-group.conn-input
                         label(for='org_phone') Téléphone de l'organisme
@@ -50,7 +50,7 @@ block content
                     h3 Questions sur l'activité
                     each question, q_i in student_questions
                         .form-group.conn-input
-                            label(for='answer'+q_i)= question
+                            label(for='answer'+q_i) !{question.replace(/\n/g, '<br/>')}
                             textarea.form-control(id='answer'+q_i, name='answer'+q_i, rows="6" required)
                     .row
                         input.btn.btn-default.form-control(type='submit', form='addextrahours', style="margin-bottom: 100px;")
@@ -78,5 +78,12 @@ block footscript
             input.pickadate({
                 firstDay: 1,
                 formatSubmit: 'yyyy-mm-dd'
+            });
+            $('#addextrahours').on('keyup keypress', function(e) {
+                var keyCode = e.keyCode || e.which;
+                if (keyCode === 13) { 
+                    e.preventDefault();
+                    return false;
+                }
             });
         });

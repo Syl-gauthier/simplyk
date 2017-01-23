@@ -8,7 +8,7 @@ var Intercom = require('intercom-client');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
-var moment =  require('moment');
+var moment = require('moment');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -201,13 +201,10 @@ router.get('/activity/:act_id', permissions.requireGroup('volunteer'), function(
         console.log(err);
         res.redirect('/volunteer/map?error=' + err);
       } else {
-        console.log('Organism : ' + organism);
-        console.log('Organism[0] : ' + organism[0]);
-        console.log('Organism.events : ' + organism[0].events);
-
         function isRightEvent(event) {
           return event.activities.indexOf(req.params.act_id) >= 0;
         };
+
         var event_filtered = organism[0].events.filter(isRightEvent);
         console.log('+++++++++++++++++++++');
         console.log('Event find in organism corresponding to act : ' + event_filtered)
@@ -297,6 +294,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
       console.log('Activity day : + ' + Date.parse(activity.day) + Date.parse(req.params.activity_day))
       return ((activity.activity_id.toString() === req.params.act_id) && (Date.parse(activity.day) === Date.parse(req.params.activity_day)));
     };
+
     var alreadyExists = req.session.volunteer.events.find(isActivity);
     console.log('alreadyExists : ' + alreadyExists + typeof alreadyExists);
     if (typeof alreadyExists === 'undefined') {
@@ -409,7 +407,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                 var vol_content = {
                   recipient: newVolunteer.email,
                   firstname: newVolunteer.firstname,
-                  customMessage: ['Tu es inscrit le ' +  dayString + ' à : ' + newActivity.address, 'L\'organisme ' + organism.org_name + ' va être au mis au courant de ton inscription. Entre en contact avec ' + organism.firstname + ' ' + organism.lastname + ' au ' + organism.phone + ' pour parler des détails de l\'activité !', 'Après l\'évènement, tu pourras ajouter des heures d\'engagement à ton profil pour faire progresser ton profil de citoyen engagé :)'],
+                  customMessage: ['Tu es inscrit le ' + dayString + ' à : ' + newActivity.address, 'L\'organisme ' + organism.org_name + ' va être au mis au courant de ton inscription. Entre en contact avec ' + organism.firstname + ' ' + organism.lastname + ' au ' + organism.phone + ' pour parler des détails de l\'activité !', 'Après l\'évènement, tu pourras ajouter des heures d\'engagement à ton profil pour faire progresser ton profil de citoyen engagé :)'],
                 };
                 emailer.sendSubscriptionVolEmail(vol_content);
                 //Intercom create addlongterm event
@@ -440,8 +438,10 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
       res.end();
     }
   };
-  if (req.session.volunteer.student) {
-    subscribeToActivity(schools_res.student_questions, schools_res.organism_questions);
+  if (req.session.volunteer.admin && req.session.volunteer.admin.school_id) {
+    schools_res.getQuestions(req.session.volunteer.admin, function(questions) {
+      subscribeToActivity(questions.student_questions, questions.organism_questions);
+    });
   } else {
     subscribeToActivity(null, null);
   }
@@ -456,7 +456,7 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
   var alreadyExists = req.session.volunteer.long_terms.find(isLongterm);
   console.log('alreadyExists : ' + alreadyExists + typeof alreadyExists);
   if (typeof alreadyExists === 'undefined') {
-    let phone ={};
+    let phone = {};
     if (req.session.volunteer.phone) {
       phone = req.session.volunteer.phone;
     } else if (req.body.phone) {
@@ -519,9 +519,6 @@ router.get('/user', function(req, res) {
 });
 
 router.get('/volunteer/student_questions/:act_id-:act_day', permissions.requireGroup('volunteer'), function(req, res) {
-  if (!req.session.volunteer.student) {
-    res.redirect('/volunteer/map');
-  }
 
   function alreadyAnswered(event) {
     if (event.activity_id.toString() == req.params.act_id.toString()) {
@@ -537,13 +534,13 @@ router.get('/volunteer/student_questions/:act_id-:act_day', permissions.requireG
   function goodEvent(event) {
     return ((event.activity_id.toString() == req.params.act_id.toString()) && (event.day == req.params.act_day));
   };
+
   var event_answered = req.session.volunteer.events.filter(alreadyAnswered);
-  console.log('event_answered = ' + JSON.stringify(event_answered));
   console.log('event_answered.length = ' + event_answered.length);
-  if (event_answered.length > 0) {
+  var event = req.session.volunteer.events.find(goodEvent);
+  if (event_answered.length > 0 || (event.student_questions.length < 1)) {
     res.redirect('/volunteer/map');
   } else {
-    var event = req.session.volunteer.events.find(goodEvent);
     Activity.findById(req.params.act_id, function(err, activity) {
       res.render('v_questions.jade', {
         session: req.session,
@@ -562,9 +559,6 @@ router.get('/volunteer/student_questions/:act_id-:act_day', permissions.requireG
 });
 
 router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
-  if (!req.session.volunteer.student) {
-    res.redirect('/volunteer/map');
-  }
 
   function alreadyAnswered(lt) {
     if (lt._id.toString() == req.params.lt_id.toString()) {
@@ -584,7 +578,7 @@ router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volu
   var longterm = req.session.volunteer.long_terms.find(goodLongterm);
   console.log('lt_answered = ' + JSON.stringify(lt_answered));
   console.log('lt_answered.length = ' + lt_answered.length);
-  if (lt_answered.length > 0) {
+  if (lt_answered.length > 0 || (longterm.student_questions.length < 1)) {
     res.redirect('/volunteer/map');
   } else {
     res.render('v_questions.jade', {

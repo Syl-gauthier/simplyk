@@ -258,89 +258,90 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
         res.redirect('/volunteer/map?error=' + err);
       } else {
         req.session.volunteer = newVolunteer;
-        console.log('newVolunteer ' + newVolunteer);
+        req.session.save(function() {
+          console.log('newVolunteer ' + newVolunteer);
 
-        function isActivity(event) {
-          console.log('isActivity : ' + (event.activity_id.toString() == req.params.act_id.toString()));
-          return event.activity_id.toString() == req.params.act_id.toString();
-        };
+          function isActivity(event) {
+            console.log('isActivity : ' + (event.activity_id.toString() == req.params.act_id.toString()));
+            return event.activity_id.toString() == req.params.act_id.toString();
+          };
 
-        function isDay(event) {
-          console.log('isDay ' + (event.day == req.params.day));
-          console.log('Date.parse(event.day) ' + Date.parse(event.day));
-          console.log('Date.parse(req.params.day) ' + Date.parse(req.params.day));
-          return Date.parse(event.day) == Date.parse(req.params.day);
-        };
-        const event = newVolunteer.events.filter(isActivity).find(isDay);
-        console.log(event);
-        if (newVolunteer.student) {
-          var newTodo = new OrgTodo({
-            type: 'hours_pending',
-            org_id: event.org_id,
-            lastname: newVolunteer.lastname,
-            firstname: newVolunteer.firstname,
-            vol_id: newVolunteer._id,
-            activity_id: req.params.act_id,
-            day: Date.parse(req.params.day),
-            activity_intitule: event.intitule_activity,
-            hours: req.body.hours_pending,
-            student: true,
-            organism_questions: event.organism_questions
-          });
-        } else {
-          var newTodo = new OrgTodo({
-            type: 'hours_pending',
-            org_id: event.org_id,
-            lastname: newVolunteer.lastname,
-            firstname: newVolunteer.firstname,
-            vol_id: newVolunteer._id,
-            activity_id: req.params.act_id,
-            day: Date.parse(req.params.day),
-            activity_intitule: event.intitule_activity,
-            hours: req.body.hours_pending
-          });
-        };
-        //Intercom create unsubscribe to longterm event
-        client.events.create({
-          event_name: 'vol_activity_hourspending',
-          created_at: Math.round(Date.now() / 1000),
-          user_id: req.session.volunteer._id,
-          metadata: {
-            act_id: req.params.act_id,
-            intitule_activity: event.intitule_activity
-          }
-        });
-        client.users.update({
-          user_id: req.session.volunteer._id,
-          update_last_request_at: true
-        });
-        Organism.findById(event.org_id, {
-          email: true
-        }, function(err, orga) {
-          if (err) {
-            console.log('ERR: hourspendingOrg has not been sent !');
-            console.log(err);
+          function isDay(event) {
+            console.log('isDay ' + (event.day == req.params.day));
+            console.log('Date.parse(event.day) ' + Date.parse(event.day));
+            console.log('Date.parse(req.params.day) ' + Date.parse(req.params.day));
+            return Date.parse(event.day) == Date.parse(req.params.day);
+          };
+          const event = newVolunteer.events.filter(isActivity).find(isDay);
+          if (event.organism_questions) {
+            var newTodo = new OrgTodo({
+              type: 'hours_pending',
+              org_id: event.org_id,
+              lastname: newVolunteer.lastname,
+              firstname: newVolunteer.firstname,
+              vol_id: newVolunteer._id,
+              activity_id: req.params.act_id,
+              day: Date.parse(req.params.day),
+              activity_intitule: event.intitule_activity,
+              hours: req.body.hours_pending,
+              student: true,
+              organism_questions: event.organism_questions
+            });
           } else {
-            emailer.sendHoursPendingOrgEmail({
-              firstname: req.session.volunteer.firstname,
-              lastname: req.session.volunteer.lastname,
-              recipient: orga.email,
-              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+            var newTodo = new OrgTodo({
+              type: 'hours_pending',
+              org_id: event.org_id,
+              lastname: newVolunteer.lastname,
+              firstname: newVolunteer.firstname,
+              vol_id: newVolunteer._id,
+              activity_id: req.params.act_id,
+              day: Date.parse(req.params.day),
+              activity_intitule: event.intitule_activity,
+              hours: req.body.hours_pending
             });
           };
-        });
-        //TODO creation
-        newTodo.save(function(err, todo) {
-          if (err) {
-            console.log(err);
-            res.redirect('/volunteer/map?error=' + err);
-          } else {
-            if (req.session.volunteer.student) {
-              res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
-            } else {
-              res.redirect('/volunteer/map');
+          //Intercom create unsubscribe to longterm event
+          client.events.create({
+            event_name: 'vol_activity_hourspending',
+            created_at: Math.round(Date.now() / 1000),
+            user_id: req.session.volunteer._id,
+            metadata: {
+              act_id: req.params.act_id,
+              intitule_activity: event.intitule_activity
             }
-          }
+          });
+          client.users.update({
+            user_id: req.session.volunteer._id,
+            update_last_request_at: true
+          });
+          Organism.findById(event.org_id, {
+            email: true
+          }, function(err, orga) {
+            if (err) {
+              console.log('ERR: hourspendingOrg has not been sent !');
+              console.log(err);
+            } else {
+              emailer.sendHoursPendingOrgEmail({
+                firstname: req.session.volunteer.firstname,
+                lastname: req.session.volunteer.lastname,
+                recipient: orga.email,
+                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+              });
+            };
+          });
+          //TODO creation
+          newTodo.save(function(err, todo) {
+            if (err) {
+              console.log(err);
+              res.redirect('/volunteer/map?error=' + err);
+            } else {
+              if (event.organism_questions) {
+                res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
+              } else {
+                res.redirect('/volunteer/map');
+              }
+            }
+          })
         })
       }
     });
@@ -363,7 +364,6 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
       return (longterm._id).toString() == (req.params.lt_id).toString();
     };
     const lt = req.session.volunteer.long_terms.find(isLongTerm);
-    console.log('req.session.volunteer : ' + JSON.stringify(req.session.volunteer));
     console.log('lt : ' + JSON.stringify(lt));
     console.log('lt.hours_pending : ' + lt.hours_pending);
     if (lt.hours_pending > 0) {
@@ -398,75 +398,76 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
         res.redirect('/volunteer/map?error=' + err);
       } else {
         req.session.volunteer = newVolunteer;
-        console.log('newVolunteer ' + newVolunteer);
-        const new_lt = newVolunteer.long_terms.find(isLongTerm);
-        console.log('(typeof new_lt.hours_done == undefined) ' + (typeof new_lt.hours_done == 'undefined'));
-        console.log('(new_lt.organism_answers.length<1) ' + (new_lt.organism_answers.length < 1));
-        console.log('(newVolunteer.student) ' + (newVolunteer.student));
-        console.log('!(lt.hours_pending>0) ' + !(lt.hours_pending > 0));
-        console.log(new_lt);
-        if ((newVolunteer.student) && (typeof new_lt.hours_done == 'undefined') && (new_lt.organism_answers.length < 1) && !(lt.hours_pending > 0)) {
-          var newTodo = new OrgTodo({
-            type: 'LThours_pending',
-            org_id: new_lt.org_id,
-            lastname: newVolunteer.lastname,
-            firstname: newVolunteer.firstname,
-            vol_id: newVolunteer._id,
-            lt_id: req.params.lt_id,
-            lt_intitule: new_lt.intitule,
-            hours: req.body.hours_pending,
-            student: true,
-            organism_questions: new_lt.organism_questions
-          });
-        } else {
-          var newTodo = new OrgTodo({
-            type: 'LThours_pending',
-            org_id: new_lt.org_id,
-            lastname: newVolunteer.lastname,
-            firstname: newVolunteer.firstname,
-            vol_id: newVolunteer._id,
-            lt_id: req.params.lt_id,
-            lt_intitule: new_lt.intitule,
-            hours: req.body.hours_pending
-          });
-        };
-
-        //Intercom create unsubscribe to longterm event
-        client.events.create({
-          event_name: 'vol_longterm_hourspending',
-          created_at: Math.round(Date.now() / 1000),
-          user_id: req.session.volunteer._id,
-          metadata: {
-            lt_id: req.params.lt_id,
-            intitule_longterm: new_lt.intitule
-          }
-        });
-        Organism.findById(new_lt.org_id, {
-          email: true
-        }, function(err, orga) {
-          if (err) {
-            console.log('ERR: hourspendingOrg has not been sent !');
-            console.log(err);
-          } else {
-            emailer.sendHoursPendingOrgEmail({
-              firstname: req.session.volunteer.firstname,
-              lastname: req.session.volunteer.lastname,
-              recipient: orga.email,
-              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'engagement ' + new_lt.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+        req.session.save(function() {
+          const new_lt = newVolunteer.long_terms.find(isLongTerm);
+          console.log('(typeof new_lt.hours_done == undefined) ' + (typeof new_lt.hours_done == 'undefined'));
+          console.log('(new_lt.organism_answers.length<1) ' + (new_lt.organism_answers.length < 1));
+          console.log('(newVolunteer.student) ' + (newVolunteer.student));
+          console.log('!(lt.hours_pending>0) ' + !(lt.hours_pending > 0));
+          console.log(new_lt);
+          if ((new_lt.organism_questions.length > 0) && (typeof new_lt.hours_done == 'undefined') && (new_lt.organism_answers.length < 1) && !(lt.hours_pending > 0)) {
+            var newTodo = new OrgTodo({
+              type: 'LThours_pending',
+              org_id: new_lt.org_id,
+              lastname: newVolunteer.lastname,
+              firstname: newVolunteer.firstname,
+              vol_id: newVolunteer._id,
+              lt_id: req.params.lt_id,
+              lt_intitule: new_lt.intitule,
+              hours: req.body.hours_pending,
+              student: true,
+              organism_questions: new_lt.organism_questions
             });
-          }
-        });
-        newTodo.save(function(err, todo) {
-          if (err) {
-            console.log(err);
           } else {
-            console.log('INFO : Todo created : ' + todo);
-            if (req.session.volunteer.student) {
-              res.redirect('/volunteer/student_questions/' + req.params.lt_id);
-            } else {
-              res.redirect('/volunteer/map');
+            var newTodo = new OrgTodo({
+              type: 'LThours_pending',
+              org_id: new_lt.org_id,
+              lastname: newVolunteer.lastname,
+              firstname: newVolunteer.firstname,
+              vol_id: newVolunteer._id,
+              lt_id: req.params.lt_id,
+              lt_intitule: new_lt.intitule,
+              hours: req.body.hours_pending
+            });
+          };
+
+          //Intercom create unsubscribe to longterm event
+          client.events.create({
+            event_name: 'vol_longterm_hourspending',
+            created_at: Math.round(Date.now() / 1000),
+            user_id: req.session.volunteer._id,
+            metadata: {
+              lt_id: req.params.lt_id,
+              intitule_longterm: new_lt.intitule
             }
-          }
+          });
+          Organism.findById(new_lt.org_id, {
+            email: true
+          }, function(err, orga) {
+            if (err) {
+              console.log('ERR: hourspendingOrg has not been sent !');
+              console.log(err);
+            } else {
+              emailer.sendHoursPendingOrgEmail({
+                firstname: req.session.volunteer.firstname,
+                lastname: req.session.volunteer.lastname,
+                recipient: orga.email,
+                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'engagement ' + new_lt.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+              });
+            }
+          });
+          newTodo.save(function(err, todo) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log('INFO : Todo created : ' + todo);
+              if (todo.organism_questions) {
+                res.redirect('/volunteer/student_questions/' + req.params.lt_id);
+              } else {
+                res.redirect('/volunteer/map');
+              }
+            }
+          })
         })
       }
     });
@@ -549,12 +550,15 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
 });
 
 router.get('/volunteer/extra_simplyk_hours', permissions.requireGroup('volunteer'), function(req, res) {
-  if (req.session.volunteer.student) {
-    res.status(200).render('v_extra_simplyk_hours.jade', {
-      session: req.session,
-      volunteer: req.session.volunteer,
-      group: req.session.group,
-      student_questions: schools_res.student_questions
+  if (req.session.volunteer.admin && req.session.volunteer.admin.school_id) {
+    //Get school questions
+    schools_res.getQuestions(req.session.volunteer.admin, function(questions) {
+      res.status(200).render('v_extra_simplyk_hours.jade', {
+        session: req.session,
+        volunteer: req.session.volunteer,
+        group: req.session.group,
+        student_questions: questions.student_questions
+      });
     });
   } else {
     const err = 'ERROR: Il te faut être un élève pour accéder à cette page d\'ajout d\'heures extra-Simplyk';
@@ -579,7 +583,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
 
     console.log('student_answers : ' + student_answers);
     let newActivity = new Activity({
-      email: req.body.org_email,
+      email: req.body.org_email.toLowerCase(),
       org_name: req.body.org_name,
       org_phone: req.body.org_phone,
       intitule: req.body.intitule,
@@ -591,138 +595,53 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
       }]
     });
 
-    //Ajouter organism s'il n'existe pas
-    Organism.findOne({
-      '$or': [{
-        'email': req.body.org_email
-      }, {
-        'org_name': req.body.org_name
-      }, {
-        'phone': req.body.org_phone
-      }]
-    }, function(err, theOrg) {
-      if (err) {
-        const err = 'Une erreur est survenu lors de la recherche de l\'organisme mentionné dans le formulaire';
-        console.error(err);
-        res.redirect('/volunteer/map?error=' + err);
-      } else {
-        //If the organism already has an account, add it a orgTodo and send it an email
-        let organism = {};
-        let newTodo = new OrgTodo({
-          type: 'students_hours_pending',
-          lastname: req.session.volunteer.lastname,
-          firstname: req.session.volunteer.firstname,
-          vol_id: req.session.volunteer._id,
-          activity_intitule: req.body.intitule,
-          day: req.body.activity_date,
-          hours: req.body.hours_pending,
-          student: true,
-          organism_questions: ['Quel point positif pouvez-vous mettre en avant sur l’élève, et qu’est-ce que l’élève pourrait améliorer ?'],
-          activity_id: newActivity._id
-        }); //////TO SAVE !
-        if (theOrg) {
-          //send email and add orgToDo
-          newTodo.org_id = newActivity.org_id = theOrg._id;
-
-          organism = theOrg;
-          newTodo.save(function(err, newTodo_saved) {
-            if (err) {
-              console.error(err);
-            };
-          });
-          emailer.sendHoursPendingOrgEmail({
-            firstname: req.session.volunteer.firstname,
-            lastname: req.session.volunteer.lastname,
-            recipient: req.body.org_email,
-            customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'En tant qu\'élève dans une école où le bénévolat est encouragé, il a besoin que vous lui validiez ces heures s\'il les a réellement fait. Sinon, il est utile aussi que vous signaliez qu\'il y a une erreur ! :)', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
-          });
-          console.info('INFO: student add extra hours to an organism which ALREADY exists : ' + req.body.org_name);
-          newActivity.save(function(err, activity_saved) {
-            if (err) {
-              console.error(err);
-            };
-            let extra_to_add = {
-              activity_id: activity_saved._id,
-              status: 'pending',
-              email: activity_saved.email,
-              org_name: activity_saved.org_name,
-              org_phone: activity_saved.org_phone,
-              intitule: activity_saved.intitule,
-              description: activity_saved.description,
-              status: 'pending',
-              days: activity_saved.days,
-              hours_pending: req.body.hours_pending,
-              extra: true,
-              student_questions: schools_res.student_questions,
-              organism_questions: schools_res.organism_questions,
-              student_answers
-            };
-            console.log('extra_to_add : ' + JSON.stringify(extra_to_add));
-            Volunteer.findOneAndUpdate({
-              '_id': req.session.volunteer._id
-            }, {
-              '$push': {
-                'extras': extra_to_add
-              }
-            }, {
-              new: true
-            }, function(err, newVolunteer) {
-              if (err) {
-                console.error(err);
-              } else {
-                req.session.volunteer = newVolunteer;
-                res.redirect('/volunteer/map');
-              }
-            })
-          });
+    function addOrganismIfDoesntExist(questions) {
+      //Ajouter organism s'il n'existe pas
+      Organism.findOne({
+        '$or': [{
+          'email': req.body.org_email.toLowerCase()
+        }, {
+          'org_name': req.body.org_name
+        }, {
+          'phone': req.body.org_phone
+        }]
+      }, function(err, theOrg) {
+        if (err) {
+          const err = 'Une erreur est survenu lors de la recherche de l\'organisme mentionné dans le formulaire';
+          console.error(err);
+          res.redirect('/volunteer/map?error=' + err);
         } else {
-          //The organism hasn't any account on the platform, send it an email, create an account and add an orgTodo
-          let pass1 = req.session.volunteer._id,
-            pass2 = req.body.org_name;
-          const randomString = randomstring.generate();
+          //If the organism already has an account, add it a orgTodo and send it an email
+          let organism = {};
+          let newTodo = new OrgTodo({
+            type: 'students_hours_pending',
+            lastname: req.session.volunteer.lastname,
+            firstname: req.session.volunteer.firstname,
+            vol_id: req.session.volunteer._id,
+            activity_intitule: req.body.intitule,
+            day: req.body.activity_date,
+            hours: req.body.hours_pending,
+            student: true,
+            organism_questions: questions.organism_questions,
+            activity_id: newActivity._id
+          }); //////TO SAVE !
+          if (theOrg) {
+            //send email and add orgToDo
+            newTodo.org_id = newActivity.org_id = theOrg._id;
 
-          organism = new Organism({
-            email: req.body.org_email,
-            org_name: req.body.org_name,
-            email_verified: false,
-            email_verify_string: randomString,
-            password: '',
-            phone: req.body.org_phone,
-            description: req.body.description,
-            automatic: true
-          });
-
-          const passToChange = (pass1.substring(0, 3) + pass2.substring(0, 3)).toLowerCase();
-          organism.password = organism.generateHash(passToChange);
-
-          organism.save(function(err, org_saved) {
-            if (err) {
-              console.error(err);
-            }
-
-            newTodo.org_id = newActivity.org_id = org_saved._id;
-
+            organism = theOrg;
             newTodo.save(function(err, newTodo_saved) {
               if (err) {
                 console.error(err);
               };
             });
-
-            var hostname = req.headers.host;
-            var verifyUrl = 'http://' + hostname + '/verifyO/' + randomString;
-            console.log('Verify url sent: ' + verifyUrl);
-
-            emailer.sendAutomaticSubscriptionOrgEmail({
-              recipient: req.body.org_email,
-              button: {
-                link: verifyUrl
-              },
-              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name + '.', 'Vous recevez ce message car cet élève mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Si c\'est bel et bien le cas, venez valider ses heures sur la plateforme Simplyk afin qu\'elles soient comptabiliser par ses professeurs !', 'S\'il n\'a pas fait les heures mentionnées, connectez-vous pour corriger la situation. :) ', 'Vos identifiants de connexion sont les suivants :', 'Email: ' + req.body.org_email, 'Mot de passe: ' + passToChange],
+            emailer.sendHoursPendingOrgEmail({
               firstname: req.session.volunteer.firstname,
-              lastname: req.session.volunteer.lastname
+              lastname: req.session.volunteer.lastname,
+              recipient: req.body.org_email.toLowerCase(),
+              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'En tant qu\'élève dans une école où le bénévolat est encouragé, il a besoin que vous lui validiez ces heures s\'il les a réellement fait. Sinon, il est utile aussi que vous signaliez qu\'il y a une erreur ! :)', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
             });
-            console.info('INFO: student add extra hours to an organism which has NOT subscribed to the platform : ' + req.body.org_name);
-
+            console.info('INFO: student add extra hours to an organism which ALREADY exists : ' + req.body.org_name);
             newActivity.save(function(err, activity_saved) {
               if (err) {
                 console.error(err);
@@ -739,8 +658,8 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 days: activity_saved.days,
                 hours_pending: req.body.hours_pending,
                 extra: true,
-                student_questions: schools_res.student_questions,
-                organism_questions: schools_res.organism_questions,
+                student_questions: questions.student_questions,
+                organism_questions: questions.organism_questions,
                 student_answers
               };
               console.log('extra_to_add : ' + JSON.stringify(extra_to_add));
@@ -757,14 +676,107 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                   console.error(err);
                 } else {
                   req.session.volunteer = newVolunteer;
-                  res.redirect('/volunteer/map');
+                  req.session.save(function() {
+                    res.redirect('/volunteer/map');
+                  });
                 }
+              })
+            });
+          } else {
+            //The organism hasn't any account on the platform, send it an email, create an account and add an orgTodo
+            let pass1 = req.session.volunteer._id,
+              pass2 = req.body.org_name;
+            const randomString = randomstring.generate();
+
+            organism = new Organism({
+              email: req.body.org_email.toLowerCase(),
+              org_name: req.body.org_name,
+              email_verified: false,
+              email_verify_string: randomString,
+              password: '',
+              phone: req.body.org_phone,
+              description: req.body.description,
+              automatic: true
+            });
+
+            const passToChange = (pass1.substring(0, 3) + pass2.substring(0, 3)).toLowerCase();
+            organism.password = organism.generateHash(passToChange);
+
+            organism.save(function(err, org_saved) {
+              if (err) {
+                console.error(err);
+              }
+
+              newTodo.org_id = newActivity.org_id = org_saved._id;
+
+              newTodo.save(function(err, newTodo_saved) {
+                if (err) {
+                  console.error(err);
+                };
               });
 
+              var hostname = req.headers.host;
+              var verifyUrl = 'http://' + hostname + '/verifyO/' + randomString;
+              console.log('Verify url sent: ' + verifyUrl);
+
+              emailer.sendAutomaticSubscriptionOrgEmail({
+                recipient: req.body.org_email.toLowerCase(),
+                button: {
+                  link: verifyUrl
+                },
+                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name + '.', 'Vous recevez ce message car cet élève mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Si c\'est bel et bien le cas, venez valider ses heures sur la plateforme Simplyk afin qu\'elles soient comptabiliser par ses professeurs !', 'S\'il n\'a pas fait les heures mentionnées, connectez-vous pour corriger la situation. :) ', 'Vos identifiants de connexion sont les suivants :', 'Email: ' + req.body.org_email.toLowerCase(), 'Mot de passe: ' + passToChange],
+                firstname: req.session.volunteer.firstname,
+                lastname: req.session.volunteer.lastname
+              });
+              console.info('INFO: student add extra hours to an organism which has NOT subscribed to the platform : ' + req.body.org_name);
+
+              newActivity.save(function(err, activity_saved) {
+                if (err) {
+                  console.error(err);
+                };
+                let extra_to_add = {
+                  activity_id: activity_saved._id,
+                  status: 'pending',
+                  email: activity_saved.email,
+                  org_name: activity_saved.org_name,
+                  org_phone: activity_saved.org_phone,
+                  intitule: activity_saved.intitule,
+                  description: activity_saved.description,
+                  status: 'pending',
+                  days: activity_saved.days,
+                  hours_pending: req.body.hours_pending,
+                  extra: true,
+                  student_questions: questions.student_questions,
+                  organism_questions: questions.organism_questions,
+                  student_answers
+                };
+                console.log('extra_to_add : ' + JSON.stringify(extra_to_add));
+                Volunteer.findOneAndUpdate({
+                  '_id': req.session.volunteer._id
+                }, {
+                  '$push': {
+                    'extras': extra_to_add
+                  }
+                }, {
+                  new: true
+                }, function(err, newVolunteer) {
+                  if (err) {
+                    console.error(err);
+                  } else {
+                    req.session.volunteer = newVolunteer;
+                    res.redirect('/volunteer/map');
+                  }
+                });
+
+              });
             });
-          });
+          }
         }
-      }
+      });
+    };
+
+    schools_res.getQuestions(req.session.volunteer.admin, function(questions) {
+      addOrganismIfDoesntExist(questions);
     });
   } else {
     const err = 'ERROR: Il te faut être un élève pour accéder à cette page d\'ajout d\'heures extra-Simplyk';
