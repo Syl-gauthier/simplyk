@@ -82,6 +82,8 @@ var VolunteerSchema = new Schema({
     org_name: String,
     org_phone: String,
     intitule: String,
+    firstname: String,
+    lastname: String,
     activity_id: {
       type: Schema.Types.ObjectId,
       ref: 'Activity'

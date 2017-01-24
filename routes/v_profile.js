@@ -694,6 +694,8 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
               email_verified: false,
               email_verify_string: randomString,
               password: '',
+              firstname: req.body.firstname,
+              lastname: req.body.lastname,
               phone: req.body.org_phone,
               description: req.body.description,
               automatic: true

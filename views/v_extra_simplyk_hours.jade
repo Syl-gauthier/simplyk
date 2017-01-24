@@ -29,7 +29,7 @@ block content
                         input.form-control(id='org_name', type='text', placeholder='Ex: Équiterre', name='org_name', required)
                     .form-group.conn-input
                         label(for='org_email') Courriel de l'organisme <br> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <small>Vérifie bien l'adresse courriel, sinon l'organisme ne pourra pas valider tes heures</small>
-                        input.form-control(id='org_email', name='org_email'/*, type='email'*/ required)
+                        input.form-control(id='org_email', name='org_email', type='email' required)
                     .form-group.conn-input
                         label(for='org_phone') Téléphone de l'organisme
                         input.form-control(id='org_phone', name='org_phone', type='text' required)
@@ -48,6 +48,12 @@ block content
                             .form-group.conn-input
                                 label(for='hours_pending') Nombres d'heures réalisées
                                 input.form-control(id='hours_pending', type='number', name='hours_pending', step='0.5', min="0", max="100", required)
+                    .form-group.conn-input
+                        label(for='firstname') Prénom du responsable
+                        input.form-control(id='firstname', name='firstname' type='text' required)
+                    .form-group.conn-input
+                        label(for='lastname') Nom du responsable
+                        input.form-control(id='lastname', name='lastname' type='text' required)
                     h3 Questions sur l'activité
                     each question, q_i in student_questions
                         .form-group.conn-input
