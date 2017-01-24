@@ -174,19 +174,31 @@ router.post('/edit-event', permissions.requireGroup('organism'), function(req, r
 
   if (req.body.vol_nb) {
     //Edit vol_nb
-    //Check if req.body.vol_nb < numbre of applicants
-    const event_in_session = req.session.organism.events.find(function(lt) {
-      return lt._id == event_id;
-    });
-
-    if (event_in_session.applicants.length > req.body.vol_nb) {
+    //Check if req.body.vol_nb < number of applicants
+    console.info(req.body.vol_nb.length + ' : req.body.vol_nb.length')
+    if (req.body.vol_nb && (req.body.vol_nb.length < 1)){
+      const err_string = encodeURIComponent('Le champ du nombre de bénévoles recherchés doit être rempli.');
+      res.redirect(req.body.url + '?error=' + err_string);
+    } else if (req.body.nb_applicants > req.body.vol_nb) {
       const err_string = encodeURIComponent('Il ne peut pas y avoir moins de places disponibles que de bénévoles déjà inscrits.');
       res.redirect(req.body.url + '?error=' + err_string);
     } else {
-      update = {
-        'events.$.vol_nb': req.body.vol_nb
+      //Update activity with the new number of people asked
+      const activity_nb_vol_update = {
+        'days.$.vol_nb': req.body.vol_nb
       };
-      mongoOrganismUpdate(update);
+      Activity.update({
+        '_id': req.body.activity_id,
+        'days.day': req.body.day
+      }, activity_nb_vol_update, function(err, response){
+        if (err) {
+          console.error('ERROR when updating activity, with update : ' + activity_nb_vol_update + ' and the error is ' + err);
+        } else {
+          console.info('SUCCESS : we have updated activity ' + activity_nb_vol_update + ' and activities with response : ' + JSON.stringify(response));
+          res.redirect(req.body.url);
+          res.end();
+        };
+      })
     }
   } else if (req.body.description) {
     update = {
@@ -198,6 +210,9 @@ router.post('/edit-event', permissions.requireGroup('organism'), function(req, r
       'events.$.intitule': req.body.intitule
     };
     mongoOrganismUpdate(update);
+  } else {
+    const err_string = encodeURIComponent('La requête n\'a pas été comprise. Essaye de nouveau ou sinon, contacte nous par téléphone ou courriel :)');
+    res.redirect(req.body.url + '?error=' + err_string);
   }
 });
 
