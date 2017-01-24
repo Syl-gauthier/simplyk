@@ -86,33 +86,49 @@ block content
             ul.list-group.list-opportunity
               unless (events)
                 p.alert.alert-danger Aucune activité
-              each event, index in events
-                if event.status != 'gathered'
-                  li.list-group-item
-                    div.media-left
-                      h4.media-heading Status
-                      if ((event.hours_pending == 0) && (event.hours_done != 0))
-                        p Confirmé
-                      else if (event.hours_pending > 0)
-                        p Attente de validation par l'organisme
-                      else if event.status == 'past'
-                        p Passé, à valider par l'élève
-                      else if event.status == 'subscribed'
-                        p Inscrit, à venir
-                      else
-                        p.alert.alert-danger Indéfini
-                    div.media-body
-                      h4.media-heading= 'Organisme : ' + event.org_name
-                      a.firstColor= 'Évènement : ' + event.intitule
-                      h6= event.description_event
-                      h6= event.day.toLocaleDateString()
-                      h6= 'Adresse : ' + event.address
-                      if event.hours_done > 0
-                        p= event.hours_done + ' heures confirmées par l\'organisme'
-                      if event.hours_pending > 0
-                        p= event.hours_pending + ' heures en attente de confirmation par l\'organisme'
-                      #identifiant(style='display:none')
-                        p= event._id
+              table.table.table-striped
+                tr
+                  th.text-center Informations
+                  th.text-center Retours
+                  th.text-center Actions
+                each event, index in events
+                  tr.status(status=event.status)
+                    td
+                      div.panel.panel-default
+                        div.panel-heading
+                          h4.media-heading= 'Organisme : ' + event.org_name
+                          a.firstColor= 'Évènement : ' + event.intitule
+                          p
+                          if event.status == 'confirmed'
+                            span.badge(style='background-color: #113A20')= 'Confirmé'
+                          else if (event.status == 'pending')
+                            span.badge(style='background-color: #FF800E')= 'Attente de validation par l\'organisme'
+                          else if event.status == 'subscribed'
+                            span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
+                          else if event.status == 'past'
+                            span.badge(style='background-color: #FF800E')= 'Passé, à valider par l\'élève'
+                          else if event.status == 'denied'
+                            span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
+                          else
+                            span.badge(style='background-color: #E33831')= 'Indéfini'
+                          if event.hours_done > 0
+                            span.badge(style='background-color: #113A20')= event.hours_done + ' heures confirmées par l\'organisme'
+                          if event.hours_pending > 0
+                            span.badge(style='background-color: #FF800E')= event.hours_pending + ' heures en attente de confirmation par l\'organisme'
+                        div.panel-body
+                          h6= event.description_event
+                          div
+                            i.fa.fa-calendar-o.inline
+                            h6.inline= date.printDate(event.day)
+                          div
+                            i.fa.fa-map
+                            h6.inline= event.address
+                          div
+                            i.fa.fa-at
+                            h6.inline= event.email
+                          #identifiant(style='display:none')
+                            p= event._id
+                    td
                       if event.student_answers.length > 0
                         div.panel.panel-default
                           div.panel-heading
@@ -135,6 +151,13 @@ block content
                                     h6= question
                                   div.panel-body
                                     h6= event.organism_answers[q_I]
+                    td(align='center')
+                      if ((event.status == 'confirmed') || (event.status == 'corrected'))
+                        .btn-group(role='group')
+                          button.btn.btn-default
+                            i.fa.fa-check-square-o.fa-2x
+                          button.btn.btn-danger
+                            i.fa.fa-times-circle-o.fa-2x
     .row
       .col-md-10.col-md-offset-1(style='border: 3px solid #359B9C; margin-bottom:10px;')
         .page-header
@@ -153,11 +176,11 @@ block content
                     td
                       if (lt.hours_pending > 0 || lt.hours_done > 0)
                         if (lt.hours_pending > 0)
-                          span.badge(style='background-color: #E33831')= lt.hours_pending + ' heures à confirmer'
+                          span.badge(style='background-color: #FF800E')= lt.hours_pending + ' heures à confirmer'
                         if (lt.hours_done > 0)
                           span.badge(style='background-color: #113A20')= lt.hours_done + ' heures réalisées'
                       else 
-                        span.badge(style='background-color: #E33831')= 'Aucune heure enregistrée'
+                        span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
                       h4= lt.intitule
                       h6 pour <strong> #{lt.org_name} </strong>
                       if (lt.hours_pending > 0 || lt.hours_done > 0)
@@ -206,11 +229,11 @@ block content
                           td
                             if (ext.hours_pending > 0 || ext.hours_done > 0)
                               if (ext.hours_pending > 0)
-                                span.badge(style='background-color: #E33831')= ext.hours_pending + ' heures à confirmer'
+                                span.badge(style='background-color: #FF800E')= ext.hours_pending + ' heures à confirmer'
                               if (ext.hours_done > 0)
                                 span.badge(style='background-color: #113A20')= ext.hours_done + ' heures réalisées'
                             else 
-                              span.badge(style='background-color: #E33831')= 'Aucune heure enregistrée'
+                              span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
                             h4= ext.intitule
                             h6 pour <strong> #{ext.org_name} </strong>
                             if (ext.hours_pending > 0 || ext.hours_done > 0)
@@ -256,7 +279,7 @@ block content
                           if (man.hours_done > 0)
                             span.badge(style='background-color: #113A20')= man.hours_done + ' heures réalisées'
                           else 
-                            span.badge(style='background-color: #E33831')= 'Aucune heure enregistrée'
+                            span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
                           h3
                           p ajoutées par <b> #{man.admin_name} </b>
                           if (man.added.toLocaleString())
@@ -293,5 +316,17 @@ block footscript
             $('#manual-danger').html(' ' + data.responseJSON.error);
             console.log('JSON.stringify(data) : ' + JSON.stringify(data));
           });
+        });
+
+        const getRowClass = function(status){
+          console.info('Status : ' + status);
+          if(status == 'ended'){ return 'success'}
+          else if (status == 'denied'){ return 'warning'}
+          else if (status == 'confirmed'){ console.info('Return success');return 'success'}
+          else { return ''}
+        };
+        $('.status').each(function(){
+          let status = $(this).attr('status');
+          $(this).addClass(getRowClass(status));
         });
       });

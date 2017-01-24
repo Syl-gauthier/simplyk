@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var emailer = require('../email/emailer.js');
+var date = require('../lib/dates/date_browser.js');
 
 var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
@@ -66,7 +67,7 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
         group: req.session.group
       });
     } else {
-      var formatted_events = volunteer.events;
+      /*var formatted_events = volunteer.events;
       for (var i = 0; i < formatted_events.length; i++) {
         for (var k = 0; k < formatted_events.length; k++) {
           if (formatted_events[i].activity_id.toString() == formatted_events[k].activity_id.toString()) {
@@ -80,12 +81,13 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
             }
           }
         }
-      };
+      };*/
       res.render('a_report.jade', {
         volunteer: volunteer,
-        events: formatted_events,
+        events: volunteer.events,
         session: req.session,
-        group: req.session.group
+        group: req.session.group,
+        date
       });
     }
   });
