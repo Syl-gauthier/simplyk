@@ -23,6 +23,8 @@ var Organism = require('../models/organism_model.js');
 var Activity = require('../models/activity_model.js');
 var OrgTodo = require('../models/o_todo_model.js');
 
+var agenda = require('../lib/agenda.js');
+
 var app = express();
 
 var opp_management = require('../middlewares/opp_management.js');
@@ -267,6 +269,7 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
                 console.error(err);
                 res.redirect('/organism/dashboard?error=' + err);
             } else {
+                agenda.every('4 minutes', 'testJob', {'text': req.params.event_id});
                 Volunteer.find({
                     'events': {
                         '$elemMatch': {

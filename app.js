@@ -38,6 +38,7 @@ var Admin = require('./models/admin_model.js');
 var app = express();
 app.locals.moment = require('moment');
 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -50,6 +51,9 @@ if (typeof db_credentials === 'undefined') {
 }
 
 mongoose.connect('mongodb://' + db_credentials);
+
+//Init agendas
+require('./lib/agenda.js');
 
 passport.use('local-volunteer', new LocalStrategy({
     usernameField: 'email',
@@ -173,6 +177,7 @@ passport.use('local-organism', new LocalStrategy({
     });
   }
 ));
+
 
 passport.serializeUser(function(user, done) {
   done(null, user._id);
