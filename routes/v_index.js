@@ -15,6 +15,7 @@ var ObjectId = Schema.ObjectId;
 var Organism = require('../models/organism_model.js');
 var Volunteer = require('../models/volunteer_model.js');
 var Activity = require('../models/activity_model.js');
+var agenda = require('../lib/agenda.js');
 
 var permissions = require('../middlewares/permissions.js');
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
@@ -375,6 +376,8 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               console.log('**********************************');
               //UPDATING REQ.SESSION.VOLUNTEER
               req.session.volunteer = newVolunteer;
+              //SEND REMINDER EMAIL
+              sendEmailOneDayBeforeEvent(req.params.activity_day, req.session.volunteer, newActivity);
               var success = encodeURIComponent('Vous avez été inscrit à l\'activité avec succès !');
               Organism.findById(newActivity.org_id, function(err, organism) {
                 //Find the event in organism
@@ -665,5 +668,29 @@ function getAge(dateString) {
   }
   return age;
 };
+
+
+///////////////////////////////////////-----------------AGENDAS------------------
+function sendEmailOneDayBeforeEvent(event_date, volunteer, activity) {
+  agenda.define('sendEmail', function(job) {
+    console.log('We send a reminder email !');
+    emailer.sendOneDayReminderEmail({
+      recipient: 'thibaut.jaurou@gmail.com',
+      customMessage: [volunteer.firstname + ', tu es en forme pour demain ?', 'N\'oublie pas que ' + activity.org_name + ' t\'attends demain ' + date.printDate(event_date) + ' à ' + activity.address],
+      firstname: volunteer.firstname,
+      lastname: volunteer.lastname
+    });
+  });
+
+  agenda.now('sendEmail');
+
+  function defineDayBefore(date_tomorrow){
+    let result_date = new Date(date_tomorrow);
+    result_date.setDate(new Date(date_tomorrow).getDate() - 1);
+    return result_date;
+  }
+
+  agenda.schedule(defineDayBefore(event_date), 'sendEmail');
+}
 
 module.exports = router;

@@ -262,6 +262,32 @@ function sendManualHoursEmail(content) {
   });
 };
 
+function sendOneDayReminderEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'reminder';
+  content.title = 'Demain !';
+  content.button = {
+    text: 'Voir mon bénévolat',
+    link: 'platform.simplyk.org/volunteer/profile'
+  };
+  content.gif = 'http://i.giphy.com/YJ5OlVLZ2QNl6.gif';
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: content.firstname + ', prêt pour le bénévolat de demain ??', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+}
+
 
 module.exports = {
   sendSubscriptionOrgEmail: sendSubscriptionOrgEmail,
@@ -272,5 +298,6 @@ module.exports = {
   sendHoursConfirmedVolEmail: sendHoursConfirmedVolEmail,
   sendAutomaticSubscriptionOrgEmail,
   sendForgottenPasswordEmail,
-  sendManualHoursEmail
+  sendManualHoursEmail,
+  sendOneDayReminderEmail
 };
