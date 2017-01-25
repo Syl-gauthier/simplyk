@@ -66,6 +66,28 @@ block content
 											else
 												div.media-right.media-middle
 													h4 <b>Passé</b>
+				if (student_questions.length > 0 && student_answers.length > 0)
+					div.panel.panel-default
+						div.panel-heading
+							h4 Ton retour d'expérience
+						div.panel-body
+							each question, q_I in student_questions
+								div.panel.panel-warning
+									div.panel-heading
+										h6= question
+									div.panel-body
+										h6= student_answers[q_I]
+				if (organism_questions.length > 0 && organism_answers.length > 0)
+					div.panel.panel-default
+						div.panel-heading
+							h4 Retour de l'organisme
+						div.panel-body
+							each question, q_I in organism_questions
+								div.panel.panel-warning
+									div.panel-heading
+										h6= question
+									div.panel-body
+										h6= organism_answers[q_I]
 				if other_activities.length > 0
 					h3 Autres activités de l'évènement
 					each act, act_i in other_activities

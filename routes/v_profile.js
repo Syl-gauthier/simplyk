@@ -335,7 +335,7 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
               console.log(err);
               res.redirect('/volunteer/map?error=' + err);
             } else {
-              if (event.organism_questions) {
+              if (event.student_questions) {
                 res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
               } else {
                 res.redirect('/volunteer/map');
@@ -483,7 +483,6 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
 
   //Pour trouver l'event dasn le volunteer
   function isEvent(event) {
-    console.log('indexOf : ' + event.activities.indexOf(req.params.act_id) + ' in ' + JSON.stringify(event.activities));
     return event.activities.indexOf(req.params.act_id) > -1;
   };
 
@@ -503,7 +502,6 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
       const org = organism;
       const event = organism.events.find(isEvent);
       const activities_in_event_ids = event.activities;
-      console.log('activities_in_event_ids' + typeof activities_in_event_ids);
       Activity.find({
         '_id': {
           '$in': activities_in_event_ids
@@ -521,19 +519,27 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
           var isNotActivity = function(activity) {
             return activity._id != req.params.act_id;
           };
-          const other_activities = acts.filter(isNotActivity);
-          /*var isSubscribed = function(activity){
-            var subscribelist = req.session.volunteer.events.find(function(event){
-              return event.activity_id == activity._id;
-            });
-            if(subscribelist){
-              return true;
-            }
-            else{
-              return false;
-            }
+          //As you can have participated to 1 activity but trhough many days, just 1 activity contains the questions and answers, so we get them
+          const event_with_answers = (req.session.volunteer.events.filter(event => {
+            return event.activity_id == req.params.act_id;
+          })).find(event => {
+            return (event.student_answers.length > 0)
+          });
+
+          console.log('event_with_answers : ' + JSON.stringify(event_with_answers));
+          let student_questions = {};
+          let student_answers = {};
+          let organism_answers = {};
+          let organism_questions = {};
+
+          if (event_with_answers) {
+            student_questions = event_with_answers.student_questions;
+            student_answers = event_with_answers.student_answers;
+            organism_answers = event_with_answers.organism_answers;
+            organism_questions = event_with_answers.organism_questions;
           }
-          const acts_subscribed = acts.filter(isSubscribed)*/
+
+          const other_activities = acts.filter(isNotActivity);
           res.render('v_event.jade', {
             session: req.session,
             other_activities: other_activities,
@@ -541,7 +547,11 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
             organism: org,
             activity: activity,
             volunteer: req.session.volunteer,
-            group: req.session.group
+            group: req.session.group,
+            student_answers,
+            student_questions,
+            organism_answers,
+            organism_questions
           });
         };
       })

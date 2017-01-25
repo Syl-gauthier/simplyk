@@ -439,9 +439,16 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
     }
   };
   if (req.session.volunteer.admin && req.session.volunteer.admin.school_id) {
-    schools_res.getQuestions(req.session.volunteer.admin, function(questions) {
-      subscribeToActivity(questions.student_questions, questions.organism_questions);
-    });
+    //If the volunteer has already subscribed to this activity but another day, he already have the questions in it, so we subscribe him with no questions
+    if ((req.session.volunteer.events.filter(event => {
+        return event.activity_id == req.params.act_id;
+      })).length > 0) {
+      subscribeToActivity(null, null);
+    } else {
+      schools_res.getQuestions(req.session.volunteer.admin, function(questions) {
+        subscribeToActivity(questions.student_questions, questions.organism_questions);
+      });
+    }
   } else {
     subscribeToActivity(null, null);
   }
