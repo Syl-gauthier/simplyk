@@ -11,6 +11,7 @@ var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
 var Volunteer = require('../models/volunteer_model.js');
 var Admin = require('../models/admin_model.js');
+var Activity = require('../models/activity_model.js');
 
 
 router.get('/admin/classes', permissions.requireGroup('admin'), function(req, res, next) {
@@ -67,28 +68,56 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
         group: req.session.group
       });
     } else {
-      /*var formatted_events = volunteer.events;
-      for (var i = 0; i < formatted_events.length; i++) {
-        for (var k = 0; k < formatted_events.length; k++) {
-          if (formatted_events[i].activity_id.toString() == formatted_events[k].activity_id.toString()) {
-            if ((formatted_events[i].status != 'gathered') && (formatted_events[i] != formatted_events[k])) {
-              formatted_events[i].hours_done += formatted_events[k].hours_done;
-              formatted_events[i].hours_pending += formatted_events[k].hours_pending;
-              if (formatted_events[i].student_answers.length > formatted_events[k].student_answers.length) {} else if (formatted_events[i].student_answers.length < formatted_events[k].student_answers.length) {
-                formatted_events[i].student_answers = formatted_events[k].student_answers;
-              } else {};
-              formatted_events[k].status = 'gathered';
+      //Add infos to each event from activity_id
+
+      function getEventWithActivityInfos(event) {
+        return new Promise((resolve, reject) => {
+          Activity.findOne({
+            '_id': event.activity_id
+          }, 'intitule description', function(err, matching_activity) {
+            if (err) {
+              reject(err);
+            } else {
+              Organism.findOne({
+                '_id': event.org_id
+              }, 'events', function(err, matching_organism) {
+                if (err) {
+                  reject(err);
+                } else {
+                  let new_event = JSON.parse(JSON.stringify(event));
+                  const new_event_description = (matching_organism.events.find(event => {return (event.activities.indexOf(matching_activity._id) != -1)})).description;
+                  new_event['description'] = new_event_description;
+                  new_event['activity_intitule'] = matching_activity.intitule;
+                  console.log('new_event in resolve : ' + JSON.stringify(new_event));
+                  resolve(new_event);
+                }
+              })
             }
-          }
-        }
-      };*/
-      res.render('a_report.jade', {
-        volunteer: volunteer,
-        events: volunteer.events,
-        session: req.session,
-        group: req.session.group,
-        date
+          })
+        });
+      };
+
+      Promise.all(volunteer.events.map(event => {
+        return getEventWithActivityInfos(event);
+      })).then(events => {
+        console.log('Final events : ' + events);
+        res.render('a_report.jade', {
+          volunteer: volunteer,
+          session: req.session,
+          group: req.session.group,
+          events,
+          date
+        });
+      }).catch(err => {
+        console.error('ERROR : ' + err);
+        res.render('a_classes.jade', {
+          error: err,
+          session: req.session,
+          admin: req.session.admin,
+          group: req.session.group
+        });
       });
+
     }
   });
 });

@@ -88,9 +88,9 @@ block content
                 p.alert.alert-danger Aucune activité
               table.table.table-striped
                 tr
-                  th.text-center Informations
-                  th.text-center Retours
-                  th.text-center Actions
+                  th(style="width:30%").text-center Informations
+                  th(style="width:50%").text-center Retours
+                  th(style="width:20%").text-center Actions
                 each event, index in events
                   tr.status(status=event.status)
                     td
@@ -98,6 +98,7 @@ block content
                         div.panel-heading
                           h4.media-heading= 'Organisme : ' + event.org_name
                           a.firstColor= 'Évènement : ' + event.intitule
+                          h5= event.activity_intitule
                           p
                           if event.status == 'confirmed'
                             span.badge(style='background-color: #113A20')= 'Confirmé'
@@ -116,7 +117,6 @@ block content
                           if event.hours_pending > 0
                             span.badge(style='background-color: #FF800E')= event.hours_pending + ' heures en attente de confirmation par l\'organisme'
                         div.panel-body
-                          h6= event.description_event
                           div
                             i.fa.fa-calendar-o.inline
                             h6.inline= date.printDate(event.day)
@@ -128,6 +128,7 @@ block content
                             h6.inline= event.email
                           #identifiant(style='display:none')
                             p= event._id
+                          h6= event.description
                     td
                       if event.student_answers.length > 0
                         div.panel.panel-default
@@ -155,9 +156,9 @@ block content
                       if ((event.status == 'confirmed') || (event.status == 'corrected'))
                         .btn-group(role='group')
                           button.btn.btn-default
-                            i.fa.fa-check-square-o.fa-2x
+                            i.fa.fa-check-square-o
                           button.btn.btn-danger
-                            i.fa.fa-times-circle-o.fa-2x
+                            i.fa.fa-times-circle-o
     .row
       .col-md-10.col-md-offset-1(style='border: 3px solid #359B9C; margin-bottom:10px;')
         .page-header
@@ -169,8 +170,9 @@ block content
             if (volunteer.long_terms)
               table.table.table-striped
                 tr
-                  th Informations
-                  th Retours
+                  th(style="width:30%").text-center Informations
+                  th(style="width:50%").text-center Retours
+                  th(style="width:20%").text-center Actions
                 each lt, lt_i in volunteer.long_terms
                   tr
                     td
@@ -210,6 +212,13 @@ block content
                                     h6= question
                                   div.panel-body
                                     h6= lt.organism_answers[q_I]
+                    td(align='center')
+                      if ((lt.status == 'confirmed') || (lt.status == 'corrected'))
+                        .btn-group(role='group')
+                          button.btn.btn-default
+                            i.fa.fa-check-square-o
+                          button.btn.btn-danger
+                            i.fa.fa-times-circle-o
     if (volunteer.extras || volunteer.manuals)
       .row
         .col-md-10.col-md-offset-1(style='border: 3px solid #E56252; margin-bottom:10px;')
@@ -222,8 +231,9 @@ block content
                   if (volunteer.extras)
                     table.table.table-striped
                       tr
-                        th Informations
-                        th Retours
+                        th(style="width:30%") Informations
+                        th(style="width:50%") Retours
+                        th(style="width:20%") Actions
                       each ext, ext_i in volunteer.extras
                         tr
                           td
@@ -263,6 +273,13 @@ block content
                                           h6= question
                                         div.panel-body
                                           h6= ext.organism_answers[q_I]
+                          td(align='center')
+                            if ((ext.status == 'confirmed') || (ext.status == 'corrected'))
+                              .btn-group(role='group')
+                                button.btn.btn-default
+                                  i.fa.fa-check-square-o
+                                button.btn.btn-danger
+                                  i.fa.fa-times-circle-o
           if (volunteer.manuals)
             if (volunteer.manuals.length > 0)
               .page-header
