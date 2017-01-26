@@ -207,41 +207,37 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
                         group: req.session.group
                     });
                 } else {
+                    //Add event_name to a todo
                     function addEventName(td) {
                         if (td.type == 'hours_pending') {
                             var todo = JSON.parse(JSON.stringify(td));
                             todo.event_name = null;
 
+                            //Find the organism.event correspnding to the todo
                             function containsActivity(event) {
-                                var isIt = event.activities.find(function(act) {
-                                    if (act.$oid) {
-                                        return act.$oid.toString() == todo.activity_id.toString();
-                                    } else {
-                                        return false;
-                                    }
+                                const act_found = event.activities.find(act => {
+                                    return act.toString() == todo.activity_id.toString();
                                 });
-                                if (isIt == -1) {
-                                    return false;
-                                } else {
-                                    return true;
-                                }
+                                return ((act_found) ? true : false);
                             }
-                            const theEvent = req.session.organism.events.find(containsActivity);
-                            console.info('theEvent : ' + theEvent);
-                            todo.event_name = theEvent.intitule;
+
+                            const considered_event = req.session.organism.events.find(containsActivity);
+                            console.info('considered_event : ' + considered_event);
+                            todo.event_name = considered_event.intitule;
                             return todo;
                         } else {
                             return td;
                         }
                     }
-                    var lastTodos = todos.map(addEventName);
+
+                    var todo_to_send = todos.map(addEventName);
                     res.render('o_dashboard.jade', {
                         ev_past: ev_past,
                         error: req.query.error,
                         ev_to_come: ev_to_come,
                         session: req.session,
                         organism: req.session.organism,
-                        todos: lastTodos,
+                        todos: todo_to_send,
                         group: req.session.group
                     });
                 }
