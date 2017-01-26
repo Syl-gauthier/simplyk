@@ -102,12 +102,14 @@ block content
                           p
                           if event.status == 'confirmed'
                             span.badge(style='background-color: #113A20')= 'Confirmé'
+                          else if (event.status == 'validated')
+                            span.badge(style='background-color: #113A20')= 'Validé'
                           else if (event.status == 'pending')
-                            span.badge(style='background-color: #FF800E')= 'Attente de validation par l\'organisme'
+                            span.badge(style='background-color: #FF800E')= 'Attente de confirmation par l\'organisme'
                           else if event.status == 'subscribed'
                             span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
                           else if event.status == 'past'
-                            span.badge(style='background-color: #FF800E')= 'Passé, à valider par l\'élève'
+                            span.badge(style='background-color: #FF800E')= 'Passé, à confirmé par l\'élève'
                           else if event.status == 'denied'
                             span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
                           else
