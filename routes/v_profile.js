@@ -582,18 +582,6 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
     };
 
     console.log('student_answers : ' + student_answers);
-    let newActivity = new Activity({
-      email: req.body.org_email.toLowerCase(),
-      org_name: req.body.org_name,
-      org_phone: req.body.org_phone,
-      intitule: req.body.intitule,
-      extra: true,
-      description: req.body.description,
-      days: [{
-        day: req.body.activity_date,
-        applicants: [req.session.volunteer._id]
-      }]
-    });
 
     function addOrganismIfDoesntExist(questions) {
       //Ajouter organism s'il n'existe pas
@@ -612,7 +600,17 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
           res.redirect('/volunteer/map?error=' + err);
         } else {
           //If the organism already has an account, add it a orgTodo and send it an email
-          let organism = {};
+
+          let newActivity = new Activity({
+            intitule: req.body.intitule,
+            extra: true,
+            description: req.body.description,
+            days: [{
+              day: req.body.activity_date,
+              applicants: [req.session.volunteer._id]
+            }]
+          });
+
           let newTodo = new OrgTodo({
             type: 'students_hours_pending',
             lastname: req.session.volunteer.lastname,
@@ -624,114 +622,88 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
             student: true,
             organism_questions: questions.organism_questions,
             activity_id: newActivity._id
-          }); //////TO SAVE !
-          if (theOrg) {
-            //send email and add orgToDo
-            newTodo.org_id = newActivity.org_id = theOrg._id;
+          });
 
-            organism = theOrg;
-            newTodo.save(function(err, newTodo_saved) {
-              if (err) {
-                console.error(err);
-              };
-            });
-            emailer.sendHoursPendingOrgEmail({
-              firstname: req.session.volunteer.firstname,
-              lastname: req.session.volunteer.lastname,
-              recipient: req.body.org_email.toLowerCase(),
-              customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'En tant qu\'élève dans une école où le bénévolat est encouragé, il a besoin que vous lui validiez ces heures s\'il les a réellement fait. Sinon, il est utile aussi que vous signaliez qu\'il y a une erreur ! :)', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
-            });
-            console.info('INFO: student add extra hours to an organism which ALREADY exists : ' + req.body.org_name);
-            newActivity.save(function(err, activity_saved) {
-              if (err) {
-                console.error(err);
-              };
-              let extra_to_add = {
-                activity_id: activity_saved._id,
-                status: 'pending',
-                email: activity_saved.email,
-                org_name: activity_saved.org_name,
-                org_phone: activity_saved.org_phone,
-                intitule: activity_saved.intitule,
-                description: activity_saved.description,
-                status: 'pending',
-                days: activity_saved.days,
-                hours_pending: req.body.hours_pending,
-                extra: true,
-                student_questions: questions.student_questions,
-                organism_questions: questions.organism_questions,
-                student_answers
-              };
-              console.log('extra_to_add : ' + JSON.stringify(extra_to_add));
-              Volunteer.findOneAndUpdate({
-                '_id': req.session.volunteer._id
-              }, {
-                '$push': {
-                  'extras': extra_to_add
-                }
-              }, {
-                new: true
-              }, function(err, newVolunteer) {
+          const setTodoAndActivityValuesFromOrganismResults = new Promise((resolve, reject) => {
+
+            if (theOrg) {
+              //if the organism has already subscribed
+              newTodo.org_id = newActivity.org_id = theOrg._id;
+              newActivity.org_name = theOrg.org_name;
+              newActivity.email = theOrg.email;
+              newActivity.org_phone = theOrg.phone;
+
+              emailer.sendHoursPendingOrgEmail({
+                firstname: req.session.volunteer.firstname,
+                lastname: req.session.volunteer.lastname,
+                recipient: req.body.org_email.toLowerCase(),
+                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'En tant qu\'élève dans une école où le bénévolat est encouragé, il a besoin que vous lui validiez ces heures s\'il les a réellement fait. Sinon, il est utile aussi que vous signaliez qu\'il y a une erreur ! :)', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+              });
+
+              console.info('INFO: student add extra hours to an organism which ALREADY exists : ' + req.body.org_name);
+              resolve();
+            } else {
+              //The organism hasn't any account on the platform, send it an email, create an account and add an orgTodo
+              let pass1 = req.session.volunteer._id,
+                pass2 = req.body.org_name;
+              const randomString = randomstring.generate();
+
+              let organism = new Organism({
+                email: req.body.org_email.toLowerCase(),
+                org_name: req.body.org_name,
+                email_verified: false,
+                email_verify_string: randomString,
+                password: '',
+                firstname: req.body.firstname,
+                lastname: req.body.lastname,
+                phone: req.body.org_phone,
+                description: req.body.description,
+                automatic: true
+              });
+
+              const passToChange = (pass1.substring(0, 3) + pass2.substring(0, 3)).toLowerCase();
+              organism.password = organism.generateHash(passToChange);
+
+              organism.save(function(err, org_saved) {
                 if (err) {
                   console.error(err);
+                  reject(err);
                 } else {
-                  req.session.volunteer = newVolunteer;
-                  req.session.save(function() {
-                    res.redirect('/volunteer/map');
+                  var hostname = req.headers.host;
+                  var verifyUrl = 'http://' + hostname + '/verifyO/' + randomString;
+                  console.log('Verify url sent: ' + verifyUrl);
+
+                  newTodo.org_id = newActivity.org_id = org_saved._id;
+                  newActivity.org_name = org_saved.org_name;
+                  newActivity.email = org_saved.email;
+                  newActivity.org_phone = org_saved.phone;
+
+
+                  emailer.sendAutomaticSubscriptionOrgEmail({
+                    recipient: org_saved.email,
+                    button: {
+                      link: verifyUrl
+                    },
+                    customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name + '.', 'Vous recevez ce message car cet élève mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Si c\'est bel et bien le cas, venez valider ses heures sur la plateforme Simplyk afin qu\'elles soient comptabiliser par ses professeurs !', 'S\'il n\'a pas fait les heures mentionnées, connectez-vous pour corriger la situation. :) ', 'Vos identifiants de connexion sont les suivants :', 'Email: ' + org_saved.email, 'Mot de passe: ' + passToChange],
+                    firstname: req.session.volunteer.firstname,
+                    lastname: req.session.volunteer.lastname
                   });
+                  console.info('INFO: student add extra hours to an organism which has NOT subscribed to the platform : ' + org_saved.org_name);
+                  resolve();
                 }
-              })
-            });
-          } else {
-            //The organism hasn't any account on the platform, send it an email, create an account and add an orgTodo
-            let pass1 = req.session.volunteer._id,
-              pass2 = req.body.org_name;
-            const randomString = randomstring.generate();
+              });
 
-            organism = new Organism({
-              email: req.body.org_email.toLowerCase(),
-              org_name: req.body.org_name,
-              email_verified: false,
-              email_verify_string: randomString,
-              password: '',
-              firstname: req.body.firstname,
-              lastname: req.body.lastname,
-              phone: req.body.org_phone,
-              description: req.body.description,
-              automatic: true
-            });
+            }
 
-            const passToChange = (pass1.substring(0, 3) + pass2.substring(0, 3)).toLowerCase();
-            organism.password = organism.generateHash(passToChange);
+          });
 
-            organism.save(function(err, org_saved) {
-              if (err) {
-                console.error(err);
-              }
-
-              newTodo.org_id = newActivity.org_id = org_saved._id;
+          setTodoAndActivityValuesFromOrganismResults.then(function() {
 
               newTodo.save(function(err, newTodo_saved) {
                 if (err) {
                   console.error(err);
                 };
               });
-
-              var hostname = req.headers.host;
-              var verifyUrl = 'http://' + hostname + '/verifyO/' + randomString;
-              console.log('Verify url sent: ' + verifyUrl);
-
-              emailer.sendAutomaticSubscriptionOrgEmail({
-                recipient: req.body.org_email.toLowerCase(),
-                button: {
-                  link: verifyUrl
-                },
-                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name + '.', 'Vous recevez ce message car cet élève mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Si c\'est bel et bien le cas, venez valider ses heures sur la plateforme Simplyk afin qu\'elles soient comptabiliser par ses professeurs !', 'S\'il n\'a pas fait les heures mentionnées, connectez-vous pour corriger la situation. :) ', 'Vos identifiants de connexion sont les suivants :', 'Email: ' + req.body.org_email.toLowerCase(), 'Mot de passe: ' + passToChange],
-                firstname: req.session.volunteer.firstname,
-                lastname: req.session.volunteer.lastname
-              });
-              console.info('INFO: student add extra hours to an organism which has NOT subscribed to the platform : ' + req.body.org_name);
-
               newActivity.save(function(err, activity_saved) {
                 if (err) {
                   console.error(err);
@@ -766,13 +738,19 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                     console.error(err);
                   } else {
                     req.session.volunteer = newVolunteer;
-                    res.redirect('/volunteer/map');
+                    req.session.save(function() {
+                      res.redirect('/volunteer/map');
+                    });
                   }
-                });
-
+                })
               });
+
+            })
+            .catch(err => {
+              const error = 'Une erreur est survenu lors de la recherche de l\'organisme mentionné dans le formulaire';
+              console.error(err);
+              res.redirect('/volunteer/map?error=' + error);
             });
-          }
         }
       });
     };
