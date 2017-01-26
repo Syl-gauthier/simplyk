@@ -11,6 +11,7 @@ block content
 	.container-fluid
 		.row.fill
 			.col-md-7.col-md-offset-1.no-side-padding
+				p=JSON.stringify(student_answers)
 				h1= event.intitule + ' par ' + organism.org_name
 				p <b>Adresse:</b> #{event.address}
 				p <b>Description:</b> #{event.description}

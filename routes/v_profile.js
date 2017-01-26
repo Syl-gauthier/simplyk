@@ -519,27 +519,23 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
           var isNotActivity = function(activity) {
             return activity._id != req.params.act_id;
           };
-          //As you can have participated to 1 activity but trhough many days, just 1 activity contains the questions and answers, so we get them
-          const event_with_answers = (req.session.volunteer.events.filter(event => {
-            return event.activity_id == req.params.act_id;
-          })).find(event => {
-            return (event.student_answers.length > 0)
-          });
+          const other_activities = acts.filter(isNotActivity);
 
-          console.log('event_with_answers : ' + JSON.stringify(event_with_answers));
           let student_questions = {};
+          let organism_questions = {};
           let student_answers = {};
           let organism_answers = {};
-          let organism_questions = {};
 
-          if (event_with_answers) {
-            student_questions = event_with_answers.student_questions;
-            student_answers = event_with_answers.student_answers;
-            organism_answers = event_with_answers.organism_answers;
-            organism_questions = event_with_answers.organism_questions;
+          if (event.student_answers) {
+            student_questions = event.student_questions;
+            student_answers = event.student_answers;
+            organism_answers = event.organism_answers;
+            organism_questions = event.organism_questions;
           }
 
-          const other_activities = acts.filter(isNotActivity);
+          console.info(JSON.stringify(event));
+
+
           res.render('v_event.jade', {
             session: req.session,
             other_activities: other_activities,
@@ -550,8 +546,8 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
             group: req.session.group,
             student_answers,
             student_questions,
-            organism_answers,
-            organism_questions
+            organism_questions,
+            organism_answers
           });
         };
       })
