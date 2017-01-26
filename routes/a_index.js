@@ -85,7 +85,9 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
                   reject(err);
                 } else {
                   let new_event = JSON.parse(JSON.stringify(event));
-                  const new_event_description = (matching_organism.events.find(event => {return (event.activities.indexOf(matching_activity._id) != -1)})).description;
+                  const new_event_description = (matching_organism.events.find(event => {
+                    return (event.activities.indexOf(matching_activity._id) != -1)
+                  })).description;
                   new_event['description'] = new_event_description;
                   new_event['activity_intitule'] = matching_activity.intitule;
                   console.log('new_event in resolve : ' + JSON.stringify(new_event));
@@ -233,6 +235,31 @@ router.get('/admin/internopps', permissions.requireGroup('admin'), function(req,
     admin: req.session.admin,
     group: req.session.group
   });
+});
+
+router.post('/admin/validate', permissions.requireGroup('admin'), function(req, res, next) {
+  console.info('C\'est dans validate ! : ' + JSON.stringify(req.body));
+  let find_query = {
+    '_id': req.body.vol
+  };
+  find_query[req.body.type+'._id'] = req.body.id;
+  let update_query = {};
+  update_query[req.body.type + '.$.status'] = 'validated';
+  console.info('C\'est dans validate update_query! : ' + JSON.stringify(update_query));
+  console.info('C\'est dans validate find_query! : ' + JSON.stringify(find_query));
+  Volunteer.findOneAndUpdate(find_query, update_query, function(err, response) {
+    if (err) {
+      console.error('ERROR : ' + err);
+      res.status(404).send({
+        message: 'Erreur lors de l\'opération'
+      });
+    } else {
+      console.info('MESSAGE : ' + err);
+      res.status(200).send({
+        message: 'Validé'
+      });
+    }
+  })
 });
 
 router.get('/admin/listorganisms', permissions.requireGroup('admin'), function(req, res, next) {

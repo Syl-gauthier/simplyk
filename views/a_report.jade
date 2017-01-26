@@ -155,9 +155,9 @@ block content
                     td(align='center')
                       if ((event.status == 'confirmed') || (event.status == 'corrected'))
                         .btn-group(role='group')
-                          button.btn.btn-default
+                          button.btn.btn-default.validate(vol=volunteer._id, id=event._id, type='events')
                             i.fa.fa-check-square-o
-                          button.btn.btn-danger
+                          button.btn.btn-danger.deny
                             i.fa.fa-times-circle-o
     .row
       .col-md-10.col-md-offset-1(style='border: 3px solid #359B9C; margin-bottom:10px;')
@@ -174,7 +174,7 @@ block content
                   th(style="width:50%").text-center Retours
                   th(style="width:20%").text-center Actions
                 each lt, lt_i in volunteer.long_terms
-                  tr
+                  tr.status(status=lt.status)
                     td
                       if (lt.hours_pending > 0 || lt.hours_done > 0)
                         if (lt.hours_pending > 0)
@@ -215,9 +215,9 @@ block content
                     td(align='center')
                       if ((lt.status == 'confirmed') || (lt.status == 'corrected'))
                         .btn-group(role='group')
-                          button.btn.btn-default
+                          button.btn.btn-default.validate(vol=volunteer._id, id=lt._id, type='long_terms')
                             i.fa.fa-check-square-o
-                          button.btn.btn-danger
+                          button.btn.btn-danger.deny
                             i.fa.fa-times-circle-o
     if (volunteer.extras || volunteer.manuals)
       .row
@@ -235,7 +235,7 @@ block content
                         th(style="width:50%") Retours
                         th(style="width:20%") Actions
                       each ext, ext_i in volunteer.extras
-                        tr
+                        tr.status(status=ext.status)
                           td
                             if (ext.hours_pending > 0 || ext.hours_done > 0)
                               if (ext.hours_pending > 0)
@@ -276,9 +276,9 @@ block content
                           td(align='center')
                             if ((ext.status == 'confirmed') || (ext.status == 'corrected'))
                               .btn-group(role='group')
-                                button.btn.btn-default
+                                button.btn.btn-default.validate(vol=volunteer._id, id=ext._id, type='extras')
                                   i.fa.fa-check-square-o
-                                button.btn.btn-danger
+                                button.btn.btn-danger.deny
                                   i.fa.fa-times-circle-o
           if (volunteer.manuals)
             if (volunteer.manuals.length > 0)
@@ -335,11 +335,28 @@ block footscript
           });
         });
 
+        //Handle validation or denying button
+        $('.validate').click(function(){
+          const type = $(this).attr('type');
+          const buttons = $(this).parent('.btn-group');
+          const row = $(this).parent('tr.status');
+          $.post('/admin/validate', {type: $(this).attr('type'), id: $(this).attr('id'), vol: $(this).attr('vol')})
+          .always(function(data){
+            console.info('data : ' + JSON.stringify(data));
+            buttons.html('<p>'+data.message+'</p>');
+            console.log('buttons : ' + JSON.stringify(buttons));
+            console.log('row : ' + JSON.stringify(row));
+            row.css('background-color', '#dff0d8');
+          });
+        });
+
         const getRowClass = function(status){
           console.info('Status : ' + status);
           if(status == 'ended'){ return 'success'}
-          else if (status == 'denied'){ return 'warning'}
-          else if (status == 'confirmed'){ console.info('Return success');return 'success'}
+          else if (status == 'denied'){ console.info('Return danger');return 'danger'}
+          else if (status == 'confirmed'){ console.info('Return success');return ''}
+          else if (status == 'validated'){ console.info('Return success');return 'success'}
+          else if (status == 'pending'){ console.info('Return warning');return 'warning'}
           else { return ''}
         };
         $('.status').each(function(){
