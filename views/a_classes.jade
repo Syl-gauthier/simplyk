@@ -27,10 +27,8 @@ block content
                   if classes_array.length > 1
                     th.text-center(rowspan='2') Changement de classe
                 tr
-                  th.text-center
-                    span.badge(style='background-color: #E33831') Inscriptions
-                  th.text-center 
-                    span.badge(style='background-color: #CF7C00') En attente
+                  th.text-center(style='font-weight: 700; font-size: 13px') Inscriptions
+                  th.text-center(style='font-weight: 700; font-size: 13px') En attente
                   th.text-center 
                     span.badge(style='background-color: #197500') Confirmés
                   each classe, classe_i in classes_array
@@ -51,17 +49,13 @@ block content
                             td.text-center= vol.lastname
                             td.text-center= vol.firstname
                             if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
-                              td.text-center 
-                                span.badge(style='background-color: #E33831')= getSubscriptions(vol)
-                              td.text-center 
-                                span.badge(style='background-color: #CF7C00')= getWaiting(vol)
+                              td.text-center(style='font-weight: 700; font-size: 13px')= getSubscriptions(vol)
+                              td.text-center(style='font-weight: 700; font-size: 13px')= getWaiting(vol)
                               td.text-center 
                                 span.badge(style='background-color: #197500')= getConfirmed(vol)
                             else
                               td.text-center 
-                                span.badge 0
                               td.text-center
-                                span.badge 0
                               td.text-center  
                                 span.badge 0
                             td.text-center
@@ -101,17 +95,13 @@ block content
                           td.text-center= vol.lastname
                           td.text-center= vol.firstname
                           if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
-                            td.text-center 
-                              span.badge(style='background-color: #E33831')= getSubscriptions(vol)
-                            td.text-center 
-                              span.badge(style='background-color: #CF7C00')= getWaiting(vol)
+                            td.text-center(style='font-weight: 700; font-size: 13px')= getSubscriptions(vol)
+                            td.text-center(style='font-weight: 700; font-size: 13px')= getWaiting(vol)
                             td.text-center 
                               span.badge(style='background-color: #197500')= getConfirmed(vol)
                           else
                             td.text-center 
-                              span.badge 0
                             td.text-center
-                              span.badge 0
                             td.text-center  
                               span.badge 0
                           td.text-center
@@ -209,4 +199,8 @@ block footscript
         let status = $(this).attr('status');
         $(this).addClass(getRowClass(status));
       });
+      
+      $('.danger>td').css('background-color', '#E3998F');
+      $('.success>td').css('background-color', '#9CF095');
+      $('.warning>td').css('background-color', '#FAF297');
     });
