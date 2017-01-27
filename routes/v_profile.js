@@ -27,6 +27,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   var events_past = [];
   var events_pending = [];
   var events_subscribed = [];
+  var events_denied = [];
   var events_confirmed = [];
   var error;
   const volunteer = req.session.volunteer;
@@ -38,8 +39,10 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       events_subscribed.push(volunteer.events[eventI]);
     } else if (Date.parse(volunteer.events[eventI].day) < Date.now() && volunteer.events[eventI].status === 'pending') {
       events_pending.push(volunteer.events[eventI]);
-    } else if (Date.parse(volunteer.events[eventI].day) < Date.now() && volunteer.events[eventI].status === 'confirmed') {
+    } else if ((Date.parse(volunteer.events[eventI].day) < Date.now() && volunteer.events[eventI].status === 'confirmed') || volunteer.events[eventI].status == 'corrected' || volunteer.events[eventI].status == 'validated') {
       events_confirmed.push(volunteer.events[eventI]);
+    } else if (volunteer.events[eventI].status == 'denied') {
+      events_denied.push(volunteer.events[eventI]);
     } else {
       error = 'Une erreur avec vos inscriptions';
       console.log(error);
@@ -136,7 +139,8 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
         manuals_hours_done,
         extras_hours_done,
         hash,
-        client_schools
+        client_schools,
+        events_denied
       });
     });
   });

@@ -155,6 +155,31 @@ block content
                         #identifiant(style='display:none')
                           p= event._id
 
+                  //IF EVENT_DENIED
+                  if events_denied.length
+                    h4 CORRIGER TON RETOUR
+                  each event, index in events_denied
+                    li.list-group-item
+                      .panel.panel-default
+                        .panel-heading
+                          div.media-left.media-middle
+                            a(href='profile')
+                              img.media-object.little-img(src='/images/clouds.jpg')
+                          div.media-body
+                            h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
+                            h6 <small>pour</small> #{event.org_name}
+                        .panel-body
+                          h6
+                            i.fa.fa-map-marker
+                            p.inline Adresse : #{event.address}
+                          h6.inline
+                            i.fa.fa-calendar-o
+                            p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
+                        .panel-footer
+                          a.btn.btn-danger(href='/volunteer/event/'+event.activity_id) Corriger
+                        #identifiant(style='display:none')
+                          p= event._id
+
                   // IF EVENT_PENDING
                   if events_pending.length
                     h4 EN ATTENTE DE CONFIRMATION
