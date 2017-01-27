@@ -34,7 +34,7 @@ block content
                   th.text-center 
                     span.badge(style='background-color: #197500') Confirmés
                   each classe, classe_i in classes_array
-                    tr.warning
+                    tr.active
                       td.text-center= classe.toString()
                       td
                       td
@@ -47,7 +47,7 @@ block content
                     each vol, vol_i in volunteers
                       if ((typeof vol.admin.class != undefined) && (classe != 'Sans classe'))
                         if vol.admin.class == classe
-                          tr.success
+                          tr.student-row(class=vol.status)
                             td.text-center= vol.lastname
                             td.text-center= vol.firstname
                             if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
@@ -97,7 +97,7 @@ block content
                                         li
                                           a.change_class(style="cursor: pointer;", new_class=classe.toString(), vol=vol._id)= classe.toString()
                       else if (((!vol.admin.class) || (vol.admin.class == '')) && (classe == 'Sans classe'))
-                        tr.success
+                        tr.student-row(class=vol.status)
                           td.text-center= vol.lastname
                           td.text-center= vol.firstname
                           if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
@@ -195,5 +195,18 @@ block footscript
           $('#manual-danger'+index).html(' ' + data.responseJSON.error);
           console.log('JSON.stringify(data) : ' + JSON.stringify(data));
         });
+      });
+
+      const getRowClass = function(status){
+        console.info('Status : ' + status);
+        if(status == 'pending'){ console.info('Return warning');return 'warning'}
+        else if (status == 'denied'){ console.info('Return danger');return 'danger'}
+        else if (status == 'confirmed'){ console.info('Return success');return 'warning'}
+        else if (status == 'validated'){ console.info('Return success');return 'success'}
+        else { return ''}
+      };
+      $('.student-row').each(function(){
+        let status = $(this).attr('status');
+        $(this).addClass(getRowClass(status));
       });
     });

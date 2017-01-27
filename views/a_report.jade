@@ -159,7 +159,7 @@ block content
                         .btn-group(role='group')
                           button.btn.btn-default.validate(vol=volunteer._id, id=event._id, type='events')
                             i.fa.fa-check-square-o
-                          button.btn.btn-danger.deny
+                          button.btn.btn-danger.deny(vol=volunteer._id, id=event._id, type='events')
                             i.fa.fa-times-circle-o
     .row
       .col-md-10.col-md-offset-1(style='border: 3px solid #359B9C; margin-bottom:10px;')
@@ -219,7 +219,7 @@ block content
                         .btn-group(role='group')
                           button.btn.btn-default.validate(vol=volunteer._id, id=lt._id, type='long_terms')
                             i.fa.fa-check-square-o
-                          button.btn.btn-danger.deny
+                          button.btn.btn-danger.deny(vol=volunteer._id, id=lt._id, type='long_terms')
                             i.fa.fa-times-circle-o
     if (volunteer.extras || volunteer.manuals)
       .row
@@ -280,7 +280,7 @@ block content
                               .btn-group(role='group')
                                 button.btn.btn-default.validate(vol=volunteer._id, id=ext._id, type='extras')
                                   i.fa.fa-check-square-o
-                                button.btn.btn-danger.deny
+                                button.btn.btn-danger.deny(vol=volunteer._id, id=ext._id, type='extras')
                                   i.fa.fa-times-circle-o
           if (volunteer.manuals)
             if (volunteer.manuals.length > 0)

@@ -44,6 +44,61 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
       }
       console.log('Classes array : ' + JSON.stringify(classes_array));
 
+      //Determine student status
+      volunteers.map(vol => {
+        const extra_status_array = vol.extras.map(ext => {
+          return ext.status;
+        });
+
+        if (extra_status_array.indexOf('denied') == -1) {
+          const event_status_array = vol.events.map(ev => {
+            return ev.status;
+          });
+
+          if (event_status_array.indexOf('denied') == -1) {
+            const lt_status_array = vol.long_terms.map(lt => {
+              return lt.status;
+            });
+
+            if (lt_status_array.indexOf('denied') == -1) {
+              if ((extra_status_array.indexOf('pending') == -1) && (extra_status_array.indexOf('confirmed') == -1) && (extra_status_array.indexOf('corrected') == -1)) {
+                if ((event_status_array.indexOf('pending') == -1) && (event_status_array.indexOf('confirmed') == -1) && (event_status_array.indexOf('corrected') == -1)) {
+                  if ((lt_status_array.indexOf('pending') == -1) && (lt_status_array.indexOf('confirmed') == -1) && (lt_status_array.indexOf('corrected') == -1)) {
+                    if ((lt_status_array.indexOf('validated') == -1) && (event_status_array.indexOf('validated') == -1) && (extra_status_array.indexOf('validated') == -1)) {
+                      vol.status = ''
+                      return vol;
+                    } else {
+                      vol.status = 'success';
+                      return vol;
+                    };
+                    vol.status = ''
+                    return vol;
+                  } else {
+                    vol.status = 'warning';
+                    return vol;
+                  };
+                } else {
+                  vol.status = 'warning';
+                  return vol;
+                };
+              } else {
+                vol.status = 'warning';
+                return vol;
+              };
+            } else {
+              vol.status = 'danger';
+              return vol;
+            };
+          } else {
+            vol.status = 'danger';
+            return vol;
+          };
+        } else {
+          vol.status = 'danger';
+          return vol;
+        };
+      });
+
       res.status(200).render('a_classes.jade', {
         session: req.session,
         admin: req.session.admin,
@@ -242,7 +297,7 @@ router.post('/admin/validate', permissions.requireGroup('admin'), function(req, 
   let find_query = {
     '_id': req.body.vol
   };
-  find_query[req.body.type+'._id'] = req.body.id;
+  find_query[req.body.type + '._id'] = req.body.id;
   let update_query = {};
   update_query[req.body.type + '.$.status'] = 'validated';
   console.info('C\'est dans validate update_query! : ' + JSON.stringify(update_query));
@@ -267,7 +322,7 @@ router.post('/admin/deny', permissions.requireGroup('admin'), function(req, res,
   let find_query = {
     '_id': req.body.vol
   };
-  find_query[req.body.type+'._id'] = req.body.id;
+  find_query[req.body.type + '._id'] = req.body.id;
   let update_query = {};
   update_query[req.body.type + '.$.status'] = 'denied';
   console.info('C\'est dans deny update_query! : ' + JSON.stringify(update_query));
