@@ -238,7 +238,7 @@ router.get('/admin/internopps', permissions.requireGroup('admin'), function(req,
 });
 
 router.post('/admin/validate', permissions.requireGroup('admin'), function(req, res, next) {
-  console.info('C\'est dans validate ! : ' + JSON.stringify(req.body));
+  console.info('In validate with req.body ! : ' + JSON.stringify(req.body));
   let find_query = {
     '_id': req.body.vol
   };
@@ -256,7 +256,32 @@ router.post('/admin/validate', permissions.requireGroup('admin'), function(req, 
     } else {
       console.info('MESSAGE : ' + err);
       res.status(200).send({
-        message: 'Validé'
+        message: 'VALIDÉ'
+      });
+    }
+  })
+});
+
+router.post('/admin/deny', permissions.requireGroup('admin'), function(req, res, next) {
+  console.info('In deny with req.body ! : ' + JSON.stringify(req.body));
+  let find_query = {
+    '_id': req.body.vol
+  };
+  find_query[req.body.type+'._id'] = req.body.id;
+  let update_query = {};
+  update_query[req.body.type + '.$.status'] = 'denied';
+  console.info('C\'est dans deny update_query! : ' + JSON.stringify(update_query));
+  console.info('C\'est dans deny find_query! : ' + JSON.stringify(find_query));
+  Volunteer.findOneAndUpdate(find_query, update_query, function(err, response) {
+    if (err) {
+      console.error('ERROR : ' + err);
+      res.status(404).send({
+        message: 'Erreur lors de l\'opération'
+      });
+    } else {
+      console.info('MESSAGE : ' + err);
+      res.status(200).send({
+        message: 'À REVOIR'
       });
     }
   })

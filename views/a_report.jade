@@ -341,24 +341,38 @@ block footscript
         $('.validate').click(function(){
           const type = $(this).attr('type');
           const buttons = $(this).parent('.btn-group');
-          const row = $(this).parent('tr.status');
+          const row = $(this).closest('.status');
           $.post('/admin/validate', {type: $(this).attr('type'), id: $(this).attr('id'), vol: $(this).attr('vol')})
           .always(function(data){
             console.info('data : ' + JSON.stringify(data));
             buttons.html('<p>'+data.message+'</p>');
             console.log('buttons : ' + JSON.stringify(buttons));
             console.log('row : ' + JSON.stringify(row));
-            row.css('background-color', '#dff0d8');
+            row.removeClass('warning');
+            row.addClass('success');
+          });
+        });
+
+        //Handle validation or denying button
+        $('.deny').click(function(){
+          const type = $(this).attr('type');
+          const buttons = $(this).parent('.btn-group');
+          const row = $(this).closest('.status');
+          $.post('/admin/deny', {type: $(this).attr('type'), id: $(this).attr('id'), vol: $(this).attr('vol')})
+          .always(function(data){
+            console.info('data : ' + JSON.stringify(data));
+            buttons.html('<p>'+data.message+'</p>');
+            row.removeClass('warning');
+            row.addClass('danger');
           });
         });
 
         const getRowClass = function(status){
           console.info('Status : ' + status);
-          if(status == 'ended'){ return 'success'}
+          if(status == 'pending'){ console.info('Return warning');return 'warning'}
           else if (status == 'denied'){ console.info('Return danger');return 'danger'}
-          else if (status == 'confirmed'){ console.info('Return success');return ''}
+          else if (status == 'confirmed'){ console.info('Return success');return 'warning'}
           else if (status == 'validated'){ console.info('Return success');return 'success'}
-          else if (status == 'pending'){ console.info('Return warning');return 'warning'}
           else { return ''}
         };
         $('.status').each(function(){
