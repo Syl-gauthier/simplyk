@@ -328,6 +328,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
           } else {
             phone = null;
           };
+          const start_time = newActivity.days.find(isGoodDay).start_time;
           console.log('phone : ' + phone);
           Volunteer.findOneAndUpdate({
             "_id": req.session.volunteer._id
@@ -343,7 +344,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                 "intitule_activity": newActivity.description,
                 "org_id": newActivity.org_id,
                 "org_name": newActivity.org_name,
-                "start_time": newActivity.days.find(isGoodDay).start_time,
+                "start_time": start_time,
                 "end_time": newActivity.days.find(isGoodDay).end_time,
                 "email": newActivity.email,
                 "hours_done": 0,
@@ -377,7 +378,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               //UPDATING REQ.SESSION.VOLUNTEER
               req.session.volunteer = newVolunteer;
               //SEND REMINDER EMAIL
-              sendEmailOneDayBeforeEvent(req.params.activity_day, req.session.volunteer, newActivity);
+              sendEmailOneDayBeforeEvent(req.params.activity_day, req.session.volunteer, newActivity, start_time);
               var success = encodeURIComponent('Vous avez été inscrit à l\'activité avec succès !');
               Organism.findById(newActivity.org_id, function(err, organism) {
                 //Find the event in organism
@@ -671,26 +672,28 @@ function getAge(dateString) {
 
 
 ///////////////////////////////////////-----------------AGENDAS------------------
-function sendEmailOneDayBeforeEvent(event_date, volunteer, activity) {
-  agenda.define('sendEmail', function(job) {
+function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time) {
+  agenda.define('sendEmail' + volunteer._id + activity._id + event_date, function(job) {
     console.log('We send a reminder email !');
     emailer.sendOneDayReminderEmail({
       recipient: 'thibaut.jaurou@gmail.com',
-      customMessage: [volunteer.firstname + ', tu es en forme pour demain ?', 'N\'oublie pas que ' + activity.org_name + ' t\'attends demain ' + date.printDate(event_date) + ' à ' + activity.address],
+      customMessage: [volunteer.firstname + ', tu es en forme pour demain ?', 'N\'oublie pas que ' + activity.org_name + ' t\'attends demain ' + date.printDate(event_date) + ' ' + start_time + ' à ' + activity.address],
       firstname: volunteer.firstname,
       lastname: volunteer.lastname
     });
   });
 
-  agenda.now('sendEmail');
-
-  function defineDayBefore(date_tomorrow){
-    let result_date = new Date(date_tomorrow);
-    result_date.setDate(new Date(date_tomorrow).getDate() - 1);
-    return result_date;
+  agenda.now('sendEmail' + volunteer._id + activity._id + event_date);
+  console.log('moment(start_time, HH:mm A)' + moment(start_time, 'HH:mm A'));
+  function defineDayBefore(date_tomorrow) {
+    moment(date_tomorrow).add(7, 'h');
+    moment(date_tomorrow).subtract(1, 'd');
+    return date_tomorrow;
   }
 
-  agenda.schedule(defineDayBefore(event_date), 'sendEmail');
+  agenda.schedule(defineDayBefore(event_date), {
+    timezone: 'America/New_York'
+  }, 'sendEmail' + volunteer._id + activity._id + event_date);
 }
 
 module.exports = router;
