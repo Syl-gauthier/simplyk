@@ -89,7 +89,6 @@ router.get('/', function(req, res, next) {
                     Organism.find({
                         'validation': true,
                         'long_terms': {
-                            '$exists': true,
                             '$not': {
                                 '$size': 0
                             }

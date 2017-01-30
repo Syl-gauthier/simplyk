@@ -289,7 +289,7 @@ router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('
                 };
               });
               const content = {
-                recipient: /*new_organism.email*/'thibaut.jaurou@gmail.com',
+                recipient: /*new_organism.email*/ 'thibaut.jaurou@gmail.com',
                 activity_name: lt_name,
                 name: new_organism.org_name,
                 customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est désinscrit de votre engagement ' + lt_name + ' !'
@@ -624,13 +624,18 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
 
 router.get('/volunteer/extra_simplyk_hours', permissions.requireGroup('volunteer'), function(req, res) {
   if (req.session.volunteer.admin && req.session.volunteer.admin.school_id) {
+    const hash = require('intercom-client').SecureMode.userHash({
+      secretKey: process.env.INTERCOM_SECRET_KEY,
+      identifier: req.session.volunteer.email
+    });
     //Get school questions
     schools_res.getQuestions(req.session.volunteer.admin, function(questions) {
       res.status(200).render('v_extra_simplyk_hours.jade', {
         session: req.session,
         volunteer: req.session.volunteer,
         group: req.session.group,
-        student_questions: questions.student_questions
+        student_questions: questions.student_questions,
+        hash
       });
     });
   } else {
