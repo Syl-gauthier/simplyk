@@ -289,7 +289,20 @@ block content
                           .panel-footer
                             .btn-group
                               a.btn.infos-button-longterm.longterm(id= lt._id, href='/longterm/'+lt._id) Détails
-                              button.btn.btn-warning(data-toggle='modal' data-target='#addLTHoursModal'+lt_i) Ajouter des heures
+                              button.btn.btn-danger(data-toggle='modal' data-target='#addLTHoursModal'+lt_i) Ajouter des heures
+                              input.btn.btn-warning(type='button' value='Se désinscrire' data-toggle='modal' data-target='#unsubscribe-lt-modal'+lt_i)
+                              .modal.fade(id='unsubscribe-lt-modal'+lt_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+lt_i)
+                                .modal-dialog(role='document')
+                                  .modal-content
+                                    .modal-header
+                                      button.close(type='button' data-dismiss="modal" aria-label="Close")
+                                        span(aria-hidden='true') &times;
+                                      h4.modal-title(id='myModalLabel'+lt_i) Es-tu sûr de vouloir te désinscrire de cet engagement ?
+                                    .modal-footer
+                                      form.inline(action='/volunteer/unsubscribe/longterm/'+lt._id, method='post')
+                                        .btn-group
+                                          a.btn.btn-warning(data-dismiss='modal') Annuler
+                                          input.btn.btn-default(type='submit' value='Oui' role='button')
                       .modal.fade(tabindex='-1', role='dialog' aria-labelledby="addLTHoursModalLabel", id='addLTHoursModal'+lt_i)
                         div.modal-dialog(role='document')
                           form.modal-content.addLTHoursForm(id='addLTHoursForm'+lt_i, method='post', action='/volunteer/LThours_pending/'+lt._id)

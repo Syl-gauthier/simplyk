@@ -215,7 +215,7 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
             update_last_request_at: true
           });
           const dayString = new Date(req.params.day).toLocaleDateString();
-          console.log('newVolunteer after unsubscription process : ' + newVolunteer);
+          console.log('after event unsubscription process');
           res.render('v_postunsubscription.jade', {
             session: req.session,
             org_name: newActivity.org_name,
@@ -224,6 +224,61 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
             volunteer: req.session.volunteer,
             group: req.session.group
           });
+        }
+      })
+    }
+  });
+});
+
+//Unsubscribe from an event
+router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+  const lt_id = req.params.lt_id;
+  console.log('Unsubscribe process starts');
+  Volunteer.findOneAndUpdate({
+    '_id': req.session.volunteer._id
+  }, {
+    '$pull': {
+      'long_terms': {
+        '_id': lt_id
+      }
+    }
+  }, {
+    new: true
+  }, function(err, new_volunteer) {
+    if (err) {
+      console.error('ERR : ' + err);
+      res.redirect('/volunteer/map?error=' + 'Un problème est survenu lors de la désinscription. Si le problème persite, n\'hésite pas à nous contacter ! :)');
+    } else {
+      req.session.volunteer = new_volunteer;
+      req.session.save(function(err) {
+        if (err) {
+          console.error('ERR : ' + err);
+          res.redirect('/volunteer/map?error=' + 'Un problème est survenu lors de la désinscription. Si le problème persite, n\'hésite pas à nous contacter ! :)');
+        } else {
+          Organism.findOneAndUpdate({
+            'long_terms': {
+              '$elemMatch': {
+                '_id': lt_id
+              }
+            }
+          }, {
+            '$pull': {
+              'long_terms.$.applicants': new_volunteer._id
+            }
+          }, {
+            new: true
+          }, function(err, new_organism) {
+            if (err) {
+              console.error('ERR : ' + err);
+              res.redirect('/volunteer/map?error=' + 'Un problème est survenu lors de la désinscription. Si le problème persite, n\'hésite pas à nous contacter ! :)');
+            } else {
+              console.log('after longterm unsubscription process');
+              res.render('v_postunsubscription.jade', {
+                session: req.session,
+                org_name: new_organism.org_name
+              });
+            }
+          })
         }
       })
     }
