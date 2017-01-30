@@ -8,6 +8,7 @@ var school_list = require('../lib/ressources/school_list.js');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
+var update_intercom = require('../lib/intercom/update_intercom.js');
 
 var moment = require('moment');
 
@@ -234,6 +235,9 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
 router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
   const lt_id = req.params.lt_id;
   console.log('Unsubscribe process starts');
+  const lt_name = (req.session.volunteer.long_terms.find(lt => {
+    return lt._id == lt_id;
+  })).intitule;
   Volunteer.findOneAndUpdate({
     '_id': req.session.volunteer._id
   }, {
@@ -277,6 +281,20 @@ router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('
                 session: req.session,
                 org_name: new_organism.org_name
               });
+              update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, 'LT', function(err) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
+                };
+              });
+              const content = {
+                recipient: /*new_organism.email*/'thibaut.jaurou@gmail.com',
+                activity_name: lt_name,
+                name: new_organism.org_name,
+                customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est désinscrit de votre engagement ' + lt_name + ' !'
+              };
+              emailer.sendUnsubscriptionEmail(content);
             }
           })
         }
