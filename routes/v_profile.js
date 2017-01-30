@@ -505,6 +505,9 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
     } else {
       const org = organism;
       const event = organism.events.find(isEvent);
+      const event_in_volunteer = req.session.volunteer.events.find(ev => {
+        return ev.activity_id == req.params.act_id;
+      });
       const activities_in_event_ids = event.activities;
       Activity.find({
         '_id': {
@@ -530,11 +533,11 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
           let student_answers = {};
           let organism_answers = {};
 
-          if (event.student_answers) {
-            student_questions = event.student_questions;
-            student_answers = event.student_answers;
-            organism_answers = event.organism_answers;
-            organism_questions = event.organism_questions;
+          if (event_in_volunteer.student_answers) {
+            student_questions = event_in_volunteer.student_questions;
+            student_answers = event_in_volunteer.student_answers;
+            organism_answers = event_in_volunteer.organism_answers;
+            organism_questions = event_in_volunteer.organism_questions;
           }
 
           console.info(JSON.stringify(event));

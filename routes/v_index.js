@@ -254,17 +254,28 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
       const alreadySubscribed = longterm.applicants.find(function(app) {
         return app.toString() == req.session.volunteer._id.toString();
       });
-      const longtTermInVolunteer = req.session.volunteer.long_terms.find(function(lt) {
+      const long_term_in_volunteer = req.session.volunteer.long_terms.find(function(lt) {
         console.log('longterm._id : ' + longterm._id);
         console.log('lt._id : ' + lt._id);
         return longterm._id.toString() == lt._id.toString()
       });
-      console.log('longtTermInVolunteer : ' + longtTermInVolunteer);
-      if (longtTermInVolunteer) {
-        var hours_pending = longtTermInVolunteer.hours_pending;
-        var hours_done = longtTermInVolunteer.hours_done;
+
+      let student_questions = {};
+      let organism_questions = {};
+      let student_answers = {};
+      let organism_answers = {};
+      console.log('long_term_in_volunteer : ' + long_term_in_volunteer);
+      if (long_term_in_volunteer) {
+        var hours_pending = long_term_in_volunteer.hours_pending;
+        var hours_done = long_term_in_volunteer.hours_done;
         console.log('hours_done : ' + hours_done);
         console.log('hours_pending : ' + hours_pending);
+        if (long_term_in_volunteer.student_answers) {
+          student_questions = long_term_in_volunteer.student_questions;
+          student_answers = long_term_in_volunteer.student_answers;
+          organism_answers = long_term_in_volunteer.organism_answers;
+          organism_questions = long_term_in_volunteer.organism_questions;
+        }
       } else {
         var hours_pending = null;
         var hours_done = null;
@@ -279,7 +290,11 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
         alreadySubscribed: alreadySubscribed,
         hours_done: hours_done,
         hours_pending: hours_pending,
-        group: req.session.group
+        group: req.session.group,
+        student_answers,
+        student_questions,
+        organism_questions,
+        organism_answers
       });
       res.end();
     }
