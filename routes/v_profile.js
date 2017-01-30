@@ -739,7 +739,13 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                   } else {
                     req.session.volunteer = newVolunteer;
                     req.session.save(function() {
-                      res.redirect('/volunteer/map');
+                      res.render('v_postsubscription.jade', {
+                        session: req.session,
+                        org_name: activity_saved.org_name,
+                        volunteer: req.session.volunteer,
+                        group: req.session.group,
+                        type: 'extra'
+                      });
                     });
                   }
                 })

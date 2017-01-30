@@ -13,11 +13,19 @@ block content
         .page-header.jumbotron
           h1.text-center Félicitations !
           div.icon-center
-            i.fa.fa-space-shuttle.fa-5x
-          h2.text-center Tu es prêt à changer le monde ?!
+            if type == 'extra'
+              i.fa.fa-tachometer.fa-5x
+            else
+              i.fa.fa-space-shuttle.fa-5x
+          if type == 'extra'
+            h2.text-center Ton engagement fais du bien autour de toi
+          else
+            h2.text-center Tu es prêt à changer le monde ?!
           //It means this is an event
           if day
             h4.text-center <br>L'organisme <b>#{org_name}</b>  va être mis au courant de ton inscription.<br> Entre en contact avec eux en appelant le <b>#{org_phone}</b> pour confirmer ta venue et prévoir les détails. <br> Après l'évènement, tu pourras ajouter des heures d'engagement à ton profil pour faire valoir ton travail dans la communauté.
+          else if type == 'extra'
+            h4.text-center <br>Maintenant, assure toi que l'organisme <b>#{org_name}</b>  valide bien ce bénévolat. <br> Pense à le lui rappeler la prochaine fois !            
           else
             h4.text-center <br>L'organisme <b>#{org_name}</b> a reçu un courriel pour être prévenu de ton inscription.<br> S'il ne te contacte pas, appelle-le au <b>#{org_phone}</b> ou envoie un courriel à <b>#{email}</b>. <br>Après tes actions bénévoles, tu pourras enregistrer tes heures de bénévolat à ton profil pour garder une trace de ton action !
           a.btn.btn-default.icon-center(href='/volunteer/profile') C'est parti !
