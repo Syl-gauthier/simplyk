@@ -312,6 +312,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
         "$addToSet": {
           "days.$.applicants": req.session.volunteer._id
         }
+
       }, function(err, newActivity) {
         if (err) {
           console.log(err);
@@ -329,6 +330,8 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
             phone = null;
           };
           const start_time = newActivity.days.find(isGoodDay).start_time;
+          const end_time = newActivity.days.find(isGoodDay).end_time;
+
           console.log('phone : ' + phone);
           Volunteer.findOneAndUpdate({
             "_id": req.session.volunteer._id
@@ -378,7 +381,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               //UPDATING REQ.SESSION.VOLUNTEER
               req.session.volunteer = newVolunteer;
               //SEND REMINDER EMAIL
-              sendEmailOneDayBeforeEvent(req.params.activity_day, req.session.volunteer, newActivity, start_time);
+              sendEmailOneDayBeforeEvent(req.params.activity_day, req.session.volunteer, newActivity, start_time, end_time);
               var success = encodeURIComponent('Vous avez été inscrit à l\'activité avec succès !');
               Organism.findById(newActivity.org_id, function(err, organism) {
                 //Find the event in organism
@@ -672,28 +675,55 @@ function getAge(dateString) {
 
 
 ///////////////////////////////////////-----------------AGENDAS------------------
-function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time) {
-  agenda.define('sendEmail' + volunteer._id + activity._id + event_date, function(job) {
+function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time, end_time) {
+
+
+  //Transform date
+  console.log('event_date at the beginnning' + event_date);
+  let start_date = (new Date(event_date)).getTime();
+  let s_time = {};
+  let e_time = {};
+  start_date = moment(start_date).add(5, 'hours');
+  s_time = moment(start_time, 'H:mm a');
+  e_time = moment(end_time, 'H:mm a');
+  let end_date = {};
+  start_date = moment(start_date).hour(s_time.hour()).minute(s_time.minute());
+  end_date = moment(start_date).hour(e_time.hour()).minute(e_time.minute());
+  const dayBefore = moment(start_date).subtract(1, 'days');
+  const dayAfter = moment(end_date).add(20, 'hours');
+  console.info('start_date : ' + moment(start_date).format('dddd D MMMM YYYY HH:mm'));
+  console.info('end_date : ' + moment(end_date).format('dddd D MMMM YYYY HH:mm'));
+  console.info('dayAfter : ' + moment(dayAfter).format('dddd D MMMM YYYY HH:mm'));
+  console.info('dayAfter : ' + moment(dayAfter).toString());
+  console.info('dayAfter : ' + moment(dayAfter).toISOString());
+  console.info('dayBefore : ' + moment(dayBefore).format('dddd D MMMM YYYY HH:mm'));
+  console.info('dayBefore : ' + moment(dayBefore).toString());
+  console.info('dayBefore : ' + moment(dayBefore).toISOString());
+
+  //Job definition
+  agenda.define('sendDayBeforeEmail' + volunteer._id + activity._id + event_date, function(job) {
     console.log('We send a reminder email !');
     emailer.sendOneDayReminderEmail({
       recipient: 'thibaut.jaurou@gmail.com',
-      customMessage: [volunteer.firstname + ', tu es en forme pour demain ?', 'N\'oublie pas que ' + activity.org_name + ' t\'attends demain ' + date.printDate(event_date) + ' ' + start_time + ' à ' + activity.address],
+      customMessage: [volunteer.firstname + ', tu es en forme pour demain ?', 'N\'oublie pas que ' + activity.org_name + ' t\'attends demain, ' + moment(start_date).format('dddd D MMMM HH:mm') + ', à ' + activity.address],
       firstname: volunteer.firstname,
       lastname: volunteer.lastname
     });
   });
 
-  agenda.now('sendEmail' + volunteer._id + activity._id + event_date);
-  console.log('moment(start_time, HH:mm A)' + moment(start_time, 'HH:mm A'));
-  function defineDayBefore(date_tomorrow) {
-    moment(date_tomorrow).add(7, 'h');
-    moment(date_tomorrow).subtract(1, 'd');
-    return date_tomorrow;
-  }
+  agenda.define('sendDayAfterEmail' + volunteer._id + activity._id + event_date, function(job) {
+    console.log('We send a tomorrow email !');
+    emailer.sendTomorrowReminderEmail({
+      recipient: 'thibaut.jaurou@gmail.com',
+      customMessage: [volunteer.firstname + ', ton bénévolat d\'hier s\'est bien passé ?', 'Pour faire évoluer ton profil, valide tes heures sur la plateforme ! ', 'En plus, cela permet aussi à ' + activity.org_name + ' de tenir les comptes de son impact !'],
+      firstname: volunteer.firstname,
+      lastname: volunteer.lastname
+    });
+  });
 
-  agenda.schedule(defineDayBefore(event_date), {
-    timezone: 'America/New_York'
-  }, 'sendEmail' + volunteer._id + activity._id + event_date);
+  agenda.schedule(moment(dayBefore).toDate(), 'sendDayBeforeEmail' + volunteer._id + activity._id + event_date);
+
+  agenda.schedule(moment(dayAfter).toDate(), 'sendDayAfterEmail' + volunteer._id + activity._id + event_date);
 }
 
 module.exports = router;
