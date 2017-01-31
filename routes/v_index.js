@@ -228,6 +228,10 @@ router.get('/activity/:act_id', permissions.requireGroup('volunteer'), function(
 
 router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
   console.log('In GET to a longterm page with lt_id:' + req.params.lt_id);
+  let error = '';
+  if (req.query.error) {
+    error = req.query.error;
+  }
   //Find organism corresponding to the activity
   Organism.findOne({
     "long_terms": {
@@ -264,6 +268,7 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
       let organism_questions = {};
       let student_answers = {};
       let organism_answers = {};
+      let status = '';
       console.log('long_term_in_volunteer : ' + long_term_in_volunteer);
       if (long_term_in_volunteer) {
         var hours_pending = long_term_in_volunteer.hours_pending;
@@ -275,6 +280,7 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
           student_answers = long_term_in_volunteer.student_answers;
           organism_answers = long_term_in_volunteer.organism_answers;
           organism_questions = long_term_in_volunteer.organism_questions;
+          status = long_term_in_volunteer.status;
         }
       } else {
         var hours_pending = null;
@@ -294,7 +300,9 @@ router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(r
         student_answers,
         student_questions,
         organism_questions,
-        organism_answers
+        organism_answers,
+        status,
+        error
       });
       res.end();
     }
@@ -487,37 +495,39 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
         res.redirect('/volunteer/map?error=' + err);
       } else {
         req.session.volunteer = results.newVolunteer;
-        console.log('newltreq.session.volunteer.long_terms : ' + req.session.volunteer.long_terms);
-        var newlt = req.session.volunteer.long_terms.find(function(lt) {
-          console.log('lt._id: ' + lt._id + 'req.params.lt_id :' + req.params.lt_id);
-          console.log((lt._id.toString() === req.params.lt_id.toString()));
-          return ((lt._id).toString() === (req.params.lt_id).toString());
-        });
-        console.log('newlt : ' + newlt);
-        //Intercom create subscribe to longterm event
-        client.events.create({
-          event_name: 'vol_longterm_subscribe',
-          created_at: Math.round(Date.now() / 1000),
-          user_id: req.session.volunteer._id,
-          metadata: {
-            lt_id: req.params.lt_id,
-            lt_intitule: newlt.intitule
-          }
-        });
-        update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, 'LT', function(err) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
-          };
-        });
-        res.render('v_postsubscription.jade', {
-          org_phone: results.newOrganism.phone,
-          session: req.session,
-          org_name: results.newOrganism.org_name,
-          email: results.newOrganism.email,
-          volunteer: req.session.volunteer,
-          group: req.session.group
+        req.session.save(function() {
+          console.log('newltreq.session.volunteer.long_terms : ' + req.session.volunteer.long_terms);
+          var newlt = req.session.volunteer.long_terms.find(function(lt) {
+            console.log('lt._id: ' + lt._id + 'req.params.lt_id :' + req.params.lt_id);
+            console.log((lt._id.toString() === req.params.lt_id.toString()));
+            return ((lt._id).toString() === (req.params.lt_id).toString());
+          });
+          console.log('newlt : ' + newlt);
+          //Intercom create subscribe to longterm event
+          client.events.create({
+            event_name: 'vol_longterm_subscribe',
+            created_at: Math.round(Date.now() / 1000),
+            user_id: req.session.volunteer._id,
+            metadata: {
+              lt_id: req.params.lt_id,
+              lt_intitule: newlt.intitule
+            }
+          });
+          update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, 'LT', function(err) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
+            };
+          });
+          res.render('v_postsubscription.jade', {
+            org_phone: results.newOrganism.phone,
+            session: req.session,
+            org_name: results.newOrganism.org_name,
+            email: results.newOrganism.email,
+            volunteer: req.session.volunteer,
+            group: req.session.group
+          });
         });
       }
     });
