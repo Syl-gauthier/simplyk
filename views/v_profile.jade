@@ -168,6 +168,9 @@ block content
                           div.media-body
                             h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
                             h6 <small>pour</small> #{event.org_name}
+                          if event.status == 'denied'
+                            div.media-right.media-top
+                              span.badge(style='background-color: #E33831')= 'À corriger'
                         .panel-body
                           h6
                             i.fa.fa-map-marker
@@ -207,7 +210,7 @@ block content
                             li
                               h4.text-right
                                 if event.hours_pending
-                                  span.badge(style='background-color: #E33831')= event.hours_pending + ' heures à confirmer'
+                                  span.badge(style='background-color: #FF800E')= event.hours_pending + ' heures à confirmer'
                         #identifiant(style='display:none')
                           p= event._id
 
@@ -298,6 +301,9 @@ block content
                             div.media-body
                               h4.media-heading <b>#{lt.intitule}</b>
                               h6 <small>pour</small> #{lt.org_name}
+                            if lt.status == 'denied'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #E33831')= 'À corriger'
                           .panel-body
                             h6
                               i.fa.fa-map-marker
@@ -310,10 +316,13 @@ block content
                                 if lt.hours_done
                                   span.badge(style='background-color: #113A20')= lt.hours_done + ' heures réalisées '
                                 if lt.hours_pending
-                                  span.badge(style='background-color: #E33831')= lt.hours_pending + ' heures à confirmer '
+                                  span.badge(style='background-color: #FF800E')= lt.hours_pending + ' heures à confirmer '
                           .panel-footer
                             .btn-group
-                              a.btn.infos-button-longterm.longterm(id= lt._id, href='/longterm/'+lt._id) Détails
+                              if lt.status == 'denied'
+                                a.btn.btn-danger(id= lt._id, href='/longterm/'+lt._id) Corriger
+                              else 
+                                a.btn.infos-button-longterm.longterm(id= lt._id, href='/longterm/'+lt._id) Détails
                               button.btn.btn-warning(data-toggle='modal' data-target='#addLTHoursModal'+lt_i) Ajouter des heures
                       .modal.fade(tabindex='-1', role='dialog' aria-labelledby="addLTHoursModalLabel", id='addLTHoursModal'+lt_i)
                         div.modal-dialog(role='document')
@@ -477,6 +486,9 @@ block content
                             div.media-body
                               h4.media-heading <b>#{ext.intitule}</b>
                               h6 <small>pour</small> #{ext.org_name}
+                            if ext.status == 'denied'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #E33831')= 'À corriger'
                           .panel-body
                             h6.inline
                               i.fa.fa-info
@@ -486,10 +498,13 @@ block content
                                 if ext.hours_done
                                   span.badge(style='background-color: #113A20')= ext.hours_done + ' heures réalisées '
                                 if ext.hours_pending
-                                  span.badge(style='background-color: #E33831')= ext.hours_pending + ' heures à confirmer '
+                                  span.badge(style='background-color: #FF800E')= ext.hours_pending + ' heures à confirmer '
                           .panel-footer
                             .btn-group
-                              button.btn.infos-button-extra.extra(id= ext._id, data-toggle='modal' data-target='#extraModal'+ext_i) Détails
+                              if ext.status == 'denied'
+                                button.btn.btn-danger(id= ext._id, data-toggle='modal' data-target='#extraModal'+ext_i) Corriger
+                              else
+                                button.btn.btn-default(id= ext._id, data-toggle='modal' data-target='#extraModal'+ext_i) Détails
                       .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='extraModal'+ext_i)
                         div.modal-dialog(role='document')
                           .modal-content

@@ -122,6 +122,16 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       if (err) {
         console.error(err);
       }
+      req.session.volunteer.extras.sort((a, b) => {
+        if ((a.status == 'denied') && (b.status != 'denied')) {
+          return -1;
+        } else if ((a.status != 'denied') && (b.status == 'denied')) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      console.log('extras sorted : ' + JSON.stringify(req.session.volunteer.extras));
       res.render('v_profile.jade', {
         session: req.session,
         volunteer: req.session.volunteer,
