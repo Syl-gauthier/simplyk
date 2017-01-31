@@ -279,7 +279,9 @@ router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('
               console.log('after longterm unsubscription process');
               res.render('v_postunsubscription.jade', {
                 session: req.session,
-                org_name: new_organism.org_name
+                org_name: new_organism.org_name,
+                volunteer: req.session.volunteer,
+                group: req.session.group
               });
               update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, 'LT', function(err) {
                 if (err) {
