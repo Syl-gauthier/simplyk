@@ -97,7 +97,6 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         lt_filter = {
           'validation': true,
           'long_terms': {
-            '$exists': true,
             '$not': {
               '$size': 0
             }
@@ -107,7 +106,6 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isNotAnExtra).filter(justMySchool);
         lt_filter = {
           'long_terms': {
-            '$exists': true,
             '$not': {
               '$size': 0
             }
@@ -672,7 +670,6 @@ function getAge(dateString) {
   }
   return age;
 };
-
 
 ///////////////////////////////////////-----------------AGENDAS------------------
 function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time, end_time) {

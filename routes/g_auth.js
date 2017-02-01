@@ -34,7 +34,7 @@ router.get('/legal', function(req, res) {
 });
 
 router.post('/login', function(req, res, next) {
-  passport.authenticate(['local-admin', 'local-organism', 'local-volunteer'], function(err, user, info) {
+  passport.authenticate([ 'local-volunteer', 'local-admin', 'local-organism'], function(err, user, info) {
     console.log(info);
     if (err) {
       return next(err);
