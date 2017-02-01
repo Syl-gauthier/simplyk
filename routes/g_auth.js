@@ -418,6 +418,7 @@ router.post('/sendVerificationEmail', function(req, res) {
     firstname: req.body.firstname
       //customMessage: 'Congratulations, create an event to get volunteers!'
   });
+  res.end();
 });
 
 
