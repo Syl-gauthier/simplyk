@@ -314,6 +314,32 @@ function sendTomorrowReminderEmail(content) {
   });
 }
 
+function sendOneWeekReminderEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'reminder';
+  content.title = 'Bientôt';
+  content.button = {
+    text: 'Voir mon rendez-vous',
+    link: 'platform.simplyk.org/volunteer/profile'
+  };
+  content.gif = 'http://i.giphy.com/l46CvRFB1GqPYAOis.gif';
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: 'Dans une semaine : ' + content.event + ' !', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+}
+
 
 module.exports = {
   sendSubscriptionOrgEmail: sendSubscriptionOrgEmail,
@@ -326,5 +352,6 @@ module.exports = {
   sendForgottenPasswordEmail,
   sendManualHoursEmail,
   sendOneDayReminderEmail,
+  sendOneWeekReminderEmail,
   sendTomorrowReminderEmail
 };

@@ -677,19 +677,34 @@ function getAge(dateString) {
 ///////////////////////////////////////-----------------AGENDAS------------------
 function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time, end_time) {
 
-
   //Transform date
   console.log('event_date at the beginnning' + event_date);
   let start_date = (new Date(event_date)).getTime();
   let s_time = {};
   let e_time = {};
+  let is_time_precised = true;
   start_date = moment(start_date).add(5, 'hours');
-  s_time = moment(start_time, 'H:mm a');
-  e_time = moment(end_time, 'H:mm a');
+  
+  if (start_time) {
+    s_time = moment(start_time, 'H:mm a');
+  } else {
+    s_time = moment('2:00 pm', 'H:mm a');
+    is_time_precised = false;
+  };
+
+
+  if (end_time) {
+    e_time = moment(end_time, 'H:mm a');
+  } else {
+    is_time_precised = false;
+    e_time = moment('3:00 pm', 'H:mm a');
+  }
+
   let end_date = {};
   start_date = moment(start_date).hour(s_time.hour()).minute(s_time.minute());
   end_date = moment(start_date).hour(e_time.hour()).minute(e_time.minute());
   const dayBefore = moment(start_date).subtract(1, 'days');
+  const fiveDaysBefore = moment(start_date).subtract(7, 'days');
   const dayAfter = moment(end_date).add(20, 'hours');
   console.info('start_date : ' + moment(start_date).format('dddd D MMMM YYYY HH:mm'));
   console.info('end_date : ' + moment(end_date).format('dddd D MMMM YYYY HH:mm'));
@@ -699,31 +714,38 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
   console.info('dayBefore : ' + moment(dayBefore).format('dddd D MMMM YYYY HH:mm'));
   console.info('dayBefore : ' + moment(dayBefore).toString());
   console.info('dayBefore : ' + moment(dayBefore).toISOString());
+  let start_date_to_send = {};
+  if (is_time_precised) {
+    start_date_to_send = moment(start_date).format('dddd D MMMM HH:mm');
+  } else {
+    start_date_to_send = moment(start_date).format('dddd D MMMM');
+  }
 
-  //Job definition
-  agenda.define('sendDayBeforeEmail' + volunteer._id + activity._id + event_date, function(job) {
-    console.log('We send a reminder email !');
-    emailer.sendOneDayReminderEmail({
-      recipient: 'thibaut.jaurou@gmail.com',
-      customMessage: [volunteer.firstname + ', tu es en forme pour demain ?', 'N\'oublie pas que ' + activity.org_name + ' t\'attends demain, ' + moment(start_date).format('dddd D MMMM HH:mm') + ', à ' + activity.address],
-      firstname: volunteer.firstname,
-      lastname: volunteer.lastname
-    });
+  agenda.schedule(moment(dayBefore).toDate(), 'sendDayBeforeEmail', {
+    firstname: volunteer.firstname,
+    lastname: volunteer.lastname,
+    org_name: activity.org_name,
+    address: activity.address,
+    start_date: start_date_to_send,
+    email: volunteer.email
   });
 
-  agenda.define('sendDayAfterEmail' + volunteer._id + activity._id + event_date, function(job) {
-    console.log('We send a tomorrow email !');
-    emailer.sendTomorrowReminderEmail({
-      recipient: 'thibaut.jaurou@gmail.com',
-      customMessage: [volunteer.firstname + ', ton bénévolat d\'hier s\'est bien passé ?', 'Pour faire évoluer ton profil, valide tes heures sur la plateforme ! ', 'En plus, cela permet aussi à ' + activity.org_name + ' de tenir les comptes de son impact !'],
-      firstname: volunteer.firstname,
-      lastname: volunteer.lastname
-    });
+  agenda.schedule(moment(fiveDaysBefore).toDate(), 'sendOneWeekBeforeEmail', {
+    firstname: volunteer.firstname,
+    lastname: volunteer.lastname,
+    org_name: activity.org_name,
+    address: activity.address,
+    start_date: start_date_to_send,
+    event_intitule: activity.event_intitule,
+    email: volunteer.email
   });
 
-  agenda.schedule(moment(dayBefore).toDate(), 'sendDayBeforeEmail' + volunteer._id + activity._id + event_date);
-
-  agenda.schedule(moment(dayAfter).toDate(), 'sendDayAfterEmail' + volunteer._id + activity._id + event_date);
+  agenda.schedule(moment(dayAfter).toDate(), 'sendDayAfterEmail', {
+    firstname: volunteer.firstname,
+    lastname: volunteer.lastname,
+    org_name: activity.org_name,
+    email: volunteer.email
+  });
 }
 
 module.exports = router;
