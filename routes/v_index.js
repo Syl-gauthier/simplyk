@@ -15,6 +15,7 @@ var ObjectId = Schema.ObjectId;
 var Organism = require('../models/organism_model.js');
 var Volunteer = require('../models/volunteer_model.js');
 var Activity = require('../models/activity_model.js');
+var agenda = require('../lib/agenda.js');
 
 var permissions = require('../middlewares/permissions.js');
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
@@ -309,6 +310,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
         "$addToSet": {
           "days.$.applicants": req.session.volunteer._id
         }
+
       }, function(err, newActivity) {
         if (err) {
           console.log(err);
@@ -325,6 +327,9 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
           } else {
             phone = null;
           };
+          const start_time = newActivity.days.find(isGoodDay).start_time;
+          const end_time = newActivity.days.find(isGoodDay).end_time;
+
           console.log('phone : ' + phone);
           Volunteer.findOneAndUpdate({
             "_id": req.session.volunteer._id
@@ -340,7 +345,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                 "intitule_activity": newActivity.description,
                 "org_id": newActivity.org_id,
                 "org_name": newActivity.org_name,
-                "start_time": newActivity.days.find(isGoodDay).start_time,
+                "start_time": start_time,
                 "end_time": newActivity.days.find(isGoodDay).end_time,
                 "email": newActivity.email,
                 "hours_done": 0,
@@ -373,6 +378,8 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               console.log('**********************************');
               //UPDATING REQ.SESSION.VOLUNTEER
               req.session.volunteer = newVolunteer;
+              //SEND REMINDER EMAIL
+              sendEmailOneDayBeforeEvent(req.params.activity_day, req.session.volunteer, newActivity, start_time, end_time);
               var success = encodeURIComponent('Vous avez été inscrit à l\'activité avec succès !');
               Organism.findById(newActivity.org_id, function(err, organism) {
                 //Find the event in organism
@@ -663,5 +670,79 @@ function getAge(dateString) {
   }
   return age;
 };
+
+///////////////////////////////////////-----------------AGENDAS------------------
+function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time, end_time) {
+
+  //Transform date
+  console.log('event_date at the beginnning' + event_date);
+  let start_date = (new Date(event_date)).getTime();
+  let s_time = {};
+  let e_time = {};
+  let is_time_precised = true;
+  start_date = moment(start_date).add(5, 'hours');
+  
+  if (start_time) {
+    s_time = moment(start_time, 'H:mm a');
+  } else {
+    s_time = moment('2:00 pm', 'H:mm a');
+    is_time_precised = false;
+  };
+
+
+  if (end_time) {
+    e_time = moment(end_time, 'H:mm a');
+  } else {
+    is_time_precised = false;
+    e_time = moment('3:00 pm', 'H:mm a');
+  }
+
+  let end_date = {};
+  start_date = moment(start_date).hour(s_time.hour()).minute(s_time.minute());
+  end_date = moment(start_date).hour(e_time.hour()).minute(e_time.minute());
+  const dayBefore = moment(start_date).subtract(1, 'days');
+  const fiveDaysBefore = moment(start_date).subtract(7, 'days');
+  const dayAfter = moment(end_date).add(20, 'hours');
+  console.info('start_date : ' + moment(start_date).format('dddd D MMMM YYYY HH:mm'));
+  console.info('end_date : ' + moment(end_date).format('dddd D MMMM YYYY HH:mm'));
+  console.info('dayAfter : ' + moment(dayAfter).format('dddd D MMMM YYYY HH:mm'));
+  console.info('dayAfter : ' + moment(dayAfter).toString());
+  console.info('dayAfter : ' + moment(dayAfter).toISOString());
+  console.info('dayBefore : ' + moment(dayBefore).format('dddd D MMMM YYYY HH:mm'));
+  console.info('dayBefore : ' + moment(dayBefore).toString());
+  console.info('dayBefore : ' + moment(dayBefore).toISOString());
+  let start_date_to_send = {};
+  if (is_time_precised) {
+    start_date_to_send = moment(start_date).format('dddd D MMMM HH:mm');
+  } else {
+    start_date_to_send = moment(start_date).format('dddd D MMMM');
+  }
+
+  agenda.schedule(moment(dayBefore).toDate(), 'sendDayBeforeEmail', {
+    firstname: volunteer.firstname,
+    lastname: volunteer.lastname,
+    org_name: activity.org_name,
+    address: activity.address,
+    start_date: start_date_to_send,
+    email: volunteer.email
+  });
+
+  agenda.schedule(moment(fiveDaysBefore).toDate(), 'sendOneWeekBeforeEmail', {
+    firstname: volunteer.firstname,
+    lastname: volunteer.lastname,
+    org_name: activity.org_name,
+    address: activity.address,
+    start_date: start_date_to_send,
+    event_intitule: activity.event_intitule,
+    email: volunteer.email
+  });
+
+  agenda.schedule(moment(dayAfter).toDate(), 'sendDayAfterEmail', {
+    firstname: volunteer.firstname,
+    lastname: volunteer.lastname,
+    org_name: activity.org_name,
+    email: volunteer.email
+  });
+}
 
 module.exports = router;
