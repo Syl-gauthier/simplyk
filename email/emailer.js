@@ -331,7 +331,7 @@ function sendOneWeekReminderEmail(content) {
     var mailOptions = {
       from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
       to: content.recipient,
-      subject: 'Dans une semaine : ' + content.event + ' !', // Subject line
+      subject: 'Bientôt : ' + content.event + ' !', // Subject line
       text: '', // plaintext body
       html: results.html
     };
