@@ -493,32 +493,27 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
 });
 
 
-router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), function(req, res) {
+router.get('/volunteer/event/:event_id', permissions.requireGroup('volunteer'), function(req, res) {
 
   //Pour trouver l'event dasn le volunteer
   function isEvent(event) {
-    return event.activities.indexOf(req.params.act_id) > -1;
+    return event._id == req.params.event_id;
   };
+  const event_in_volunteer = req.session.volunteer.events.find(isEvent);
+  const activity_id = event_in_volunteer.activity_id;
 
   Organism.findOne({
-    'events': {
-      '$elemMatch': {
-        'activities': {
-          '$in': [req.params.act_id]
-        }
-      }
-    }
+    'events.activities': activity_id
   }, function(err, organism) {
     if (err) {
       console.log(err);
       res.redirect('/volunteer/map?error=' + err);
     } else {
       const org = organism;
-      const event = organism.events.find(isEvent);
-      const event_in_volunteer = req.session.volunteer.events.find(ev => {
-        return ev.activity_id == req.params.act_id;
+      const event_organism = organism.events.find(ev => {
+        return (ev.activities.indexOf(activity_id)>-1);
       });
-      const activities_in_event_ids = event.activities;
+      const activities_in_event_ids = event_organism.activities;
       Activity.find({
         '_id': {
           '$in': activities_in_event_ids
@@ -528,15 +523,17 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
           console.log(err);
           res.redirect('/volunteer/map?error=' + err);
         } else {
-          const acts = activities;
           var isActivity = function(activity) {
-            return activity._id.toString() == req.params.act_id.toString();
+            return activity._id.toString() == activity_id.toString();
           };
-          const activity = acts.find(isActivity);
+          const activity_in_activities = activities.find(isActivity);
+          console.log('activity_id : ' + JSON.stringify(activity_id));
+          console.log('activity_in_activities : ' + JSON.stringify(activity_in_activities));
           var isNotActivity = function(activity) {
-            return activity._id != req.params.act_id;
+            return activity._id != activity_id;
           };
-          const other_activities = acts.filter(isNotActivity);
+          const other_activities = activities.filter(isNotActivity);
+          console.log('other_activities : ' + JSON.stringify(other_activities));
 
           let student_questions = {};
           let organism_questions = {};
@@ -550,15 +547,17 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
             organism_questions = event_in_volunteer.organism_questions;
           }
 
-          console.info(JSON.stringify(event));
+          console.info(JSON.stringify(event_organism));
 
 
           res.render('v_event.jade', {
             session: req.session,
             other_activities: other_activities,
-            event: event,
+            event: event_organism,
             organism: org,
-            activity: activity,
+            activity: activity_in_activities,
+            event_id: event_in_volunteer._id,
+            status: event_in_volunteer.status,
             volunteer: req.session.volunteer,
             group: req.session.group,
             student_answers,

@@ -231,22 +231,26 @@ block content
       .col-md-10.col-md-offset-1
         if (student_questions.length > 0 && student_answers.length > 0)
           div.panel.panel-default
-            div.panel-heading
-              h4 Ton retour d'expérience
-              if status == 'denied'
-                span.badge(style='background-color: #E33831')= 'À corriger'
-              else if status == 'corrected'
-                span.badge(style='background-color: #113A20')= 'Corrigé'
-            div.panel-body
-              each question, q_I in student_questions
-                div.panel.panel-warning
-                  div.panel-heading
-                    h6= question 
-                  div.panel-body
-                    if ((status == 'denied') || (status == 'corrected'))
-                      h6 #{student_answers[q_I]} <i class="fa fa-pencil edit" index=#{q_I} style="cursor: pointer"></i>
-                    else
-                      h6 #{student_answers[q_I]}
+            form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
+              div.panel-heading
+                h4 Ton retour d'expérience
+                if status == 'denied'
+                  span.badge(style='background-color: #E33831')= 'À corriger'
+                  i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
+                else if status == 'corrected'
+                  span.badge(style='background-color: #113A20')= 'Corrigé'
+                  i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
+              div.panel-body
+                each question, q_I in student_questions
+                  div.panel.panel-warning
+                    div.panel-heading
+                      h6= question 
+                    div.panel-body
+                      if ((status == 'denied') || (status == 'corrected'))
+                        h6.answer_to_edit #{student_answers[q_I]}
+                      else
+                        h6 #{student_answers[q_I]}
+                div.submit-button
         if (organism_questions.length > 0 && organism_answers.length > 0)
           div.panel.panel-default
             div.panel-heading
@@ -275,9 +279,10 @@ block footscript
     $(document).ready(function(){
       const lt_id = !{JSON.stringify(longterm._id)};
       $('.edit').click(function(){
-        const type = $(this).attr('type');
-        const index = $(this).attr('index');
-        let div = $(this).parent();
-        div.html("<form name='edit-form' method='post' action='/volunteer/edit-student-feedbacks'><p>Correction de la réponse</p><textarea rows='4' name='new_response'>"+div.text()+"</textarea><input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='index_question' value="+index+"></input><input class='hidden' name='lt_id' value="+lt_id+"></input><input type='submit' value='Modifier'></input></form>");
-      })
+        $('.edit').removeClass('fa').removeClass('fa-pencil');
+        $('.answer_to_edit').each(function(index){
+          $(this).html("<p>Correction de la réponse</p><textarea rows='4' name='new_response'>"+$(this).text()+"</textarea>");
+        });
+        $('.submit-button').html("<input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='lt_id' value="+lt_id+"></input><input type='submit' value='Envoyer les corrections' class='btn btn-warning'></input>");
+      });
     });

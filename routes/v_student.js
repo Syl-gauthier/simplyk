@@ -15,19 +15,11 @@ router.post('/volunteer/edit-student-feedbacks', permissions.requireGroup('volun
 	let update_pull_query = {};
 	let update_push_query = {};
 
-	let new_student_answers = Array.from((req.session.volunteer.long_terms.find(lt => {
-		return lt._id == req.body.lt_id;
-	})).student_answers);
-	let long_term_index_in_volunteer = req.session.volunteer.long_terms.findIndex(lt => {
-		return lt._id == req.body.lt_id;
-	});
-	new_student_answers[req.body.index_question] = req.body.new_response;
+	let new_student_answers = req.body.new_response;
 	console.log('new_student_answers : ' + JSON.stringify(new_student_answers));
-
 
 	if (req.body.lt_id) {
 		//Find long_terms index in req.session.volunteer to apply to mongo search (DANGEROUS BUT AFTER MULTIPLE HOURS .........)
-		req.session
 		console.info('We are starting to update answers to a longterm');
 		find_query = {
 			'_id': req.session.volunteer._id,
@@ -42,6 +34,28 @@ router.post('/volunteer/edit-student-feedbacks', permissions.requireGroup('volun
 		update_push_query = {
 			'$push': {
 				'long_terms.$.student_answers': {
+					'$each': new_student_answers
+				}
+			}
+		}
+		console.info('update_pull_query : ' + JSON.stringify(update_pull_query));
+		console.info('update_push_query : ' + JSON.stringify(update_push_query));
+	} else if (req.body.event_id){
+		//Find long_terms index in req.session.volunteer to apply to mongo search (DANGEROUS BUT AFTER MULTIPLE HOURS .........)
+		console.info('We are starting to update answers to an event');
+		find_query = {
+			'_id': req.session.volunteer._id,
+			'events._id': req.body.event_id
+		}
+		update_pull_query = {
+			'$set': {
+				'events.$.student_answers': [],
+				'events.$.status': 'corrected'
+			}
+		};
+		update_push_query = {
+			'$push': {
+				'events.$.student_answers': {
 					'$each': new_student_answers
 				}
 			}
