@@ -21,7 +21,7 @@ block content
                 tr
                   th.text-center(rowspan='2') Nom
                   th.text-center(rowspan='2') Prénom
-                  th.text-center(colspan='3') Heures effectués
+                  th.text-center(colspan='3') Heures effectuées
                   th.text-center(rowspan='2') Dossier
                   th.text-center(rowspan='2') Ajout d'heures
                   if classes_array.length > 1
@@ -30,7 +30,7 @@ block content
                   th.text-center(style='font-weight: 700; font-size: 13px') Inscriptions
                   th.text-center(style='font-weight: 700; font-size: 13px') En attente
                   th.text-center 
-                    span.badge(style='background-color: #197500') Confirmés
+                    span.badge(style='background-color: #197500') Confirmées
                   each classe, classe_i in classes_array
                     tr.active
                       td.text-center= classe.toString()

@@ -20,7 +20,7 @@ block content
                     if error
                         p.alert.alert-danger #{error}
                     p#validation
-                    p.alert.alert-warning Les heures ajoutées ici seront vérifiées auprès de l'organisme en question, ainsi que par la coordinatrice du bénévolat de ton école ;)
+                    p.alert.alert-warning Les heures ajoutées ici devront être validées par l'organisme concerné, ainsi que par la personne responsable du bénévolat de ton école. Écris bien la bonne adresse courriel, sinon ce ne sera pas validé !
         .row
             .col-md-6.col-md-offset-3
                 form(id='addextrahours', name='addextrahours', action='addextrahours', method='post', onsubmit='return validateForm()')
@@ -74,7 +74,7 @@ block content
                     h3
                     .alert
                         i.fa.fa-info-circle
-                        p.inline <b>Cette fonctionnalité est destinée à ajouter des heures à ton profil pour les engagements que tu n'as PAS fait au travers de la plateforme Simplyk ! </br></br> Avant de faire ça, vérifie que tu n'es pas déjà inscrit à cette activité sur ton profil :)</b>
+                        p.inline <b>Cette fonctionnalité est destinée à ajouter des heures à ton profil pour le bénévolat pour lequel tu ne t'ai PAS inscrit par la plateforme Simplyk ! </br></br> Si tu t'es inscrit par Simplyk, ajoute des heures sur l'activité de bénévolat directement sur ton profil :)</b>
 
 
 block footscript
