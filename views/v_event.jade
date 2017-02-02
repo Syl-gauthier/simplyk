@@ -26,6 +26,7 @@ block content
 										i.fa.fa-map-marker
 										p.inline Adresse : #{event.address}
 							.panel-body
+								p= activity.description
 								h5 <b>Description : </b> #{activity.description}
 								each day, day_i in activity.days
 									if day.day
@@ -66,6 +67,39 @@ block content
 											else
 												div.media-right.media-middle
 													h4 <b>Passé</b>
+				if (student_questions.length > 0 && student_answers.length > 0)
+					div.panel.panel-default
+						form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
+							div.panel-heading
+								h4 Ton retour d'expérience
+								if status == 'denied'
+									span.badge(style='background-color: #E33831')= 'À corriger'
+									i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
+								else if status == 'corrected'
+									span.badge(style='background-color: #113A20')= 'Corrigé'
+									i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
+							div.panel-body
+								each question, q_I in student_questions
+									div.panel.panel-warning
+										div.panel-heading
+											h6= question 
+										div.panel-body
+											if ((status == 'denied') || (status == 'corrected'))
+												h6.answer_to_edit #{student_answers[q_I]}
+											else
+												h6 #{student_answers[q_I]}
+								div.submit-button
+				if (organism_questions.length > 0 && organism_answers.length > 0)
+					div.panel.panel-default
+						div.panel-heading
+							h4 Retour de l'organisme
+						div.panel-body
+							each question, q_I in organism_questions
+								div.panel.panel-warning
+									div.panel-heading
+										h6= question
+									div.panel-body
+										h6= organism_answers[q_I]
 				if other_activities.length > 0
 					h3 Autres activités de l'évènement
 					each act, act_i in other_activities
@@ -152,3 +186,15 @@ block footscript
 				return false;
 			};
 		};
+	script(type='text/javascript').
+		'use strict';
+		$(document).ready(function(){
+			const event_id = !{JSON.stringify(event_id)};
+			$('.edit').click(function(){
+				$('.edit').removeClass('fa').removeClass('fa-pencil');
+				$('.answer_to_edit').each(function(index){
+					$(this).html("<p>Correction de la réponse</p><textarea rows='4' name='new_response'>"+$(this).text()+"</textarea>");
+				});
+				$('.submit-button').html("<input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='event_id' value="+event_id+"></input><input type='submit' value='Envoyer les corrections' class='btn btn-warning'></input>");
+			});
+		});

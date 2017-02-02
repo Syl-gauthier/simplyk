@@ -11,7 +11,7 @@ const Organism = require('../models/organism_model.js');
 const Volunteer = require('../models/volunteer_model.js');
 const Activity = require('../models/activity_model.js');
 
-router.post('/edit-longterm', permissions.requireGroup('organism'), function(req, res) {
+router.post('/edit-longterm', permissions.requireGroup('organism', 'admin'), function(req, res) {
   console.info('req.body : ' + JSON.stringify(req.body));
   const lt_id = req.body.url.substring(req.body.url.length - 24);
   console.log('lt_id to update : ' + lt_id);
@@ -91,7 +91,7 @@ router.post('/edit-longterm', permissions.requireGroup('organism'), function(req
 });
 
 
-router.post('/edit-event', permissions.requireGroup('organism'), function(req, res) {
+router.post('/edit-event', permissions.requireGroup('organism', 'admin'), function(req, res) {
   console.info('req.body : ' + JSON.stringify(req.body));
   const event_id = req.body.url.substring(req.body.url.length - 24);
   console.log('event_id to update : ' + event_id);

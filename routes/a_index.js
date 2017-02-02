@@ -5,11 +5,13 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var emailer = require('../email/emailer.js');
+var date = require('../lib/dates/date_browser.js');
 
 var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
 var Volunteer = require('../models/volunteer_model.js');
 var Admin = require('../models/admin_model.js');
+var Activity = require('../models/activity_model.js');
 
 
 router.get('/admin/classes', permissions.requireGroup('admin'), function(req, res, next) {
@@ -42,6 +44,75 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
       }
       console.log('Classes array : ' + JSON.stringify(classes_array));
 
+      //Determine student status
+      volunteers.map(vol => {
+        const extra_status_array = vol.extras.map(ext => {
+          return ext.status;
+        });
+
+        if (extra_status_array.indexOf('denied') == -1) {
+          const event_status_array = vol.events.map(ev => {
+            return ev.status;
+          });
+
+          if (event_status_array.indexOf('denied') == -1) {
+            const lt_status_array = vol.long_terms.map(lt => {
+              return lt.status;
+            });
+
+            if (lt_status_array.indexOf('denied') == -1) {
+              if ((extra_status_array.indexOf('pending') == -1) && (extra_status_array.indexOf('confirmed') == -1) && (extra_status_array.indexOf('corrected') == -1)) {
+                if ((event_status_array.indexOf('pending') == -1) && (event_status_array.indexOf('confirmed') == -1) && (event_status_array.indexOf('corrected') == -1)) {
+                  if ((lt_status_array.indexOf('pending') == -1) && (lt_status_array.indexOf('confirmed') == -1) && (lt_status_array.indexOf('corrected') == -1)) {
+                    if ((lt_status_array.indexOf('validated') == -1) && (event_status_array.indexOf('validated') == -1) && (extra_status_array.indexOf('validated') == -1)) {
+                      vol.status = ''
+                      return vol;
+                    } else {
+                      vol.status = 'success';
+                      return vol;
+                    };
+                    vol.status = ''
+                    return vol;
+                  } else {
+                    vol.status = 'warning';
+                    return vol;
+                  };
+                } else {
+                  vol.status = 'warning';
+                  return vol;
+                };
+              } else {
+                vol.status = 'warning';
+                return vol;
+              };
+            } else {
+              vol.status = 'danger';
+              return vol;
+            };
+          } else {
+            vol.status = 'danger';
+            return vol;
+          };
+        } else {
+          vol.status = 'danger';
+          return vol;
+        };
+      });
+
+      volunteers.sort(function(a, b) {
+        var lastnameA = a.lastname.toUpperCase(); // ignore upper and lowercase
+        var lastnameB = b.lastname.toUpperCase(); // ignore upper and lowercase
+        if (lastnameA < lastnameB) {
+          return -1;
+        }
+        if (lastnameA > lastnameB) {
+          return 1;
+        }
+
+        // names must be equal
+        return 0;
+      });
+
       res.status(200).render('a_classes.jade', {
         session: req.session,
         admin: req.session.admin,
@@ -66,27 +137,58 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
         group: req.session.group
       });
     } else {
-      var formatted_events = volunteer.events;
-      for (var i = 0; i < formatted_events.length; i++) {
-        for (var k = 0; k < formatted_events.length; k++) {
-          if (formatted_events[i].activity_id.toString() == formatted_events[k].activity_id.toString()) {
-            if ((formatted_events[i].status != 'gathered') && (formatted_events[i] != formatted_events[k])) {
-              formatted_events[i].hours_done += formatted_events[k].hours_done;
-              formatted_events[i].hours_pending += formatted_events[k].hours_pending;
-              if (formatted_events[i].student_answers.length > formatted_events[k].student_answers.length) {} else if (formatted_events[i].student_answers.length < formatted_events[k].student_answers.length) {
-                formatted_events[i].student_answers = formatted_events[k].student_answers;
-              } else {};
-              formatted_events[k].status = 'gathered';
+      //Add infos to each event from activity_id
+
+      function getEventWithActivityInfos(event) {
+        return new Promise((resolve, reject) => {
+          Activity.findOne({
+            '_id': event.activity_id
+          }, 'intitule description', function(err, matching_activity) {
+            if (err) {
+              reject(err);
+            } else {
+              Organism.findOne({
+                '_id': event.org_id
+              }, 'events', function(err, matching_organism) {
+                if (err) {
+                  reject(err);
+                } else {
+                  let new_event = JSON.parse(JSON.stringify(event));
+                  const new_event_description = (matching_organism.events.find(event => {
+                    return (event.activities.indexOf(matching_activity._id) != -1)
+                  })).description;
+                  new_event['description'] = new_event_description;
+                  new_event['activity_intitule'] = matching_activity.intitule;
+                  console.log('new_event in resolve : ' + JSON.stringify(new_event));
+                  resolve(new_event);
+                }
+              })
             }
-          }
-        }
+          })
+        });
       };
-      res.render('a_report.jade', {
-        volunteer: volunteer,
-        events: formatted_events,
-        session: req.session,
-        group: req.session.group
+
+      Promise.all(volunteer.events.map(event => {
+        return getEventWithActivityInfos(event);
+      })).then(events => {
+        console.log('Final events : ' + events);
+        res.render('a_report.jade', {
+          volunteer: volunteer,
+          session: req.session,
+          group: req.session.group,
+          events,
+          date
+        });
+      }).catch(err => {
+        console.error('ERROR : ' + err);
+        res.render('a_classes.jade', {
+          error: err,
+          session: req.session,
+          admin: req.session.admin,
+          group: req.session.group
+        });
       });
+
     }
   });
 });
@@ -202,6 +304,56 @@ router.get('/admin/internopps', permissions.requireGroup('admin'), function(req,
     admin: req.session.admin,
     group: req.session.group
   });
+});
+
+router.post('/admin/validate', permissions.requireGroup('admin'), function(req, res, next) {
+  console.info('In validate with req.body ! : ' + JSON.stringify(req.body));
+  let find_query = {
+    '_id': req.body.vol
+  };
+  find_query[req.body.type + '._id'] = req.body.id;
+  let update_query = {};
+  update_query[req.body.type + '.$.status'] = 'validated';
+  console.info('C\'est dans validate update_query! : ' + JSON.stringify(update_query));
+  console.info('C\'est dans validate find_query! : ' + JSON.stringify(find_query));
+  Volunteer.findOneAndUpdate(find_query, update_query, function(err, response) {
+    if (err) {
+      console.error('ERROR : ' + err);
+      res.status(404).send({
+        message: 'Erreur lors de l\'opération'
+      });
+    } else {
+      console.info('MESSAGE : ' + err);
+      res.status(200).send({
+        message: 'VALIDÉ'
+      });
+    }
+  })
+});
+
+router.post('/admin/deny', permissions.requireGroup('admin'), function(req, res, next) {
+  console.info('In deny with req.body ! : ' + JSON.stringify(req.body));
+  let find_query = {
+    '_id': req.body.vol
+  };
+  find_query[req.body.type + '._id'] = req.body.id;
+  let update_query = {};
+  update_query[req.body.type + '.$.status'] = 'denied';
+  console.info('C\'est dans deny update_query! : ' + JSON.stringify(update_query));
+  console.info('C\'est dans deny find_query! : ' + JSON.stringify(find_query));
+  Volunteer.findOneAndUpdate(find_query, update_query, function(err, response) {
+    if (err) {
+      console.error('ERROR : ' + err);
+      res.status(404).send({
+        message: 'Erreur lors de l\'opération'
+      });
+    } else {
+      console.info('MESSAGE : ' + err);
+      res.status(200).send({
+        message: 'À REVOIR'
+      });
+    }
+  })
 });
 
 router.get('/admin/listorganisms', permissions.requireGroup('admin'), function(req, res, next) {

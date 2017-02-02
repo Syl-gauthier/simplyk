@@ -86,33 +86,54 @@ block content
             ul.list-group.list-opportunity
               unless (events)
                 p.alert.alert-danger Aucune activité
-              each event, index in events
-                if event.status != 'gathered'
-                  li.list-group-item
-                    div.media-left
-                      h4.media-heading Status
-                      if ((event.hours_pending == 0) && (event.hours_done != 0))
-                        p Confirmé
-                      else if (event.hours_pending > 0)
-                        p Attente de validation par l'organisme
-                      else if event.status == 'past'
-                        p Passé, à valider par l'élève
-                      else if event.status == 'subscribed'
-                        p Inscrit, à venir
-                      else
-                        p.alert.alert-danger Indéfini
-                    div.media-body
-                      h4.media-heading= 'Organisme : ' + event.org_name
-                      a.firstColor= 'Évènement : ' + event.intitule
-                      h6= event.description_event
-                      h6= event.day.toLocaleDateString()
-                      h6= 'Adresse : ' + event.address
-                      if event.hours_done > 0
-                        p= event.hours_done + ' heures confirmées par l\'organisme'
-                      if event.hours_pending > 0
-                        p= event.hours_pending + ' heures en attente de confirmation par l\'organisme'
-                      #identifiant(style='display:none')
-                        p= event._id
+              table.table.table-striped
+                tr
+                  th(style="width:30%").text-center Informations
+                  th(style="width:50%").text-center Retours
+                  th(style="width:20%").text-center Actions
+                each event, index in events
+                  tr.status(status=event.status)
+                    td
+                      div.panel.panel-default
+                        div.panel-heading
+                          h4.media-heading= 'Organisme : ' + event.org_name
+                          a.firstColor= 'Évènement : ' + event.intitule
+                          h5= event.activity_intitule
+                          p
+                          if event.status == 'confirmed'
+                            span.badge(style='background-color: #113A20')= 'Confirmé'
+                          else if (event.status == 'validated')
+                            span.badge(style='background-color: #113A20')= 'Validé'
+                          else if (event.status == 'pending')
+                            span.badge(style='background-color: #FF800E')= 'Attente de confirmation par l\'organisme'
+                          else if event.status == 'subscribed'
+                            span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
+                          else if event.status == 'past'
+                            span.badge(style='background-color: #FF800E')= 'Passé, à confirmé par l\'élève'
+                          else if event.status == 'corrected'
+                            span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
+                          else if event.status == 'denied'
+                            span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
+                          else
+                            span.badge(style='background-color: #E33831')= 'Indéfini'
+                          if event.hours_done > 0
+                            span.badge(style='background-color: #113A20')= event.hours_done + ' heures confirmées par l\'organisme'
+                          if event.hours_pending > 0
+                            span.badge(style='background-color: #FF800E')= event.hours_pending + ' heures en attente de confirmation par l\'organisme'
+                        div.panel-body
+                          div
+                            i.fa.fa-calendar-o.inline
+                            h6.inline= date.printDate(event.day)
+                          div
+                            i.fa.fa-map
+                            h6.inline= event.address
+                          div
+                            i.fa.fa-at
+                            h6.inline= event.email
+                          #identifiant(style='display:none')
+                            p= event._id
+                          h6= event.description
+                    td
                       if event.student_answers.length > 0
                         div.panel.panel-default
                           div.panel-heading
@@ -135,6 +156,13 @@ block content
                                     h6= question
                                   div.panel-body
                                     h6= event.organism_answers[q_I]
+                    td(align='center')
+                      if ((event.status == 'confirmed') || (event.status == 'corrected') || (event.status == 'validated') || (event.status == 'denied'))
+                        .btn-group(role='group')
+                          button.btn.btn-default.validate(vol=volunteer._id, id=event._id, type='events')
+                            i.fa.fa-check-square-o
+                          button.btn.btn-danger.deny(vol=volunteer._id, id=event._id, type='events')
+                            i.fa.fa-times-circle-o
     .row
       .col-md-10.col-md-offset-1(style='border: 3px solid #359B9C; margin-bottom:10px;')
         .page-header
@@ -146,18 +174,36 @@ block content
             if (volunteer.long_terms)
               table.table.table-striped
                 tr
-                  th Informations
-                  th Retours
+                  th(style="width:30%").text-center Informations
+                  th(style="width:50%").text-center Retours
+                  th(style="width:20%").text-center Actions
                 each lt, lt_i in volunteer.long_terms
-                  tr
+                  tr.status(status=lt.status)
                     td
+                      p
+                      if lt.status == 'confirmed'
+                        span.badge(style='background-color: #113A20')= 'Confirmé'
+                      else if (lt.status == 'validated')
+                        span.badge(style='background-color: #113A20')= 'Validé'
+                      else if (lt.status == 'pending')
+                        span.badge(style='background-color: #FF800E')= 'Attente de confirmation par l\'organisme'
+                      else if lt.status == 'subscribed'
+                        span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
+                      else if lt.status == 'past'
+                        span.badge(style='background-color: #FF800E')= 'Passé, à confirmé par l\'élève'
+                      else if lt.status == 'corrected'
+                        span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
+                      else if lt.status == 'denied'
+                        span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
+                      else
+                        span.badge(style='background-color: #E33831')= 'Indéfini'
                       if (lt.hours_pending > 0 || lt.hours_done > 0)
                         if (lt.hours_pending > 0)
-                          span.badge(style='background-color: #E33831')= lt.hours_pending + ' heures à confirmer'
+                          span.badge(style='background-color: #FF800E')= lt.hours_pending + ' heures à confirmer'
                         if (lt.hours_done > 0)
                           span.badge(style='background-color: #113A20')= lt.hours_done + ' heures réalisées'
                       else 
-                        span.badge(style='background-color: #E33831')= 'Aucune heure enregistrée'
+                        span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
                       h4= lt.intitule
                       h6 pour <strong> #{lt.org_name} </strong>
                       if (lt.hours_pending > 0 || lt.hours_done > 0)
@@ -187,6 +233,13 @@ block content
                                     h6= question
                                   div.panel-body
                                     h6= lt.organism_answers[q_I]
+                    td(align='center')
+                      if ((lt.status == 'confirmed') || (lt.status == 'corrected') || (lt.status == 'validated') || (lt.status == 'denied'))
+                        .btn-group(role='group')
+                          button.btn.btn-default.validate(vol=volunteer._id, id=lt._id, type='long_terms')
+                            i.fa.fa-check-square-o
+                          button.btn.btn-danger.deny(vol=volunteer._id, id=lt._id, type='long_terms')
+                            i.fa.fa-times-circle-o
     if (volunteer.extras || volunteer.manuals)
       .row
         .col-md-10.col-md-offset-1(style='border: 3px solid #E56252; margin-bottom:10px;')
@@ -199,18 +252,36 @@ block content
                   if (volunteer.extras)
                     table.table.table-striped
                       tr
-                        th Informations
-                        th Retours
+                        th(style="width:30%") Informations
+                        th(style="width:50%") Retours
+                        th(style="width:20%") Actions
                       each ext, ext_i in volunteer.extras
-                        tr
+                        tr.status(status=ext.status)
                           td
+                            p
+                            if ext.status == 'confirmed'
+                              span.badge(style='background-color: #113A20')= 'Confirmé'
+                            else if (ext.status == 'validated')
+                              span.badge(style='background-color: #113A20')= 'Validé'
+                            else if (ext.status == 'pending')
+                              span.badge(style='background-color: #FF800E')= 'Attente de confirmation par l\'organisme'
+                            else if ext.status == 'subscribed'
+                              span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
+                            else if ext.status == 'past'
+                              span.badge(style='background-color: #FF800E')= 'Passé, à confirmé par l\'élève'
+                            else if ext.status == 'corrected'
+                              span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
+                            else if ext.status == 'denied'
+                              span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
+                            else
+                              span.badge(style='background-color: #E33831')= 'Indéfini'
                             if (ext.hours_pending > 0 || ext.hours_done > 0)
                               if (ext.hours_pending > 0)
-                                span.badge(style='background-color: #E33831')= ext.hours_pending + ' heures à confirmer'
+                                span.badge(style='background-color: #FF800E')= ext.hours_pending + ' heures à confirmer'
                               if (ext.hours_done > 0)
                                 span.badge(style='background-color: #113A20')= ext.hours_done + ' heures réalisées'
                             else 
-                              span.badge(style='background-color: #E33831')= 'Aucune heure enregistrée'
+                              span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
                             h4= ext.intitule
                             h6 pour <strong> #{ext.org_name} </strong>
                             if (ext.hours_pending > 0 || ext.hours_done > 0)
@@ -240,6 +311,13 @@ block content
                                           h6= question
                                         div.panel-body
                                           h6= ext.organism_answers[q_I]
+                          td(align='center')
+                            if ((ext.status == 'confirmed') || (ext.status == 'corrected') || (ext.status == 'validated') || (ext.status == 'denied'))
+                              .btn-group(role='group')
+                                button.btn.btn-default.validate(vol=volunteer._id, id=ext._id, type='extras')
+                                  i.fa.fa-check-square-o
+                                button.btn.btn-danger.deny(vol=volunteer._id, id=ext._id, type='extras')
+                                  i.fa.fa-times-circle-o
           if (volunteer.manuals)
             if (volunteer.manuals.length > 0)
               .page-header
@@ -256,7 +334,7 @@ block content
                           if (man.hours_done > 0)
                             span.badge(style='background-color: #113A20')= man.hours_done + ' heures réalisées'
                           else 
-                            span.badge(style='background-color: #E33831')= 'Aucune heure enregistrée'
+                            span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
                           h3
                           p ajoutées par <b> #{man.admin_name} </b>
                           if (man.added.toLocaleString())
@@ -293,5 +371,47 @@ block footscript
             $('#manual-danger').html(' ' + data.responseJSON.error);
             console.log('JSON.stringify(data) : ' + JSON.stringify(data));
           });
+        });
+
+        //Handle validation or denying button
+        $('.validate').click(function(){
+          const type = $(this).attr('type');
+          const buttons = $(this).parent('.btn-group');
+          const row = $(this).closest('.status');
+          $.post('/admin/validate', {type: $(this).attr('type'), id: $(this).attr('id'), vol: $(this).attr('vol')})
+          .always(function(data){
+            console.info('data : ' + JSON.stringify(data));
+            //buttons.html('<p>'+data.message+'</p>');
+            row.removeClass('warning');
+            row.removeClass('danger');
+            row.addClass('success');
+          });
+        });
+
+        //Handle validation or denying button
+        $('.deny').click(function(){
+          const type = $(this).attr('type');
+          const buttons = $(this).parent('.btn-group');
+          const row = $(this).closest('.status');
+          $.post('/admin/deny', {type: $(this).attr('type'), id: $(this).attr('id'), vol: $(this).attr('vol')})
+          .always(function(data){
+            console.info('data : ' + JSON.stringify(data));
+            //buttons.html('<p>'+data.message+'</p>');
+            row.removeClass('warning');
+            row.removeClass('success');
+            row.addClass('danger');
+          });
+        });
+
+        const getRowClass = function(status){
+          console.info('Status : ' + status);
+          if((status == 'pending') || (status == 'confirmed') || (status == 'corrected')){ console.info('Return warning');return 'warning'}
+          else if (status == 'denied'){ console.info('Return danger');return 'danger'}
+          else if (status == 'validated'){ console.info('Return success');return 'success'}
+          else { return ''}
+        };
+        $('.status').each(function(){
+          let status = $(this).attr('status');
+          $(this).addClass(getRowClass(status));
         });
       });

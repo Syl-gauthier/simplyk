@@ -151,7 +151,35 @@ block content
                               input.form-control(id='input'+event._id, type='number', min='0.5', max='50', step='0.5' placeholder='Heures réalisées' name='hours_pending', required)
                               .input-group-btn
                                 input.btn.btn-default(type='submit', value='Confirmer' form='hoursPendingForm'+event.activity_id+event.day)
-                                a.btn.btn-default(href='/volunteer/event/'+event.activity_id) Détails
+                                a.btn.btn-default(href='/volunteer/event/'+event._id) Détails
+                        #identifiant(style='display:none')
+                          p= event._id
+
+                  //IF EVENT_DENIED
+                  if events_denied.length
+                    h4 CORRIGER TON RETOUR
+                  each event, index in events_denied
+                    li.list-group-item
+                      .panel.panel-default
+                        .panel-heading
+                          div.media-left.media-middle
+                            a(href='profile')
+                              img.media-object.little-img(src='/images/clouds.jpg')
+                          div.media-body
+                            h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
+                            h6 <small>pour</small> #{event.org_name}
+                          if event.status == 'denied'
+                            div.media-right.media-top
+                              span.badge(style='background-color: #E33831')= 'À corriger'
+                        .panel-body
+                          h6
+                            i.fa.fa-map-marker
+                            p.inline Adresse : #{event.address}
+                          h6.inline
+                            i.fa.fa-calendar-o
+                            p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
+                        .panel-footer
+                          a.btn.btn-danger(href='/volunteer/event/'+event._id) Corriger
                         #identifiant(style='display:none')
                           p= event._id
 
@@ -168,6 +196,9 @@ block content
                           div.media-body
                             h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
                             h6 <small>pour</small> #{event.org_name}
+                          if event.status == 'pending'
+                            div.media-right.media-top
+                              span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
                         .panel-body
                           h6
                             i.fa.fa-map-marker
@@ -178,11 +209,11 @@ block content
                         .panel-footer
                           ul.list-inline
                             li
-                              a.btn.btn-default(id= event._id, href='/volunteer/event/'+event.activity_id) Détails
+                              a.btn.btn-default(id= event._id, href='/volunteer/event/'+event._id) Détails
                             li
                               h4.text-right
                                 if event.hours_pending
-                                  span.badge(style='background-color: #E33831')= event.hours_pending + ' heures à confirmer'
+                                  span.badge(style='background-color: #FF800E')= event.hours_pending + ' heures à confirmer'
                         #identifiant(style='display:none')
                           p= event._id
 
@@ -208,7 +239,7 @@ block content
                             p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
                         .panel-footer
                           .btn-group(role='group')
-                            a.btn.btn-default(href='/volunteer/event/'+event.activity_id) Détails
+                            a.btn.btn-default(href='/volunteer/event/'+event._id) Détails
                             input.btn.btn-warning(type='button' value='Se désinscrire' data-toggle='modal' data-target='#unsubscribe-modal'+index)
                           .modal.fade(id='unsubscribe-modal'+index, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+index)
                             .modal-dialog(role='document')
@@ -237,6 +268,15 @@ block content
                             div.media-body
                               h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
                               h6 <small>pour</small> #{event.org_name}
+                            if event.status == 'corrected'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #FF800E')= 'Corrigé'
+                            else if event.status == 'validated'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #113A20')= 'Validé'
+                            else if event.status == 'confirmed'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #113A20')= 'Confirmé par l\'organisme'
                         .panel-body
                           h6
                             i.fa.fa-map-marker
@@ -247,7 +287,7 @@ block content
                         .panel-footer
                           ul.list-inline
                             li
-                              a.btn.btn-default(id= event._id, href='/volunteer/event/'+event.activity_id) Détails
+                              a.btn.btn-default(id= event._id, href='/volunteer/event/'+event._id) Détails
                             li
                               h4.text-right
                                 if event.hours_done
@@ -273,6 +313,15 @@ block content
                             div.media-body
                               h4.media-heading <b>#{lt.intitule}</b>
                               h6 <small>pour</small> #{lt.org_name}
+                            if lt.status == 'denied'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #E33831')= 'À corriger'
+                            else if lt.status == 'corrected'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #FF800E')= 'Corrigé'
+                            else if lt.status == 'validated'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #113A20')= 'Validé'
                           .panel-body
                             h6
                               i.fa.fa-map-marker
@@ -285,10 +334,13 @@ block content
                                 if lt.hours_done
                                   span.badge(style='background-color: #113A20')= lt.hours_done + ' heures réalisées '
                                 if lt.hours_pending
-                                  span.badge(style='background-color: #E33831')= lt.hours_pending + ' heures à confirmer '
+                                  span.badge(style='background-color: #FF800E')= lt.hours_pending + ' heures à confirmer '
                           .panel-footer
                             .btn-group
-                              a.btn.infos-button-longterm.longterm(id= lt._id, href='/longterm/'+lt._id) Détails
+                              if lt.status == 'denied'
+                                a.btn.btn-danger(id= lt._id, href='/longterm/'+lt._id) Corriger
+                              else 
+                                a.btn.infos-button-longterm.longterm(id= lt._id, href='/longterm/'+lt._id) Détails
                               button.btn.btn-danger(data-toggle='modal' data-target='#addLTHoursModal'+lt_i) Ajouter des heures
                               input.btn.btn-warning(type='button' value='Se désinscrire' data-toggle='modal' data-target='#unsubscribe-lt-modal'+lt_i)
                               .modal.fade(id='unsubscribe-lt-modal'+lt_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+lt_i)
@@ -465,6 +517,21 @@ block content
                             div.media-body
                               h4.media-heading <b>#{ext.intitule}</b>
                               h6 <small>pour</small> #{ext.org_name}
+                            if ext.status == 'denied'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #E33831')= 'À corriger'
+                            else if ext.status == 'corrected'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #FF800E')= 'Corrigé'
+                            else if ext.status == 'validated'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #113A20')= 'Validé'
+                            else if ext.status == 'confirmed'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #113A20')= 'Confirmé par l\'organisme'
+                            else if ext.status == 'pending'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
                           .panel-body
                             h6.inline
                               i.fa.fa-info
@@ -474,10 +541,13 @@ block content
                                 if ext.hours_done
                                   span.badge(style='background-color: #113A20')= ext.hours_done + ' heures réalisées '
                                 if ext.hours_pending
-                                  span.badge(style='background-color: #E33831')= ext.hours_pending + ' heures à confirmer '
+                                  span.badge(style='background-color: #FF800E')= ext.hours_pending + ' heures à confirmer '
                           .panel-footer
                             .btn-group
-                              button.btn.infos-button-extra.extra(id= ext._id, data-toggle='modal' data-target='#extraModal'+ext_i) Détails
+                              if ext.status == 'denied'
+                                button.btn.btn-danger(id= ext._id, data-toggle='modal' data-target='#extraModal'+ext_i) Corriger
+                              else
+                                button.btn.btn-default(id= ext._id, data-toggle='modal' data-target='#extraModal'+ext_i) Détails
                       .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='extraModal'+ext_i)
                         div.modal-dialog(role='document')
                           .modal-content
@@ -486,14 +556,28 @@ block content
                                 span(aria-hidden='true')
                                 h4.modal-title Détails de l'extra
                             div.modal-body
-                              if ext.student_questions && ext.student_answers
-                                h4 <b>Tes retours</b>
-                                each question, question_i in ext.student_questions
-                                  div.panel.panel-warning
+                              if (ext.student_questions.length > 0 && ext.student_answers.length > 0)
+                                div.panel.panel-default
+                                  form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
                                     div.panel-heading
-                                      h6= question
+                                      h4 Ton retour d'expérience
+                                      if ext.status == 'denied'
+                                        span.badge(style='background-color: #E33831')= 'À corriger'
+                                        i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=ext._id)
+                                      else if ext.status == 'corrected'
+                                        span.badge(style='background-color: #FF800E')= 'Corrigé'
+                                        i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=ext._id)
                                     div.panel-body
-                                      h6= ext.student_answers[question_i]
+                                      each question, q_I in ext.student_questions
+                                        div.panel.panel-warning
+                                          div.panel-heading
+                                            h6= question 
+                                          div.panel-body
+                                            if ((ext.status == 'denied') || (ext.status == 'corrected'))
+                                              h6.answer_to_edit #{ext.student_answers[q_I]}
+                                            else
+                                              h6 #{ext.student_answers[q_I]}
+                                      div.submit-button
                               if ext.organism_questions.length && ext.organism_answers.length
                                 h4 <b>Les retours de l'organisme</b>
                                 each question, question_i in ext.organism_questions
@@ -611,4 +695,15 @@ block footscript
           }
         }
       });
+
+
+      $('.edit').click(function(){
+        const ext_id = $(this).attr('ext_id');
+        $('.edit').removeClass('fa').removeClass('fa-pencil');
+        $('.answer_to_edit').each(function(index){
+          $(this).html("<p>Correction de la réponse</p><textarea rows='4' name='new_response'>"+$(this).text()+"</textarea>");
+        });
+        $('.submit-button').html("<input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='ext_id' value="+ext_id+"></input><input type='submit' value='Envoyer les corrections' class='btn btn-warning'></input>");
+      });
+
     });

@@ -28,6 +28,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   var events_past = [];
   var events_pending = [];
   var events_subscribed = [];
+  var events_denied = [];
   var events_confirmed = [];
   var error;
   const volunteer = req.session.volunteer;
@@ -39,8 +40,10 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       events_subscribed.push(volunteer.events[eventI]);
     } else if (Date.parse(volunteer.events[eventI].day) < Date.now() && volunteer.events[eventI].status === 'pending') {
       events_pending.push(volunteer.events[eventI]);
-    } else if (Date.parse(volunteer.events[eventI].day) < Date.now() && volunteer.events[eventI].status === 'confirmed') {
+    } else if ((Date.parse(volunteer.events[eventI].day) < Date.now() && volunteer.events[eventI].status === 'confirmed') || volunteer.events[eventI].status == 'corrected' || volunteer.events[eventI].status == 'validated') {
       events_confirmed.push(volunteer.events[eventI]);
+    } else if (volunteer.events[eventI].status == 'denied') {
+      events_denied.push(volunteer.events[eventI]);
     } else {
       error = 'Une erreur avec vos inscriptions';
       console.log(error);
@@ -120,6 +123,41 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       if (err) {
         console.error(err);
       }
+      //Sort extras by status
+      req.session.volunteer.extras.sort((a, b) => {
+        if ((a.status == 'denied') && (b.status != 'denied')) {
+          return -1;
+        } else if ((a.status != 'denied') && (b.status == 'denied')) {
+          return 1;
+        } else {
+          if ((a.status == 'pending') && (b.status != 'pending')) {
+            return -1;
+          } else if ((a.status != 'pending') && (b.status == 'pending')) {
+            return 1;
+          } else {
+            if ((a.status == 'corrected') && (b.status != 'corrected')) {
+              return -1;
+            } else if ((a.status != 'corrected') && (b.status == 'corrected')) {
+              return 1;
+            } else {
+              if ((a.status == 'validated') && (b.status != 'validated')) {
+                return -1;
+              } else if ((a.status != 'validated') && (b.status == 'validated')) {
+                return 1;
+              } else {
+                if ((a.status == 'confirmed') && (b.status != 'confirmed')) {
+                  return -1;
+                } else if ((a.status != 'confirmed') && (b.status == 'confirmed')) {
+                  return 1;
+                } else {
+                  return 0;
+                }
+              }
+            }
+          }
+        }
+      });
+      console.log('extras sorted : ' + JSON.stringify(req.session.volunteer.extras));
       res.render('v_profile.jade', {
         session: req.session,
         volunteer: req.session.volunteer,
@@ -137,11 +175,11 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
         manuals_hours_done,
         extras_hours_done,
         hash,
-        client_schools
+        client_schools,
+        events_denied
       });
     });
   });
-
 });
 
 //Unsubscribe from an event
@@ -410,7 +448,7 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
               console.log(err);
               res.redirect('/volunteer/map?error=' + err);
             } else {
-              if (event.organism_questions) {
+              if (event.student_questions) {
                 res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
               } else {
                 res.redirect('/volunteer/map');
@@ -554,31 +592,27 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
 });
 
 
-router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), function(req, res) {
+router.get('/volunteer/event/:event_id', permissions.requireGroup('volunteer'), function(req, res) {
 
   //Pour trouver l'event dasn le volunteer
   function isEvent(event) {
-    console.log('indexOf : ' + event.activities.indexOf(req.params.act_id) + ' in ' + JSON.stringify(event.activities));
-    return event.activities.indexOf(req.params.act_id) > -1;
+    return event._id == req.params.event_id;
   };
+  const event_in_volunteer = req.session.volunteer.events.find(isEvent);
+  const activity_id = event_in_volunteer.activity_id;
 
   Organism.findOne({
-    'events': {
-      '$elemMatch': {
-        'activities': {
-          '$in': [req.params.act_id]
-        }
-      }
-    }
+    'events.activities': activity_id
   }, function(err, organism) {
     if (err) {
       console.log(err);
       res.redirect('/volunteer/map?error=' + err);
     } else {
       const org = organism;
-      const event = organism.events.find(isEvent);
-      const activities_in_event_ids = event.activities;
-      console.log('activities_in_event_ids' + typeof activities_in_event_ids);
+      const event_organism = organism.events.find(ev => {
+        return (ev.activities.indexOf(activity_id) > -1);
+      });
+      const activities_in_event_ids = event_organism.activities;
       Activity.find({
         '_id': {
           '$in': activities_in_event_ids
@@ -588,35 +622,47 @@ router.get('/volunteer/event/:act_id', permissions.requireGroup('volunteer'), fu
           console.log(err);
           res.redirect('/volunteer/map?error=' + err);
         } else {
-          const acts = activities;
           var isActivity = function(activity) {
-            return activity._id.toString() == req.params.act_id.toString();
+            return activity._id.toString() == activity_id.toString();
           };
-          const activity = acts.find(isActivity);
+          const activity_in_activities = activities.find(isActivity);
+          console.log('activity_id : ' + JSON.stringify(activity_id));
+          console.log('activity_in_activities : ' + JSON.stringify(activity_in_activities));
           var isNotActivity = function(activity) {
-            return activity._id != req.params.act_id;
+            return activity._id != activity_id;
           };
-          const other_activities = acts.filter(isNotActivity);
-          /*var isSubscribed = function(activity){
-            var subscribelist = req.session.volunteer.events.find(function(event){
-              return event.activity_id == activity._id;
-            });
-            if(subscribelist){
-              return true;
-            }
-            else{
-              return false;
-            }
+          const other_activities = activities.filter(isNotActivity);
+          console.log('other_activities : ' + JSON.stringify(other_activities));
+
+          let student_questions = {};
+          let organism_questions = {};
+          let student_answers = {};
+          let organism_answers = {};
+
+          if (event_in_volunteer.student_answers) {
+            student_questions = event_in_volunteer.student_questions;
+            student_answers = event_in_volunteer.student_answers;
+            organism_answers = event_in_volunteer.organism_answers;
+            organism_questions = event_in_volunteer.organism_questions;
           }
-          const acts_subscribed = acts.filter(isSubscribed)*/
+
+          console.info(JSON.stringify(event_organism));
+
+
           res.render('v_event.jade', {
             session: req.session,
             other_activities: other_activities,
-            event: event,
+            event: event_organism,
             organism: org,
-            activity: activity,
+            activity: activity_in_activities,
+            event_id: event_in_volunteer._id,
+            status: event_in_volunteer.status,
             volunteer: req.session.volunteer,
-            group: req.session.group
+            group: req.session.group,
+            student_answers,
+            student_questions,
+            organism_questions,
+            organism_answers
           });
         };
       })

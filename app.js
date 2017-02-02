@@ -27,6 +27,7 @@ var v_profile = require('./routes/v_profile');
 var g_nav = require('./routes/g_nav');
 var g_editprofile = require('./routes/g_editprofile');
 var g_profile = require('./routes/g_profile');
+var v_student = require('./routes/v_student');
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
@@ -241,6 +242,7 @@ app.use('/', o_addevent);
 app.use('/', o_addlongterm);
 app.use('/', v_routes);
 app.use('/', g_profile);
+app.use('/', v_student);
 app.use('/', g_editprofile);
 app.use('/', g_nav);
 app.use('/', v_profile);
