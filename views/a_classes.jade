@@ -189,9 +189,8 @@ block footscript
 
       const getRowClass = function(status){
         console.info('Status : ' + status);
-        if(status == 'pending'){ console.info('Return warning');return 'warning'}
+        if((status == 'pending')  || (status == 'confirmed')  || (status == 'danger')){ console.info('Return warning');return 'warning'}
         else if (status == 'denied'){ console.info('Return danger');return 'danger'}
-        else if (status == 'confirmed'){ console.info('Return success');return 'warning'}
         else if (status == 'validated'){ console.info('Return success');return 'success'}
         else { return ''}
       };

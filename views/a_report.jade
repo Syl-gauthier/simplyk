@@ -110,6 +110,8 @@ block content
                             span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
                           else if event.status == 'past'
                             span.badge(style='background-color: #FF800E')= 'Passé, à confirmé par l\'élève'
+                          else if event.status == 'corrected'
+                            span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
                           else if event.status == 'denied'
                             span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
                           else
@@ -178,6 +180,23 @@ block content
                 each lt, lt_i in volunteer.long_terms
                   tr.status(status=lt.status)
                     td
+                      p
+                      if lt.status == 'confirmed'
+                        span.badge(style='background-color: #113A20')= 'Confirmé'
+                      else if (lt.status == 'validated')
+                        span.badge(style='background-color: #113A20')= 'Validé'
+                      else if (lt.status == 'pending')
+                        span.badge(style='background-color: #FF800E')= 'Attente de confirmation par l\'organisme'
+                      else if lt.status == 'subscribed'
+                        span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
+                      else if lt.status == 'past'
+                        span.badge(style='background-color: #FF800E')= 'Passé, à confirmé par l\'élève'
+                      else if lt.status == 'corrected'
+                        span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
+                      else if lt.status == 'denied'
+                        span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
+                      else
+                        span.badge(style='background-color: #E33831')= 'Indéfini'
                       if (lt.hours_pending > 0 || lt.hours_done > 0)
                         if (lt.hours_pending > 0)
                           span.badge(style='background-color: #FF800E')= lt.hours_pending + ' heures à confirmer'
@@ -239,6 +258,23 @@ block content
                       each ext, ext_i in volunteer.extras
                         tr.status(status=ext.status)
                           td
+                            p
+                            if ext.status == 'confirmed'
+                              span.badge(style='background-color: #113A20')= 'Confirmé'
+                            else if (ext.status == 'validated')
+                              span.badge(style='background-color: #113A20')= 'Validé'
+                            else if (ext.status == 'pending')
+                              span.badge(style='background-color: #FF800E')= 'Attente de confirmation par l\'organisme'
+                            else if ext.status == 'subscribed'
+                              span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
+                            else if ext.status == 'past'
+                              span.badge(style='background-color: #FF800E')= 'Passé, à confirmé par l\'élève'
+                            else if ext.status == 'corrected'
+                              span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
+                            else if ext.status == 'denied'
+                              span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
+                            else
+                              span.badge(style='background-color: #E33831')= 'Indéfini'
                             if (ext.hours_pending > 0 || ext.hours_done > 0)
                               if (ext.hours_pending > 0)
                                 span.badge(style='background-color: #FF800E')= ext.hours_pending + ' heures à confirmer'
@@ -369,9 +405,8 @@ block footscript
 
         const getRowClass = function(status){
           console.info('Status : ' + status);
-          if(status == 'pending'){ console.info('Return warning');return 'warning'}
+          if((status == 'pending') || (status == 'confirmed') || (status == 'corrected')){ console.info('Return warning');return 'warning'}
           else if (status == 'denied'){ console.info('Return danger');return 'danger'}
-          else if (status == 'confirmed'){ console.info('Return success');return 'warning'}
           else if (status == 'validated'){ console.info('Return success');return 'success'}
           else { return ''}
         };
