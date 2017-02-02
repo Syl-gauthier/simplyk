@@ -122,13 +122,38 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       if (err) {
         console.error(err);
       }
+      //Sort extras by status
       req.session.volunteer.extras.sort((a, b) => {
         if ((a.status == 'denied') && (b.status != 'denied')) {
           return -1;
         } else if ((a.status != 'denied') && (b.status == 'denied')) {
           return 1;
         } else {
-          return 0;
+          if ((a.status == 'pending') && (b.status != 'pending')) {
+            return -1;
+          } else if ((a.status != 'pending') && (b.status == 'pending')) {
+            return 1;
+          } else {
+            if ((a.status == 'corrected') && (b.status != 'corrected')) {
+              return -1;
+            } else if ((a.status != 'corrected') && (b.status == 'corrected')) {
+              return 1;
+            } else {
+              if ((a.status == 'validated') && (b.status != 'validated')) {
+                return -1;
+              } else if ((a.status != 'validated') && (b.status == 'validated')) {
+                return 1;
+              } else {
+                if ((a.status == 'confirmed') && (b.status != 'confirmed')) {
+                  return -1;
+                } else if ((a.status != 'confirmed') && (b.status == 'confirmed')) {
+                  return 1;
+                } else {
+                  return 0;
+                }
+              }
+            }
+          }
         }
       });
       console.log('extras sorted : ' + JSON.stringify(req.session.volunteer.extras));
@@ -154,7 +179,6 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       });
     });
   });
-
 });
 
 //Unsubscribe from an event
@@ -511,7 +535,7 @@ router.get('/volunteer/event/:event_id', permissions.requireGroup('volunteer'), 
     } else {
       const org = organism;
       const event_organism = organism.events.find(ev => {
-        return (ev.activities.indexOf(activity_id)>-1);
+        return (ev.activities.indexOf(activity_id) > -1);
       });
       const activities_in_event_ids = event_organism.activities;
       Activity.find({

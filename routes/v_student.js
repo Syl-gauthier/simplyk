@@ -62,6 +62,28 @@ router.post('/volunteer/edit-student-feedbacks', permissions.requireGroup('volun
 		}
 		console.info('update_pull_query : ' + JSON.stringify(update_pull_query));
 		console.info('update_push_query : ' + JSON.stringify(update_push_query));
+	} else if (req.body.ext_id){
+		//Find long_terms index in req.session.volunteer to apply to mongo search (DANGEROUS BUT AFTER MULTIPLE HOURS .........)
+		console.info('We are starting to update answers to an extra');
+		find_query = {
+			'_id': req.session.volunteer._id,
+			'extras._id': req.body.ext_id
+		}
+		update_pull_query = {
+			'$set': {
+				'extras.$.student_answers': [],
+				'extras.$.status': 'corrected'
+			}
+		};
+		update_push_query = {
+			'$push': {
+				'extras.$.student_answers': {
+					'$each': new_student_answers
+				}
+			}
+		}
+		console.info('update_pull_query : ' + JSON.stringify(update_pull_query));
+		console.info('update_push_query : ' + JSON.stringify(update_push_query));
 	}
 	//PULL STUDENT ANSWERS FROM THE CORRESPONDING FIELD
 	Volunteer.findOneAndUpdate(find_query, update_pull_query, function(err) {

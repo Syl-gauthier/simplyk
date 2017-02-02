@@ -40,7 +40,7 @@ var VolunteerSchema = new Schema({
     start_time: String,
     end_time: String,
     hours_done: Number,
-    status: String, //confirmed, pending, validated, denied, subscribed, past
+    status: String, //confirmed, pending, validated, denied, subscribed, past, corrected
     extra: Boolean,
     hours_pending: Number,
     student_questions: [String],
@@ -62,7 +62,7 @@ var VolunteerSchema = new Schema({
     slot: String,
     hours_pending: Number,
     hours_done: Number,
-    status: String, //confirmed, pending, validated, denied, subscribed
+    status: String, //confirmed, pending, validated, denied, subscribed, corrected
     student_questions: [String],
     student_answers: [String],
     organism_questions: [String],
@@ -87,7 +87,7 @@ var VolunteerSchema = new Schema({
       ref: 'Activity'
     },
     description: String,
-    status: String, //confirmed, pending, validated, denied
+    status: String, //confirmed, pending, validated, denied, corrected
     days: [{
       day: Date,
       applicants: [{

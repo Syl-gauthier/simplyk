@@ -26,6 +26,7 @@ block content
 										i.fa.fa-map-marker
 										p.inline Adresse : #{event.address}
 							.panel-body
+								p= activity.description
 								h5 <b>Description : </b> #{activity.description}
 								each day, day_i in activity.days
 									if day.day
