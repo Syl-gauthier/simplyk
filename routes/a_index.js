@@ -99,6 +99,20 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
         };
       });
 
+      volunteers.sort(function(a, b) {
+        var lastnameA = a.lastname.toUpperCase(); // ignore upper and lowercase
+        var lastnameB = b.lastname.toUpperCase(); // ignore upper and lowercase
+        if (lastnameA < lastnameB) {
+          return -1;
+        }
+        if (lastnameA > lastnameB) {
+          return 1;
+        }
+
+        // names must be equal
+        return 0;
+      });
+
       res.status(200).render('a_classes.jade', {
         session: req.session,
         admin: req.session.admin,
