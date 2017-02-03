@@ -154,7 +154,7 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
     if (req.body.org) {
         req.session.organism = req.body.org;
         console.info('organism refreshed !');
-    }
+    };
     Activity.find({
         'org_id': req.session.organism._id
     }, function(err, activities) {
@@ -178,7 +178,6 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
                     return (events[eventI].activities.indexOf(activity._id.toString()) >= 0);
                 }
                 var these_activities = activities.filter(inThisEvent);
-                console.info('In the event ' + events[eventI]._id + 'where activitieslist is :' + events[eventI].activities + ' , the activities are : ' + these_activities);
                 Array.prototype.push.apply(events[eventI].acts, these_activities);
                 var lastDay = events[eventI].dates[0];
                 for (var dateI = events[eventI].dates.length - 1; dateI >= 0; dateI--) {
@@ -238,7 +237,8 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
                         session: req.session,
                         organism: req.session.organism,
                         todos: todo_to_send,
-                        group: req.session.group
+                        group: req.session.group,
+                        message: req.query.message
                     });
                 }
             });

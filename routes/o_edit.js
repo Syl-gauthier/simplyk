@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const permissions = require('../middlewares/permissions.js');
+const remove = require('../lib/organism/remove.js');
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
@@ -130,9 +131,9 @@ router.post('/edit-event', permissions.requireGroup('organism', 'admin'), functi
                 'events.$.intitule': req.body.intitule
               };
               activity_update = {
-                'event_intitule': req.body.intitule
-              }
-              //A PROBLEM IS LEFT FOR NOW, BUT NOT URGENT (PEOPLE WHO ARE ALREADY SUBSCRIBED TO MULTIPLE ACTIVTY OF THE EVENT HAVE ONLY ONE ACIVITY UPDATED WITH THE NEW EVENT_INTITULE)
+                  'event_intitule': req.body.intitule
+                }
+                //A PROBLEM IS LEFT FOR NOW, BUT NOT URGENT (PEOPLE WHO ARE ALREADY SUBSCRIBED TO MULTIPLE ACTIVTY OF THE EVENT HAVE ONLY ONE ACIVITY UPDATED WITH THE NEW EVENT_INTITULE)
             }
 
             Volunteer.update({
@@ -176,7 +177,7 @@ router.post('/edit-event', permissions.requireGroup('organism', 'admin'), functi
     //Edit vol_nb
     //Check if req.body.vol_nb < number of applicants
     console.info(req.body.vol_nb.length + ' : req.body.vol_nb.length')
-    if (req.body.vol_nb && (req.body.vol_nb.length < 1)){
+    if (req.body.vol_nb && (req.body.vol_nb.length < 1)) {
       const err_string = encodeURIComponent('Le champ du nombre de bénévoles recherchés doit être rempli.');
       res.redirect(req.body.url + '?error=' + err_string);
     } else if (req.body.nb_applicants > req.body.vol_nb) {
@@ -190,7 +191,7 @@ router.post('/edit-event', permissions.requireGroup('organism', 'admin'), functi
       Activity.update({
         '_id': req.body.activity_id,
         'days.day': req.body.day
-      }, activity_nb_vol_update, function(err, response){
+      }, activity_nb_vol_update, function(err, response) {
         if (err) {
           console.error('ERROR when updating activity, with update : ' + activity_nb_vol_update + ' and the error is ' + err);
         } else {
@@ -213,6 +214,38 @@ router.post('/edit-event', permissions.requireGroup('organism', 'admin'), functi
   } else {
     const err_string = encodeURIComponent('La requête n\'a pas été comprise. Essaye de nouveau ou sinon, contacte nous par téléphone ou courriel :)');
     res.redirect(req.body.url + '?error=' + err_string);
+  }
+});
+
+router.post('/remove-activity:act_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
+  console.log('req.params : ' + JSON.stringify(req.params));
+  let error = {};
+  let message = {};
+  if (req.params.act_id) {
+    remove.removeActivity(req.params.act_id, function(err) {
+      if (err) {
+        error = 'Les données de la requêtes ne sont pas lisibles';
+        console.error('ERR : ' + err);
+        res.redirect('/organism/dashboard?error=' + error);
+      } else {
+        message = 'Activité supprimée avec succès';
+        Organism.findOne({
+          '_id': req.session.organism._id
+        }, function(err, organism) {
+          if (err) {
+            console.error('ERR : ' + err);
+          }
+          req.session.organism = organism;
+          req.session.save(function() {
+            res.redirect('/organism/dashboard?message=' + message);
+          });
+        });
+      }
+    });
+  } else {
+    error = 'Les données de la requêtes ne sont pas lisibles'
+    console.error('ERR : ' + err);
+    res.redirect('/organism/dashboard?error=' + error);
   }
 });
 
