@@ -14,19 +14,16 @@ block content
           h3
           if error
             p.alert.alert-danger #{error}
-        ul.list-group
-          li.list-group-item
-            | Prénom: #{volunteer.firstname}
-            small
-          li.list-group-item
-            | Nom: #{volunteer.lastname}
-            small
-          li.list-group-item
-            | Date de naissance: #{volunteer.birthdate}
-            small
-          li.list-group-item
-            | Adresse mail: #{volunteer.email}
-            small
+        .panel.panel-default
+          .panel-heading
+            i.fa.fa-user-o.fa-2x.inline
+            p.inline <b>#{volunteer.lastname}</b> #{volunteer.firstname}
+          .panel-body
+            ul.list-group
+              li.list-group-item Date de naissance: #{date.printDate(volunteer.birthdate)}
+                small
+              li.list-group-item Adresse mail: #{volunteer.email}
+                small
         p.alert.alert-success.hidden#manual-success
         button.btn.btn-warning(data-toggle='modal' data-target='#manualHoursModal', style='margin-bottom: 20px;') Ajouter des heures manuellement
         .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal')

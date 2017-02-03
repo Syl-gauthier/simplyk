@@ -61,9 +61,9 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
             });
 
             if (lt_status_array.indexOf('denied') == -1) {
-              if ((extra_status_array.indexOf('pending') == -1) && (extra_status_array.indexOf('confirmed') == -1) && (extra_status_array.indexOf('corrected') == -1)) {
-                if ((event_status_array.indexOf('pending') == -1) && (event_status_array.indexOf('confirmed') == -1) && (event_status_array.indexOf('corrected') == -1)) {
-                  if ((lt_status_array.indexOf('pending') == -1) && (lt_status_array.indexOf('confirmed') == -1) && (lt_status_array.indexOf('corrected') == -1)) {
+              if ((extra_status_array.indexOf('confirmed') == -1) && (extra_status_array.indexOf('corrected') == -1)) {
+                if ((event_status_array.indexOf('confirmed') == -1) && (event_status_array.indexOf('corrected') == -1)) {
+                  if ((lt_status_array.indexOf('confirmed') == -1) && (lt_status_array.indexOf('corrected') == -1)) {
                     if ((lt_status_array.indexOf('validated') == -1) && (event_status_array.indexOf('validated') == -1) && (extra_status_array.indexOf('validated') == -1)) {
                       vol.status = ''
                       return vol;
@@ -185,7 +185,8 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
           error: err,
           session: req.session,
           admin: req.session.admin,
-          group: req.session.group
+          group: req.session.group,
+          date
         });
       });
 

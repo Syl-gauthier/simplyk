@@ -28,12 +28,14 @@ block content
                     th.text-center(rowspan='2') Changement de classe
                 tr
                   th.text-center(style='font-weight: 700; font-size: 13px') Inscriptions
-                  th.text-center(style='font-weight: 700; font-size: 13px') En attente
+                  th.text-center
+                    span.badge(style='background-color: #FF800E') En attente
                   th.text-center 
                     span.badge(style='background-color: #197500') Confirmées
                   each classe, classe_i in classes_array
                     tr.active
-                      td.text-center= classe.toString()
+                      td
+                        h4.text-center <b> #{classe.toString()} </b>
                       td
                       td
                       td
@@ -46,11 +48,15 @@ block content
                       if ((typeof vol.admin.class != undefined) && (classe != 'Sans classe'))
                         if vol.admin.class == classe
                           tr.student-row(class=vol.status)
-                            td.text-center= vol.lastname
+                            td.text-center <b> #{vol.lastname} </b>
                             td.text-center= vol.firstname
                             if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
                               td.text-center(style='font-weight: 700; font-size: 13px')= getSubscriptions(vol)
-                              td.text-center(style='font-weight: 700; font-size: 13px')= getWaiting(vol)
+                              if (getWaiting(vol) != '0 (0h)')
+                                td.text-center 
+                                  span.badge(style='background-color: #FF800E')= getWaiting(vol)
+                              else
+                                td.text-center(style='font-weight: 700; font-size: 13px')= getWaiting(vol)
                               td.text-center 
                                 span.badge(style='background-color: #197500')= getConfirmed(vol)
                             else
@@ -189,7 +195,7 @@ block footscript
 
       const getRowClass = function(status){
         console.info('Status : ' + status);
-        if((status == 'pending')  || (status == 'confirmed')  || (status == 'danger')){ console.info('Return warning');return 'warning'}
+        if((status == 'confirmed')  || (status == 'danger')){ console.info('Return warning');return 'warning'}
         else if (status == 'denied'){ console.info('Return danger');return 'danger'}
         else if (status == 'validated'){ console.info('Return success');return 'success'}
         else { return ''}
@@ -200,6 +206,6 @@ block footscript
       });
       
       $('.danger>td').css('background-color', '#E3998F');
-      $('.success>td').css('background-color', '#9CF095');
+      $('.success>td').css('background-color', '#A8F099');
       $('.warning>td').css('background-color', '#FAF297');
     });
