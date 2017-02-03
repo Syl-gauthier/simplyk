@@ -634,12 +634,12 @@ router.get('/volunteer/event/:event_id', permissions.requireGroup('volunteer'), 
           const other_activities = activities.filter(isNotActivity);
           console.log('other_activities : ' + JSON.stringify(other_activities));
 
-          let student_questions = {};
-          let organism_questions = {};
-          let student_answers = {};
-          let organism_answers = {};
+          let student_questions = [];
+          let organism_questions = [];
+          let student_answers = [];
+          let organism_answers = [];
 
-          if (event_in_volunteer.student_answers) {
+          if (event_in_volunteer.student_questions) {
             student_questions = event_in_volunteer.student_questions;
             student_answers = event_in_volunteer.student_answers;
             organism_answers = event_in_volunteer.organism_answers;
