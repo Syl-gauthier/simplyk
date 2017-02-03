@@ -1,7 +1,7 @@
 extends ./g_layout.jade
 block vars
 	- var page = 'event'
-
+	- function isPast(days){return ((days.map(function(day){return (Date.parse(day.day)<Date.now())})).indexOf(true) > -1)};
 
 block head
 	title Bénévoles à court terme
@@ -31,6 +31,24 @@ block content
 									h6
 										i.fa.fa-map-marker
 										p.inline Adresse : #{event.address}
+								div.media-top.media-right
+									if isPast(act.days)
+									else
+										i.fa.fa-times.fa-xs.fa-2x.edit.inline(style="cursor: pointer; color: red;" act_id=act._id, data-toggle='modal' data-target='#erase-modal'+act_i )
+										.modal.fade(id='erase-modal'+act_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+act_i)
+											.modal-dialog(role='document')
+												.modal-content
+													.modal-header
+														button.close(type='button' data-dismiss="modal" aria-label="Close")
+															span(aria-hidden='true') &times;
+														h4.modal-title(id='myModalLabel'+act_i) Es-tu sûr de vouloir supprimer cette activité ?
+													.modal-body
+														p.alert.alert-danger Si vous supprimez cette activité, pensez bien à prévenir tous les bénévoles qui y sont inscrits !
+													.modal-footer
+														form.inline(action='/remove-activity'+act._id, method='post')
+															.btn-group
+																a.btn.btn-warning(data-dismiss='modal') Annuler
+																input.btn.btn-default(type='submit' value='Oui' role='button')
 							.panel-body
 								each day, day_i in act.days
 									h4
@@ -39,7 +57,7 @@ block content
 											i.fa.fa-user
 											p.inline= day.applicants.length+' bénévoles se sont inscrits'
 											p.inline= ' (' + day.vol_nb +' bénévoles demandés'
-											i.fa.fa-pencil.fa-xs.edit.inline(style="cursor: pointer" type='vol_nb', vol_nb=day.vol_nb, day=day.day, applicants=day.applicants.length, activity=act._id)
+											i.fa.fa-pencil.fa-xs.edit.inline(style="cursor: pointer;" type='vol_nb', vol_nb=day.vol_nb, day=day.day, applicants=day.applicants.length, activity=act._id)
 											p.inline )
 										h6 De #{day.start_time} à #{day.end_time}
 									if day.vols.length
