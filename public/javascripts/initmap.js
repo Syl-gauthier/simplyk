@@ -316,8 +316,10 @@ function initMap() {
   const localization_bar_div = document.createElement('div');
   localization_bar_div.id = 'localization_bar_div';
   let loc_bar_content = [];
-  loc_bar_content.push('<input id="address_field" class="form-control" placeholder="Indiquez un lieu UNIQUE (format: n° de rue, nom de rue, ville)">');
-  loc_bar_content.push('<input id="loc_submit" type="button" value="Geocode">');
+  loc_bar_content.push('<form class="form-inline">');
+  loc_bar_content.push('<input id="address_field" class="form-control" placeholder="Chercher une adresse">');
+  loc_bar_content.push('<a id="loc_submit" class="btn btn-default"><i class="fa fa-search"></i></a>');
+  loc_bar_content.push('</form>');
   localization_bar_div.innerHTML = loc_bar_content.join('');
   localization_bar_div.index = 1;
   map.controls[google.maps.MapTypeControlStyle.HORIZONTAL_BAR].push(localization_bar_div);
@@ -470,23 +472,19 @@ function initMap() {
         country: 'ca'
       }
     };
+
     console.info('In initAutocomplete');
-    var autocomplete_is_loading = false;
     var localization_bar = document.getElementById('address_field');
     console.log('localization_bar ' + localization_bar);
     var autocomplete = new google.maps.places.Autocomplete(localization_bar, loc_bar_options);
+
     autocomplete.addListener('place_changed', function() {
-      autocomplete_is_loading = true;
       console.log('In the place_changed listener !')
       var place = autocomplete.getPlace();
       console.log('place : ' + JSON.stringify(place));
-      if (!place.geometry) {
-        autocomplete_is_loading = false;
-      } else {
-        autocomplete_is_loading = false;
-        testAddress();
-      }
+      testAddress();
     });
+
 
     var testAddress = function() {
       var place = autocomplete.getPlace();
@@ -497,32 +495,40 @@ function initMap() {
           address: address_string
         }, function(data) {
           console.info('POST to test_address sent with datas : ' + JSON.stringify(address_string));
-          $('#address_result').removeClass('hidden');
         })
         .done(function(data) {
           console.log('There is a place.geometry !' + JSON.stringify(data));
-          if (!autocomplete_is_loading) {
-            $('#address_container').removeClass('has-error');
-            $('#address_container').addClass('has-success');
-            $('#alert-maps').addClass('hidden');
-            map.setCenter({
-              lat: data.lat,
-              lng: data.lon
-            });
-            $('#address_result').empty();
-            $('#address_result').append('Sur la carte, l\'adresse sera : ' + data.string);
-          }
+          map.setCenter({
+            lat: data.lat,
+            lng: data.lon
+          });
+          map.setZoom(14);
         })
         .fail(function(data) {
           console.log('NO place or place.geometry !' + JSON.stringify(data));
-          if (!autocomplete_is_loading) {
-            $('#address_container').removeClass('has-success');
-            $('#address_container').addClass('has-error');
-            $('#address_result').empty();
-            $('#alert-maps').removeClass('hidden');
-          }
         })
     };
+
+    var geocoder = new google.maps.Geocoder();
+
+    //GEOCODING SERVICE
+    document.getElementById('loc_submit').addEventListener('click', function() {
+      geocodeAddress(geocoder, map);
+    });
+
+    function geocodeAddress(geocoder, resultsMap) {
+      var address = document.getElementById('address_field').value;
+      geocoder.geocode({
+        'address': address
+      }, function(results, status) {
+        if (status === google.maps.GeocoderStatus.OK) {
+          resultsMap.setCenter(results[0].geometry.location);
+          resultsMap.setZoom(14);
+        } else {
+          alert('Geocode was not successful for the following reason: ' + status);
+        }
+      });
+    }
 
     $('#address').on('focusout', function() {
       console.log('GET OUT !')
