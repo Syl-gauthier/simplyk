@@ -45,7 +45,7 @@ block content
                       if classes_array.length > 1
                         td
                     each vol, vol_i in volunteers
-                      if ((typeof vol.admin.class != undefined) && (classe != 'Sans classe'))
+                      if ((typeof vol.admin.class != undefined) && (classe != 'Autres'))
                         if vol.admin.class == classe
                           tr.student-row(class=vol.status)
                             td.text-center <b> #{vol.lastname} </b>
@@ -93,12 +93,11 @@ block content
                                     i.fa.fa-exchange
                                   ul.dropdown-menu
                                     each classe, classe_i in classes_array
-                                      if classe.toString() != 'Sans classe'
-                                        li
-                                          a.change_class(style="cursor: pointer;", new_class=classe.toString(), vol=vol._id)= classe.toString()
-                      else if (((!vol.admin.class) || (vol.admin.class == '')) && (classe == 'Sans classe'))
+                                      li
+                                        a.change_class(style="cursor: pointer;", new_class=classe.toString(), vol=vol._id)= classe.toString()
+                      else if (((!vol.admin.class) || (vol.admin.class == 'Autres')) && (classe == 'Autres'))
                         tr.student-row(class=vol.status)
-                          td.text-center= vol.lastname
+                          td.text-center <b> #{vol.lastname} </b>
                           td.text-center= vol.firstname
                           if vol.events.length || vol.long_terms.length || vol.extras.length || vol.manuals.length
                             td.text-center(style='font-weight: 700; font-size: 13px')= getSubscriptions(vol)
@@ -139,9 +138,8 @@ block content
                                   i.fa.fa-exchange
                                 ul.dropdown-menu
                                   each classe, classe_i in classes_array
-                                    if classe.toString() != 'Sans classe'
-                                      li
-                                        a.change_class(style="cursor: pointer;", new_class=classe.toString(), vol=vol._id)= classe.toString()
+                                    li
+                                      a.change_class(style="cursor: pointer;", new_class=classe.toString(), vol=vol._id)= classe.toString()
 
 block footscript
   // jQuery (necessary for Bootstrap's JavaScript plugins)
