@@ -1,4 +1,3 @@
-
 function initMap() {
   'use strict';
   let markers = [];
@@ -281,14 +280,14 @@ function initMap() {
   };
   let scrollable = true;
 
-  if (page == 'landing'){
+  if (page == 'landing') {
     scrollable = false;
-  };  
+  };
   const mapDiv = document.getElementById('map');
   const map = new google.maps.Map(mapDiv, {
     center: {
-      lat: 45.503,
-      lng: -73.613
+      lat: 45 /*.503*/ ,
+      lng: -73 /*.613*/
     },
     zoom: 12,
     scrollwheel: scrollable,
@@ -302,20 +301,57 @@ function initMap() {
     minimumClusterSize: 15,
     imagePath: '/images/m'
   };
+  // Create legend
   const legend = document.createElement('div');
   legend.id = 'legend';
-  let content = [];
-  content.push('<h5 class="leaf" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-envira fa-lg fa-fw leaf"></i> Nature </h5><br>');
-  content.push('<h5 class="soli" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-heart fa-lg fa-fw soli"></i> Solidarité </h5><br>');
-  content.push('<h5 class="cult" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-institution fa-lg fa-fw cult"></i> Sport et culture </h5><br>');
-  content.push('<h5 class="child" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-child fa-lg fa-fw child"></i> Enfance </h5>');
-  legend.innerHTML = content.join('');
+  let legend_content = [];
+  legend_content.push('<h5 class="leaf" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-envira fa-lg fa-fw leaf"></i> Nature </h5><br>');
+  legend_content.push('<h5 class="soli" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-heart fa-lg fa-fw soli"></i> Solidarité </h5><br>');
+  legend_content.push('<h5 class="cult" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-institution fa-lg fa-fw cult"></i> Sport et culture </h5><br>');
+  legend_content.push('<h5 class="child" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-child fa-lg fa-fw child"></i> Enfance </h5>');
+  legend.innerHTML = legend_content.join('');
   legend.index = 1;
   map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
+  // Create localization search bar
+  const localization_bar_div = document.createElement('div');
+  localization_bar_div.id = 'localization_bar_div';
+  let loc_bar_content = [];
+  loc_bar_content.push('<input id="address_field" class="form-control" placeholder="Indiquez un lieu UNIQUE (format: n° de rue, nom de rue, ville)">');
+  loc_bar_content.push('<input id="loc_submit" type="button" value="Geocode">');
+  localization_bar_div.innerHTML = loc_bar_content.join('');
+  localization_bar_div.index = 1;
+  map.controls[google.maps.MapTypeControlStyle.HORIZONTAL_BAR].push(localization_bar_div);
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(localization_bar_div);
   markers = generateMarkers(map, markers);
-  if (page == 'landing'){
+  if (page == 'landing') {
     filter_by_age();
   };
+
+
+  // Try HTML5 geolocation.
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      console.info('In navigator.geolocation !');
+
+      map.setCenter(pos);
+    }, function() {
+      handleLocationError(true, infoWindow, map.getCenter());
+    });
+  } else {
+    // Browser doesn't support Geolocation
+    handleLocationError(false, infoWindow, map.getCenter());
+  }
+
+  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(browserHasGeolocation ?
+      'Error: The Geolocation service failed.' :
+      'Error: Your browser doesn\'t support geolocation.');
+  }
 
   $('#acts_filter').click(function() {
     acts_checked = !acts_checked;
@@ -395,6 +431,7 @@ function initMap() {
       printed = 'all';
     }
   });
+
   function filter_by_age() {
     age_checked = !age_checked;
     if (age_checked) {
@@ -423,5 +460,75 @@ function initMap() {
   $('#age_filter').click(function() {
     filter_by_age();
   });
+
+  google.maps.event.addListenerOnce(map, 'tilesloaded', initAutocomplete);
+  //AUTOCOMPLETE input
+  function initAutocomplete() {
+    var loc_bar_options = {
+      types: ['address'],
+      componentRestrictions: {
+        country: 'ca'
+      }
+    };
+    console.info('In initAutocomplete');
+    var autocomplete_is_loading = false;
+    var localization_bar = document.getElementById('address_field');
+    console.log('localization_bar ' + localization_bar);
+    var autocomplete = new google.maps.places.Autocomplete(localization_bar, loc_bar_options);
+    autocomplete.addListener('place_changed', function() {
+      autocomplete_is_loading = true;
+      console.log('In the place_changed listener !')
+      var place = autocomplete.getPlace();
+      console.log('place : ' + JSON.stringify(place));
+      if (!place.geometry) {
+        autocomplete_is_loading = false;
+      } else {
+        autocomplete_is_loading = false;
+        testAddress();
+      }
+    });
+
+    var testAddress = function() {
+      var place = autocomplete.getPlace();
+      var address_string = place.formatted_address;
+      console.info('POST to test_address and place : ' + JSON.stringify(place));
+      console.info('POST to test_address and address_string : ' + JSON.stringify(address_string));
+      $.post('/test_address', {
+          address: address_string
+        }, function(data) {
+          console.info('POST to test_address sent with datas : ' + JSON.stringify(address_string));
+          $('#address_result').removeClass('hidden');
+        })
+        .done(function(data) {
+          console.log('There is a place.geometry !' + JSON.stringify(data));
+          if (!autocomplete_is_loading) {
+            $('#address_container').removeClass('has-error');
+            $('#address_container').addClass('has-success');
+            $('#alert-maps').addClass('hidden');
+            map.setCenter({
+              lat: data.lat,
+              lng: data.lon
+            });
+            $('#address_result').empty();
+            $('#address_result').append('Sur la carte, l\'adresse sera : ' + data.string);
+          }
+        })
+        .fail(function(data) {
+          console.log('NO place or place.geometry !' + JSON.stringify(data));
+          if (!autocomplete_is_loading) {
+            $('#address_container').removeClass('has-success');
+            $('#address_container').addClass('has-error');
+            $('#address_result').empty();
+            $('#alert-maps').removeClass('hidden');
+          }
+        })
+    };
+
+    $('#address').on('focusout', function() {
+      console.log('GET OUT !')
+      window.setTimeout(testAddress(), 1000);
+    });
+  };
+
 
 }

@@ -204,6 +204,8 @@ router.post('/test_address', function(req, res){
     } else {
       response.ok = true;
       response.string = string;
+      response.lat = lat;
+      response.lon = lon;
       res.status(200).send(response);
       res.end();
     }
