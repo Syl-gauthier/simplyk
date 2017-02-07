@@ -341,6 +341,10 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
       });
     } else {
       //Create opps list
+      let my_school = null;
+      if (req.session.organism.school_id) {
+        my_school = req.session.organism.school_id;
+      };
       var isNotPassed = function(activity) {
         var days_length = activity.days.filter(function(day) {
           return day.day > Date.now();
@@ -364,10 +368,23 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
         return !activity.extra;
       };
 
+      var justMySchool = function(activity) {
+        if (activity.school_id) {
+          if (my_school) {
+            console.log('activity.school_id :' + activity.school_id + ' my_school : ' + my_school + 'activity.school_id == my_school' + (activity.school_id == my_school));
+            return activity.school_id.toString() == my_school.toString();
+          } else {
+            return false;
+          };
+        } else {
+          return true;
+        }
+      };
+
       //If user is under 16, he can't see the activities of unverified organisms
       let acts = {};
       let lt_filter = {};
-      acts = activities.filter(isNotPassed).filter(isNotAnExtra);
+      acts = activities.filter(isNotPassed).filter(isNotAnExtra).filter(isUnverified).filter(justMySchool);
       lt_filter = {
         'long_terms': {
           '$not': {
@@ -411,7 +428,23 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
             });
           } else {
             //Filter organisms authorized to be seen by the volunteer
-            var longterms = longtermsList(organisms, 80);
+            const lt_organisms = organisms.filter(function(orga) {
+              if (orga.school_id || orga.admin_id) {
+                if (orga.school_id) {
+                  var the_school = orga.school_id;
+                } else {
+                  var the_school = orga.admin_id;
+                };
+                if (my_school) {
+                  return the_school.toString() == my_school.toString();
+                } else {
+                  return false;
+                }
+              } else {
+                return true;
+              }
+            });
+            var longterms = longtermsList(lt_organisms, 80);
             const hash = require('intercom-client').SecureMode.userHash({
               secretKey: process.env.INTERCOM_SECRET_KEY,
               identifier: req.session.organism.email
