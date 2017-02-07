@@ -46,6 +46,9 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           unless page == 'dashboard'
             li.navbar-link(role='presentation')
               a(href='/organism/dashboard') Tableau de bord
+          unless page=='map'
+            li.navbar-link(role='presentation')
+              a(href='/organism/map') Carte
           li(role='presentation')
             form.navbar-form( method='post', action='./logout')
               button.btn.btn-default(type='submit') Déconnexion
@@ -57,6 +60,9 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           if session.organism
             li.navbar-link(role='presentation')
               a(href='/organism/dashboard') Mes opportunités internes
+            unless page=='map'
+              li.navbar-link(role='presentation')
+                a(href='/organism/map') Carte
           li(role='presentation')
             form.navbar-form
               li.dropdown
