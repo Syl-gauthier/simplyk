@@ -557,6 +557,8 @@ function initMap() {
       }
     };
 
+    var geocoder = new google.maps.Geocoder();
+
     console.info('In initAutocomplete');
     var localization_bar = document.getElementById('address_field');
     console.log('localization_bar ' + localization_bar);
@@ -566,34 +568,9 @@ function initMap() {
       console.log('In the place_changed listener !')
       var place = autocomplete.getPlace();
       console.log('place : ' + JSON.stringify(place));
-      testAddress();
+      geocodeAddress(geocoder, map);
     });
 
-
-    var testAddress = function() {
-      var place = autocomplete.getPlace();
-      var address_string = place.formatted_address;
-      console.info('POST to test_address and place : ' + JSON.stringify(place));
-      console.info('POST to test_address and address_string : ' + JSON.stringify(address_string));
-      $.post('/test_address', {
-          address: address_string
-        }, function(data) {
-          console.info('POST to test_address sent with datas : ' + JSON.stringify(address_string));
-        })
-        .done(function(data) {
-          console.log('There is a place.geometry !' + JSON.stringify(data));
-          map.setCenter({
-            lat: data.lat,
-            lng: data.lon
-          });
-          map.setZoom(14);
-        })
-        .fail(function(data) {
-          console.log('NO place or place.geometry !' + JSON.stringify(data));
-        })
-    };
-
-    var geocoder = new google.maps.Geocoder();
 
     //GEOCODING SERVICE
     document.getElementById('loc_submit').addEventListener('click', function() {
