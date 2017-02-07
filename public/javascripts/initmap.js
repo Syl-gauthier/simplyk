@@ -1,4 +1,3 @@
-
 function initMap() {
   'use strict';
   let markers = [];
@@ -115,6 +114,8 @@ function initMap() {
       console.log('Marker is not defined in attachInfoWindow');
     };
   };
+
+
 
   function generateMarkers(map, mks) {
     //Generate markers
@@ -281,9 +282,9 @@ function initMap() {
   };
   let scrollable = true;
 
-  if (page == 'landing'){
+  if (page == 'landing') {
     scrollable = false;
-  };  
+  };
   const mapDiv = document.getElementById('map');
   const map = new google.maps.Map(mapDiv, {
     center: {
@@ -294,7 +295,10 @@ function initMap() {
     scrollwheel: scrollable,
     streetViewControl: false,
     mapTypeControl: false,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    zoomControlOptions: {
+      position: google.maps.ControlPosition.RIGHT_TOP
+    }
   });
   const options = {
     gridSize: 50,
@@ -302,100 +306,10 @@ function initMap() {
     minimumClusterSize: 15,
     imagePath: '/images/m'
   };
-  const legend = document.createElement('div');
-  legend.id = 'legend';
-  let content = [];
-  content.push('<h5 class="leaf" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-envira fa-lg fa-fw leaf"></i> Nature </h5><br>');
-  content.push('<h5 class="soli" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-heart fa-lg fa-fw soli"></i> Solidarité </h5><br>');
-  content.push('<h5 class="cult" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-institution fa-lg fa-fw cult"></i> Sport et culture </h5><br>');
-  content.push('<h5 class="child" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-child fa-lg fa-fw child"></i> Enfance </h5>');
-  legend.innerHTML = content.join('');
-  legend.index = 1;
-  map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
-  markers = generateMarkers(map, markers);
-  if (page == 'landing'){
-    filter_by_age();
-  };
 
-  $('#acts_filter').click(function() {
-    acts_checked = !acts_checked;
-    if (acts_checked) {
-      $('#acts_check').removeClass('fa-square-o');
-      $('#acts_check').addClass('fa-check-square-o');
-    } else {
-      $('#acts_check').removeClass('fa-check-square-o');
-      $('#acts_check').addClass('fa-square-o');
-    }
-    if (printed != 'acts') {
-      if (printed == 'lts') {
-        if (age_printed == 'all') {
-          $("[opp_type='activity']").removeClass('hidden');
-        } else if (age_printed == 'kids') {
-          $("[opp_type='activity'][adult='false']").removeClass('hidden');
-        }
-        setMapOnAll('acts', map);
-        printed = 'all';
-      } else {
-        if (acts_checked) {
-          $("[opp_type='longterm']").addClass('hidden');
-          setMapOnAll('lts', null);
-          printed = 'acts';
-        } else {
-          $("[opp_type='activity']").addClass('hidden');
-          setMapOnAll('acts', null);
-          printed = 'lts';
-        }
-      }
-    } else {
-      if (age_printed == 'all') {
-        $("[opp_type='longterm']").removeClass('hidden');
-      } else if (age_printed == 'kids') {
-        $("[opp_type='longterm'][adult='false']").removeClass('hidden');
-      }
-      setMapOnAll('lts', map);
-      printed = 'all';
-    }
-  });
-  $('#lts_filter').click(function() {
-    lts_checked = !lts_checked;
-    if (lts_checked) {
-      $('#lts_check').removeClass('fa-square-o');
-      $('#lts_check').addClass('fa-check-square-o');
-    } else {
-      $('#lts_check').removeClass('fa-check-square-o');
-      $('#lts_check').addClass('fa-square-o');
-    }
-    if (printed != 'lts') {
-      if (printed == 'acts') {
-        if (age_printed == 'all') {
-          $("[opp_type='longterm']").removeClass('hidden');
-        } else if (age_printed == 'kids') {
-          $("[opp_type='longterm'][adult='false']").removeClass('hidden');
-        }
-        setMapOnAll('lts', map);
-        printed = 'all';
-      } else {
-        if (lts_checked) {
-          $("[opp_type='activity']").addClass('hidden');
-          setMapOnAll('acts', null);
-          printed = 'lts';
-        } else {
-          $("[opp_type='longterm']").addClass('hidden');
-          setMapOnAll('lts', null);
-          printed = 'acts';
-        }
-      }
-    } else {
-      if (age_printed == 'all') {
-        $("[opp_type='activity']").removeClass('hidden');
-      } else if (age_printed == 'kids') {
-        $("[opp_type='activity'][adult='false']").removeClass('hidden');
-      }
-      setMapOnAll('acts', map);
-      printed = 'all';
-    }
-  });
-  function filter_by_age() {
+
+
+  function filterByAge(map) {
     age_checked = !age_checked;
     if (age_checked) {
       $('#age_check').removeClass('fa-square-o');
@@ -420,8 +334,269 @@ function initMap() {
       age_printed = 'all';
     }
   }
+
+
+  // Create legend
+  const legend = document.createElement('div');
+  legend.id = 'legend';
+  let legend_content = [];
+  legend_content.push('<h5 class="leaf" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-envira fa-lg fa-fw leaf"></i> Nature </h5><br>');
+  legend_content.push('<h5 class="soli" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-heart fa-lg fa-fw soli"></i> Solidarité </h5><br>');
+  legend_content.push('<h5 class="cult" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-institution fa-lg fa-fw cult"></i> Sport et culture </h5><br>');
+  legend_content.push('<h5 class="child" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-child fa-lg fa-fw child"></i> Enfance </h5>');
+  legend.innerHTML = legend_content.join('');
+  legend.index = 1;
+  map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
+  // Create localization search bar
+  const localization_bar_div = document.createElement('div');
+  localization_bar_div.id = 'localization_bar_div';
+  let loc_bar_content = [];
+  loc_bar_content.push('<form class="form-inline" style="margin-top:10px;"">');
+  loc_bar_content.push('<input id="address_field" class="form-control" placeholder="Chercher une adresse">');
+  loc_bar_content.push('<a id="loc_submit" class="btn btn-default"><i class="fa fa-search"></i></a>');
+  loc_bar_content.push('</form>');
+  localization_bar_div.innerHTML = loc_bar_content.join('');
+  localization_bar_div.index = 1;
+  map.controls[google.maps.MapTypeControlStyle.HORIZONTAL_BAR].push(localization_bar_div);
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(localization_bar_div);
+  markers = generateMarkers(map, markers);
+  if (page == 'landing') {
+    filterByAge(map);
+  };
+
+
+
+  //MARKERS FILTERING ON MAP MOUVEMENT
+
+  function filterOnLocation() {
+    acts.map(activity => {
+      console.info(activity.lat);
+      if (map.getBounds().contains({
+          lat: activity.lat,
+          lng: activity.lon
+        })) {
+        if ((printed == 'all') || (printed == 'acts')) {
+          if (page == 'landing') {
+            if (age_printed == 'kids') {
+              if ($("[id='" + activity._id + "']").attr('adult') == 'true') {
+                $("[id='" + activity._id + "']").addClass('hidden');
+              } else {
+                $("[id='" + activity._id + "']").removeClass('hidden');
+              }
+            } else {
+              $("[id='" + activity._id + "']").removeClass('hidden');
+            }
+          } else {
+            $("[id='" + activity._id + "']").removeClass('hidden');
+          }
+        } else {
+          $("[id='" + activity._id + "']").addClass('hidden');
+        }
+      } else {
+        $("[id='" + activity._id + "']").addClass('hidden');
+      }
+    });
+    lts.map(longterm => {
+      /*console.info(longterm._id);
+      console.info(longterm.long_term._id + ' sous');*/
+      if (map.getBounds().contains({
+          lat: longterm.long_term.lat,
+          lng: longterm.long_term.lon
+        })) {
+        /*console.info(longterm._id + 'is contained');
+        console.info(longterm.long_term._id + ' sous contained');*/
+        if ((printed == 'all') || (printed == 'lts')) {
+          if (page == 'landing') {
+            if (age_printed == 'kids') {
+              if ($("[id='" + longterm.long_term._id + "']").attr('adult') == 'true') {
+                $("[id='" + longterm.long_term._id + "']").addClass('hidden');
+              } else {
+                $("[id='" + longterm.long_term._id + "']").removeClass('hidden');
+              }
+            } else {
+              $("[id='" + longterm.long_term._id + "']").removeClass('hidden');
+            }
+          } else {
+            $("[id='" + longterm.long_term._id + "']").removeClass('hidden');
+          }
+        } else {
+          $("[id='" + longterm.long_term._id + "']").addClass('hidden');
+        }
+      } else {
+        $("[id='" + longterm.long_term._id + "']").addClass('hidden');
+      }
+    });
+  };
+
+  google.maps.event.addListener(map, 'bounds_changed', filterOnLocation);
+
+
+  // Try HTML5 geolocation.
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      console.info('In navigator.geolocation !');
+
+      map.setCenter(pos);
+    }, function() {
+      handleLocationError(true, infoWindow, map.getCenter());
+    });
+  } else {
+    // Browser doesn't support Geolocation
+    handleLocationError(false, infoWindow, map.getCenter());
+  }
+
+  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(browserHasGeolocation ?
+      'Error: The Geolocation service failed.' :
+      'Error: Your browser doesn\'t support geolocation.');
+  }
+
+  $('#acts_filter').click(function() {
+    acts_checked = !acts_checked;
+    if (acts_checked) {
+      $('#acts_check').removeClass('fa-square-o');
+      $('#acts_check').addClass('fa-check-square-o');
+    } else {
+      $('#acts_check').removeClass('fa-check-square-o');
+      $('#acts_check').addClass('fa-square-o');
+    }
+    if (printed != 'acts') {
+      if (printed == 'lts') {
+        if (age_printed == 'all') {
+          $("[opp_type='activity']").removeClass('hidden');
+        } else if (age_printed == 'kids') {
+          $("[opp_type='activity'][adult='false']").removeClass('hidden');
+        }
+        setMapOnAll('acts', map);
+        printed = 'all';
+        filterOnLocation();
+      } else {
+        if (acts_checked) {
+          $("[opp_type='longterm']").addClass('hidden');
+          setMapOnAll('lts', null);
+          printed = 'acts';
+          filterOnLocation();
+        } else {
+          $("[opp_type='activity']").addClass('hidden');
+          setMapOnAll('acts', null);
+          printed = 'lts';
+          filterOnLocation();
+        }
+      }
+    } else {
+      if (age_printed == 'all') {
+        $("[opp_type='longterm']").removeClass('hidden');
+      } else if (age_printed == 'kids') {
+        $("[opp_type='longterm'][adult='false']").removeClass('hidden');
+      }
+      setMapOnAll('lts', map);
+      printed = 'all';
+      filterOnLocation();
+    }
+  });
+  $('#lts_filter').click(function() {
+    lts_checked = !lts_checked;
+    if (lts_checked) {
+      $('#lts_check').removeClass('fa-square-o');
+      $('#lts_check').addClass('fa-check-square-o');
+    } else {
+      $('#lts_check').removeClass('fa-check-square-o');
+      $('#lts_check').addClass('fa-square-o');
+    }
+    if (printed != 'lts') {
+      if (printed == 'acts') {
+        if (age_printed == 'all') {
+          $("[opp_type='longterm']").removeClass('hidden');
+        } else if (age_printed == 'kids') {
+          $("[opp_type='longterm'][adult='false']").removeClass('hidden');
+        }
+        setMapOnAll('lts', map);
+        printed = 'all';
+        filterOnLocation();
+      } else {
+        if (lts_checked) {
+          $("[opp_type='activity']").addClass('hidden');
+          setMapOnAll('acts', null);
+          printed = 'lts';
+          filterOnLocation();
+        } else {
+          $("[opp_type='longterm']").addClass('hidden');
+          setMapOnAll('lts', null);
+          printed = 'acts';
+          filterOnLocation();
+        }
+      }
+    } else {
+      if (age_printed == 'all') {
+        $("[opp_type='activity']").removeClass('hidden');
+      } else if (age_printed == 'kids') {
+        $("[opp_type='activity'][adult='false']").removeClass('hidden');
+      }
+      setMapOnAll('acts', map);
+      printed = 'all';
+      filterOnLocation();
+    }
+  });
   $('#age_filter').click(function() {
-    filter_by_age();
+    filterByAge(map);
+    filterOnLocation();
   });
 
+  google.maps.event.addListenerOnce(map, 'tilesloaded', initAutocomplete);
+  //AUTOCOMPLETE input
+  function initAutocomplete() {
+    var loc_bar_options = {
+      types: ['address'],
+      componentRestrictions: {
+        country: 'ca'
+      }
+    };
+
+    var geocoder = new google.maps.Geocoder();
+
+    console.info('In initAutocomplete');
+    var localization_bar = document.getElementById('address_field');
+    console.log('localization_bar ' + localization_bar);
+    var autocomplete = new google.maps.places.Autocomplete(localization_bar, loc_bar_options);
+
+    autocomplete.addListener('place_changed', function() {
+      console.log('In the place_changed listener !')
+      var place = autocomplete.getPlace();
+      console.log('place : ' + JSON.stringify(place));
+      geocodeAddress(geocoder, map);
+    });
+
+
+    //GEOCODING SERVICE
+    document.getElementById('loc_submit').addEventListener('click', function() {
+      geocodeAddress(geocoder, map);
+    });
+
+    $('#address_field').on('keyup keypress', function(e) {
+      var keyCode = e.keyCode || e.which;
+      if (keyCode === 13) {
+        e.preventDefault();
+        geocodeAddress(geocoder, map);
+      }
+    });
+
+    function geocodeAddress(geocoder, resultsMap) {
+      var address = document.getElementById('address_field').value;
+      geocoder.geocode({
+        'address': address
+      }, function(results, status) {
+        if (status === google.maps.GeocoderStatus.OK) {
+          resultsMap.setCenter(results[0].geometry.location);
+          resultsMap.setZoom(14);
+        } else {
+          alert('Geocode was not successful for the following reason: ' + status);
+        }
+      });
+    }
+  };
 }
