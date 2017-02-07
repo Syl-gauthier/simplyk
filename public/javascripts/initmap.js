@@ -534,7 +534,75 @@ function initMap() {
       console.log('GET OUT !')
       window.setTimeout(testAddress(), 1000);
     });
+
+    //MARKERS FILTERING ON MAP MOUVEMENT
+
+    google.maps.event.addListener(map, 'bounds_changed', filterOnMouvement);
+
+    function filterOnMouvement() {
+      acts.map(activity => {
+        console.info(activity.lat);
+        if (map.getBounds().contains({
+            lat: activity.lat,
+            lng: activity.lon
+          })) {
+          if ((printed == 'all') || (printed == 'acts')) {
+            if (page == 'landing') {
+              if (age_printed == 'kids') {
+                if ($("[id='"+activity._id+"']").attr('adult') == 'true') {
+                  $("[id='"+activity._id+"']").addClass('hidden');
+                } else {
+                  $("[id='"+activity._id+"']").removeClass('hidden');
+                }
+              } else {
+                $("[id='"+activity._id+"']").removeClass('hidden');
+              }
+            } else {
+              $("[id='"+activity._id+"']").removeClass('hidden');
+            }
+          } else {
+            $("[id='"+activity._id+"']").addClass('hidden');
+          }
+        } else {
+          $("[id='"+activity._id+"']").addClass('hidden');
+        }
+      });
+      lts.map(longterm => {
+        /*console.info(longterm._id);
+        console.info(longterm.long_term._id + ' sous');*/
+        if (map.getBounds().contains({
+            lat: longterm.long_term.lat,
+            lng: longterm.long_term.lon
+          })) {
+          /*console.info(longterm._id + 'is contained');
+          console.info(longterm.long_term._id + ' sous contained');*/
+          if ((printed == 'all') || (printed == 'lts')) {
+            if (page == 'landing') {
+              if (age_printed == 'kids') {
+                if ($("[id='"+longterm.long_term._id+"']").attr('adult') == 'true') {
+                  $("[id='"+longterm.long_term._id+"']").addClass('hidden');
+                  console.info(JSON.stringify($("[id='"+longterm.long_term._id+"']").type) + ' hide');
+                } else {
+                  $("[id='"+longterm.long_term._id+"']").removeClass('hidden');
+                  console.info(longterm.long_term._id + ' show');
+                }
+              } else {
+                $("[id='"+longterm.long_term._id+"']").removeClass('hidden');
+                console.info(longterm.long_term._id + ' show');
+              }
+            } else {
+              $("[id='"+longterm.long_term._id+"']").removeClass('hidden');
+              console.info(longterm.long_term._id + ' show');
+            }
+          } else {
+            $("[id='"+longterm.long_term._id+"']").addClass('hidden');
+            console.info(JSON.stringify($("[id='"+longterm.long_term._id+"']").type) + ' hide');
+          }
+        } else {
+          $("[id='"+longterm.long_term._id+"']").addClass('hidden');
+          console.info(JSON.stringify($('#' + longterm.long_term._id).type) + ' hide');
+        }
+      });
+    };
   };
-
-
 }
