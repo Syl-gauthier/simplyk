@@ -159,10 +159,13 @@ block content
           h4 L'organisme :
           h2= organism.org_name
           p <b>Mission:</b> #{organism.description}
-          p <b>Courriel:</b> #{organism.email}
           p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
-          if organism.phone
-            p <b>Téléphone:</b> #{organism.phone}
+          if volunteer
+            p <b>Courriel:</b> #{organism.email}
+            if organism.phone
+              p <b>Téléphone:</b> #{organism.phone}
+          else
+            a.btn.btn-default(href='/login') S'inscrire
         if (alreadySubscribed)
           .panel.panel-default
             .panel-heading
@@ -207,7 +210,7 @@ block content
                           p.text-center 0h
     .row
       .col-md-10.col-md-offset-1
-        if (!alreadySubscribed)
+        if (!alreadySubscribed && volunteer)
           input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#longterm-modal')
           .modal.fade(id='longterm-modal' tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
             .modal-dialog(role='document')
@@ -229,7 +232,7 @@ block content
                     input.btn.btn-default(type='submit' value='Oui' role='button')
     .row
       .col-md-10.col-md-offset-1
-        if (student_questions.length > 0 && student_answers.length > 0)
+        if (student_questions && student_answers && student_questions.length > 0 && student_answers.length > 0)
           div.panel.panel-default
             form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
               div.panel-heading
@@ -251,7 +254,7 @@ block content
                       else
                         h6 #{student_answers[q_I]}
                 div.submit-button
-        if (organism_questions.length > 0 && organism_answers.length > 0)
+        if (organism_questions && organism_answers && organism_questions.length > 0 && organism_answers.length > 0)
           div.panel.panel-default
             div.panel-heading
               h4 Retour de l'organisme

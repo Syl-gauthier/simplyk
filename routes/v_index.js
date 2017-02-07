@@ -189,7 +189,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
 });
 
 
-router.get('/activity/:act_id', permissions.requireGroup('volunteer'), function(req, res) {
+router.get('/activity/:act_id', function(req, res) {
   console.log('In GET to an activity page with act_id:' + req.params.act_id);
   //Find organism corresponding to the activity
   Activity.findById(req.params.act_id, function(err, activity) {
@@ -225,7 +225,7 @@ router.get('/activity/:act_id', permissions.requireGroup('volunteer'), function(
 });
 
 
-router.get('/longterm/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+router.get('/longterm/:lt_id', function(req, res) {
   console.log('In GET to a longterm page with lt_id:' + req.params.lt_id);
   let error = '';
   if (req.query.error) {
