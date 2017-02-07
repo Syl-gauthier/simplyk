@@ -430,7 +430,7 @@ function initMap() {
 
   google.maps.event.addListener(map, 'bounds_changed', filterOnLocation);
 
-
+  /* While there is not a lot of offers around the world
   // Try HTML5 geolocation.
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
@@ -454,7 +454,7 @@ function initMap() {
     infoWindow.setContent(browserHasGeolocation ?
       'Error: The Geolocation service failed.' :
       'Error: Your browser doesn\'t support geolocation.');
-  }
+  }*/
 
   $('#acts_filter').click(function() {
     acts_checked = !acts_checked;
