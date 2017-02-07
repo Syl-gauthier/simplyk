@@ -115,6 +115,8 @@ function initMap() {
     };
   };
 
+
+
   function generateMarkers(map, mks) {
     //Generate markers
     //infowindows = [];
@@ -286,14 +288,17 @@ function initMap() {
   const mapDiv = document.getElementById('map');
   const map = new google.maps.Map(mapDiv, {
     center: {
-      lat: 45 /*.503*/ ,
-      lng: -73 /*.613*/
+      lat: 45.503,
+      lng: -73.613
     },
     zoom: 12,
     scrollwheel: scrollable,
     streetViewControl: false,
     mapTypeControl: false,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    zoomControlOptions: {
+      position: google.maps.ControlPosition.RIGHT_TOP
+    }
   });
   const options = {
     gridSize: 50,
@@ -301,6 +306,36 @@ function initMap() {
     minimumClusterSize: 15,
     imagePath: '/images/m'
   };
+
+
+
+  function filterByAge(map) {
+    age_checked = !age_checked;
+    if (age_checked) {
+      $('#age_check').removeClass('fa-square-o');
+      $('#age_check').addClass('fa-check-square-o');
+    } else {
+      $('#age_check').removeClass('fa-check-square-o');
+      $('#age_check').addClass('fa-square-o');
+    }
+    if (age_printed == 'all') {
+      $("[adult='true']").addClass('hidden');
+      setMapOnAll('adults', null);
+      age_printed = 'kids';
+    } else {
+      if (printed == 'all') {
+        $("[adult='true']").removeClass('hidden');
+      } else if (printed == 'acts') {
+        $("[adult='true'][opp_type='activity']").removeClass('hidden');
+      } else if (printed == 'lts') {
+        $("[adult='true'][opp_type='longterm']").removeClass('hidden');
+      }
+      setMapOnAll('adults', map);
+      age_printed = 'all';
+    }
+  }
+
+
   // Create legend
   const legend = document.createElement('div');
   legend.id = 'legend';
@@ -316,7 +351,7 @@ function initMap() {
   const localization_bar_div = document.createElement('div');
   localization_bar_div.id = 'localization_bar_div';
   let loc_bar_content = [];
-  loc_bar_content.push('<form class="form-inline">');
+  loc_bar_content.push('<form class="form-inline" style="margin-top:10px;"">');
   loc_bar_content.push('<input id="address_field" class="form-control" placeholder="Chercher une adresse">');
   loc_bar_content.push('<a id="loc_submit" class="btn btn-default"><i class="fa fa-search"></i></a>');
   loc_bar_content.push('</form>');
@@ -326,8 +361,74 @@ function initMap() {
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(localization_bar_div);
   markers = generateMarkers(map, markers);
   if (page == 'landing') {
-    filter_by_age();
+    filterByAge(map);
   };
+
+
+
+  //MARKERS FILTERING ON MAP MOUVEMENT
+
+  function filterOnLocation() {
+    acts.map(activity => {
+      console.info(activity.lat);
+      if (map.getBounds().contains({
+          lat: activity.lat,
+          lng: activity.lon
+        })) {
+        if ((printed == 'all') || (printed == 'acts')) {
+          if (page == 'landing') {
+            if (age_printed == 'kids') {
+              if ($("[id='" + activity._id + "']").attr('adult') == 'true') {
+                $("[id='" + activity._id + "']").addClass('hidden');
+              } else {
+                $("[id='" + activity._id + "']").removeClass('hidden');
+              }
+            } else {
+              $("[id='" + activity._id + "']").removeClass('hidden');
+            }
+          } else {
+            $("[id='" + activity._id + "']").removeClass('hidden');
+          }
+        } else {
+          $("[id='" + activity._id + "']").addClass('hidden');
+        }
+      } else {
+        $("[id='" + activity._id + "']").addClass('hidden');
+      }
+    });
+    lts.map(longterm => {
+      /*console.info(longterm._id);
+      console.info(longterm.long_term._id + ' sous');*/
+      if (map.getBounds().contains({
+          lat: longterm.long_term.lat,
+          lng: longterm.long_term.lon
+        })) {
+        /*console.info(longterm._id + 'is contained');
+        console.info(longterm.long_term._id + ' sous contained');*/
+        if ((printed == 'all') || (printed == 'lts')) {
+          if (page == 'landing') {
+            if (age_printed == 'kids') {
+              if ($("[id='" + longterm.long_term._id + "']").attr('adult') == 'true') {
+                $("[id='" + longterm.long_term._id + "']").addClass('hidden');
+              } else {
+                $("[id='" + longterm.long_term._id + "']").removeClass('hidden');
+              }
+            } else {
+              $("[id='" + longterm.long_term._id + "']").removeClass('hidden');
+            }
+          } else {
+            $("[id='" + longterm.long_term._id + "']").removeClass('hidden');
+          }
+        } else {
+          $("[id='" + longterm.long_term._id + "']").addClass('hidden');
+        }
+      } else {
+        $("[id='" + longterm.long_term._id + "']").addClass('hidden');
+      }
+    });
+  };
+
+  google.maps.event.addListener(map, 'bounds_changed', filterOnLocation);
 
 
   // Try HTML5 geolocation.
@@ -373,15 +474,18 @@ function initMap() {
         }
         setMapOnAll('acts', map);
         printed = 'all';
+        filterOnLocation();
       } else {
         if (acts_checked) {
           $("[opp_type='longterm']").addClass('hidden');
           setMapOnAll('lts', null);
           printed = 'acts';
+          filterOnLocation();
         } else {
           $("[opp_type='activity']").addClass('hidden');
           setMapOnAll('acts', null);
           printed = 'lts';
+          filterOnLocation();
         }
       }
     } else {
@@ -392,6 +496,7 @@ function initMap() {
       }
       setMapOnAll('lts', map);
       printed = 'all';
+      filterOnLocation();
     }
   });
   $('#lts_filter').click(function() {
@@ -412,15 +517,18 @@ function initMap() {
         }
         setMapOnAll('lts', map);
         printed = 'all';
+        filterOnLocation();
       } else {
         if (lts_checked) {
           $("[opp_type='activity']").addClass('hidden');
           setMapOnAll('acts', null);
           printed = 'lts';
+          filterOnLocation();
         } else {
           $("[opp_type='longterm']").addClass('hidden');
           setMapOnAll('lts', null);
           printed = 'acts';
+          filterOnLocation();
         }
       }
     } else {
@@ -431,36 +539,12 @@ function initMap() {
       }
       setMapOnAll('acts', map);
       printed = 'all';
+      filterOnLocation();
     }
   });
-
-  function filter_by_age() {
-    age_checked = !age_checked;
-    if (age_checked) {
-      $('#age_check').removeClass('fa-square-o');
-      $('#age_check').addClass('fa-check-square-o');
-    } else {
-      $('#age_check').removeClass('fa-check-square-o');
-      $('#age_check').addClass('fa-square-o');
-    }
-    if (age_printed == 'all') {
-      $("[adult='true']").addClass('hidden');
-      setMapOnAll('adults', null);
-      age_printed = 'kids';
-    } else {
-      if (printed == 'all') {
-        $("[adult='true']").removeClass('hidden');
-      } else if (printed == 'acts') {
-        $("[adult='true'][opp_type='activity']").removeClass('hidden');
-      } else if (printed == 'lts') {
-        $("[adult='true'][opp_type='longterm']").removeClass('hidden');
-      }
-      setMapOnAll('adults', map);
-      age_printed = 'all';
-    }
-  }
   $('#age_filter').click(function() {
-    filter_by_age();
+    filterByAge(map);
+    filterOnLocation();
   });
 
   google.maps.event.addListenerOnce(map, 'tilesloaded', initAutocomplete);
@@ -516,6 +600,14 @@ function initMap() {
       geocodeAddress(geocoder, map);
     });
 
+    $('#address_field').on('keyup keypress', function(e) {
+      var keyCode = e.keyCode || e.which;
+      if (keyCode === 13) {
+        e.preventDefault();
+        geocodeAddress(geocoder, map);
+      }
+    });
+
     function geocodeAddress(geocoder, resultsMap) {
       var address = document.getElementById('address_field').value;
       geocoder.geocode({
@@ -529,80 +621,5 @@ function initMap() {
         }
       });
     }
-
-    $('#address').on('focusout', function() {
-      console.log('GET OUT !')
-      window.setTimeout(testAddress(), 1000);
-    });
-
-    //MARKERS FILTERING ON MAP MOUVEMENT
-
-    google.maps.event.addListener(map, 'bounds_changed', filterOnMouvement);
-
-    function filterOnMouvement() {
-      acts.map(activity => {
-        console.info(activity.lat);
-        if (map.getBounds().contains({
-            lat: activity.lat,
-            lng: activity.lon
-          })) {
-          if ((printed == 'all') || (printed == 'acts')) {
-            if (page == 'landing') {
-              if (age_printed == 'kids') {
-                if ($("[id='"+activity._id+"']").attr('adult') == 'true') {
-                  $("[id='"+activity._id+"']").addClass('hidden');
-                } else {
-                  $("[id='"+activity._id+"']").removeClass('hidden');
-                }
-              } else {
-                $("[id='"+activity._id+"']").removeClass('hidden');
-              }
-            } else {
-              $("[id='"+activity._id+"']").removeClass('hidden');
-            }
-          } else {
-            $("[id='"+activity._id+"']").addClass('hidden');
-          }
-        } else {
-          $("[id='"+activity._id+"']").addClass('hidden');
-        }
-      });
-      lts.map(longterm => {
-        /*console.info(longterm._id);
-        console.info(longterm.long_term._id + ' sous');*/
-        if (map.getBounds().contains({
-            lat: longterm.long_term.lat,
-            lng: longterm.long_term.lon
-          })) {
-          /*console.info(longterm._id + 'is contained');
-          console.info(longterm.long_term._id + ' sous contained');*/
-          if ((printed == 'all') || (printed == 'lts')) {
-            if (page == 'landing') {
-              if (age_printed == 'kids') {
-                if ($("[id='"+longterm.long_term._id+"']").attr('adult') == 'true') {
-                  $("[id='"+longterm.long_term._id+"']").addClass('hidden');
-                  console.info(JSON.stringify($("[id='"+longterm.long_term._id+"']").type) + ' hide');
-                } else {
-                  $("[id='"+longterm.long_term._id+"']").removeClass('hidden');
-                  console.info(longterm.long_term._id + ' show');
-                }
-              } else {
-                $("[id='"+longterm.long_term._id+"']").removeClass('hidden');
-                console.info(longterm.long_term._id + ' show');
-              }
-            } else {
-              $("[id='"+longterm.long_term._id+"']").removeClass('hidden');
-              console.info(longterm.long_term._id + ' show');
-            }
-          } else {
-            $("[id='"+longterm.long_term._id+"']").addClass('hidden');
-            console.info(JSON.stringify($("[id='"+longterm.long_term._id+"']").type) + ' hide');
-          }
-        } else {
-          $("[id='"+longterm.long_term._id+"']").addClass('hidden');
-          console.info(JSON.stringify($('#' + longterm.long_term._id).type) + ' hide');
-        }
-      });
-    };
   };
 }

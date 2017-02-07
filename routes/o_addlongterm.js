@@ -6,7 +6,7 @@ var gmaps = require('../middlewares/gmaps.js');
 var sloter = require('../lib/slot.js');
 var Intercom = require('intercom-client');
 var client = new Intercom.Client({
-  token: process.env.INTERCOM_TOKEN
+	token: process.env.INTERCOM_TOKEN
 });
 
 var permissions = require('../middlewares/permissions.js');
@@ -86,7 +86,9 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 						}
 					});
 					req.session.organism = organism;
-					res.redirect('/organism/dashboard');
+					req.session.save(function() {
+						res.redirect('/organism/dashboard');
+					});
 				}
 			});
 		}
