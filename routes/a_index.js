@@ -39,9 +39,6 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
     } else {
       let classes_array = [];
       classes_array = JSON.parse(JSON.stringify(req.session.admin.classes));
-      if (req.session.admin.type == 'school-coordinator') {
-        classes_array.push('Sans classe');
-      }
       console.log('Classes array : ' + JSON.stringify(classes_array));
 
       //Determine student status

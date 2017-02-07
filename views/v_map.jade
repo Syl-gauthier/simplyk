@@ -43,7 +43,8 @@ block content
                 p <b>Adresse : </b> #{act.address}
             .modal-footer
               button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-              a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act._id) Plus d'infos
+              if volunteer
+                a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act._id) Plus d'infos
   each lt, index in longterms
     div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id, id=lt.long_term._id)
       .modal-dialog(role='document')
@@ -60,7 +61,8 @@ block content
               p <b>Âge minimal : </b> #{lt.long_term.min_age}
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-            a.subscribe-button-longterm.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id, href='/longterm/'+lt.long_term._id) Plus d'infos
+            if volunteer
+              a.subscribe-button-longterm.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id, href='/longterm/'+lt.long_term._id) Plus d'infos
   if (typeof the_favo !== 'undefined') && the_favo.days
     div(tabindex='-1', role='dialog', class='modal fade ' + the_favo._id, id=the_favo._id)
       .modal-dialog(role='document')
@@ -94,7 +96,8 @@ block content
               p <b>Adresse : </b> #{the_favo.address}
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-            a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = the_favo._id, href='/activity/'+the_favo._id) Plus d'infos
+            if volunteer
+              a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = the_favo._id, href='/activity/'+the_favo._id) Plus d'infos
   .container-fluid
     .row.fill
       .col-sm-4.col-xs-12#map-left
