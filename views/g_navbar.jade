@@ -70,13 +70,23 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                   span.caret
                 ul.dropdown-menu#drop-down-but
                   li
-                    a.toggle-but(href='/admin/listorganisms') Organismes
+                    a.toggle-but(href='/listorganisms') Liste des organismes
           li(role='presentation')
             form.navbar-form( method='post', action='/logout')
               button.btn.btn-default(type='submit') Déconnexion
         else
           li.navbar-link(role='presentation')
             a(href='register_organism') Je cherche des bénévoles !
+          li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                  span.caret
+                ul.dropdown-menu#drop-down-bu
+                  li
+                    a.toggle-but(href='/listorganisms') Liste des organismes
+                  li
+                    a.toggle-but(href='/contact') Contactez-nous
           li(role='presentation')
             form.navbar-form
               li.dropdown

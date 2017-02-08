@@ -7,6 +7,10 @@ router.get('/listorganisms', function(req, res) {
 	Organism.find({
 		"school_id": {
 			$exists: false
+		},
+		"validation": true,
+		"cause": {
+			$exists: true
 		}
 	}, function(err, organisms) {
 		if (err) {
@@ -26,6 +30,14 @@ router.get('/listorganisms', function(req, res) {
 			});
 		}
 	})
+});
+
+router.get('/contact', function(req, res) {
+	res.render('g_contact.jade', {
+		session: req.session,
+		admin: req.session.admin,
+		group: req.session.group
+	});
 });
 
 module.exports = router;

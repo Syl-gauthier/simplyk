@@ -354,27 +354,6 @@ router.post('/admin/deny', permissions.requireGroup('admin'), function(req, res,
   })
 });
 
-router.get('/admin/listorganisms', permissions.requireGroup('admin'), function(req, res, next) {
-  Organism.find(function(err, organisms) {
-    if (err) {
-      console.error('There is an error to access /listorganisms and get all the oragnisms, the error is : ' + err);
-      res.render('a_listorganisms.jade', {
-        error: err,
-        session: req.session,
-        admin: req.session.admin,
-        group: req.session.group
-      });
-    } else {
-      res.render('a_listorganisms.jade', {
-        organisms: organisms,
-        session: req.session,
-        admin: req.session.admin,
-        group: req.session.group
-      });
-    }
-  })
-});
-
 router.get('/admin/profile', permissions.requireGroup('admin'), function(req, res) {
   console.info('Begin get /profile')
   res.render('a_profile.jade', {
