@@ -329,7 +329,7 @@ router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('
                 };
               });
               const content = {
-                recipient: /*new_organism.email*/ 'thibaut.jaurou@gmail.com',
+                recipient: new_organism.email,
                 activity_name: lt_name,
                 name: new_organism.org_name,
                 customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est désinscrit de votre engagement ' + lt_name + ' !'
