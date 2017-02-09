@@ -55,6 +55,17 @@ block share
        js.src = "//connect.facebook.net/fr_FR/sdk.js";
        fjs.parentNode.insertBefore(js, fjs);
      }(document, 'script', 'facebook-jssdk'));
+
+  meta(property='og:type', content='website')
+  meta(property='og:title', content='Bénévolat avec ' + organism.org_name)
+  meta(property='og:description', content='Viens faire du bénévolat chez ' + organism.org_name + ' pour ' + activity.event_intitule +'. Simplyk est la plateforme de bénévolat de référence à Montréal. Des opportunités de bénévolat pour tous les goûts y sont visibles !')
+  meta(property='og:image', content='http://platform.simplyk.org/images/carte.png')
+
+  //meta pour twitter et l'open graphe
+  meta(property='twitter:card', content='content=app')
+  meta(property='twitter:title', content='Des opportunités de bénévolat à portée de main à Montréal')
+  meta(property='twitter:description', content='Viens faire du bénévolat chez ' + organism.org_name + ' pour ' + activity.event_intitule +'. Simplyk est la plateforme de bénévolat de référence à Montréal. Des opportunités de bénévolat pour tous les goûts y sont visibles !')
+  meta(property='twitter:image', content='http://platform.simplyk.org/images/carte.png')
 block content
   .container-fluid
     .row
