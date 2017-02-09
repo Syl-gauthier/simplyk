@@ -25,7 +25,7 @@ block share
         console.info('bitly : ' + JSON.stringify(datas));
         if(datas.status_code < 400){
           $('#propose').click(function(){
-            $(this).parent().html("<a class='btn' id='messenger' style='background-color: #3B5998; color:white;'><i class='fa fa-facebook'></i>Par Messenger</a><p> Ou partage ce lien : </p><input type='text' id='link_to_share'></input>");
+            $(this).parent().html("<div class='alert alert-info text-center'><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> Par Messenger</a><p> Ou partage ce lien : </p><input type='text' id='link_to_share'></input></div>");
             console.info('We are in the status_code OK !');
             $('#link_to_share').val(datas.data.url);
             $('#messenger').click(function(){
@@ -127,15 +127,15 @@ block content
             p <b>Courriel:</b> #{organism.email}
             if organism.phone
               p <b>Téléphone:</b> #{organism.phone}
-            .row(style='margin-top: 10px;')
+            div(style='margin-top: 10px;')
               a.btn.btn-warning#propose Proposer à des amis
           else
-            .row
+            div
               a.btn.btn-default(href='/login') Se connecter
               p.inline  ou 
               a(href='/register_volunteer')  Créer un compte
-            .row(style='margin-top: 10px;')
-              a.btn.btn-warning Proposer à des amis
+            div(style='margin-top: 10px;')
+              a.btn.btn-warning#propose Proposer à des amis
 
 block footscript
   script(type="text/javascript").
