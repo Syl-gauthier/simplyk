@@ -217,6 +217,11 @@ body{
 	border-bottom: 1px solid #bbb;
 }
 
+.fullscreen-section {
+	min-height: calc(100vh - 50px);
+	border-bottom: 1px solid #bbb;
+}
+
 .section-div{
 	height: 100%;
 }
@@ -227,6 +232,35 @@ body{
 
 #age-section{
 	background-color: #FF4F3C;
+}
+
+#mission-section{
+	background-color: #4EBDC7;
+}
+
+#values-section{
+	background-color: #FF4F3C;
+}
+
+#team-section{
+	background-color: #5BCF8F;
+}
+
+#partners-section{
+	background-color: #F1F5FF;
+}
+
+.section__title h1{
+	color: white;
+	font-weight: 300;
+	letter-spacing: 10px;
+	font-size: 10vh;
+}
+
+.presentation__text {
+	color: white;
+	font-weight: 300;
+	letter-spacing: 10px;
 }
 
 .section__sentence{
@@ -348,6 +382,19 @@ body{
 
 .btn-filter.i {
 	padding-left: 0px;
+}
+
+.panel-profile .panel-heading{
+	height: 150px;
+	background-size: cover;
+}
+
+.img-portrait{
+	border-radius: 100%;
+	border: 3px solid white;
+	margin-top: -70px;
+	height: 100px;
+	width: auto;
 }
 
 .firstColor{

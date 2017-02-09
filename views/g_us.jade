@@ -1,0 +1,100 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'us'
+  
+block head
+  title À propos de Simplyk
+  meta(name='description', content='Simplyk: à propos')
+block content
+      .container-fluid
+        .row.fullscreen-section#mission-section
+          .section__title
+            h1.text-center Mission
+        .row.fullscreen-section#values-section
+          .section__title
+            h1.text-center Valeurs
+        .row.fullscreen-section#team-section
+          .section__title
+            h1.text-center L'équipe
+          .row
+            .col-xs-10.col-xs-offset-1
+              .row.presentation__text
+                h3.text-center Une équipe de feu pour un projet solidaire
+              .row(style='margin-top: 10vh;')
+                .col-md-3.col-xs-6
+                  .panel.panel-default.panel-profile
+                    .panel-heading
+                      a.pull-right(href='https://www.linkedin.com/in/francoisdekerret/' target="_blank")
+                        i.fa.fa-linkedin
+                      h3.text-center François
+                    .panel-body.text-center
+                      img(src='images/francois.jpg').img-responsive.center-block.img-portrait
+                      .caption
+                        p
+                        p CEO, <small>Co-fondateur</small>
+                .col-md-3.col-xs-6
+                  .panel.panel-default.panel-profile
+                    .panel-heading
+                      a.pull-right(href='https://www.linkedin.com/in/thibaut-jaurou/' target="_blank")
+                        i.fa.fa-linkedin
+                      h3.text-center Thibaut
+                    .panel-body.text-center
+                      img(src='images/thibaut.jpg').img-responsive.center-block.img-portrait
+                      .caption
+                        p
+                        p CTO, <small>Co-fondateur</small>
+                .col-md-3.col-xs-6
+                  .panel.panel-default.panel-profile
+                    .panel-heading
+                      a.pull-right(href='https://www.linkedin.com/in/nolwendesire/' target="_blank")
+                        i.fa.fa-linkedin
+                      h3.text-center Nolwen
+                    .panel-body.text-center
+                      img(src='https://media.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAAX-AAAAJGVlZWUxZjdjLTI5ODAtNDgzZS05ZWU2LWQ3MGRmZjg0NmVhNQ.jpg').img-responsive.center-block.img-portrait
+                      .caption
+                        p  
+                        p Responsable communauté
+                .col-md-3.col-xs-6
+                  .panel.panel-default.panel-profile
+                    .panel-heading
+                      a.pull-right(href='https://www.linkedin.com/in/ali-zniber-16467987/' target="_blank")
+                        i.fa.fa-linkedin
+                      h3.text-center Ali
+                    .panel-body.text-center
+                      img(src='https://media.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAAifAAAAJGRjMGM1MTE1LTc3ZjUtNDc4OC1hMzQxLTI2YjMzYWZiNWM0MA.jpg').img-responsive.center-block.img-portrait
+                      .caption
+                        p  
+                        p Responsable organismes
+        .row.fullscreen-section#partners-section
+          .section__title
+            h1.text-center(style='color: black') Partenaires
+          .row
+            .col-xs-10.col-xs-offset-1
+              .row.presentation__text
+                h3.text-center(style='color: black') D'importants partenaires dans le milieu entrepreunarial et communautaire
+              .row(style='margin-top: 15vh;')
+                .col-md-3.col-xs-6
+                  a(href='http://d3center.ca/en/home/')
+                    img.center-block(src='http://d3center.ca/wp-content/uploads/2016/08/D3-logo-print-nowords.png', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
+                .col-md-3.col-xs-6
+                  a(href='https://www.facebook.com/NOVA.HEC.MTL/')
+                    img.center-block(src='https://scontent.fyhu1-1.fna.fbcdn.net/v/t1.0-9/11248879_905913282832720_5434240178862469539_n.png?oh=4e0c2ee4d947892ce437c15046cfc846&oe=5945E769', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
+                .col-md-3.col-xs-6
+                  a(href='http://www.cabm.net/')
+                    img.center-block(src='https://www.arrondissement.com/userImgs/directory/logos/260x140/47073.jpg', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
+                .col-md-3.col-xs-6
+                  a(href='https://mobilisonslocal.ca/')
+                    img.center-block(src='http://veilleaction.org/images/Mobilisons_Local.PNG', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
+              .row(style='margin-top: 10vh;')
+                .col-md-3.col-xs-6
+                  a(href='http://entrepreneuriat.poly-udem.ca/')
+                    img.center-block(src='http://entrepreneuriat.poly-udem.ca/profiles/minimal/themes/custom/lexus/logo.png', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
+                .col-md-3.col-xs-6
+                  a(href='http://matv.ca/montreal')
+                    img.center-block(src='http://matv.ca/bundles/vox/images/logo-vox-ma-tv.png', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
+                .col-md-3.col-xs-6
+                  a(href='http://cjestlaurent.org/')
+                    img.center-block(src='http://cjestlaurent.org/wp-content/uploads/2016/04/Logo_CJE_hori.png', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
+                .col-md-3.col-xs-6
+                  a(href='http://www.esplanademtl.org/')
+                    img.center-block(src='http://www.esplanademtl.org/wp-content/uploads/2015/10/logo-_esplanade-e1472753730414.jpg', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')

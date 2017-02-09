@@ -40,4 +40,12 @@ router.get('/contact', function(req, res) {
 	});
 });
 
+router.get('/us', function(req, res) {
+	res.render('g_us.jade', {
+		session: req.session,
+		admin: req.session.admin,
+		group: req.session.group
+	});
+});
+
 module.exports = router;

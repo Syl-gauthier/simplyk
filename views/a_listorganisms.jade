@@ -25,17 +25,16 @@ block content
                               .panel-heading
                                 h3.text-center= org.org_name
                               .panel-body.text-center
-                                .img-responsive.center-block.img-portrait
-                                  if (org.cause==='Sport et Culture')
-                                    i.fa.fa-institution.fa-lg.fa-fw.cult(style= "color:#{org.color}") 
-                                  else if (org.cause === 'Nature')
-                                    i.fa.fa-envira.fa-lg.fa-fw.leaf(style= "color:#{org.color}") 
-                                  else if (org.cause === 'Solidarité')
-                                    i.fa.fa-heart.fa-lg.fa-fw.soli(style= "color:#{org.color}") 
-                                  else if (org.cause === 'Enfance')
-                                    i.fa.fa-child.fa-lg.fa-fw.child(style= "color:#{org.color}") 
-                                  else
-                                    i.icon.icon-puzzle-piece(style= "color:#{org.color}") 
+                                if (org.cause==='Sport et Culture')
+                                  i.fa.fa-institution.fa-lg.fa-fw.cult(style= "color:#{org.color}") 
+                                else if (org.cause === 'Nature')
+                                  i.fa.fa-envira.fa-lg.fa-fw.leaf(style= "color:#{org.color}") 
+                                else if (org.cause === 'Solidarité')
+                                  i.fa.fa-heart.fa-lg.fa-fw.soli(style= "color:#{org.color}") 
+                                else if (org.cause === 'Enfance')
+                                  i.fa.fa-child.fa-lg.fa-fw.child(style= "color:#{org.color}") 
+                                else
+                                  i.icon.icon-puzzle-piece(style= "color:#{org.color}") 
                                 .caption
                                   h4= org.cause
                                   p= org.description
