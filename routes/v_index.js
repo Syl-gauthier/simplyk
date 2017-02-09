@@ -191,121 +191,128 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
 
 router.get('/activity/:act_id', function(req, res) {
   console.log('In GET to an activity page with act_id:' + req.params.act_id);
-  //Find organism corresponding to the activity
-  Activity.findById(req.params.act_id, function(err, activity) {
-    Organism.find({
-      "events.activities": req.params.act_id
-    }, function(err, organism) {
-      if (err) {
-        console.log(err);
-        res.redirect('/volunteer/map?error=' + err);
-      } else {
-        function isRightEvent(event) {
-          return event.activities.indexOf(req.params.act_id) >= 0;
-        };
+  if (req.session.volunteer) {
+    //Find organism corresponding to the activity
+    Activity.findById(req.params.act_id, function(err, activity) {
+      Organism.find({
+        "events.activities": req.params.act_id
+      }, function(err, organism) {
+        if (err) {
+          console.log(err);
+          res.redirect('/volunteer/map?error=' + err);
+        } else {
+          function isRightEvent(event) {
+            return event.activities.indexOf(req.params.act_id) >= 0;
+          };
 
-        var event_filtered = organism[0].events.filter(isRightEvent);
-        console.log('+++++++++++++++++++++');
-        console.log('Event find in organism corresponding to act : ' + event_filtered)
-        console.log('+++++++++++++++++++++');
-        console.log('Activity : ' + activity);
-        res.render('v_activity.jade', {
-          session: req.session,
-          act_id: req.params.act_id,
-          event: event_filtered,
-          organism: organism[0],
-          activity: activity,
-          volunteer: req.session.volunteer,
-          group: req.session.group
-        });
-        res.end();
-      }
+          var event_filtered = organism[0].events.filter(isRightEvent);
+          console.log('+++++++++++++++++++++');
+          console.log('Event find in organism corresponding to act : ' + event_filtered)
+          console.log('+++++++++++++++++++++');
+          console.log('Activity : ' + activity);
+          res.render('v_activity.jade', {
+            session: req.session,
+            act_id: req.params.act_id,
+            event: event_filtered,
+            organism: organism[0],
+            activity: activity,
+            volunteer: req.session.volunteer,
+            group: req.session.group
+          });
+        }
+      });
     });
-  });
+  } else {
+    res.redirect('/all/activity/' + req.params.act_id);
+  }
 });
 
 
 router.get('/longterm/:lt_id', function(req, res) {
   console.log('In GET to a longterm page with lt_id:' + req.params.lt_id);
-  let error = '';
-  if (req.query.error) {
-    error = req.query.error;
-  }
-  //Find organism corresponding to the activity
-  Organism.findOne({
-    "long_terms": {
-      "$elemMatch": {
-        "_id": req.params.lt_id
-      }
+  if (req.session.volunteer) {
+
+    let error = '';
+    if (req.query.error) {
+      error = req.query.error;
     }
-  }, function(err, organism) {
-    if (err) {
-      console.log(err);
-      res.redirect('/volunteer/map?error=' + err);
-    } else {
-      console.log('Organism from longterm : ' + organism);
-
-      function isRightLongterm(long) {
-        console.log('long._id == req.params.lt_id : ' + (long._id.toString() == req.params.lt_id.toString()) + long._id + '  ' + req.params.lt_id)
-        return long._id.toString() == req.params.lt_id.toString();
-      };
-      var longterm = organism.long_terms.find(isRightLongterm);
-      console.log('+++++++++++++++++++++');
-      console.log('Longterm found in organism corresponding to lt_id : ' + longterm)
-      console.log('+++++++++++++++++++++');
-      var slotJSON = rewindSlotString(longterm.slot);
-      const alreadySubscribed = longterm.applicants.find(function(app) {
-        return app.toString() == req.session.volunteer._id.toString();
-      });
-      const long_term_in_volunteer = req.session.volunteer.long_terms.find(function(lt) {
-        console.log('longterm._id : ' + longterm._id);
-        console.log('lt._id : ' + lt._id);
-        return longterm._id.toString() == lt._id.toString()
-      });
-
-      let student_questions = {};
-      let organism_questions = {};
-      let student_answers = {};
-      let organism_answers = {};
-      let status = '';
-      console.log('long_term_in_volunteer : ' + long_term_in_volunteer);
-      if (long_term_in_volunteer) {
-        var hours_pending = long_term_in_volunteer.hours_pending;
-        var hours_done = long_term_in_volunteer.hours_done;
-        console.log('hours_done : ' + hours_done);
-        console.log('hours_pending : ' + hours_pending);
-        if (long_term_in_volunteer.student_answers) {
-          student_questions = long_term_in_volunteer.student_questions;
-          student_answers = long_term_in_volunteer.student_answers;
-          organism_answers = long_term_in_volunteer.organism_answers;
-          organism_questions = long_term_in_volunteer.organism_questions;
-          status = long_term_in_volunteer.status;
+    //Find organism corresponding to the activity
+    Organism.findOne({
+      "long_terms": {
+        "$elemMatch": {
+          "_id": req.params.lt_id
         }
+      }
+    }, function(err, organism) {
+      if (err) {
+        console.log(err);
+        res.redirect('/volunteer/map?error=' + err);
       } else {
-        var hours_pending = null;
-        var hours_done = null;
-      };
-      res.render('v_longterm.jade', {
-        session: req.session,
-        lt_id: req.params.lt_id,
-        organism: organism,
-        longterm: longterm,
-        volunteer: req.session.volunteer,
-        slotJSON: slotJSON,
-        alreadySubscribed: alreadySubscribed,
-        hours_done: hours_done,
-        hours_pending: hours_pending,
-        group: req.session.group,
-        student_answers,
-        student_questions,
-        organism_questions,
-        organism_answers,
-        status,
-        error
-      });
-      res.end();
-    }
-  });
+        console.log('Organism from longterm : ' + organism);
+
+        function isRightLongterm(long) {
+          console.log('long._id == req.params.lt_id : ' + (long._id.toString() == req.params.lt_id.toString()) + long._id + '  ' + req.params.lt_id)
+          return long._id.toString() == req.params.lt_id.toString();
+        };
+        var longterm = organism.long_terms.find(isRightLongterm);
+        console.log('+++++++++++++++++++++');
+        console.log('Longterm found in organism corresponding to lt_id : ' + longterm)
+        console.log('+++++++++++++++++++++');
+        var slotJSON = rewindSlotString(longterm.slot);
+        const alreadySubscribed = longterm.applicants.find(function(app) {
+          return app.toString() == req.session.volunteer._id.toString();
+        });
+        const long_term_in_volunteer = req.session.volunteer.long_terms.find(function(lt) {
+          console.log('longterm._id : ' + longterm._id);
+          console.log('lt._id : ' + lt._id);
+          return longterm._id.toString() == lt._id.toString()
+        });
+
+        let student_questions = {};
+        let organism_questions = {};
+        let student_answers = {};
+        let organism_answers = {};
+        let status = '';
+        console.log('long_term_in_volunteer : ' + long_term_in_volunteer);
+        if (long_term_in_volunteer) {
+          var hours_pending = long_term_in_volunteer.hours_pending;
+          var hours_done = long_term_in_volunteer.hours_done;
+          console.log('hours_done : ' + hours_done);
+          console.log('hours_pending : ' + hours_pending);
+          if (long_term_in_volunteer.student_answers) {
+            student_questions = long_term_in_volunteer.student_questions;
+            student_answers = long_term_in_volunteer.student_answers;
+            organism_answers = long_term_in_volunteer.organism_answers;
+            organism_questions = long_term_in_volunteer.organism_questions;
+            status = long_term_in_volunteer.status;
+          }
+        } else {
+          var hours_pending = null;
+          var hours_done = null;
+        };
+        res.render('v_longterm.jade', {
+          session: req.session,
+          lt_id: req.params.lt_id,
+          organism: organism,
+          longterm: longterm,
+          volunteer: req.session.volunteer,
+          slotJSON: slotJSON,
+          alreadySubscribed: alreadySubscribed,
+          hours_done: hours_done,
+          hours_pending: hours_pending,
+          group: req.session.group,
+          student_answers,
+          student_questions,
+          organism_questions,
+          organism_answers,
+          status,
+          error
+        });
+      }
+    });
+  } else {
+    res.redirect('/all/longterm/' + req.params.lt_id);
+  }
 });
 
 
@@ -706,7 +713,7 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
   let e_time = {};
   let is_time_precised = true;
   start_date = moment(start_date).add(5, 'hours');
-  
+
   if (start_time) {
     s_time = moment(start_time, 'H:mm a');
   } else {
