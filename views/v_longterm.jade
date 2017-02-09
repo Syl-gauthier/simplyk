@@ -164,8 +164,15 @@ block content
             p <b>Courriel:</b> #{organism.email}
             if organism.phone
               p <b>Téléphone:</b> #{organism.phone}
+            .row(style='margin-top: 10px;')
+              a.btn.btn-warning Proposer à des amis
           else
-            a.btn.btn-default(href='/login') S'inscrire
+            .row
+              a.btn.btn-default(href='/login') Se connecter
+              p.inline  ou 
+              a(href='/register_volunteer')  Créer un compte
+            .row(style='margin-top: 10px;')
+              a.btn.btn-warning Proposer à des amis
         if (alreadySubscribed)
           .panel.panel-default
             .panel-heading

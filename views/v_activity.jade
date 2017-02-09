@@ -7,6 +7,52 @@ block vars
 block head
   title Activité de bénévolat
   meta(name='description', content='Informations sur les activités de bénévolat ')
+block share
+  script.
+    var bitly_token = '074139d6c2b2511f886ae9e554856c4ecf3ca141';
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : 1829081597379617,
+        xfbml      : true,
+        version    : 'v2.8'
+      });
+      FB.AppEvents.logPageView();
+      var url = window.location.href;
+      console.log('url : ' + url);
+      var bitly_address = 'https://api-ssl.bitly.com/v3/shorten?access_token='+bitly_token+'&longURL='+url;
+      console.log('bitly_address : ' + bitly_address);
+      $.get(bitly_address, function(datas){
+        console.info('bitly : ' + JSON.stringify(datas));
+        if(datas.status_code < 400){
+          $('#propose').click(function(){
+            $(this).parent().html("<a class='btn' id='messenger' style='background-color: #3B5998; color:white;'><i class='fa fa-facebook'></i>Par Messenger</a><p> Ou partage ce lien : </p><input type='text' id='link_to_share'></input>");
+            $('#link_to_share').val(datas.data.url);
+            $('#messenger').click(function(){
+              FB.ui({
+                method: 'send',
+                link: datas.data.url
+              }, function(response){
+                // Debug response (optional)
+                console.log(response);
+              });
+            });
+          });
+        } else {
+          $('#propose').click(function(){
+            $(this).parent().html("<div class='alert alert-warning'><p>Problème avec réseaux sociaux, néanmoins possibilité de partager directement ce lien <br> <b>Voici le lien</b> : </p><input type='text' id='link_to_share'></input></div>");
+            $('#link_to_share').val(url);
+          });
+        }
+      });
+    };
+    
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "//connect.facebook.net/fr_FR/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
 block content
   .container-fluid
     .row
@@ -68,8 +114,15 @@ block content
             p <b>Courriel:</b> #{organism.email}
             if organism.phone
               p <b>Téléphone:</b> #{organism.phone}
+            .row(style='margin-top: 10px;')
+              a.btn.btn-warning#propose Proposer à des amis
           else
-            a.btn.btn-default(href='/login') S'inscrire
+            .row
+              a.btn.btn-default(href='/login') Se connecter
+              p.inline  ou 
+              a(href='/register_volunteer')  Créer un compte
+            .row(style='margin-top: 10px;')
+              a.btn.btn-warning Proposer à des amis
 
 block footscript
   script(type="text/javascript").
@@ -82,5 +135,4 @@ block footscript
       };
     };
     $(document).ready(function(){
-      
     });
