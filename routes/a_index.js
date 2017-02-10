@@ -110,12 +110,18 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
         return 0;
       });
 
+      const hash = require('intercom-client').SecureMode.userHash({
+        secretKey: process.env.INTERCOM_SECRET_KEY,
+        identifier: req.session.admin.email
+      });
+
       res.status(200).render('a_classes.jade', {
         session: req.session,
         admin: req.session.admin,
         group: req.session.group,
         volunteers,
-        classes_array
+        classes_array,
+        hash
       });
     }
   });
@@ -169,12 +175,17 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
         return getEventWithActivityInfos(event);
       })).then(events => {
         console.log('Final events : ' + events);
+        const hash = require('intercom-client').SecureMode.userHash({
+          secretKey: process.env.INTERCOM_SECRET_KEY,
+          identifier: req.session.admin.email
+        });
         res.render('a_report.jade', {
           volunteer: volunteer,
           session: req.session,
           group: req.session.group,
           events,
-          date
+          date,
+          hash
         });
       }).catch(err => {
         console.error('ERROR : ' + err);
