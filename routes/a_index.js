@@ -182,6 +182,7 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
         res.render('a_report.jade', {
           volunteer: volunteer,
           session: req.session,
+          admin: req.session.admin,
           group: req.session.group,
           events,
           date,
