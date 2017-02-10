@@ -4,6 +4,7 @@ block vars
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
+  - function getCauseDesign(cause){if (cause=='Solidarité') {return '#00b3ff'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
 block head
   title Bénévolat long terme
   meta(name='description', content='Information sur l\'opportunité de bénévolat long terme')
@@ -68,9 +69,32 @@ block share
   meta(property='twitter:image', content='http://platform.simplyk.org/images/carte.png')
 block content
   .container-fluid
-    .row
+    .row.activity__header
       .col-md-6.col-md-offset-1
+        img(src='/images/happy_city_white.svg', align='middle', style='max-height:30vh; padding-top:3vh')
+      .col-md-4.col-md-offset-1
         .page-header
+          h4 L'organisme :
+          h2= organism.org_name
+          p <b>Mission:</b> #{organism.description}
+          p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
+          if volunteer
+            p <b>Courriel:</b> #{organism.email}
+            if organism.phone
+              p <b>Téléphone:</b> #{organism.phone}
+            div(style='margin-top: 10px;')
+              a.btn.btn-warning#propose Proposer à des amis
+          else
+            div
+              a.btn.btn-default(href='/login') Se connecter
+              p.inline  ou 
+              a(href='/register_volunteer')  Créer un compte
+            div(style='margin-top: 10px;')
+              a.btn.btn-warning#propose Proposer à des amis
+    .row.activity__background
+      .col-md-6.col-md-offset-1
+        .page-header.activity__unit
+          span.badge(style='background-color: '+getCauseDesign(organism.cause))= organism.cause
           if (alreadySubscribed)
             h1= longterm.intitule + ' '
               if status == 'denied'
@@ -213,90 +237,73 @@ block content
                           i.fa.fa-check
                         else
                           p
-      .col-md-4.col-md-offset-1
-        .page-header
-          h4 L'organisme :
-          h2= organism.org_name
-          p <b>Mission:</b> #{organism.description}
-          p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
-          if volunteer
-            p <b>Courriel:</b> #{organism.email}
-            if organism.phone
-              p <b>Téléphone:</b> #{organism.phone}
-            div(style='margin-top: 10px;')
-              a.btn.btn-warning#propose Proposer à des amis
-          else
-            div
-              a.btn.btn-default(href='/login') Se connecter
-              p.inline  ou 
-              a(href='/register_volunteer')  Créer un compte
-            div(style='margin-top: 10px;')
-              a.btn.btn-warning#propose Proposer à des amis
-        if (alreadySubscribed)
-          .panel.panel-default
-            .panel-heading
-              div.media
-                div.media-left.media-top
-                  h4 <strong>Mon engagement</strong>
-                div.media-top.media-right
-                  button.btn.longterm(data-toggle='modal' data-target='#addLTHoursModal')
-                    i.fa.fa-plus
-                    p.inline Ajouter des heures
-              #addLTHoursModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="addLTHoursModalLabel")
-                div.modal-dialog(role='document')
-                  form.modal-content.addLTHoursForm(id='addLTHoursForm'+longterm._id, method='post', action='/volunteer/LThours_pending/'+longterm._id)
+          if (!alreadySubscribed && volunteer)
+            input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#longterm-modal')
+            .modal.fade(id='longterm-modal' tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
+              .modal-dialog(role='document')
+                .modal-content
+                  form.inline(action='/volunteer/longterm/subscribe/'+longterm._id, method='post', onsubmit='return validatePhone()')
                     .modal-header
-                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                        span(aria-hidden='true')
-                        h4.modal-title Ajout d'heures
-                      div.modal-body
-                        div.form-group
-                          label(for='addLTHoursInput') Combien d'heures as-tu effectué dernièrement ?
-                          input.form-control(name='hours_pending', type='number', min=1, max=50, step=0.5 form='addLTHoursForm'+longterm._id, required)
-                      div.modal-footer
-                        a.btn.btn-default(data-dismiss='modal') Annuler
-                        input.btn.btn-warning(type='submit' form='addLTHoursForm'+longterm._id, value='Envoyer')
-            .panel-body
-              table.table(id='achievements')
-                  thead
-                    tr
-                      th.text-center Heures réalisées
-                      th.text-center Heures à confirmer
-                  tbody
-                    tr
-                      td
-                        if (hours_done)
-                          p.text-center= hours_done + 'h'
-                        else
-                          p.text-center 0h
-                      td
-                        if (hours_pending)
-                          p.text-center= hours_pending + 'h'
-                        else
-                          p.text-center 0h
-    .row
-      .col-md-10.col-md-offset-1
-        if (!alreadySubscribed && volunteer)
-          input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#longterm-modal')
-          .modal.fade(id='longterm-modal' tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
-            .modal-dialog(role='document')
-              .modal-content
-                form.inline(action='/volunteer/longterm/subscribe/'+longterm._id, method='post', onsubmit='return validatePhone()')
-                  .modal-header
-                    button.close(type='button' data-dismiss="modal" aria-label="Close")
-                      span(aria-hidden='true')&times;
-                    h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cet engagement ?
-                    if !volunteer.phone
-                      .modal-body
-                        h6 Afin que l'organisme puisse t'appeller s'il y a un changement, il est souvent préférable qu'il soit informé de ton numéro de téléphone
-                        p.alert.alert-danger.hidden(class='phone_alert') Entrer un numéro de téléphone
-                        .form-group.conn-input
-                          label.control-label Téléphone
-                          input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone')
-                  .modal-footer
-                    a.btn.btn-warning(data-dismiss='modal') Annuler
-                    input.btn.btn-default(type='submit' value='Oui' role='button')
-    .row
+                      button.close(type='button' data-dismiss="modal" aria-label="Close")
+                        span(aria-hidden='true')&times;
+                      h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cet engagement ?
+                      if !volunteer.phone
+                        .modal-body
+                          h6 Afin que l'organisme puisse t'appeller s'il y a un changement, il est souvent préférable qu'il soit informé de ton numéro de téléphone
+                          p.alert.alert-danger.hidden(class='phone_alert') Entrer un numéro de téléphone
+                          .form-group.conn-input
+                            label.control-label Téléphone
+                            input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone')
+                    .modal-footer
+                      a.btn.btn-warning(data-dismiss='modal') Annuler
+                      input.btn.btn-default(type='submit' value='Oui' role='button')
+        if ((student_questions && student_answers && student_questions.length > 0 && student_answers.length > 0) || (organism_questions && organism_answers && organism_questions.length > 0 && organism_answers.length > 0))
+          h2 Questionnaire
+      .col-md-4.col-md-offset-1
+        if (alreadySubscribed)
+          .page-header.activity__unit--no-padding
+            .panel.panel-default
+              .panel-heading
+                div.media
+                  div.media-left.media-top
+                    h4 <strong>Mon engagement</strong>
+                  div.media-top.media-right
+                    button.btn.longterm(data-toggle='modal' data-target='#addLTHoursModal')
+                      i.fa.fa-plus
+                      p.inline Ajouter des heures
+                #addLTHoursModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="addLTHoursModalLabel")
+                  div.modal-dialog(role='document')
+                    form.modal-content.addLTHoursForm(id='addLTHoursForm'+longterm._id, method='post', action='/volunteer/LThours_pending/'+longterm._id)
+                      .modal-header
+                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                          span(aria-hidden='true')
+                          h4.modal-title Ajout d'heures
+                        div.modal-body
+                          div.form-group
+                            label(for='addLTHoursInput') Combien d'heures as-tu effectué dernièrement ?
+                            input.form-control(name='hours_pending', type='number', min=1, max=50, step=0.5 form='addLTHoursForm'+longterm._id, required)
+                        div.modal-footer
+                          a.btn.btn-default(data-dismiss='modal') Annuler
+                          input.btn.btn-warning(type='submit' form='addLTHoursForm'+longterm._id, value='Envoyer')
+              .panel-body
+                table.table(id='achievements')
+                    thead
+                      tr
+                        th.text-center Heures réalisées
+                        th.text-center Heures à confirmer
+                    tbody
+                      tr
+                        td
+                          if (hours_done)
+                            p.text-center= hours_done + 'h'
+                          else
+                            p.text-center 0h
+                        td
+                          if (hours_pending)
+                            p.text-center= hours_pending + 'h'
+                          else
+                            p.text-center 0h
+    .row.background__color
       .col-md-10.col-md-offset-1
         if (student_questions && student_answers && student_questions.length > 0 && student_answers.length > 0)
           div.panel.panel-default

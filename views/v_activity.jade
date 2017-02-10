@@ -4,6 +4,7 @@ block vars
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
+  - function getCauseDesign(cause){if (cause=='Solidarité') {return '#00b3ff'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
 block head
   title Activité de bénévolat
   meta(name='description', content='Informations sur les activités de bénévolat ')
@@ -68,9 +69,31 @@ block share
   meta(property='twitter:image', content='http://platform.simplyk.org/images/carte.png')
 block content
   .container-fluid
-    .row
+    .row.activity__header
       .col-md-6.col-md-offset-1
+        img(src='/images/happy_city_white.svg', align='middle', style='max-height:30vh; padding-top:3vh')
+      .col-md-4.col-md-offset-1
         .page-header
+          h2(style='margin-top: 10%')= organism.org_name
+          p <b>Mission:</b> #{organism.description}
+          p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
+          if volunteer
+            p <b>Courriel:</b> #{organism.email}
+            if organism.phone
+              p <b>Téléphone:</b> #{organism.phone}
+            div(style='margin-top: 10px;')
+              a.btn.btn-warning#propose Proposer à des amis
+          else
+            div
+              a.btn.btn-default(href='/login') Se connecter
+              p.inline  ou 
+              a(href='/register_volunteer')  Créer un compte
+            div(style='margin-top: 10px;')
+              a.btn.btn-warning#propose Proposer à des amis
+    .row.activity__background
+      .col-md-6.col-md-offset-1
+        .page-header.activity__unit
+          span.badge(style='background-color: '+getCauseDesign(organism.cause))= organism.cause
           h1= activity.event_intitule
           p= event[0].description
           p <b>Adresse : </b> #{event[0].address} 
@@ -117,25 +140,6 @@ block content
                     else
                       h4 Passé
                   else
-      .col-md-4.col-md-offset-1
-        .page-header
-          h4 L'organisme :
-          h2= organism.org_name
-          p <b>Mission:</b> #{organism.description}
-          p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
-          if volunteer
-            p <b>Courriel:</b> #{organism.email}
-            if organism.phone
-              p <b>Téléphone:</b> #{organism.phone}
-            div(style='margin-top: 10px;')
-              a.btn.btn-warning#propose Proposer à des amis
-          else
-            div
-              a.btn.btn-default(href='/login') Se connecter
-              p.inline  ou 
-              a(href='/register_volunteer')  Créer un compte
-            div(style='margin-top: 10px;')
-              a.btn.btn-warning#propose Proposer à des amis
 
 block footscript
   script(type="text/javascript").
