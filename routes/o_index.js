@@ -228,6 +228,10 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
               return td;
             }
           }
+          const hash = require('intercom-client').SecureMode.userHash({
+            secretKey: process.env.INTERCOM_SECRET_KEY,
+            identifier: req.session.organism._id
+          });
 
           var todo_to_send = todos.map(addEventName);
           res.render('o_dashboard.jade', {
@@ -238,7 +242,8 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
             organism: req.session.organism,
             todos: todo_to_send,
             group: req.session.group,
-            message: req.query.message
+            message: req.query.message,
+            hash
           });
         }
       });
@@ -447,7 +452,7 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
             var longterms = longtermsList(lt_organisms, 80);
             const hash = require('intercom-client').SecureMode.userHash({
               secretKey: process.env.INTERCOM_SECRET_KEY,
-              identifier: req.session.organism.email
+              identifier: req.session.organism._id
             });
             console.info('hash : ' + hash);
             console.info('typeof hash : ' + typeof hash);

@@ -96,9 +96,13 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                   span.caret
                 ul.dropdown-menu#drop-down-but
                   li
-                    a.toggle-but(href='register_organism') Organismes
+                    a.toggle-but(href='/register_organism') Organismes
                   li
-                    a.toggle-but(href='register_volunteer') Bénévoles
-          li(role='presentation')
-            form.navbar-form( method='get', action='login')
-              button.btn.btn-default(type='submit') Connexion
+                    a.toggle-but(href='/register_volunteer') Bénévoles
+          unless page == 'accueil'
+            li.navbar-link(role='presentation')
+              a(href='/') Accueil
+          unless page=='login'
+            li(role='presentation')
+              form.navbar-form(method='get', action='/login')
+                button.btn.btn-default(type='submit') Connexion

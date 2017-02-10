@@ -7,6 +7,56 @@ block vars
 block head
 	title Événement de bénévolat
 	meta(name='description', content='Informations sur l\'événement de bénévolat ')
+block share
+	script.
+		var bitly_token = '074139d6c2b2511f886ae9e554856c4ecf3ca141';
+		window.fbAsyncInit = function() {
+			FB.init({
+				appId      : 1829081597379617,
+				xfbml      : true,
+				version    : 'v2.8'
+			});
+			FB.AppEvents.logPageView();
+			var activity_id = !{JSON.stringify(activity._id)};
+			var url = window.location.origin + '/all/activity/' + activity_id;
+			console.log('url : ' + url);
+			var bitly_address = 'https://api-ssl.bitly.com/v3/shorten?access_token='+bitly_token+'&longURL='+url;
+			console.log('bitly_address : ' + bitly_address);
+			$.get(bitly_address, function(datas){
+				console.info('bitly : ' + JSON.stringify(datas));
+				if(datas.status_code < 400){
+					$('#propose').click(function(){
+						$(this).parent().html("<div class='alert alert-info text-center'><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> Par Messenger</a><p> Ou partage ce lien : </p><input type='text' id='link_to_share'></input></div>");
+						console.info('We are in the status_code OK !');
+						$('#link_to_share').val(datas.data.url);
+						$('#messenger').click(function(){
+							FB.ui({
+								method: 'send',
+								link: datas.data.url
+							}, function(response){
+								// Debug response (optional)
+								console.log(response);
+							});
+						});
+					});
+				} else {
+					$('#propose').click(function(){
+						console.info('We are in the status_code not OK !');
+						$(this).parent().html("<div class='alert alert-warning'><p>Problème avec réseaux sociaux, néanmoins possibilité de partager directement ce lien <br> <b>Voici le lien</b> : </p><input type='text' id='link_to_share'></input></div>");
+						$('#link_to_share').val(url);
+					});
+				}
+			});
+		};
+
+		(function(d, s, id){
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) {return;}
+			js = d.createElement(s); js.id = id;
+			js.src = "//connect.facebook.net/fr_FR/sdk.js";
+			fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+
 block content
 	.container-fluid
 		.row.fill
@@ -163,10 +213,15 @@ block content
 				h4 L'organisme <b> #{organism.org_name} </b>
 				h5 <b>Mission : </b> #{organism.description}
 				p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
+				p <b>Courriel:</b> #{organism.email}
+				if organism.phone
+					p <b>Téléphone:</b> #{organism.phone}
 				a(href='http://'+organism.website) Site web
 				h5
 					i.fa.fa-at
 					p.inline #{organism.email}
+				div(style='margin-top: 10px;')
+					a.btn.btn-warning#propose Proposer à des amis
 
 block footscript
 	script(type="text/javascript").

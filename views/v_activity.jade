@@ -4,14 +4,97 @@ block vars
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
+  - function getCauseDesign(cause){if (cause=='Solidarité') {return '#00b3ff'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
 block head
   title Activité de bénévolat
   meta(name='description', content='Informations sur les activités de bénévolat ')
+block share
+  script.
+    var bitly_token = '074139d6c2b2511f886ae9e554856c4ecf3ca141';
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : 1829081597379617,
+        xfbml      : true,
+        version    : 'v2.8'
+      });
+      FB.AppEvents.logPageView();
+      var url = window.location.href;
+      console.log('url : ' + url);
+      var bitly_address = 'https://api-ssl.bitly.com/v3/shorten?access_token='+bitly_token+'&longURL='+url;
+      console.log('bitly_address : ' + bitly_address);
+      $.get(bitly_address, function(datas){
+        console.info('bitly : ' + JSON.stringify(datas));
+        if(datas.status_code < 400){
+          $('#propose').click(function(){
+            $(this).parent().html("<div class='alert alert-info text-center'><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> Par Messenger</a><p> Ou partage ce lien : </p><input type='text' id='link_to_share'></input></div>");
+            console.info('We are in the status_code OK !');
+            $('#link_to_share').val(datas.data.url);
+            $('#messenger').click(function(){
+              FB.ui({
+                method: 'send',
+                link: datas.data.url,
+                redirect_uri: url
+              }, function(response){
+                // Debug response (optional)
+                console.log(response);
+              });
+            });
+          });
+        } else {
+          $('#propose').click(function(){
+            console.info('We are in the status_code not OK !');
+            $(this).parent().html("<div class='alert alert-warning'><p>Problème avec réseaux sociaux, néanmoins possibilité de partager directement ce lien <br> <b>Voici le lien</b> : </p><input type='text' id='link_to_share'></input></div>");
+            $('#link_to_share').val(url);
+          });
+        }
+      });
+    };
+    
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "//connect.facebook.net/fr_FR/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
+
+  meta(property='og:type', content='website')
+  meta(property='og:title', content='Bénévolat avec ' + organism.org_name)
+  meta(property='og:description', content='Viens faire du bénévolat chez ' + organism.org_name + ' pour ' + activity.event_intitule +'. Simplyk est la plateforme de bénévolat de référence à Montréal. Des opportunités de bénévolat pour tous les goûts y sont visibles !')
+  meta(property='og:image', content='http://platform.simplyk.org/images/carte.png')
+
+  //meta pour twitter et l'open graphe
+  meta(property='twitter:card', content='content=app')
+  meta(property='twitter:title', content='Des opportunités de bénévolat à portée de main à Montréal')
+  meta(property='twitter:description', content='Viens faire du bénévolat chez ' + organism.org_name + ' pour ' + activity.event_intitule +'. Simplyk est la plateforme de bénévolat de référence à Montréal. Des opportunités de bénévolat pour tous les goûts y sont visibles !')
+  meta(property='twitter:image', content='http://platform.simplyk.org/images/carte.png')
 block content
   .container-fluid
-    .row
+    .row.activity__header
       .col-md-6.col-md-offset-1
+        img(src='/images/happy_city_white.svg', align='middle', style='max-height:30vh; padding-top:3vh')
+      .col-md-4.col-md-offset-1
         .page-header
+          h2(style='margin-top: 10%')= organism.org_name
+          p <b>Mission:</b> #{organism.description}
+          p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
+          if volunteer
+            p <b>Courriel:</b> #{organism.email}
+            if organism.phone
+              p <b>Téléphone:</b> #{organism.phone}
+            div(style='margin-top: 10px;')
+              a.btn.btn-warning#propose Proposer à des amis
+          else
+            div
+              a.btn.btn-default(href='/login') Se connecter
+              p.inline  ou 
+              a(href='/register_volunteer')  Créer un compte
+            div(style='margin-top: 10px;')
+              a.btn.btn-warning#propose Proposer à des amis
+    .row.activity__background
+      .col-md-6.col-md-offset-1
+        .page-header.activity__unit
+          span.badge(style='background-color: '+getCauseDesign(organism.cause))= organism.cause
           h1= activity.event_intitule
           p= event[0].description
           p <b>Adresse : </b> #{event[0].address} 
@@ -29,42 +112,35 @@ block content
                   #identifiant(style='display:none')
                     p= event._id
                 div.media-right.media-middle
-                  if day.day > Date.now()
-                    if day.applicants.find(function(applicant){return applicant==volunteer._id})
-                      h4 Inscrit
-                    else if ((day.vol_nb-day.applicants.length) < 1)
-                      h4 Complet
+                  if volunteer
+                    if day.day > Date.now()
+                      if day.applicants.find(function(applicant){return applicant==volunteer._id})
+                        h4 Inscrit
+                      else if ((day.vol_nb-day.applicants.length) < 1)
+                        h4 Complet
+                      else
+                        input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal'+index)
+                        .modal.fade(id='activity-modal'+index, tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
+                          .modal-dialog(role='document')
+                            .modal-content
+                              form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone('+day.day.getTime()+')')
+                                .modal-header
+                                  button.close(type='button' data-dismiss="modal" aria-label="Close")
+                                    span(aria-hidden='true')&times;
+                                  h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cette activité ?
+                                  if !volunteer.phone
+                                    .modal-body
+                                      h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
+                                      p.alert.alert-danger.hidden(class='phone_alert'+day.day.getTime()) Entrer un numéro de téléphone
+                                      .form-group.conn-input
+                                        label.control-label Téléphone
+                                        input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone'+day.day.getTime())
+                                .modal-footer
+                                  a.btn.btn-warning(data-dismiss='modal') Annuler
+                                  input.btn.btn-default(type='submit' value='Oui' role='button')
                     else
-                      input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal'+index)
-                      .modal.fade(id='activity-modal'+index, tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
-                        .modal-dialog(role='document')
-                          .modal-content
-                            form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone('+day.day.getTime()+')')
-                              .modal-header
-                                button.close(type='button' data-dismiss="modal" aria-label="Close")
-                                  span(aria-hidden='true')&times;
-                                h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cette activité ?
-                                if !volunteer.phone
-                                  .modal-body
-                                    h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
-                                    p.alert.alert-danger.hidden(class='phone_alert'+day.day.getTime()) Entrer un numéro de téléphone
-                                    .form-group.conn-input
-                                      label.control-label Téléphone
-                                      input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone'+day.day.getTime())
-                              .modal-footer
-                                a.btn.btn-warning(data-dismiss='modal') Annuler
-                                input.btn.btn-default(type='submit' value='Oui' role='button')
+                      h4 Passé
                   else
-                    h4 Passé
-      .col-md-4.col-md-offset-1
-        .page-header
-          h4 L'organisme :
-          h2= organism.org_name
-          p <b>Mission:</b> #{organism.description}
-          p <b>Courriel:</b> #{organism.email}
-          p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
-          if organism.phone
-            p <b>Téléphone:</b> #{organism.phone}
 
 block footscript
   script(type="text/javascript").
@@ -77,5 +153,4 @@ block footscript
       };
     };
     $(document).ready(function(){
-      
     });

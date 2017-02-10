@@ -11,7 +11,20 @@ if group == 'volunteer'
         };
     script.
         (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/oora32p1';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()
-//else if group == 'organism'
+else if group == 'admin'
+    script(type='text/javascript').
+        const adm = !{JSON.stringify(admin)};
+        const has = !{JSON.stringify(hash)};
+        console.log('hash : ' + has)
+        window.intercomSettings = {
+            app_id: "oora32p1",
+            name: adm.firstname + ' ' + adm.lastname, // Full name
+            user_id: adm._id, // Email address
+            user_hash: has
+        };
+    script.
+        (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/oora32p1';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()
+else if group == 'organism'
     script(type='text/javascript').
         const org = !{JSON.stringify(organism)};
         const has = !{JSON.stringify(hash)};
@@ -19,8 +32,7 @@ if group == 'volunteer'
         window.intercomSettings = {
             app_id: "oora32p1",
             name: org.firstname + ' ' + org.lastname, // Full name
-            email: org.email, // Email address
-            created_at: 0116354649, // Signup date as a Unix timestamp
+            user_id: org._id, // Email address
             user_hash: has
         };
     script.

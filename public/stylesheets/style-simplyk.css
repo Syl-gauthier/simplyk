@@ -81,6 +81,39 @@ body{
 	max-height: 50px;
 }
 
+.activity__background {
+    background-color: #eee;
+    min-height: 75vh;
+}
+
+.background__color {
+    background-color: #eee;
+}
+
+.activity__header {
+    background-color: white;
+    min-height: 25vh;
+    border-bottom: 1.5px solid #ddd;
+}
+
+.activity__unit--no-padding {
+    margin: 40px 0 20px;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    box-shadow: 1px 1px 1px #aaa;
+}
+
+.activity__unit {
+    padding-bottom: 9px;
+    margin: 40px 0 20px;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 40px;
+    box-shadow: 1px 1px 1px #aaa;
+}
+
 #map{
 	height: calc(100vh - 50px);
 }

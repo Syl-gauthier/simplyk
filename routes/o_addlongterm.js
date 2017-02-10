@@ -14,11 +14,16 @@ var Organism = require('../models/organism_model.js');
 
 
 router.get('/organism/addlongterm', permissions.requireGroup('organism', 'admin'), function(req, res) {
+	const hash = require('intercom-client').SecureMode.userHash({
+		secretKey: process.env.INTERCOM_SECRET_KEY,
+		identifier: req.session.organism._id
+	});
 	res.render('o_addlongterm.jade', {
 		session: req.session,
 		organism: req.session.organism,
 		admin: req.session.admin,
-		group: req.session.group
+		group: req.session.group,
+		hash
 	});
 });
 

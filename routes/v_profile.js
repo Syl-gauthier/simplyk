@@ -329,7 +329,7 @@ router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('
                 };
               });
               const content = {
-                recipient: /*new_organism.email*/ 'thibaut.jaurou@gmail.com',
+                recipient: new_organism.email,
                 activity_name: lt_name,
                 name: new_organism.org_name,
                 customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est désinscrit de votre engagement ' + lt_name + ' !'
@@ -784,7 +784,9 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 lastname: req.body.lastname,
                 phone: req.body.org_phone,
                 description: req.body.description,
-                automatic: true
+                cause: 'Solidarité',
+                automatic: true,
+                validation: false
               });
 
               const passToChange = (pass1.substring(0, 3) + pass2.substring(0, 3)).toLowerCase();
