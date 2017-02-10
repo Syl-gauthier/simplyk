@@ -19,7 +19,7 @@ else if group == 'admin'
         window.intercomSettings = {
             app_id: "oora32p1",
             name: adm.firstname + ' ' + adm.lastname, // Full name
-            email: adm.email, // Email address
+            user_id: adm._id, // Email address
             user_hash: has
         };
     script.
@@ -32,7 +32,7 @@ else if group == 'organism'
         window.intercomSettings = {
             app_id: "oora32p1",
             name: org.firstname + ' ' + org.lastname, // Full name
-            email: org.email, // Email address
+            user_id: org._id, // Email address
             user_hash: has
         };
     script.
