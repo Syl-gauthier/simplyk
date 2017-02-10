@@ -7,6 +7,56 @@ block vars
 block head
   title Bénévoles à long terme
   meta(name='description', content='Gère tes bénévoles inscrits à long terme')
+block share
+  script.
+    var bitly_token = '074139d6c2b2511f886ae9e554856c4ecf3ca141';
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : 1829081597379617,
+        xfbml      : true,
+        version    : 'v2.8'
+      });
+      FB.AppEvents.logPageView();
+
+      $('.propose').click(function(){
+        var button = $(this);
+        var longterm_id = $(this).attr('lt_id');
+        var url = window.location.origin + '/all/longterm/' + longterm_id;
+        console.log('url : ' + url);
+        var bitly_address = 'https://api-ssl.bitly.com/v3/shorten?access_token='+bitly_token+'&longURL='+url;
+        console.log('bitly_address : ' + bitly_address);
+        $.get(bitly_address, function(datas){
+          console.info('bitly : ' + JSON.stringify(datas));
+          if(datas.status_code < 400){
+            button.parent().html("<div class='alert alert-info text-center'><p> Partage ce lien par courriel ou autre : </p><input type='text' id='link_to_share'></input><p> Ou </p><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> Par Messenger</a></div>");
+            console.info('We are in the status_code OK !');
+            $('#link_to_share').val(datas.data.url);
+            $('#messenger').click(function(){
+              FB.ui({
+                method: 'send',
+                link: datas.data.url
+              }, function(response){
+                // Debug response (optional)
+                console.log(response);
+              });
+            });
+          } else {
+            console.info('We are in the status_code not OK !');
+            button.parent().html("<div class='alert alert-warning'><p>Problème avec réseaux sociaux, néanmoins possibilité de partager directement ce lien par courriel ou autre <br> <b>Voici le lien</b> : </p><input type='text' id='link_to_share'></input></div>");
+            $('#link_to_share').val(url);
+          }
+        });
+      });
+    };
+
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/fr_FR/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
 block content
   .container-fluid
     .row
@@ -150,6 +200,8 @@ block content
                           i.fa.fa-check
                         else
                           p
+      .col-md-3.text-center.page-header
+        a.inline.btn.btn-warning.propose(lt_id=longterm._id) Inviter à être bénévole
     .row
       .col-md-10.col-md-offset-1
         .panel.panel-default(style='margin-bottom: 60px;')
