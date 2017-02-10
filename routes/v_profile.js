@@ -784,7 +784,9 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 lastname: req.body.lastname,
                 phone: req.body.org_phone,
                 description: req.body.description,
-                automatic: true
+                cause: 'Solidarité',
+                automatic: true,
+                validation: false
               });
 
               const passToChange = (pass1.substring(0, 3) + pass2.substring(0, 3)).toLowerCase();
