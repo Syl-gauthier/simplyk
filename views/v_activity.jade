@@ -32,7 +32,8 @@ block share
             $('#messenger').click(function(){
               FB.ui({
                 method: 'send',
-                link: datas.data.url
+                link: datas.data.url,
+                redirect_uri: url
               }, function(response){
                 // Debug response (optional)
                 console.log(response);
