@@ -112,7 +112,7 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
 
       const hash = require('intercom-client').SecureMode.userHash({
         secretKey: process.env.INTERCOM_SECRET_KEY,
-        identifier: req.session.admin.email
+        identifier: req.session.admin._id
       });
 
       res.status(200).render('a_classes.jade', {
@@ -177,7 +177,7 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
         console.log('Final events : ' + events);
         const hash = require('intercom-client').SecureMode.userHash({
           secretKey: process.env.INTERCOM_SECRET_KEY,
-          identifier: req.session.admin.email
+          identifier: req.session.admin._id
         });
         res.render('a_report.jade', {
           volunteer: volunteer,

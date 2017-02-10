@@ -15,7 +15,7 @@ var Activity = require('../models/activity_model.js');
 router.get('/organism/addevent', permissions.requireGroup('organism', 'admin'), function(req, res) {
   const hash = require('intercom-client').SecureMode.userHash({
     secretKey: process.env.INTERCOM_SECRET_KEY,
-    identifier: req.session.organism.email
+    identifier: req.session.organism._id
   });
   res.render('o_addevent.jade', {
     session: req.session,
