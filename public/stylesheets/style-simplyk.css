@@ -255,6 +255,24 @@ body{
 	border-bottom: 1px solid #bbb;
 }
 
+.fullscreen-section--1 {
+	min-height: calc(100vh - 50px);
+	border-bottom: 1px solid #bbb;
+	background-color: #eee;
+}
+
+.fullscreen-section--2 {
+	min-height: calc(100vh - 50px);
+	border-bottom: 1px solid #ccc;
+	background-color: white;
+}
+
+.fullscreen-section--3 {
+	min-height: calc(100vh - 50px);
+	border-bottom: 1px solid #bbb;
+	background-color: #ddd;
+}
+
 .section-div{
 	height: 100%;
 }
@@ -284,14 +302,14 @@ body{
 }
 
 .section__title h1{
-	color: white;
+	color: black;
 	font-weight: 300;
 	letter-spacing: 10px;
 	font-size: 10vh;
 }
 
 .presentation__text {
-	color: white;
+	color: black;
 	font-weight: 300;
 	letter-spacing: 10px;
 }
@@ -419,6 +437,11 @@ body{
 
 .panel-profile .panel-heading{
 	height: 150px;
+	background-size: cover;
+}
+
+.panel-profile .panel-body{
+	height: 100px;
 	background-size: cover;
 }
 
