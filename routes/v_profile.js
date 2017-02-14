@@ -18,6 +18,7 @@ var Organism = require('../models/organism_model.js');
 var Activity = require('../models/activity_model.js');
 var OrgTodo = require('../models/o_todo_model.js');
 const schools_res = require('../res/schools_res.js');
+var agenda = require('../lib/agenda.js');
 const getClientSchools = require('../lib/ressources/client_school_list.js').getClientSchools;
 
 
@@ -448,6 +449,7 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
               console.log(err);
               res.redirect('/volunteer/map?error=' + err);
             } else {
+              sendEmailIfHoursNotValidated(req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname, todo._id);
               if (event.student_questions) {
                 res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
               } else {
@@ -899,5 +901,27 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
   };
 });
 
+///////////////////////////////////////-----------------AGENDAS------------------
+function sendEmailIfHoursNotValidated(vol_name, todo_id) {
+
+  //Transform date
+  let start_date = (new Date()).getTime();
+  start_date = moment(start_date).add(5, 'hours');
+
+  const fourDaysAfter = moment(start_date).add(4, 'days');
+
+
+  console.info('start_date : ' + moment(start_date).format('dddd D MMMM YYYY HH:mm'));
+  console.info('fourDaysAfter : ' + moment(fourDaysAfter).format('dddd D MMMM YYYY HH:mm'));
+  console.info('start_date : ' + moment(start_date).toString());
+  console.info('start_date : ' + moment(start_date).toISOString());
+  console.info('fourDaysAfter : ' + moment(fourDaysAfter).toString());
+  console.info('fourDaysAfter : ' + moment(fourDaysAfter).toISOString());
+
+  agenda.schedule(moment(fourDaysAfter).toDate(), 'sendHoursPendingOrgReminderEmail', {
+    vol_name,
+    todo_id: todo_id.toString()
+  });
+}
 
 module.exports = router;
