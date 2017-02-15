@@ -106,157 +106,165 @@ block content
           else
             h1= longterm.intitule
           p= longterm.description
+          p <b>Nombre de places : </b> #{longterm.vol_nb}
+          if (longterm.vol_nb - longterm.applicants.length) >= 0
+            <b>Places restantes : </b> #{longterm.vol_nb - longterm.applicants.length}
+          else
+            p <b>Places restantes : </b> 0
           p <b>Adresse : </b> #{longterm.address}
-            if error
-              p.alert.alert-danger= error
-            li.list-group-item
-              div.media-left.media-middle
-                i.fa.fa-calendar
-              div.media-body
-                h4 Horaires possibles :
-                table.table(id='slot')
-                  thead
-                    tr
-                      th.text-center #
-                      th.text-center Lundi
-                      th.text-center Mardi
-                      th.text-center Mercredi
-                      th.text-center Jeudi
-                      th.text-center Vendredi
-                      th.text-center Samedi
-                      th.text-center Dimanche
-                  tbody
-                    tr
-                      th.text-center(scope='row') AM
-                      td
-                        if slotJSON['mondayAM']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['tuesdayAM']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['wednesdayAM']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['thursdayAM']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['fridayAM']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['saturdayAM']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['sundayAM']
-                          i.fa.fa-check
-                        else
-                          p
-                    tr
-                      th.text-center(scope='row') PM
-                      td
-                        if slotJSON['mondayPM']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['tuesdayPM']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['wednesdayPM']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['thursdayPM']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['fridayPM']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['saturdayPM']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['sundayPM']
-                          i.fa.fa-check
-                        else
-                          p
-                    tr
-                      th.text-center(scope='row')= 'Soir (>16h)'
-                      td
-                        if slotJSON['mondayEVE']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['tuesdayEVE']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['wednesdayEVE']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['thursdayEVE']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['fridayEVE']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['saturdayEVE']
-                          i.fa.fa-check
-                        else
-                          p
-                      td
-                        if slotJSON['sundayEVE']
-                          i.fa.fa-check
-                        else
-                          p
+          if error
+            p.alert.alert-danger= error
+          li.list-group-item
+            div.media-left.media-middle
+              i.fa.fa-calendar
+            div.media-body
+              h4 Horaires possibles :
+              table.table(id='slot')
+                thead
+                  tr
+                    th.text-center #
+                    th.text-center Lundi
+                    th.text-center Mardi
+                    th.text-center Mercredi
+                    th.text-center Jeudi
+                    th.text-center Vendredi
+                    th.text-center Samedi
+                    th.text-center Dimanche
+                tbody
+                  tr.text-center
+                    th.text-center(scope='row') AM
+                    td
+                      if slotJSON['mondayAM']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['tuesdayAM']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['wednesdayAM']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['thursdayAM']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['fridayAM']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['saturdayAM']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['sundayAM']
+                        i.fa.fa-check
+                      else
+                        p
+                  tr.text-center
+                    th.text-center(scope='row') PM
+                    td
+                      if slotJSON['mondayPM']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['tuesdayPM']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['wednesdayPM']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['thursdayPM']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['fridayPM']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['saturdayPM']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['sundayPM']
+                        i.fa.fa-check
+                      else
+                        p
+                  tr.text-center
+                    th.text-center(scope='row')= 'Soir (>16h)'
+                    td
+                      if slotJSON['mondayEVE']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['tuesdayEVE']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['wednesdayEVE']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['thursdayEVE']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['fridayEVE']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['saturdayEVE']
+                        i.fa.fa-check
+                      else
+                        p
+                    td
+                      if slotJSON['sundayEVE']
+                        i.fa.fa-check
+                      else
+                        p
           if (!alreadySubscribed && volunteer)
-            input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#longterm-modal')
-            .modal.fade(id='longterm-modal' tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
-              .modal-dialog(role='document')
-                .modal-content
-                  form.inline(action='/volunteer/longterm/subscribe/'+longterm._id, method='post', onsubmit='return validatePhone()')
-                    .modal-header
-                      button.close(type='button' data-dismiss="modal" aria-label="Close")
-                        span(aria-hidden='true')&times;
-                      h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cet engagement ?
-                      if !volunteer.phone
-                        .modal-body
-                          h6 Afin que l'organisme puisse t'appeller s'il y a un changement, il est souvent préférable qu'il soit informé de ton numéro de téléphone
-                          p.alert.alert-danger.hidden(class='phone_alert') Entrer un numéro de téléphone
-                          .form-group.conn-input
-                            label.control-label Téléphone
-                            input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone')
-                    .modal-footer
-                      a.btn.btn-warning(data-dismiss='modal') Annuler
-                      input.btn.btn-default(type='submit' value='Oui' role='button')
+            if (longterm.vol_nb - longterm.applicants.length) >= 0
+              input.center-block.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#longterm-modal' style='margin-top: 10px')
+              .modal.fade(id='longterm-modal' tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
+                .modal-dialog(role='document')
+                  .modal-content
+                    form.inline(action='/volunteer/longterm/subscribe/'+longterm._id, method='post', onsubmit='return validatePhone()')
+                      .modal-header
+                        button.close(type='button' data-dismiss="modal" aria-label="Close")
+                          span(aria-hidden='true')&times;
+                        h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cet engagement ?
+                        if !volunteer.phone
+                          .modal-body
+                            h6 Afin que l'organisme puisse t'appeller s'il y a un changement, il est souvent préférable qu'il soit informé de ton numéro de téléphone
+                            p.alert.alert-danger.hidden(class='phone_alert') Entrer un numéro de téléphone
+                            .form-group.conn-input
+                              label.control-label Téléphone
+                              input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone')
+                      .modal-footer
+                        a.btn.btn-warning(data-dismiss='modal') Annuler
+                        input.btn.btn-default(type='submit' value='Oui' role='button')
+            else
+              button.center-block.btn.btn-default(type='button' disabled='disabled' style='margin-top: 10px') Complet
         if ((student_questions && student_answers && student_questions.length > 0 && student_answers.length > 0) || (organism_questions && organism_answers && organism_questions.length > 0 && organism_answers.length > 0))
           h2 Questionnaire
       .col-md-4.col-md-offset-1
