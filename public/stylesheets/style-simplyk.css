@@ -267,10 +267,29 @@ body{
 	background-color: white;
 }
 
-.fullscreen-section--3 {
-	min-height: calc(100vh - 50px);
+.not-fullscreen-section--1 {
+	min-height: calc(70vh - 50px);
 	border-bottom: 1px solid #bbb;
-	background-color: #ddd;
+	background-color: #eee;
+}
+
+#nav-us>li>a {
+	color: #777
+}
+
+#nav-us>li>a:hover {
+	color: #333;
+	background-color: #fff;
+}
+
+#nav-us>li.active>a {
+	background-color: #eee;
+	color: #333
+}
+
+.subtitle {
+	margin-bottom: 20px;
+	font-weight: lighter;
 }
 
 .section-div{
@@ -301,17 +320,16 @@ body{
 	background-color: #F1F5FF;
 }
 
+.text {
+	color: black;
+	letter-spacing: 0.05em;
+}
+
 .section__title h1{
 	color: black;
 	font-weight: 300;
 	letter-spacing: 10px;
-	font-size: 10vh;
-}
-
-.presentation__text {
-	color: black;
-	font-weight: 300;
-	letter-spacing: 10px;
+	font-size: 7vh;
 }
 
 .section__sentence{

@@ -7,19 +7,52 @@ block head
   meta(name='description', content='Simplyk: à propos')
 block content
       .container-fluid
-        .row.fullscreen-section--1
+        .row(style='border-bottom: 1px solid #ccc')
+          ul.nav.nav-pills#nav-us
+            li(role='presentation')
+              a#being-button(href='#') <i class='fa fa-tachometer'></i> Raison d'être
+            li(role='presentation')
+              a#history-button(href='#') <i class='fa fa-paper-plane-o'></i> Notre histoire
+            li(role='presentation')
+              a#team-button(href='#') <i class='fa fa-space-shuttle'></i> L'équipe
+            li(role='presentation')
+              a#partners-button(href='#') <i class='fa fa-rss'></i> Partenaires
+        .row.not-fullscreen-section--1
           .section__title
-            h1.text-center Mission
-        .row.fullscreen-section--2
+            h2.text-center Raison d'être
+            h3.text-center.subtitle Simplyk a une mission et des valeurs fortes
+          .row(style='min-height: 100%')
+            .col-md-4.col-md-offset-1
+              .panel.panel-default(style='box-shadow: 1px 1px 1px #363;')
+                .panel-heading
+                  h2.text.text-center Mission
+                  img.center-block(src='images/target_tune.svg', style='max-height: 13vh;')
+                .panel-body
+                  i.fa.fa-quote-left.fa-2x.fa-pull-left.fa-border
+                  h4.text.text-center Simplyk vise à encourager et faciliter le bénévolat
+                  p.text.text-center Nous avons réalisé qu'il n'est pas toujours facile de donner de son temps. Entre les formulaires, le manque d'informations et le temps à passer sur un grand nombre de sites web, il y a souvent de quoi être découragé. Nous voulons mettre fin à ce gâchis d'énergie, et supprimer toutes les barrières qui font qu'une personne va se décourager à être bénévole.
+            .col-md-4.col-md-offset-2
+              .panel.panel-default(style='box-shadow: 1px 1px 1px #363;')
+                .panel-heading
+                  h2.text.text-center Constitution Simplyk
+                  img.center-block(src='images/book_of_ester_tune.svg', style='max-height: 13vh;')
+                .panel-body
+                  i.fa.fa-quote-left.fa-2x.fa-pull-left.fa-border
+                  h4.text.text-center Simplyk est une entreprise d'économie sociale avec des valeurs ancrées dans le marbre
+                  p.text.text-center <b>Article 1 :</b>  Simplyk est et restera gratuit pour les organismes
+                  p.text.text-center <b>Article 2 :</b>  Simplyk est et restera gratuit pour les bénévoles
+                  p.text.text-center <b>Article 3 :</b>  L'engagement des bénévoles et le travail des organismes sont précieux, Simplyk existe pour les faciliter
+                  p.text.text-center <b>Article 4 :</b>  Simplyk se doit d'utliser le meilleur de la technologie pour parvenir à l'<b>Article 3</b>
+        .row.fullscreen-section--2#history
           .section__title
-            h1.text-center Valeurs
-        .row.fullscreen-section--1
+            h2.text-center Notre histoire
+        .row.fullscreen-section--1#team
           .section__title
-            h1.text-center L'équipe
+            h2.text-center L'équipe
           .row
             .col-xs-10.col-xs-offset-1
-              .row.presentation__text
-                h3.text-center Une équipe de feu pour un projet solidaire
+              .row
+                h3.text-center.subtitle Une équipe de feu pour un projet solidaire
               .row(style='margin-top: 10vh;')
                 .col-md-3.col-xs-6
                   .panel.panel-default.panel-profile
@@ -65,36 +98,68 @@ block content
                       .caption
                         p  
                         p Responsable organismes
-        .row.fullscreen-section--2
+        .row.fullscreen-section--2#partners
           .section__title
-            h1.text-center(style='color: black') Partenaires
+            h2.text-center(style='color: black') Partenaires
           .row
             .col-xs-10.col-xs-offset-1
-              .row.presentation__text
-                h3.text-center(style='color: black') D'importants partenaires dans le milieu entrepreunarial et communautaire
+              .row
+                h3.text-center.subtitle D'importants partenaires dans le milieu entrepreunarial et communautaire
               .row(style='margin-top: 15vh;')
-                .col-md-3.col-xs-6
-                  a(href='http://d3center.ca/en/home/')
-                    img.center-block(src='http://d3center.ca/wp-content/uploads/2016/08/D3-logo-print-nowords.png', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
-                .col-md-3.col-xs-6
-                  a(href='https://www.facebook.com/NOVA.HEC.MTL/')
-                    img.center-block(src='https://scontent.fyhu1-1.fna.fbcdn.net/v/t1.0-9/11248879_905913282832720_5434240178862469539_n.png?oh=4e0c2ee4d947892ce437c15046cfc846&oe=5945E769', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
-                .col-md-3.col-xs-6
-                  a(href='http://www.cabm.net/')
-                    img.center-block(src='https://www.arrondissement.com/userImgs/directory/logos/260x140/47073.jpg', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
-                .col-md-3.col-xs-6
+                .col-md-2.col-xs-6.col-md-offset-1
                   a(href='https://mobilisonslocal.ca/')
-                    img.center-block(src='http://veilleaction.org/images/Mobilisons_Local.PNG', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
-              .row(style='margin-top: 10vh;')
-                .col-md-3.col-xs-6
-                  a(href='http://entrepreneuriat.poly-udem.ca/')
-                    img.center-block(src='http://entrepreneuriat.poly-udem.ca/profiles/minimal/themes/custom/lexus/logo.png', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
-                .col-md-3.col-xs-6
-                  a(href='http://matv.ca/montreal')
-                    img.center-block(src='http://matv.ca/bundles/vox/images/logo-vox-ma-tv.png', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
-                .col-md-3.col-xs-6
+                    img.center-block(src='http://veilleaction.org/images/Mobilisons_Local.PNG', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+                .col-md-2.col-xs-6
+                  a(href='http://www.cabm.net/')
+                    img.center-block(src='https://www.arrondissement.com/userImgs/directory/logos/260x140/47073.jpg', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+                .col-md-2.col-xs-6
+                  a(href='https://www.facebook.com/NOVA.HEC.MTL/')
+                    img.center-block(src='https://scontent.fyhu1-1.fna.fbcdn.net/v/t1.0-9/11248879_905913282832720_5434240178862469539_n.png?oh=4e0c2ee4d947892ce437c15046cfc846&oe=5945E769', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+                .col-md-2.col-xs-6
                   a(href='http://cjestlaurent.org/')
-                    img.center-block(src='http://cjestlaurent.org/wp-content/uploads/2016/04/Logo_CJE_hori.png', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
-                .col-md-3.col-xs-6
+                    img.center-block(src='http://cjestlaurent.org/wp-content/uploads/2016/04/Logo_CJE_hori.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+                .col-md-2.col-xs-6
+                  a(href='https://mobilisonslocal.ca/')
+                    img.center-block(src='images/lexstart', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+              .row(style='margin-top: 10vh;')
+                .col-md-2.col-xs-6.col-md-offset-1
+                  a(href='http://d3center.ca/en/home/')
+                    img.center-block(src='http://d3center.ca/wp-content/uploads/2016/08/D3-logo-print-nowords.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+                .col-md-2.col-xs-6
+                  a(href='http://entrepreneuriat.poly-udem.ca/')
+                    img.center-block(src='http://entrepreneuriat.poly-udem.ca/profiles/minimal/themes/custom/lexus/logo.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+                .col-md-2.col-xs-6
+                  a(href='https://mobilisonslocal.ca/')
+                    img.center-block(src='images/cje.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+                .col-md-2.col-xs-6
                   a(href='http://www.esplanademtl.org/')
-                    img.center-block(src='http://www.esplanademtl.org/wp-content/uploads/2015/10/logo-_esplanade-e1472753730414.jpg', style='max-width:90%; max-height:10vh; padding-top: auto; margin-bottom: auto')
+                    img.center-block(src='http://www.esplanademtl.org/wp-content/uploads/2015/10/logo-_esplanade-e1472753730414.jpg', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+                .col-md-2.col-xs-6
+                  a(href='http://matv.ca/montreal')
+                    img.center-block(src='http://matv.ca/bundles/vox/images/logo-vox-ma-tv.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+
+
+block footscript
+  script.
+    $( document ).ready(function() {
+      $('#history-button').click(function(){
+        $('html, body').animate({
+          scrollTop: $('#history').offset().top - 50
+        }, 500)
+      });
+      $('#being-button').click(function(){
+        $('html, body').animate({
+          scrollTop: $('#nav-us').offset().top - 50
+        }, 500)
+      });
+      $('#partners-button').click(function(){
+        $('html, body').animate({
+          scrollTop: $('#partners').offset().top - 50
+        }, 500)
+      });
+      $('#team-button').click(function(){
+        $('html, body').animate({
+          scrollTop: $('#team').offset().top - 50
+        }, 500)
+      });
+    });
