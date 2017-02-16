@@ -152,7 +152,7 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
             } else {
               Organism.findOne({
                 '_id': event.org_id
-              }, 'events', function(err, matching_organism) {
+              }, 'events phone firstname lastname', function(err, matching_organism) {
                 if (err) {
                   reject(err);
                 } else {
@@ -162,6 +162,8 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
                   })).description;
                   new_event['description'] = new_event_description;
                   new_event['activity_intitule'] = matching_activity.intitule;
+                  new_event['org_phone'] = matching_organism.phone;
+                  new_event['contact'] = matching_organism.firstname + ' ' + matching_organism.lastname;
                   console.log('new_event in resolve : ' + JSON.stringify(new_event));
                   resolve(new_event);
                 }
