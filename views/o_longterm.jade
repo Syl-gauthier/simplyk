@@ -67,7 +67,8 @@ block content
           if (error)
             p.alert.alert-danger= error
           p #{longterm.description} <i class="fa fa-pencil edit" type='description' style="cursor: pointer"></i>
-          p <b>#{longterm.vol_nb}</b> bénévoles recherchés <i class="fa fa-pencil edit" type='vol_nb' style="cursor: pointer"></i>
+          p <b>#{longterm.vol_nb}</b> bénévoles recherchés <i class="fa fa-pencil edit" type='vol_nb' vol_nb=#{longterm.vol_nb} applicants=#{longterm.applicants.length} style="cursor: pointer"></i>
+          p <b>Places restantes : </b> #{longterm.vol_nb - longterm.applicants.length}
           p <b>Expiration de l'offre : </b> #{date.printDate(longterm.expiration_date)}
           if longterm.min_age
             p <b>Âge minimal : </b> #{longterm.min_age}
@@ -255,13 +256,15 @@ block footscript
         const type = $(this).attr('type');
         if(type == 'vol_nb'){
           let div = $(this).parent();
-          div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Nombre de bénévoles recherchés</p><input type='number' min='1' max='400' name='vol_nb'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+          const applicants = $(this).attr('applicants');
+          const vol_nb = $(this).attr('vol_nb');
+          div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Nombre de bénévoles recherchés</p><input type='number' min='"+applicants+"' max='400' name='vol_nb' value='"+vol_nb+"'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
         } else if (type == 'description'){
           let div = $(this).parent();
-          div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Nouvelle description</p><textarea rows='6' name='description'></textarea><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+          div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Nouvelle description</p><textarea rows='6' name='description'>"+div.text()+"</textarea><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
         } else if (type == 'intitule'){
           let div = $('h1.intitule');
-          div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Nouveau titre</p><input type='text' name='intitule'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+          div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Nouveau titre</p><input type='text' name='intitule' value='"+div.text()+"'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
         }
       })
     });

@@ -877,6 +877,18 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                         type: 'extra'
                       });
                     });
+
+                    //Intercom create vol_add_extra
+                    client.events.create({
+                      event_name: 'vol_add_extra',
+                      created_at: Math.round(Date.now() / 1000),
+                      user_id: req.session.volunteer._id,
+                      metadata: {
+                        act_id: activity_saved._id,
+                        intitule_activity: activity_saved.intitule,
+                        org_name: activity_saved.org_name
+                      }
+                    });
                   }
                 })
               });

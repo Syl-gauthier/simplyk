@@ -167,12 +167,11 @@ block footscript
 				const type = $(this).attr('type');
 				if(type == 'vol_nb'){
 					let div = $(this).parent();
-					div.html("<form name='edit-form' method='post' action='/edit-event'><p>Nombre de bénévoles recherchés</p><input type='number' min='1' max='400' placeholder='"+$(this).attr('vol_nb')+"' name='vol_nb'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='day' value='"+$(this).attr('day')+"' type='text'></input><input class='hidden' name='nb_applicants' value='"+$(this).attr('applicants')+"' type='number'></input><input class='hidden' name='activity_id' value='"+$(this).attr('activity')+"' type='text'></input><input type='submit' value='Modifier'></input></form>");
+					div.html("<form name='edit-form' method='post' action='/edit-event'><p>Nombre de bénévoles recherchés</p><input type='number' min='"+$(this).attr('applicants')+"' max='400' value='"+$(this).attr('vol_nb')+"' name='vol_nb'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='day' value='"+$(this).attr('day')+"' type='text'></input><input class='hidden' name='nb_applicants' value='"+$(this).attr('applicants')+"' type='number'></input><input class='hidden' name='activity_id' value='"+$(this).attr('activity')+"' type='text'></input><input type='submit' value='Modifier'></input></form>");
 				} else if (type == 'intitule'){
 					let div = $('h1.intitule');
-					console.info(JSON.stringify(div));
 					console.info(div.text());
-					div.html("<form name='edit-form' method='post' action='/edit-event'><input type='text' placeholder='"+div.text()+"' name='intitule'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+					div.html("<form name='edit-form' method='post' action='/edit-event'><input type='text' value='"+div.text()+"' name='intitule'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
 				}
 			});
 			$(function () {
