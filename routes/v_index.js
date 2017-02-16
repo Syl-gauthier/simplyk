@@ -438,6 +438,10 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                   link: 'http://' + req.headers.host + '/organism/event/' + theEvent._id,
                   customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !', 'Contactez le au plus vite au ' + newVolunteer.phone + ' ou par courriel à ' + newVolunteer.email, 'Attention, sans nouvelles rapidement de votre part, ' + newVolunteer.firstname + ' risque de se décourager et de ne pas venir !']
                 };
+                if (req.session.volunteer.admin.school_id && req.session.volunteer.admin.school_name) {
+                  org_content.customMessage = [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ', élève à ' + req.session.volunteer.admin.school_name + ', s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !', 'Ceci est dans le cadre du programme de bénévolat de son l\'école', 'Contactez le au plus vite au ' + newVolunteer.phone + ' ou par courriel à ' + newVolunteer.email, 'Attention, sans nouvelles rapidement de votre part, ' + newVolunteer.firstname + ' risque de se décourager et de ne pas venir !']
+                  console.log('Alert organism that the volunteer who just subscribed is a student ! ' + JSON.stringify(org_content.customMessage));
+                };
                 emailer.sendSubscriptionOrgEmail(org_content);
                 var vol_content = {
                   recipient: newVolunteer.email,
