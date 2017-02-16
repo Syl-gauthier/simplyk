@@ -471,6 +471,11 @@ body{
 	background-size: cover;
 }
 
+.panel-organism {
+	min-height: 100px;
+	background-size: cover;
+}
+
 .img-portrait{
 	border-radius: 100%;
 	border: 3px solid white;
