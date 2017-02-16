@@ -30,6 +30,18 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
       .navbar-header
       ul.nav.navbar-nav.navbar-right
         if group == 'volunteer'
+          li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                  span.caret
+                ul.dropdown-menu#drop-down-bu
+                  li
+                    a.toggle-but(href='/listorganisms') Liste des organismes
+                  li
+                    a.toggle-but(href='/contact') Contactez-nous
+                  li
+                    a.toggle-but(href='/us') À propos
           unless page=='profile'
             li.navbar-link(role='presentation')
               a(href='/volunteer/profile') Mon tableau de bord
@@ -40,6 +52,18 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
             form.navbar-form( method='post', action='./logout')
               button.btn.btn-default(type='submit') Déconnexion
         else if group == 'organism'
+          li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                  span.caret
+                ul.dropdown-menu#drop-down-bu
+                  li
+                    a.toggle-but(href='/listorganisms') Liste des organismes
+                  li
+                    a.toggle-but(href='/contact') Contactez-nous
+                  li
+                    a.toggle-but(href='/us') À propos
           unless page == 'profile'
             li.navbar-link(role='presentation')
               a(href='/organism/profile') Mon profil
@@ -68,9 +92,13 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
               li.dropdown
                 a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
                   span.caret
-                ul.dropdown-menu#drop-down-but
+                ul.dropdown-menu#drop-down-bu
                   li
                     a.toggle-but(href='/listorganisms') Liste des organismes
+                  li
+                    a.toggle-but(href='/contact') Contactez-nous
+                  li
+                    a.toggle-but(href='/us') À propos
           li(role='presentation')
             form.navbar-form( method='post', action='/logout')
               button.btn.btn-default(type='submit') Déconnexion
