@@ -268,14 +268,14 @@ body{
 }
 
 .not-fullscreen-section--1 {
-	min-height: calc(80vh - 50px);
+	min-height: calc(85vh - 50px);
 	border-bottom: 1px solid #bbb;
 	background-color: #eee;
 	padding-bottom: 25px;
 }
 
 .not-fullscreen-section--2 {
-	min-height: calc(80vh - 50px);
+	min-height: calc(85vh - 50px);
 	border-bottom: 1px solid #bbb;
 	background-color: white;
 	padding-bottom: 25px;
