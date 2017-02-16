@@ -8,37 +8,36 @@ block head
 block content
       .container-fluid
         .row.fill
-          .col-md-8.col-md-offset-2.no-side-padding
-            a.white(href='/')
-              h3
-                i.inline.fa.fa-arrow-left
-                p.inline Précédent
-            h1.text-center Liste des organismes
-            h4.text-center(style='margin-bottom: 50px') Tous les organismes inscrit et postant des opportunités sur Simplyk
+          .col-md-10.col-md-offset-1.no-side-padding
+            h1.text-center(style='margin-top: 3%') Liste des organismes
+            h4.text-center(style='margin-bottom: 3%') Tous les organismes inscrit et postant des opportunités sur Simplyk
             ul.list-group.margintop
               if error
                 p.alert.alert-danger #{error}
               if organisms
                 each val, index in organisms
-                  li.list-group-item
-                    div.media-left.media-middle
-                      if (val.cause==='Sport et Culture')
-                        i.fa.fa-institution.fa-lg.fa-fw.cult(style= "color:#{val.color}") 
-                      else if (val.cause === 'Nature')
-                        i.fa.fa-envira.fa-lg.fa-fw.leaf(style= "color:#{val.color}") 
-                      else if (val.cause === 'Solidarité')
-                        i.fa.fa-heart.fa-lg.fa-fw.soli(style= "color:#{val.color}") 
-                      else if (val.cause === 'Enfance')
-                        i.fa.fa-child.fa-lg.fa-fw.child(style= "color:#{val.color}") 
-                      else
-                        i.icon.icon-puzzle-piece(style= "color:#{val.color}") 
-                    div.media-body
-                      h4.media-heading= val.org_name 
-                      p.firstColor= val.cause
-                    div.media-right.media-middle
-                      if val.validation
-                        i.icon.icon-check.firstColor.icon-fw(href="#" data-toggle="tooltip" data-placement="top" title="Organisme vérifié par Simplyk")
-                      else
+                  if ((index == 0) || (index %3==0))
+                    .row
+                      each org, org_i in organisms
+                        if ((org_i==index)||(org_i==index+1)||(org_i==index+2))
+                          .col-md-4
+                            .panel.panel-default.panel-organism
+                              .panel-heading
+                                h3.text-center= org.org_name
+                              .panel-body.text-center
+                                if (org.cause==='Sport et Culture')
+                                  i.fa.fa-institution.fa-lg.fa-fw.cult(style= "color:#{org.color}") 
+                                else if (org.cause === 'Nature')
+                                  i.fa.fa-envira.fa-lg.fa-fw.leaf(style= "color:#{org.color}") 
+                                else if (org.cause === 'Solidarité')
+                                  i.fa.fa-heart.fa-lg.fa-fw.soli(style= "color:#{org.color}") 
+                                else if (org.cause === 'Enfance')
+                                  i.fa.fa-child.fa-lg.fa-fw.child(style= "color:#{org.color}") 
+                                else
+                                  i.icon.icon-puzzle-piece(style= "color:#{org.color}") 
+                                .caption
+                                  h4= org.cause
+                                  p= org.description
 
 block footscript
   script.

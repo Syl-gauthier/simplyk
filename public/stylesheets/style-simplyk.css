@@ -250,6 +250,56 @@ body{
 	border-bottom: 1px solid #bbb;
 }
 
+.fullscreen-section {
+	min-height: calc(100vh - 50px);
+	border-bottom: 1px solid #bbb;
+}
+
+.fullscreen-section--1 {
+	min-height: calc(100vh - 50px);
+	border-bottom: 1px solid #bbb;
+	background-color: #eee;
+}
+
+.fullscreen-section--2 {
+	min-height: calc(100vh - 50px);
+	border-bottom: 1px solid #ccc;
+	background-color: white;
+}
+
+.not-fullscreen-section--1 {
+	min-height: calc(85vh - 50px);
+	border-bottom: 1px solid #bbb;
+	background-color: #eee;
+	padding-bottom: 25px;
+}
+
+.not-fullscreen-section--2 {
+	min-height: calc(85vh - 50px);
+	border-bottom: 1px solid #bbb;
+	background-color: white;
+	padding-bottom: 25px;
+}
+
+#nav-us>li>a {
+	color: #777
+}
+
+#nav-us>li>a:hover {
+	color: #333;
+	background-color: #fff;
+}
+
+#nav-us>li.active>a {
+	background-color: #eee;
+	color: #333
+}
+
+.subtitle {
+	margin-bottom: 20px;
+	font-weight: lighter;
+}
+
 .section-div{
 	height: 100%;
 }
@@ -260,6 +310,34 @@ body{
 
 #age-section{
 	background-color: #FF4F3C;
+}
+
+#mission-section{
+	background-color: #4EBDC7;
+}
+
+#values-section{
+	background-color: #FF4F3C;
+}
+
+#team-section{
+	background-color: #5BCF8F;
+}
+
+#partners-section{
+	background-color: #F1F5FF;
+}
+
+.text {
+	color: black;
+	letter-spacing: 0.05em;
+}
+
+.section__title h1{
+	color: black;
+	font-weight: 300;
+	letter-spacing: 10px;
+	font-size: 7vh;
 }
 
 .section__sentence{
@@ -381,6 +459,29 @@ body{
 
 .btn-filter.i {
 	padding-left: 0px;
+}
+
+.panel-profile .panel-heading{
+	height: 150px;
+	background-size: cover;
+}
+
+.panel-profile .panel-body{
+	height: 100px;
+	background-size: cover;
+}
+
+.panel-organism {
+	min-height: 100px;
+	background-size: cover;
+}
+
+.img-portrait{
+	border-radius: 100%;
+	border: 3px solid white;
+	margin-top: -70px;
+	height: 100px;
+	width: auto;
 }
 
 .firstColor{
