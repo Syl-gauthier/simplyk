@@ -42,7 +42,7 @@
     "morgan": "~1.7.0",
     "newrelic": "^1.35.1",
     "node-schedule": "^1.2.0",
-    "nodemailer": "^2.5.0",
+    "nodemailer": "^3.1.2",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "randomstring": "~1.1.5",
