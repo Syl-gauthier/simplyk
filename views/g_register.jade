@@ -39,6 +39,7 @@ block content
                   .col-md-6
                     .form-group.conn-input
                       label.control-label Date de naissance *
+                      i.fa.fa-question-circle(data-toggle='tooltip' data-placement='top' title='Pour proposer du bénévolat adapté à ton âge')
                       input#birthdate.form-control(type='date', placeholder='', name='birthdate', aria-describedby='basic-addon1' required)
                     .form-group.conn-input
                       label.control-label Numéro de téléphone
@@ -176,3 +177,6 @@ block footscript
             success: onSuccess
         });
     });
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
