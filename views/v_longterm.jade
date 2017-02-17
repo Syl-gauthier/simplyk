@@ -76,7 +76,7 @@ block content
         .page-header
           h4 L'organisme :
           h2= organism.org_name
-          p <b>Mission:</b> #{organism.description}
+          p(style = 'white-space: pre-wrap') <b>Mission:</b> #{organism.description}
           p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
           if volunteer
             p <b>Courriel:</b> #{organism.email}
