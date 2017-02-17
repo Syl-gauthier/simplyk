@@ -40,7 +40,7 @@ var VolunteerSchema = new Schema({
     start_time: String,
     end_time: String,
     hours_done: Number,
-    status: String, //confirmed, pending, validated, denied, subscribed, past, corrected
+    status: String, //confirmed, pending, validated, denied, subscribed, past, corrected, absent
     extra: Boolean,
     hours_pending: Number,
     student_questions: [String],

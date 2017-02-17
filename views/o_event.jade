@@ -152,8 +152,12 @@ block content
 																				div.text-center
 																					p Participation de <b>#{event.hours_done} h</b>
 																			if (event.hours_done == event.hours_pending) && event.hours_done == 0
-																				div.text-center
-																					p Participation <b>non-confirmée</b>
+																				if event.status == 'absent'
+																					div.text-center
+																						p <b>Absent</b>
+																				else
+																					div.text-center
+																						p Participation <b>non-confirmée</b>
 																		else
 																			div.text-center
 																				button.btn.btn-default(type='button')

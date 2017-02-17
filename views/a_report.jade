@@ -74,7 +74,6 @@ block content
             td.text-center <strong> #{volunteer.events.length + volunteer.long_terms.length + volunteer.extras.length} </strong>
             td.text-center <strong> #{volunteer.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.long_terms.filter(function(long){if(long.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.extras.filter(function(extra){if(extra.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0) + volunteer.manuals.filter(function(man){if(man.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)} heures totales confirmées</strong>
 
-
     .row
       .col-md-10.col-md-offset-1(style='border: 3px solid #5BCF8F; margin-bottom:10px;')
         .page-header
@@ -111,6 +110,8 @@ block content
                             span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
                           else if event.status == 'denied'
                             span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
+                          else if event.status == 'absent'
+                            span.badge(style='background-color: #E33831')= 'Absent'
                           else
                             span.badge(style='background-color: #E33831')= 'Indéfini'
                           if event.hours_done > 0

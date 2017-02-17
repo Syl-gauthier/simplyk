@@ -41,7 +41,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       events_subscribed.push(volunteer.events[eventI]);
     } else if (Date.parse(volunteer.events[eventI].day) < Date.now() && volunteer.events[eventI].status === 'pending') {
       events_pending.push(volunteer.events[eventI]);
-    } else if ((Date.parse(volunteer.events[eventI].day) < Date.now() && volunteer.events[eventI].status === 'confirmed') || volunteer.events[eventI].status == 'corrected' || volunteer.events[eventI].status == 'validated') {
+    } else if ((Date.parse(volunteer.events[eventI].day) < Date.now() && volunteer.events[eventI].status === 'confirmed') || volunteer.events[eventI].status == 'absent' || volunteer.events[eventI].status == 'corrected' || volunteer.events[eventI].status == 'validated') {
       events_confirmed.push(volunteer.events[eventI]);
     } else if (volunteer.events[eventI].status == 'denied') {
       events_denied.push(volunteer.events[eventI]);
@@ -460,9 +460,57 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
         })
       }
     });
+  } else if (req.body.absent) {
+    Volunteer.findOneAndUpdate({
+      "$and": [{
+        "_id": req.session.volunteer._id
+      }, {
+        "events": {
+          '$elemMatch': {
+            'activity_id': req.params.act_id,
+            'day': req.params.day
+          }
+        }
+      }]
+    }, {
+      "$set": {
+        "events.$.hours_done": 0,
+        "events.$.hours_pending": 0,
+        "events.$.status": 'absent'
+      }
+    }, {
+      returnNewDocument: true,
+      new: true
+    }, function(err, newVolunteer) {
+      if (err) {
+        console.log(err);
+        res.redirect('/volunteer/map?error=' + err);
+      } else {
+        req.session.volunteer = newVolunteer;
+        req.session.save(function() {
+          console.log('newVolunteer ' + newVolunteer);
+          const message = encodeURIComponent('Ton absence à l\'évènement a bien été prise en compte');
+          res.redirect('/volunteer/map?success=' + message);
+          //Intercom create unsubscribe to longterm event
+          client.events.create({
+            event_name: 'vol_activity_absence',
+            created_at: Math.round(Date.now() / 1000),
+            user_id: req.session.volunteer._id,
+            metadata: {
+              act_id: req.params.act_id
+            }
+          });
+          client.users.update({
+            user_id: req.session.volunteer._id,
+            update_last_request_at: true
+          });
+        });
+      }
+    });
   } else {
     const err = 'ERROR: It seems you didn\'t have complete the hours_done field';
     console.log(err);
+    console.log('req.body : ' + JSON.stringify(req.body));
     res.redirect('/volunteer/map?error=' + err);
   }
 });
