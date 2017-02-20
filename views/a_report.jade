@@ -348,74 +348,74 @@ block content
 
 block footscript
   script(type='text/javascript').
-      $(document).ready(function(){
-        $('#manualHoursForm').submit(function(event){
-          'use strict';
-          event.preventDefault();
-          console.log('Submit addManualHours form');
-          let datas = {};
-          const form_datas = $('#manualHoursForm').serializeArray();
-          datas.hours_done = form_datas[0].value;
-          datas.description = form_datas[1].value;
-          datas.volunteer_id = !{JSON.stringify(volunteer._id)};
-          $.post('/addmanualhours', datas)
-          .done(function(data){
-            console.log('On est dans le callback done !');
-            $('#manualHoursModal').modal('toggle');
-            console.log('JSON.stringify(data) : ' + JSON.stringify(data));
-            console.log('Heures ajoutées');
-            $('#manual-success').removeClass('hidden');
-            $('#manual-success').html('Heures ajoutées avec succès au profil de l\'élève :) Rechargez la page si vous voulez voir le total d\'heures actualisé');
-          })
-          .fail(function(data){
-            console.log('On est dans le callback fail !');
-            console.log('Erreur !');
-            $('#manual-danger').removeClass('hidden');
-            console.log(data.error);
-            $('#manual-danger').html(' ' + data.responseJSON.error);
-            console.log('JSON.stringify(data) : ' + JSON.stringify(data));
-          });
-        });
-
-        //Handle validation or denying button
-        $('.validate').click(function(){
-          const type = $(this).attr('type');
-          const buttons = $(this).parent('.btn-group');
-          const row = $(this).closest('.status');
-          $.post('/admin/validate', {type: $(this).attr('type'), id: $(this).attr('id'), vol: $(this).attr('vol')})
-          .always(function(data){
-            console.info('data : ' + JSON.stringify(data));
-            //buttons.html('<p>'+data.message+'</p>');
-            row.removeClass('warning');
-            row.removeClass('danger');
-            row.addClass('success');
-          });
-        });
-
-        //Handle validation or denying button
-        $('.deny').click(function(){
-          const type = $(this).attr('type');
-          const buttons = $(this).parent('.btn-group');
-          const row = $(this).closest('.status');
-          $.post('/admin/deny', {type: $(this).attr('type'), id: $(this).attr('id'), vol: $(this).attr('vol')})
-          .always(function(data){
-            console.info('data : ' + JSON.stringify(data));
-            //buttons.html('<p>'+data.message+'</p>');
-            row.removeClass('warning');
-            row.removeClass('success');
-            row.addClass('danger');
-          });
-        });
-
-        const getRowClass = function(status){
-          console.info('Status : ' + status);
-          if((status == 'pending') || (status == 'confirmed') || (status == 'corrected')){ console.info('Return warning');return 'warning'}
-          else if (status == 'denied'){ console.info('Return danger');return 'danger'}
-          else if (status == 'validated'){ console.info('Return success');return 'success'}
-          else { return ''}
-        };
-        $('.status').each(function(){
-          let status = $(this).attr('status');
-          $(this).addClass(getRowClass(status));
+    'use strict';
+    $(document).ready(function(){
+      $('#manualHoursForm').submit(function(event){
+        event.preventDefault();
+        console.log('Submit addManualHours form');
+        let datas = {};
+        const form_datas = $('#manualHoursForm').serializeArray();
+        datas.hours_done = form_datas[0].value;
+        datas.description = form_datas[1].value;
+        datas.volunteer_id = !{JSON.stringify(volunteer._id)};
+        $.post('/addmanualhours', datas)
+        .done(function(data){
+          console.log('On est dans le callback done !');
+          $('#manualHoursModal').modal('toggle');
+          console.log('JSON.stringify(data) : ' + JSON.stringify(data));
+          console.log('Heures ajoutées');
+          $('#manual-success').removeClass('hidden');
+          $('#manual-success').html('Heures ajoutées avec succès au profil de l\'élève :) Rechargez la page si vous voulez voir le total d\'heures actualisé');
+        })
+        .fail(function(data){
+          console.log('On est dans le callback fail !');
+          console.log('Erreur !');
+          $('#manual-danger').removeClass('hidden');
+          console.log(data.error);
+          $('#manual-danger').html(' ' + data.responseJSON.error);
+          console.log('JSON.stringify(data) : ' + JSON.stringify(data));
         });
       });
+
+      //Handle validation or denying button
+      $('.validate').click(function(){
+        const type = $(this).attr('type');
+        const buttons = $(this).parent('.btn-group');
+        const row = $(this).closest('.status');
+        $.post('/admin/validate', {type: $(this).attr('type'), id: $(this).attr('id'), vol: $(this).attr('vol')})
+        .always(function(data){
+          console.info('data : ' + JSON.stringify(data));
+          //buttons.html('<p>'+data.message+'</p>');
+          row.removeClass('warning');
+          row.removeClass('danger');
+          row.addClass('success');
+        });
+      });
+
+      //Handle validation or denying button
+      $('.deny').click(function(){
+        const type = $(this).attr('type');
+        const buttons = $(this).parent('.btn-group');
+        const row = $(this).closest('.status');
+        $.post('/admin/deny', {type: $(this).attr('type'), id: $(this).attr('id'), vol: $(this).attr('vol')})
+        .always(function(data){
+          console.info('data : ' + JSON.stringify(data));
+          //buttons.html('<p>'+data.message+'</p>');
+          row.removeClass('warning');
+          row.removeClass('success');
+          row.addClass('danger');
+        });
+      });
+
+      const getRowClass = function(status){
+        console.info('Status : ' + status);
+        if((status == 'pending') || (status == 'confirmed') || (status == 'corrected')){ console.info('Return warning');return 'warning'}
+        else if (status == 'denied'){ console.info('Return danger');return 'danger'}
+        else if (status == 'validated'){ console.info('Return success');return 'success'}
+        else { return ''}
+      };
+      $('.status').each(function(){
+        let status = $(this).attr('status');
+        $(this).addClass(getRowClass(status));
+      });
+    });
