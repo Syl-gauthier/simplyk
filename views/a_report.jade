@@ -336,7 +336,9 @@ block content
                       tr
                         td
                           if (man.hours_done > 0)
-                            span.badge(style='background-color: #113A20')= man.hours_done + ' heures réalisées'
+                            p
+                              span.badge(style='background-color: #113A20')= man.hours_done + ' heures réalisées'
+                              i.fa.fa-pencil.edit(style="cursor: pointer", man=man._id, type='hours_done')
                           else 
                             span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
                           h3
@@ -344,7 +346,8 @@ block content
                           if (man.added.toLocaleString())
                             p le <b> #{man.added.toLocaleString()} </b>
                         td
-                          p= man.description
+                          p.inline= man.description
+                            i.fa.fa-pencil.edit(style="cursor: pointer", man=man._id, type='description')
 
 block footscript
   script(type='text/javascript').
@@ -417,5 +420,43 @@ block footscript
       $('.status').each(function(){
         let status = $(this).attr('status');
         $(this).addClass(getRowClass(status));
+      });
+    });
+
+  script(type='text/javascript').
+    'use strict';
+    $(document).ready(function(){
+      $('.edit').click(function(){
+        const man_id = $(this).attr('man');
+        const p = $(this).parent();
+        if ($(this).attr('type') == 'description'){
+          $(this).removeClass('fa').removeClass('fa-pencil');
+          $(this).parent().html("<p>Correction de la réponse</p><textarea rows='4' id='new_description'>"+$(this).parent().text()+"</textarea><input value='Valider' type='button' class='btn btn-warning valid-edit'></input>");
+          $('.valid-edit').click(function(){
+            const new_description = $('#new_description').val();
+            $.post('/edit-manual', {new_description, man_id})
+            .done(function(){
+              p.html("<p class='alert alert-success'> Modifications prises en compte </p><p>"+new_description+"</p>");
+            })
+            .fail(function(data){
+              p.html("<p class='alert alert-danger'> Erreur lors de la modification </p><p>"+data.error+"</p>");
+              console.log(data);
+            })
+          });
+        } else if ($(this).attr('type') == 'hours_done') {
+          $(this).removeClass('fa').removeClass('fa-pencil');
+          $(this).parent().html("<p>Correction de la réponse</p><input type='number' min='0.5' id='hours_done' value="+($(this).parent().text().charAt(0))+"></input><input value='Valider' type='button' class='btn btn-warning valid-edit'></input>");
+          $('.valid-edit').click(function(){
+            const hours_done = $('#hours_done').val();
+            $.post('/edit-manual', {hours_done, man_id})
+            .done(function(){
+              p.html("<p class='alert alert-success'> Modifications prises en compte </p><p>"+hours_done+" heures réalisées</p>");
+            })
+            .fail(function(data){
+              p.html("<p class='alert alert-danger'> Erreur lors de la modification </p><p>"+data.error+"</p>");
+              console.log(data);
+            })
+          });
+        }
       });
     });
