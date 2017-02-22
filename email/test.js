@@ -26,7 +26,7 @@ function testVerifyEmail() {
 		gif: 'http://i.giphy.com/k6V7dbAsBZg5y.gif',
 		button: {
 			text: 'Vérifier mon compte',
-			link: 'platform.simplyk.org'
+			link: 'simplyk.io'
 		}
 	});
 }
