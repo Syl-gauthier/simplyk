@@ -343,7 +343,7 @@ block content
                           else 
                             span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
                             i.fa.fa-times.fa-xs.edit.inline(style="cursor: pointer; color: red;" act_id=man._id, data-toggle='modal' data-target='#erase-modal'+man_i )
-                          .modal.fade(id='erase-modal'+man_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+man_i)
+                          .modal(id='erase-modal'+man_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+man_i)
                             .modal-dialog(role='document')
                               .modal-content
                                 .modal-header
@@ -353,7 +353,7 @@ block content
                                 .modal-footer
                                   .btn-group
                                     a.btn.btn-warning(data-dismiss='modal') Annuler
-                                    input.btn.btn-default.remove_manual(type='submit' value='Oui' role='button' man=man._id, modal='erase-modal'+man_i)
+                                    div.btn.btn-default.remove_manual(man=man._id, modal='erase-modal'+man_i) Oui
                           h3
                           p ajoutées par <b> #{man.admin_name} </b>
                           if (man.added.toLocaleString())
@@ -473,19 +473,16 @@ block footscript
         }
       });
       $('.remove_manual').click(function(){
-        const modal = $('#'+$(this).attr('modal'));
-        modal.modal('toggle');
-        modal.modal('hide');
+        $('#'+$(this).attr('modal')).modal('hide');
         const man_id = $(this).attr('man');
         const p = $(this).parents('[man='+man_id+']');
-        console.log(modal);
-        $.post('/remove-manual'+man_id)
+        setTimeout(function(){$.post('/remove-manual'+man_id)
         .done(function(){
           p.html("<p class='alert alert-success'> Suppression prise en compte </p>");
         })
         .fail(function(data){
           p.html("<p class='alert alert-danger'> "+ data.err +" </p>");
           console.log(data);
-        })
+        })}, 500)
       })
     });
