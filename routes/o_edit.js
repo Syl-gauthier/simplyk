@@ -291,4 +291,35 @@ router.post('/edit-manual', permissions.requireGroup('organism', 'admin'), funct
   }
 });
 
+
+router.post('/remove-manual:man_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
+  console.log('JSON.stringify(req.params) : ' + JSON.stringify(req.params));
+  if (req.params.man_id) {
+    Volunteer.findOneAndUpdate({
+      'manuals._id': req.params.man_id
+    }, {
+      '$pull': {
+        'manuals': {
+          '_id': req.params.man_id
+        }
+      }
+    }, function(err) {
+      if (err) {
+        console.error('ERROR : in remove-manual POST : mongo findOneAndUpdate callback give an error');
+        res.status(400).send({
+          err: 'Il semble qu\'il y ait un problème avec les informations envoyées à la base de données : la suppression ne s\'est pas correctement terminée'
+        });
+      } else {
+        console.info('SUCCESS: in remove-manual POST : manual changed');
+        res.status(200).end();
+      }
+    })
+  } else {
+    console.error('ERROR : in remove-manual POST : all the req.params informations are not fullfilled');
+    res.status(400).send({
+      err: 'Il semble qu\'il y ait un problème avec les informations envoyées au serveur : la suppression ne s\'est pas correctement terminée'
+    });
+  }
+});
+
 module.exports = router;

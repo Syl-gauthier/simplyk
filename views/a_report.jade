@@ -332,15 +332,28 @@ block content
                     tr
                       th Informations
                       th Description
-                    each man, ext_i in volunteer.manuals
-                      tr
+                    each man, man_i in volunteer.manuals
+                      tr(man=man._id)
                         td
                           if (man.hours_done > 0)
                             p
                               span.badge(style='background-color: #113A20')= man.hours_done + ' heures réalisées'
                               i.fa.fa-pencil.edit(style="cursor: pointer", man=man._id, type='hours_done')
+                              i.fa.fa-times.fa-xs.edit.inline(style="cursor: pointer; color: red;" act_id=man._id, data-toggle='modal' data-target='#erase-modal'+man_i )
                           else 
                             span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
+                            i.fa.fa-times.fa-xs.edit.inline(style="cursor: pointer; color: red;" act_id=man._id, data-toggle='modal' data-target='#erase-modal'+man_i )
+                          .modal.fade(id='erase-modal'+man_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+man_i)
+                            .modal-dialog(role='document')
+                              .modal-content
+                                .modal-header
+                                  button.close(type='button' data-dismiss="modal" aria-label="Close")
+                                    span(aria-hidden='true') &times;
+                                  h4.modal-title(id='myModalLabel'+man_i) Es-tu sûr de vouloir supprimer cette activité ?
+                                .modal-footer
+                                  .btn-group
+                                    a.btn.btn-warning(data-dismiss='modal') Annuler
+                                    input.btn.btn-default.remove_manual(type='submit' value='Oui' role='button' man=man._id, modal='erase-modal'+man_i)
                           h3
                           p ajoutées par <b> #{man.admin_name} </b>
                           if (man.added.toLocaleString())
@@ -459,4 +472,20 @@ block footscript
           });
         }
       });
+      $('.remove_manual').click(function(){
+        const modal = $('#'+$(this).attr('modal'));
+        modal.modal('toggle');
+        modal.modal('hide');
+        const man_id = $(this).attr('man');
+        const p = $(this).parents('[man='+man_id+']');
+        console.log(modal);
+        $.post('/remove-manual'+man_id)
+        .done(function(){
+          p.html("<p class='alert alert-success'> Suppression prise en compte </p>");
+        })
+        .fail(function(data){
+          p.html("<p class='alert alert-danger'> "+ data.err +" </p>");
+          console.log(data);
+        })
+      })
     });
