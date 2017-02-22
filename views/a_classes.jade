@@ -72,29 +72,30 @@ block content
                             td.text-center
                               a.text-center(href="/admin/report"+vol._id) Accéder
                             td.text-center
-                              button.btn.btn-warning.center-block.btn-xs(data-toggle='modal' data-target='#manualHoursModal' + vol_i)
-                                i.fa.fa-plus
-                              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal' + vol_i)
-                                div.modal-dialog(role='document')
-                                  form.manualHoursForm(id='manualHoursForm' + vol_i, volunteer=vol._id, role='form', index=vol_i).modal-content
-                                    .modal-header
-                                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                                        span(aria-hidden='true')
-                                        h4.modal-title Ajout d'heures manuel
-                                    div.modal-body
-                                      p.alert.alert-success.hidden(id='manual-success'+vol_i)
-                                      p.alert.alert-danger.hidden(id='manual-danger'+vol_i)
-                                      label(for='hours_done') Nombre d'heures
-                                      input.form-control(type='number', min='0.5', max='50', step='0.5' name='hours_done', required)
-                                      label(for='hours_description') Description
-                                      textarea.form-control(name="hours_description" id="hours_description" rows="6" required)
-                                    div.modal-footer
-                                      input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
-                                      a.btn.btn-default(data-dismiss='modal') Fermer
+                              div.btn-group
+                                div.btn.btn-warning.center-block.btn-xs(data-toggle='modal' data-target='#manualHoursModal' + vol_i)
+                                  i.fa.fa-plus
+                                .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal' + vol_i)
+                                  div.modal-dialog(role='document')
+                                    form.manualHoursForm(id='manualHoursForm' + vol_i, volunteer=vol._id, role='form', index=vol_i).modal-content
+                                      .modal-header
+                                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                          span(aria-hidden='true')
+                                          h4.modal-title Ajout d'heures manuel
+                                      div.modal-body
+                                        p.alert.alert-success.hidden(id='manual-success'+vol_i)
+                                        p.alert.alert-danger.hidden(id='manual-danger'+vol_i)
+                                        label(for='hours_done') Nombre d'heures
+                                        input.form-control(type='number', min='0.5', max='50', step='0.5' name='hours_done', required)
+                                        label(for='hours_description') Description
+                                        textarea.form-control(name="hours_description" id="hours_description" rows="6" required)
+                                      div.modal-footer
+                                        input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
+                                        a.btn.btn-default(data-dismiss='modal') Fermer
                             if classes_array.length > 1
                               td.text-center
                                 div.btn-group
-                                  button.btn.btn-default.dropdown-toggle.center-block.btn-xs(data-toggle='dropdown')
+                                  div.btn.btn-default.dropdown-toggle.center-block.btn-xs(data-toggle='dropdown')
                                     i.fa.fa-exchange
                                   ul.dropdown-menu
                                     each classe, classe_i in classes_array
@@ -116,29 +117,30 @@ block content
                           td.text-center
                             a.text-center(href="/admin/report"+vol._id) Accéder
                           td.text-center
-                            button.btn.btn-warning.center-block.btn-xs(data-toggle='modal' data-target='#manualHoursModal' + vol_i)
-                              i.fa.fa-plus
-                            .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal' + vol_i)
-                              div.modal-dialog(role='document')
-                                form.manualHoursForm(id='manualHoursForm' + vol_i, volunteer=vol._id, role='form', index=vol_i).modal-content
-                                  .modal-header
-                                    button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                                      span(aria-hidden='true')
-                                      h4.modal-title Ajout d'heures manuel
-                                  div.modal-body
-                                    p.alert.alert-success.hidden(id='manual-success'+vol_i)
-                                    p.alert.alert-danger.hidden(id='manual-danger'+vol_i)
-                                    label(for='hours_done') Nombre d'heures
-                                    input.form-control(type='number', min='0.5', max='50', step='0.5' name='hours_done', required)
-                                    label(for='hours_description') Description
-                                    textarea.form-control(name="hours_description" id="hours_description" rows="6" required)
-                                  div.modal-footer
-                                    input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
-                                    a.btn.btn-default(data-dismiss='modal') Fermer
+                            div.btn-group
+                              div.btn.btn-warning.center-block.btn-xs(data-toggle='modal' data-target='#manualHoursModal' + vol_i)
+                                i.fa.fa-plus
+                              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal' + vol_i)
+                                div.modal-dialog(role='document')
+                                  form.manualHoursForm(id='manualHoursForm' + vol_i, volunteer=vol._id, role='form', index=vol_i).modal-content
+                                    .modal-header
+                                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                        span(aria-hidden='true')
+                                        h4.modal-title Ajout d'heures manuel
+                                    div.modal-body
+                                      p.alert.alert-success.hidden(id='manual-success'+vol_i)
+                                      p.alert.alert-danger.hidden(id='manual-danger'+vol_i)
+                                      label(for='hours_done') Nombre d'heures
+                                      input.form-control(type='number', min='0.5', max='50', step='0.5' name='hours_done', required)
+                                      label(for='hours_description') Description
+                                      textarea.form-control(name="hours_description" id="hours_description" rows="6" required)
+                                    div.modal-footer
+                                      input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
+                                      a.btn.btn-default(data-dismiss='modal') Fermer
                           if classes_array.length > 1
                             td.text-center
                               div.btn-group
-                                button.btn.btn-default.dropdown-toggle.center-block.btn-xs(data-toggle='dropdown')
+                                div.btn.btn-default.dropdown-toggle.center-block.btn-xs(data-toggle='dropdown')
                                   i.fa.fa-exchange
                                 ul.dropdown-menu
                                   each classe, classe_i in classes_array

@@ -25,7 +25,7 @@ block content
               li.list-group-item Adresse mail: #{volunteer.email}
                 small
         p.alert.alert-success.hidden#manual-success
-        button.btn.btn-warning(data-toggle='modal' data-target='#manualHoursModal', style='margin-bottom: 20px;') Ajouter des heures manuellement
+        div.btn.btn-warning(data-toggle='modal' data-target='#manualHoursModal', style='margin-bottom: 20px;') Ajouter des heures manuellement
         .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal')
           div.modal-dialog(role='document')
             form(id='manualHoursForm', role='form').modal-content
