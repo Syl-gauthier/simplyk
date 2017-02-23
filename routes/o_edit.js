@@ -249,4 +249,77 @@ router.post('/remove-activity:act_id', permissions.requireGroup('organism', 'adm
   }
 });
 
+router.post('/edit-manual', permissions.requireGroup('organism', 'admin'), function(req, res) {
+  console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
+  if (req.body.new_description && req.body.man_id) {
+    Volunteer.findOneAndUpdate({
+      'manuals._id': req.body.man_id
+    }, {
+      'manuals.$.description': req.body.new_description
+    }, function(err) {
+      if (err) {
+        console.error('ERROR : in edit-manual POST : mongo findOneAndUpdate callback give an error');
+        res.status(400).send({
+          error: 'Il semble qu\'il y ait un problème avec les informations envoyées à la base de données'
+        });
+      } else {
+        console.info('SUCCESS: in edit-manual POST : manual changed');
+        res.status(200).end();
+      }
+    })
+  } else if (req.body.hours_done && req.body.man_id) {
+    Volunteer.findOneAndUpdate({
+      'manuals._id': req.body.man_id
+    }, {
+      'manuals.$.hours_done': req.body.hours_done
+    }, function(err) {
+      if (err) {
+        console.error('ERROR : in edit-manual POST : mongo findOneAndUpdate callback give an error');
+        res.status(400).send({
+          error: 'Il semble qu\'il y ait un problème avec les informations envoyées à la base de données'
+        });
+      } else {
+        console.info('SUCCESS: in edit-manual POST : manual changed');
+        res.status(200).end();
+      }
+    })
+  } else {
+    console.error('ERROR : in edit-manual POST : all the req.body informations are not fullfilled');
+    res.status(400).send({
+      error: 'Il semble qu\'il y ait un problème avec les informations envoyées au serveur'
+    });
+  }
+});
+
+
+router.post('/remove-manual:man_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
+  console.log('JSON.stringify(req.params) : ' + JSON.stringify(req.params));
+  if (req.params.man_id) {
+    Volunteer.findOneAndUpdate({
+      'manuals._id': req.params.man_id
+    }, {
+      '$pull': {
+        'manuals': {
+          '_id': req.params.man_id
+        }
+      }
+    }, function(err) {
+      if (err) {
+        console.error('ERROR : in remove-manual POST : mongo findOneAndUpdate callback give an error');
+        res.status(400).send({
+          err: 'Il semble qu\'il y ait un problème avec les informations envoyées à la base de données : la suppression ne s\'est pas correctement terminée'
+        });
+      } else {
+        console.info('SUCCESS: in remove-manual POST : manual changed');
+        res.status(200).end();
+      }
+    })
+  } else {
+    console.error('ERROR : in remove-manual POST : all the req.params informations are not fullfilled');
+    res.status(400).send({
+      err: 'Il semble qu\'il y ait un problème avec les informations envoyées au serveur : la suppression ne s\'est pas correctement terminée'
+    });
+  }
+});
+
 module.exports = router;

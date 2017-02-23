@@ -63,10 +63,9 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                   li
                     a.toggle-but(href='/contact') Contactez-nous
                   li
+                    a.toggle-but(href='/organism/profile') Mon profil
+                  li
                     a.toggle-but(href='/us') À propos
-          unless page == 'profile'
-            li.navbar-link(role='presentation')
-              a(href='/organism/profile') Mon profil
           unless page == 'dashboard'
             li.navbar-link(role='presentation')
               a(href='/organism/dashboard') Tableau de bord
@@ -77,16 +76,12 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
             form.navbar-form( method='post', action='./logout')
               button.btn.btn-default(type='submit') Déconnexion
         else if group == 'admin'
-          li.navbar-link(role='presentation')
-            a(href='/admin/profile') Mon profil
-          li.navbar-link(role='presentation')
-            a(href='/admin/classes') Mes étudiants
+          unless page == 'students'
+            li.navbar-link(role='presentation')
+              a(href='/admin/classes') Mes élèves
           if session.organism
             li.navbar-link(role='presentation')
               a(href='/organism/dashboard') Mes opportunités internes
-            unless page=='map'
-              li.navbar-link(role='presentation')
-                a(href='/organism/map') Carte
           li(role='presentation')
             form.navbar-form
               li.dropdown
@@ -95,6 +90,10 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                 ul.dropdown-menu#drop-down-bu
                   li
                     a.toggle-but(href='/listorganisms') Liste des organismes
+                  li
+                    a.toggle-but(href='/admin/profile') Mon profil
+                  li
+                    a.toggle-but(href='/organism/map') Carte
                   li
                     a.toggle-but(href='/contact') Contactez-nous
                   li

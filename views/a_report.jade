@@ -25,7 +25,7 @@ block content
               li.list-group-item Adresse mail: #{volunteer.email}
                 small
         p.alert.alert-success.hidden#manual-success
-        button.btn.btn-warning(data-toggle='modal' data-target='#manualHoursModal', style='margin-bottom: 20px;') Ajouter des heures manuellement
+        div.btn.btn-warning(data-toggle='modal' data-target='#manualHoursModal', style='margin-bottom: 20px;') Ajouter des heures manuellement
         .modal.fade(tabindex='-1', role='dialog' aria-labelledby="manualHoursModalLabel", id='manualHoursModal')
           div.modal-dialog(role='document')
             form(id='manualHoursForm', role='form').modal-content
@@ -332,19 +332,35 @@ block content
                     tr
                       th Informations
                       th Description
-                    each man, ext_i in volunteer.manuals
-                      tr
+                    each man, man_i in volunteer.manuals
+                      tr(man=man._id)
                         td
                           if (man.hours_done > 0)
-                            span.badge(style='background-color: #113A20')= man.hours_done + ' heures réalisées'
+                            p
+                              span.badge(style='background-color: #113A20')= man.hours_done + ' heures réalisées'
+                              i.fa.fa-pencil.edit(style="cursor: pointer", man=man._id, type='hours_done')
+                              i.fa.fa-times.fa-xs.edit.inline(style="cursor: pointer; color: red;" act_id=man._id, data-toggle='modal' data-target='#erase-modal'+man_i )
                           else 
                             span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
+                            i.fa.fa-times.fa-xs.edit.inline(style="cursor: pointer; color: red;" act_id=man._id, data-toggle='modal' data-target='#erase-modal'+man_i )
+                          .modal(id='erase-modal'+man_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+man_i)
+                            .modal-dialog(role='document')
+                              .modal-content
+                                .modal-header
+                                  button.close(type='button' data-dismiss="modal" aria-label="Close")
+                                    span(aria-hidden='true') &times;
+                                  h4.modal-title(id='myModalLabel'+man_i) Es-tu sûr de vouloir supprimer cette activité ?
+                                .modal-footer
+                                  .btn-group
+                                    a.btn.btn-warning(data-dismiss='modal') Annuler
+                                    div.btn.btn-default.remove_manual(man=man._id, modal='erase-modal'+man_i) Oui
                           h3
                           p ajoutées par <b> #{man.admin_name} </b>
                           if (man.added.toLocaleString())
                             p le <b> #{man.added.toLocaleString()} </b>
                         td
-                          p= man.description
+                          p.inline= man.description
+                            i.fa.fa-pencil.edit(style="cursor: pointer", man=man._id, type='description')
 
 block footscript
   script(type='text/javascript').
@@ -418,4 +434,55 @@ block footscript
         let status = $(this).attr('status');
         $(this).addClass(getRowClass(status));
       });
+    });
+
+  script(type='text/javascript').
+    'use strict';
+    $(document).ready(function(){
+      $('.edit').click(function(){
+        const man_id = $(this).attr('man');
+        const p = $(this).parent();
+        if ($(this).attr('type') == 'description'){
+          $(this).removeClass('fa').removeClass('fa-pencil');
+          $(this).parent().html("<p>Correction de la réponse</p><textarea rows='4' id='new_description'>"+$(this).parent().text()+"</textarea><input value='Valider' type='button' class='btn btn-warning valid-edit'></input>");
+          $('.valid-edit').click(function(){
+            const new_description = $('#new_description').val();
+            $.post('/edit-manual', {new_description, man_id})
+            .done(function(){
+              p.html("<p class='alert alert-success'> Modifications prises en compte </p><p>"+new_description+"</p>");
+            })
+            .fail(function(data){
+              p.html("<p class='alert alert-danger'> Erreur lors de la modification </p><p>"+data.error+"</p>");
+              console.log(data);
+            })
+          });
+        } else if ($(this).attr('type') == 'hours_done') {
+          $(this).removeClass('fa').removeClass('fa-pencil');
+          $(this).parent().html("<p>Correction de la réponse</p><input type='number' min='0.5' id='hours_done' value="+($(this).parent().text().charAt(0))+"></input><input value='Valider' type='button' class='btn btn-warning valid-edit'></input>");
+          $('.valid-edit').click(function(){
+            const hours_done = $('#hours_done').val();
+            $.post('/edit-manual', {hours_done, man_id})
+            .done(function(){
+              p.html("<p class='alert alert-success'> Modifications prises en compte </p><p>"+hours_done+" heures réalisées</p>");
+            })
+            .fail(function(data){
+              p.html("<p class='alert alert-danger'> Erreur lors de la modification </p><p>"+data.error+"</p>");
+              console.log(data);
+            })
+          });
+        }
+      });
+      $('.remove_manual').click(function(){
+        $('#'+$(this).attr('modal')).modal('hide');
+        const man_id = $(this).attr('man');
+        const p = $(this).parents('[man='+man_id+']');
+        setTimeout(function(){$.post('/remove-manual'+man_id)
+        .done(function(){
+          p.html("<p class='alert alert-success'> Suppression prise en compte </p>");
+        })
+        .fail(function(data){
+          p.html("<p class='alert alert-danger'> "+ data.err +" </p>");
+          console.log(data);
+        })}, 500)
+      })
     });
