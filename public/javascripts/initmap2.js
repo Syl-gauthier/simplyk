@@ -1,6 +1,6 @@
 function initMap() {
   'use strict';
-  let markers = [];
+  //let markers = [];
   let adult_index = [];
   let infowindows = [];
   let lts_checked = true;
@@ -220,7 +220,7 @@ function initMap() {
 
     attachInfoWindow(activity_marker, activity_info_window, act._id);
 
-    markers.push(activity_marker);
+    //markers.push(activity_marker);
     infos_about_act.filter_grid = filter_grid;
     infos_about_act.marker = activity_marker;
     infos_about_act.info_window = activity_info_window;
@@ -277,7 +277,7 @@ function initMap() {
 
     attachInfoWindow(longterm_marker, longterm_info_window, lt.long_term._id);
 
-    markers.push(longterm_marker);
+    //markers.push(longterm_marker);
     infos_about_lt.filter_grid = filter_grid;
     infos_about_lt.marker = longterm_marker;
     infos_about_lt.info_window = longterm_info_window;
@@ -288,7 +288,7 @@ function initMap() {
   });
 
   //Create the cluster for the markers
-  markerCluster = new MarkerClusterer(map, markers, options);
+  //markerCluster = new MarkerClusterer(map, markers, options);
 
 
   function attachInfoWindow(marker, infoWindow, opp_id) {
@@ -302,8 +302,8 @@ function initMap() {
       marker.addListener('mouseout', function() {
         infoWindow.close();
       });
-      $('[id=' + opp_id.toString() + '][class=list-group-item]').unbind('mouseenter mouseleave');
-      $('[id=' + opp_id.toString() + '][class=list-group-item]').hover(function(e) {
+      $('[id=' + opp_id.toString() + ']').unbind('mouseenter mouseleave');
+      $('[id=' + opp_id.toString() + ']').hover(function(e) {
         infoWindow.open(map, marker);
       }, function(e) {
         infoWindow.close();
@@ -333,11 +333,11 @@ function initMap() {
   };
 
   function showItem(item) {
-    $('[id=' + item._id.toString() + '][class=list-group-item]').removeClass('hidden');
+    $('[id=' + item._id + ']').removeClass('hidden');
   }
 
   function hideItem(item) {
-    $('[id=' + item._id.toString() + '][class=list-group-item]').addClass('hidden');
+    $('[id=' + item._id + ']').addClass('hidden');
   }
 
 
@@ -475,7 +475,7 @@ function initMap() {
   //When all the map is loaded, initAutocomplete
   google.maps.event.addListenerOnce(map, 'tilesloaded', initAutocomplete);
   google.maps.event.addListenerOnce(map, 'tilesloaded', refreshFilters);
-  google.maps.event.addListener(map, 'idle', filterOnLocation);
+  google.maps.event.addListener(map, 'bounds_changed', filterOnLocation);
   //AUTOCOMPLETE input
   function initAutocomplete() {
     var loc_bar_options = {

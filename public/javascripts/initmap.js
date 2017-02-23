@@ -37,6 +37,8 @@ function initMap() {
     listElement.childNodes[2].childNodes[0].click();
     console.log(listElement.childNodes[2]);
   }*/
+  
+  //<------------------------------------
 
   function setMapIfExists(map, i, type) {
     console.log('markers[14] : ' + JSON.stringify(acts[14]));
@@ -76,7 +78,6 @@ function initMap() {
     }
   }
 
-  //<------------------------------------
   function attachInfoWindow(marker, infoWindow, opp_id) {
     if (marker) {
       marker.addListener('click', function() {
