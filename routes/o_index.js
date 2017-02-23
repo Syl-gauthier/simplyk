@@ -66,6 +66,7 @@ router.get('/', function(req, res, next) {
             return !(activity.school_id);
           };
           const isVerified = function(activity) {
+            console.log('activity : ' + activity._id);
             return activity.validation;
           }
           const acts = activities.filter(isNotPassed).filter(isNotASchool).filter(isVerified);

@@ -1,16 +1,16 @@
 function initMap() {
   'use strict';
-  //let markers = [];
-  let adult_index = [];
-  let infowindows = [];
   let lts_checked = true;
   let acts_checked = true;
   let age_checked = false;
-  let age_printed = 'all';
-  let printed = 'all'; //Markers currently onscreen
   let markerCluster = {};
   let infos = new Array(); //For each activities and longterm, there will be an object in infos with the marker, the infos, the info_window and the filter grid
-  let filters = [1, 1, 1, 1, 0, 0];
+  let filters = [1, 1, 1, 1, 1, 0];
+
+  if (page == 'landing') {
+    filters[4] = 0;
+    age_checked = true;
+  }
   /*
   0. 1 = Nature, 0 = Non-Nature
   1. 1 = Solidarity, 0 = Non-Solidarity
@@ -51,10 +51,10 @@ function initMap() {
   const legend = document.createElement('div');
   legend.id = 'legend';
   let legend_content = [];
-  legend_content.push('<h5 id="blop" class="leaf legend" filter="checked" type="leaf" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-envira fa-lg fa-fw leaf"></i> Nature </h5><br>');
-  legend_content.push('<h5 class="soli legend" filter="checked" type="soli" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-heart fa-lg fa-fw soli"></i> Solidarité </h5><br>');
-  legend_content.push('<h5 class="cult legend" filter="checked" type="cult" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-institution fa-lg fa-fw cult"></i> Sport et culture </h5><br>');
-  legend_content.push('<h5 class="child legend" filter="checked" type="child" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-child fa-lg fa-fw child"></i> Enfance </h5>');
+  legend_content.push('<h5 id="blop" class="leaf legend" filter="checked" type="leaf" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw leaf"></i> <b>Nature</b> </h5><br>');
+  legend_content.push('<h5 class="soli legend" filter="checked" type="soli" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw soli"></i> <b>Solidarité</b> </h5><br>');
+  legend_content.push('<h5 class="cult legend" filter="checked" type="cult" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw cult"></i> <b>Sport et culture</b> </h5><br>');
+  legend_content.push('<h5 class="child legend" filter="checked" type="child" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw child"></i> <b>Enfance</b> </h5>');
   legend.innerHTML = legend_content.join('');
   legend.index = 1;
 
@@ -64,12 +64,16 @@ function initMap() {
       $(this).attr('filter', 'unchecked');
       $(this).removeClass('leaf');
       $(this).children().removeClass('leaf');
+      $(this).children("i").removeClass('fa-check-square-o');
+      $(this).children("i").addClass('fa-square-o');
       filters[0] = 0;
       refreshFilters();
     } else {
       $(this).attr('filter', 'checked');
       $(this).addClass('leaf');
       $(this).children().addClass('leaf');
+      $(this).children("i").removeClass('fa-square-o');
+      $(this).children("i").addClass('fa-check-square-o');
       filters[0] = 1;
       refreshFilters();
     }
@@ -80,12 +84,16 @@ function initMap() {
       $(this).attr('filter', 'unchecked');
       $(this).removeClass('soli');
       $(this).children().removeClass('soli');
+      $(this).children("i").removeClass('fa-check-square-o');
+      $(this).children("i").addClass('fa-square-o');
       filters[1] = 0;
       refreshFilters();
     } else {
       $(this).attr('filter', 'checked');
       $(this).addClass('soli');
       $(this).children().addClass('soli');
+      $(this).children("i").removeClass('fa-square-o');
+      $(this).children("i").addClass('fa-check-square-o');
       filters[1] = 1;
       refreshFilters();
     }
@@ -96,12 +104,16 @@ function initMap() {
       $(this).attr('filter', 'unchecked');
       $(this).removeClass('cult');
       $(this).children().removeClass('cult');
+      $(this).children("i").removeClass('fa-check-square-o');
+      $(this).children("i").addClass('fa-square-o');
       filters[2] = 0;
       refreshFilters();
     } else {
       $(this).attr('filter', 'checked');
       $(this).addClass('cult');
       $(this).children().addClass('cult');
+      $(this).children("i").removeClass('fa-square-o');
+      $(this).children("i").addClass('fa-check-square-o');
       filters[2] = 1;
       refreshFilters();
     }
@@ -112,12 +124,16 @@ function initMap() {
       $(this).attr('filter', 'unchecked');
       $(this).removeClass('child');
       $(this).children().removeClass('child');
+      $(this).children("i").removeClass('fa-check-square-o');
+      $(this).children("i").addClass('fa-square-o');
       filters[3] = 0;
       refreshFilters();
     } else {
       $(this).attr('filter', 'checked');
       $(this).addClass('child');
       $(this).children().addClass('child');
+      $(this).children("i").removeClass('fa-square-o');
+      $(this).children("i").addClass('fa-check-square-o');
       filters[3] = 1;
       refreshFilters();
     }
@@ -240,19 +256,19 @@ function initMap() {
     });
 
     let marker_image = {};
-    let filter_grid = new Array(0, 0, 0, 0, 0, 1);
+    let filter_grid = new Array(0, 0, 0, 0, 0, 2);
 
     if (lt.cause == 'Nature') {
-      marker_image = imageEnvFlash;
+      marker_image = imageEnv;
       filter_grid[0] = 1;
     } else if (lt.cause == 'Solidarité') {
-      marker_image = imageSolFlash;
+      marker_image = imageSol;
       filter_grid[1] = 1;
     } else if (lt.cause == 'Sport et Culture') {
-      marker_image = imageCulFlash;
+      marker_image = imageCul;
       filter_grid[2] = 1;
     } else if (lt.cause == 'Enfance') {
-      marker_image = imageEnfFlash;
+      marker_image = imageEnf;
       filter_grid[3] = 1;
     } else {
       marker_image = null;
@@ -287,8 +303,16 @@ function initMap() {
     infos.push(infos_about_lt);
   });
 
-  //Create the cluster for the markers
-  //markerCluster = new MarkerClusterer(map, markers, options);
+  /*markerCluster = new MarkerClusterer(map, function() {
+    let markers = new Array();
+    infos.map(function(item) {
+      if ((infos.marker).getMap()) {
+        markers.push(infos.marker)
+      }
+    });
+    return markers;
+  }, options);*/
+
 
 
   function attachInfoWindow(marker, infoWindow, opp_id) {
@@ -322,13 +346,15 @@ function initMap() {
         showItem(item);
         item.filtered = false;
         item.marker.setMap(map);
+        //markerCluster.addMarker(item.marker);
       } else {
         hideItem(item);
         item.filtered = true;
         item.marker.setMap(null);
+        //markerCluster.removeMarker(item.marker);
       };
     });
-    //markerCluster = new MarkerClusterer(map, markers, options);
+    //Create the cluster for the markers
     filterOnLocation();
   };
 
