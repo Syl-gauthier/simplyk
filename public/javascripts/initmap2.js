@@ -3,13 +3,20 @@ function initMap() {
   let lts_checked = true;
   let acts_checked = true;
   let age_checked = false;
+  let first_age_filtered = false;
   let markerCluster = {};
   let infos = new Array(); //For each activities and longterm, there will be an object in infos with the marker, the infos, the info_window and the filter grid
-  let filters = [1, 1, 1, 1, 1, 0];
+  let nature_indexes = new Array();
+  let sol_indexes = new Array();
+  let culture_indexes = new Array();
+  let child_indexes = new Array();
+  let adult_indexes = new Array();
+  let ponctual_indexes = new Array();
+  let longterm_indexes = new Array();
 
   if (page == 'landing') {
-    filters[4] = 0;
     age_checked = true;
+    first_age_filtered = true;
   }
   /*
   0. 1 = Nature, 0 = Non-Nature
@@ -66,16 +73,14 @@ function initMap() {
       $(this).children().removeClass('leaf');
       $(this).children("i").removeClass('fa-check-square-o');
       $(this).children("i").addClass('fa-square-o');
-      filters[0] = 0;
-      refreshFilters();
+      hideFromFilters(0);
     } else {
       $(this).attr('filter', 'checked');
       $(this).addClass('leaf');
       $(this).children().addClass('leaf');
       $(this).children("i").removeClass('fa-square-o');
       $(this).children("i").addClass('fa-check-square-o');
-      filters[0] = 1;
-      refreshFilters();
+      showFromFilters(0);
     }
   });
   legend.childNodes[2].addEventListener('click', function(event) {
@@ -86,16 +91,14 @@ function initMap() {
       $(this).children().removeClass('soli');
       $(this).children("i").removeClass('fa-check-square-o');
       $(this).children("i").addClass('fa-square-o');
-      filters[1] = 0;
-      refreshFilters();
+      hideFromFilters(1);
     } else {
       $(this).attr('filter', 'checked');
       $(this).addClass('soli');
       $(this).children().addClass('soli');
       $(this).children("i").removeClass('fa-square-o');
       $(this).children("i").addClass('fa-check-square-o');
-      filters[1] = 1;
-      refreshFilters();
+      showFromFilters(1);
     }
   });
   legend.childNodes[4].addEventListener('click', function(event) {
@@ -106,16 +109,14 @@ function initMap() {
       $(this).children().removeClass('cult');
       $(this).children("i").removeClass('fa-check-square-o');
       $(this).children("i").addClass('fa-square-o');
-      filters[2] = 0;
-      refreshFilters();
+      hideFromFilters(2);
     } else {
       $(this).attr('filter', 'checked');
       $(this).addClass('cult');
       $(this).children().addClass('cult');
       $(this).children("i").removeClass('fa-square-o');
       $(this).children("i").addClass('fa-check-square-o');
-      filters[2] = 1;
-      refreshFilters();
+      showFromFilters(2);
     }
   });
   legend.childNodes[6].addEventListener('click', function(event) {
@@ -126,16 +127,14 @@ function initMap() {
       $(this).children().removeClass('child');
       $(this).children("i").removeClass('fa-check-square-o');
       $(this).children("i").addClass('fa-square-o');
-      filters[3] = 0;
-      refreshFilters();
+      hideFromFilters(3);
     } else {
       $(this).attr('filter', 'checked');
       $(this).addClass('child');
       $(this).children().addClass('child');
       $(this).children("i").removeClass('fa-square-o');
       $(this).children("i").addClass('fa-check-square-o');
-      filters[3] = 1;
-      refreshFilters();
+      showFromFilters(3);
     }
   });
   map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
@@ -189,36 +188,39 @@ function initMap() {
   };
   //---------------------------------------------------------------------------------------------------------------------------GATHER INFOS AND CREATE MARKERS
   //Gather infos and create marker to each activities
-  acts.map(function(act) {
+  acts.map(function(act, act_i) {
     const infos_about_act = {};
     infos_about_act._id = act._id;
     infos_about_act.cause = act.cause;
+    ponctual_indexes.push(act_i);
     const activity_info_window = new google.maps.InfoWindow({
       content: '<b>' + act.org_name + '</b>' + '<br>' + act.intitule,
       disableAutoPan: true
     });
 
     let marker_image = {};
-    let filter_grid = new Array(0, 0, 0, 0, 0, 1);
 
     if (act.cause == 'Nature') {
       marker_image = imageEnvFlash;
-      filter_grid[0] = 1;
+      nature_indexes.push(act_i);
     } else if (act.cause == 'Solidarité') {
       marker_image = imageSolFlash;
-      filter_grid[1] = 1;
+      sol_indexes.push(act_i);
     } else if (act.cause == 'Sport et Culture') {
       marker_image = imageCulFlash;
-      filter_grid[2] = 1;
+      culture_indexes.push(act_i);
     } else if (act.cause == 'Enfance') {
       marker_image = imageEnfFlash;
-      filter_grid[3] = 1;
+      child_indexes.push(act_i);
     } else {
       marker_image = null;
     }
 
     if (act.min_age >= 16) {
-      filter_grid[4] = 1;
+      adult_indexes.push(act_i);
+      infos_about_act.age_filtered = first_age_filtered;
+    } else {
+      infos_about_act.age_filtered = false;
     }
 
     const lati = act.lat + 0.005 * (Math.random() - 0.5);
@@ -236,46 +238,53 @@ function initMap() {
 
     attachInfoWindow(activity_marker, activity_info_window, act._id);
 
-    //markers.push(activity_marker);
-    infos_about_act.filter_grid = filter_grid;
     infos_about_act.marker = activity_marker;
     infos_about_act.info_window = activity_info_window;
     infos_about_act.lat = act.lat;
     infos_about_act.lon = act.lon;
-    infos_about_act.filtered = false;
+    infos_about_act.type_filtered = false;
+    infos_about_act.category_filtered = false;
+    if (infos_about_act.category_filtered || infos_about_act.type_filtered || infos_about_act.age_filtered) {
+      infos_about_act.marker.setMap(null);
+      hideItem(infos_about_act._id);
+    }
     infos.push(infos_about_act);
+
   });
   //Gather infos and create marker to each longterms
-  lts.map(function(lt) {
+  lts.map(function(lt, lt_i) {
     const infos_about_lt = {};
     infos_about_lt._id = lt.long_term._id;
     infos_about_lt.cause = lt.cause;
+    longterm_indexes.push(lt_i + acts.length);
     const longterm_info_window = new google.maps.InfoWindow({
       content: '<b>' + lt.org_name + '</b>' + '<br>' + lt.long_term.intitule,
       disableAutoPan: true
     });
 
     let marker_image = {};
-    let filter_grid = new Array(0, 0, 0, 0, 0, 2);
 
     if (lt.cause == 'Nature') {
       marker_image = imageEnv;
-      filter_grid[0] = 1;
+      nature_indexes.push(lt_i + acts.length);
     } else if (lt.cause == 'Solidarité') {
       marker_image = imageSol;
-      filter_grid[1] = 1;
+      sol_indexes.push(lt_i + acts.length);
     } else if (lt.cause == 'Sport et Culture') {
       marker_image = imageCul;
-      filter_grid[2] = 1;
+      culture_indexes.push(lt_i + acts.length);
     } else if (lt.cause == 'Enfance') {
       marker_image = imageEnf;
-      filter_grid[3] = 1;
+      child_indexes.push(lt_i + acts.length);
     } else {
       marker_image = null;
     }
 
     if (lt.long_term.min_age >= 16) {
-      filter_grid[4] = 1;
+      adult_indexes.push(lt_i + acts.length);
+      infos_about_lt.age_filtered = first_age_filtered;
+    } else {
+      infos_about_lt.age_filtered = false;
     }
 
     const lati = lt.long_term.lat + 0.005 * (Math.random() - 0.5);
@@ -293,13 +302,16 @@ function initMap() {
 
     attachInfoWindow(longterm_marker, longterm_info_window, lt.long_term._id);
 
-    //markers.push(longterm_marker);
-    infos_about_lt.filter_grid = filter_grid;
     infos_about_lt.marker = longterm_marker;
     infos_about_lt.info_window = longterm_info_window;
     infos_about_lt.lat = lt.long_term.lat;
     infos_about_lt.lon = lt.long_term.lon;
-    infos_about_lt.filtered = false;
+    infos_about_lt.type_filtered = false;
+    infos_about_lt.category_filtered = false;
+    if (infos_about_lt.category_filtered || infos_about_lt.type_filtered || infos_about_lt.age_filtered) {
+      infos_about_lt.marker.setMap(null);
+      hideItem(infos_about_lt._id);
+    }
     infos.push(infos_about_lt);
   });
 
@@ -337,87 +349,139 @@ function initMap() {
     };
   };
   //---------------------------------------------------------------------------------------------------------------------------DEFINE FILTERS FUNCTION
-  //Launch filtering process
-  function refreshFilters() {
-    //markers.length = 0;
-    infos.map(function(item) {
-      if (isValidFilters(filters, item.filter_grid)) {
-        //markers.push(item.marker);
-        showItem(item);
-        item.filtered = false;
-        item.marker.setMap(map);
-        //markerCluster.addMarker(item.marker);
-      } else {
-        hideItem(item);
-        item.filtered = true;
-        item.marker.setMap(null);
-        //markerCluster.removeMarker(item.marker);
-      };
-    });
-    //Create the cluster for the markers
+
+  function hideFromFilters(index) {
+    if (index == 0) {
+      nature_indexes.map(function(ind) {
+        infos[ind].marker.setMap(null)
+        infos[ind].category_filtered = true;
+        hideItem(infos[ind]._id);
+      });
+    } else if (index == 1) {
+      sol_indexes.map(function(ind) {
+        infos[ind].marker.setMap(null)
+        infos[ind].category_filtered = true;
+        hideItem(infos[ind]._id);
+      });
+    } else if (index == 2) {
+      culture_indexes.map(function(ind) {
+        infos[ind].marker.setMap(null)
+        infos[ind].category_filtered = true;
+        hideItem(infos[ind]._id);
+      });
+    } else if (index == 3) {
+      child_indexes.map(function(ind) {
+        infos[ind].marker.setMap(null)
+        infos[ind].category_filtered = true;
+        hideItem(infos[ind]._id);
+      });
+    } else if (index == 4) {
+      adult_indexes.map(function(ind) {
+        infos[ind].marker.setMap(null)
+        infos[ind].age_filtered = true;
+        hideItem(infos[ind]._id);
+      });
+    } else if (index == 5) {
+      ponctual_indexes.map(function(ind) {
+        infos[ind].marker.setMap(null)
+        infos[ind].type_filtered = true;
+        hideItem(infos[ind]._id);
+      });
+    } else if (index == 6) {
+      longterm_indexes.map(function(ind) {
+        infos[ind].marker.setMap(null)
+        infos[ind].type_filtered = true;
+        hideItem(infos[ind]._id);
+      });
+    };
     filterOnLocation();
   };
 
-  function showItem(item) {
-    $('[id=' + item._id + ']').removeClass('hidden');
+  function showFromFilters(index) {
+    if (index == 0) {
+      nature_indexes.map(function(ind) {
+        infos[ind].category_filtered = false;
+        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
+          infos[ind].marker.setMap(map);
+          showItem(infos[ind]._id);
+        }
+      });
+    } else if (index == 1) {
+      sol_indexes.map(function(ind) {
+        infos[ind].category_filtered = false;
+        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
+          infos[ind].marker.setMap(map);
+          showItem(infos[ind]._id);
+        }
+      });
+    } else if (index == 2) {
+      culture_indexes.map(function(ind) {
+        infos[ind].category_filtered = false;
+        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
+          infos[ind].marker.setMap(map);
+          showItem(infos[ind]._id);
+        }
+      });
+    } else if (index == 3) {
+      child_indexes.map(function(ind) {
+        infos[ind].category_filtered = false;
+        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
+          infos[ind].marker.setMap(map);
+          showItem(infos[ind]._id);
+        }
+      });
+    } else if (index == 4) {
+      adult_indexes.map(function(ind) {
+        infos[ind].age_filtered = false;
+        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
+          infos[ind].marker.setMap(map);
+          showItem(infos[ind]._id);
+        }
+      });
+    } else if (index == 5) {
+      ponctual_indexes.map(function(ind) {
+        infos[ind].type_filtered = false;
+        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
+          infos[ind].marker.setMap(map);
+          showItem(infos[ind]._id);
+        }
+      });
+    } else if (index == 6) {
+      longterm_indexes.map(function(ind) {
+        infos[ind].type_filtered = false;
+        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
+          infos[ind].marker.setMap(map);
+          showItem(infos[ind]._id);
+        }
+      });
+    };
+    filterOnLocation();
+  };
+
+  function showItem(id) {
+    $('[id=' + id + ']').removeClass('hidden');
   }
 
-  function hideItem(item) {
-    $('[id=' + item._id + ']').addClass('hidden');
+  function hideItem(id) {
+    $('[id=' + id + ']').addClass('hidden');
   }
 
 
   function filterOnLocation() {
     infos.map(function(item) {
-      if (!item.filtered) {
+      if (!item.category_filtered && !item.type_filtered && !item.age_filtered) {
         if (map.getBounds().contains({
             lat: item.lat,
             lng: item.lon
           })) {
-          showItem(item);
+          showItem(item._id);
         } else {
-          hideItem(item);
+          hideItem(item._id);
         }
       }
     });
   };
 
-  function isValidFilters(grid_ref, grid_item) {
-    /*
-    0. 1 = Nature, 0 = Non-Nature
-    1. 1 = Solidarity, 0 = Non-Solidarity
-    2. 1 = Culture, 0 = Non-Culture
-    3. 1 = Children, 0 = Non-Children  
-    4. 0 = Kids, 1 = Adults    
-    5. 0 = All, 1 = Ponctuals, 2 = Longterms
-    */
-    if (((grid_ref[5] == grid_item[5]) || (grid_ref[5] == 0))) {
-      //IF ref adults OR IF ref kids and item kids
-      if ((grid_ref[4] == 1) || ((grid_ref[4] == 0) && (grid_item[4] == 0))) {
-        if ((grid_ref[3] == 1) || ((grid_ref[3] == 0) && (grid_item[3] == 0))) {
-          if ((grid_ref[2] == 1) || ((grid_ref[2] == 0) && (grid_item[2] == 0))) {
-            if ((grid_ref[1] == 1) || ((grid_ref[1] == 0) && (grid_item[1] == 0))) {
-              if ((grid_ref[0] == 1) || ((grid_ref[0] == 0) && (grid_item[0] == 0))) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          } else {
-            return false;
-          }
-        } else {
-          return false;
-        }
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  };
 
   //---------------------------------------------------------------------------------------------------------------------------HANDLE EVENTS ON FILTER BUTTONS
 
@@ -439,14 +503,15 @@ function initMap() {
     5. 0 = All, 1 = Ponctuals, 2 = Longterms
     */
     if ((acts_checked && lts_checked) || (!acts_checked && !lts_checked)) {
-      filters[5] = 0;
+      showFromFilters(5);
+      showFromFilters(6);
     } else if (acts_checked && !lts_checked) {
-      filters[5] = 1;
+      showFromFilters(5);
+      hideFromFilters(6);
     } else {
-      filters[5] = 2;
+      hideFromFilters(5);
+      showFromFilters(6);
     };
-
-    refreshFilters();
   });
 
   $('#lts_filter').click(function() {
@@ -467,14 +532,15 @@ function initMap() {
     5. 0 = All, 1 = Ponctuals, 2 = Longterms
     */
     if ((acts_checked && lts_checked) || (!acts_checked && !lts_checked)) {
-      filters[5] = 0;
+      showFromFilters(5);
+      showFromFilters(6);
     } else if (acts_checked && !lts_checked) {
-      filters[5] = 1;
+      showFromFilters(5);
+      hideFromFilters(6);
     } else {
-      filters[5] = 2;
+      hideFromFilters(5);
+      showFromFilters(6);
     };
-
-    refreshFilters();
   });
 
 
@@ -489,19 +555,18 @@ function initMap() {
     }
 
     if (age_checked) {
-      filters[4] = 0;
+      hideFromFilters(4);
     } else {
-      filters[4] = 1;
+      showFromFilters(4);
     };
-
-    refreshFilters();
   });
+
 
   //---------------------------------------------------------------------------------------------------------------------------SETUP AUTOCOMPLETE
   //When all the map is loaded, initAutocomplete
   google.maps.event.addListenerOnce(map, 'tilesloaded', initAutocomplete);
-  google.maps.event.addListenerOnce(map, 'tilesloaded', refreshFilters);
-  google.maps.event.addListener(map, 'idle', filterOnLocation);
+  google.maps.event.addListenerOnce(map, 'tilesloaded', filterOnLocation);
+  google.maps.event.addListener(map, 'bounds_changed', filterOnLocation);
   //AUTOCOMPLETE input
   function initAutocomplete() {
     var loc_bar_options = {
