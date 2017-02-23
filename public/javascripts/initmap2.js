@@ -501,7 +501,7 @@ function initMap() {
   //When all the map is loaded, initAutocomplete
   google.maps.event.addListenerOnce(map, 'tilesloaded', initAutocomplete);
   google.maps.event.addListenerOnce(map, 'tilesloaded', refreshFilters);
-  google.maps.event.addListener(map, 'bounds_changed', filterOnLocation);
+  google.maps.event.addListener(map, 'idle', filterOnLocation);
   //AUTOCOMPLETE input
   function initAutocomplete() {
     var loc_bar_options = {
