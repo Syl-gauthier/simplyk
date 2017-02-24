@@ -474,7 +474,9 @@ function initMap() {
             lat: item.lat,
             lng: item.lon
           })) {
-          showItem(item._id);
+          if (!item.category_filtered && !item.type_filtered && !item.age_filtered) {
+            showItem(item._id);
+          }
         } else {
           hideItem(item._id);
         }
