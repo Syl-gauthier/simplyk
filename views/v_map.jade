@@ -189,27 +189,36 @@ block content
                           if act.days[0].day && act.days[1].day
                             h6.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
             each lt, index in longterms
-                li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon)
-                  .panel.panel-default
-                    .panel-heading
-                      div.media-left.media-middle
-                        a(href='#')
-                          if lt.cause == 'Solidarité'
-                            i.fa.fa-heart
-                          else if lt.cause == 'Nature'
-                            i.fa.fa-envira(style='color: #5BCF8F')
-                          else if lt.cause == 'Sport et Culture'
-                            i.fa.fa-institution(style='color: #FFC858')
-                          else if lt.cause == 'Enfance'
-                            i.fa.fa-child(style='color: #FF4F3C')
-                      div.media-body
-                        h5.media-heading <b>#{lt.org_name}</b>
-                        h6.media-heading <b>#{lt.long_term.intitule}</b>
-                        h6
-                          i.fa.fa-map-marker
-                          p.inline Adresse : #{lt.long_term.address}
-                      div.media-right.media-middle
-                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+lt.long_term._id) Plus d'infos
+              li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon)
+                .panel.panel-default
+                  .panel-heading
+                    div.media-left.media-middle
+                      a(href='#')
+                        if lt.cause == 'Solidarité'
+                          i.fa.fa-heart
+                        else if lt.cause == 'Nature'
+                          i.fa.fa-envira(style='color: #5BCF8F')
+                        else if lt.cause == 'Sport et Culture'
+                          i.fa.fa-institution(style='color: #FFC858')
+                        else if lt.cause == 'Enfance'
+                          i.fa.fa-child(style='color: #FF4F3C')
+                    div.media-body
+                      h5.media-heading <b>#{lt.org_name}</b>
+                      h6.media-heading <b>#{lt.long_term.intitule}</b>
+                      h6
+                        i.fa.fa-map-marker
+                        p.inline Adresse : #{lt.long_term.address}
+                    div.media-right.media-middle
+                      button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+lt.long_term._id) Plus d'infos
+            li.list-group-item
+              .panel.panel-default
+                .panel-heading(style='height: 60vh;')
+                  h3.text-center(style='margin-top: 20vh') Tu veux plus d'offres ?
+                  p.text-center
+                    i.fa.fa-refresh.fa-4x
+                  h5.text-center Modifie tes filtres de recherche
+                  h5.text-center Dézoome la carte
+                  h5.text-center Demande nous des idées de bénévolat à contact@simplyk.io
       .col-sm-8.col-xs-12.no-side-padding
         #map
 
