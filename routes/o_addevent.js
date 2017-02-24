@@ -172,7 +172,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
                     });
                   } else {
                     req.session.organism = org;
-                    req.session.organism.save(function(err, orga) {
+                    req.session.save(function(err) {
                       if (err) {
                         res.render('o_addevent.jade', {
                           session: req.session,
