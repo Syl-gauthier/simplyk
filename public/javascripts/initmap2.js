@@ -11,8 +11,7 @@ function initMap() {
   let culture_indexes = new Array();
   let child_indexes = new Array();
   let adult_indexes = new Array();
-  let ponctual_indexes = new Array();
-  let longterm_indexes = new Array();
+  let markers = new Array();
 
   if (page == 'landing') {
     age_checked = true;
@@ -53,6 +52,7 @@ function initMap() {
     minimumClusterSize: 15,
     imagePath: '/images/m'
   };
+  let displayMarkerOn = map;
 
   // Create legend
   const legend = document.createElement('div');
@@ -189,10 +189,6 @@ function initMap() {
   //---------------------------------------------------------------------------------------------------------------------------GATHER INFOS AND CREATE MARKERS
   //Gather infos and create marker to each activities
   acts.map(function(act, act_i) {
-    const infos_about_act = {};
-    infos_about_act._id = act._id;
-    infos_about_act.cause = act.cause;
-    ponctual_indexes.push(act_i);
     const activity_info_window = new google.maps.InfoWindow({
       content: '<b>' + act.org_name + '</b>' + '<br>' + act.intitule,
       disableAutoPan: true
@@ -202,61 +198,61 @@ function initMap() {
 
     if (act.cause == 'Nature') {
       marker_image = imageEnvFlash;
-      nature_indexes.push(act_i);
+      nature_indexes.push(act._id);
     } else if (act.cause == 'Solidarité') {
       marker_image = imageSolFlash;
-      sol_indexes.push(act_i);
+      sol_indexes.push(act._id);
     } else if (act.cause == 'Sport et Culture') {
       marker_image = imageCulFlash;
-      culture_indexes.push(act_i);
+      culture_indexes.push(act._id);
     } else if (act.cause == 'Enfance') {
       marker_image = imageEnfFlash;
-      child_indexes.push(act_i);
+      child_indexes.push(act._id);
     } else {
       marker_image = null;
     }
 
     if (act.min_age >= 16) {
-      adult_indexes.push(act_i);
-      infos_about_act.age_filtered = first_age_filtered;
+      adult_indexes.push(act._id);
+      $('#' + act._id).attr('age_filtered', first_age_filtered);
+      //act.age_filtered = first_age_filtered;
     } else {
-      infos_about_act.age_filtered = false;
+      $('#' + act._id).attr('age_filtered', false);
+      //act.age_filtered = false;
     }
 
     const lati = act.lat + 0.005 * (Math.random() - 0.5);
     const longi = act.lon + 0.005 * (Math.random() - 0.5);
+
+    if (first_age_filtered && act.min_age >= 16) {
+      displayMarkerOn = null;
+      $('#' + act._id).addClass('hidden');
+    } else {
+      displayMarkerOn = map;
+    }
 
     const activity_marker = new google.maps.Marker({
       position: {
         lat: lati,
         lng: longi
       },
-      map,
+      map: displayMarkerOn,
+      title: act._id,
       icon: marker_image,
       clickable: true
     })
 
     attachInfoWindow(activity_marker, activity_info_window, act._id);
 
-    infos_about_act.marker = activity_marker;
-    infos_about_act.info_window = activity_info_window;
-    infos_about_act.lat = act.lat;
-    infos_about_act.lon = act.lon;
-    infos_about_act.type_filtered = false;
-    infos_about_act.category_filtered = false;
-    if (infos_about_act.category_filtered || infos_about_act.type_filtered || infos_about_act.age_filtered) {
-      infos_about_act.marker.setMap(null);
-      hideItem(infos_about_act._id);
-    }
-    infos.push(infos_about_act);
+    markers.push(activity_marker);
 
+    $('#' + act._id).attr('type_filtered', false);
+    $('#' + act._id).attr('category_filtered', false);
+    //act.type_filtered = false;
+    //act.category_filtered = false;
   });
   //Gather infos and create marker to each longterms
   lts.map(function(lt, lt_i) {
-    const infos_about_lt = {};
-    infos_about_lt._id = lt.long_term._id;
-    infos_about_lt.cause = lt.cause;
-    longterm_indexes.push(lt_i + acts.length);
     const longterm_info_window = new google.maps.InfoWindow({
       content: '<b>' + lt.org_name + '</b>' + '<br>' + lt.long_term.intitule,
       disableAutoPan: true
@@ -266,53 +262,57 @@ function initMap() {
 
     if (lt.cause == 'Nature') {
       marker_image = imageEnv;
-      nature_indexes.push(lt_i + acts.length);
+      nature_indexes.push(lt.long_term._id);
     } else if (lt.cause == 'Solidarité') {
       marker_image = imageSol;
-      sol_indexes.push(lt_i + acts.length);
+      sol_indexes.push(lt.long_term._id);
     } else if (lt.cause == 'Sport et Culture') {
       marker_image = imageCul;
-      culture_indexes.push(lt_i + acts.length);
+      culture_indexes.push(lt.long_term._id);
     } else if (lt.cause == 'Enfance') {
       marker_image = imageEnf;
-      child_indexes.push(lt_i + acts.length);
+      child_indexes.push(lt.long_term._id);
     } else {
       marker_image = null;
     }
 
     if (lt.long_term.min_age >= 16) {
-      adult_indexes.push(lt_i + acts.length);
-      infos_about_lt.age_filtered = first_age_filtered;
+      $('#' + lt.long_term._id).attr('age_filtered', first_age_filtered);
+      adult_indexes.push(lt.long_term._id);
+      //lt.age_filtered = first_age_filtered;
     } else {
-      infos_about_lt.age_filtered = false;
+      //lt.age_filtered = false;
+      $('#' + lt.long_term._id).attr('age_filtered', false);
     }
 
     const lati = lt.long_term.lat + 0.005 * (Math.random() - 0.5);
     const longi = lt.long_term.lon + 0.005 * (Math.random() - 0.5);
+
+    if (first_age_filtered && lt.long_term.min_age >= 16) {
+      displayMarkerOn = null;
+      $('#' + lt.long_term._id).addClass('hidden');
+    } else {
+      displayMarkerOn = map;
+    }
 
     const longterm_marker = new google.maps.Marker({
       position: {
         lat: lati,
         lng: longi
       },
-      map,
+      map: displayMarkerOn,
+      title: lt.long_term._id,
       icon: marker_image,
       clickable: true
     })
 
     attachInfoWindow(longterm_marker, longterm_info_window, lt.long_term._id);
 
-    infos_about_lt.marker = longterm_marker;
-    infos_about_lt.info_window = longterm_info_window;
-    infos_about_lt.lat = lt.long_term.lat;
-    infos_about_lt.lon = lt.long_term.lon;
-    infos_about_lt.type_filtered = false;
-    infos_about_lt.category_filtered = false;
-    if (infos_about_lt.category_filtered || infos_about_lt.type_filtered || infos_about_lt.age_filtered) {
-      infos_about_lt.marker.setMap(null);
-      hideItem(infos_about_lt._id);
-    }
-    infos.push(infos_about_lt);
+    markers.push(longterm_marker);
+    $('#' + lt.long_term._id).attr('type_filtered', false);
+    $('#' + lt.long_term._id).attr('category_filtered', false);
+    //lt.type_filtered = false;
+    //lt.category_filtered = false;
   });
 
   /*markerCluster = new MarkerClusterer(map, function() {
@@ -352,46 +352,55 @@ function initMap() {
 
   function hideFromFilters(index) {
     if (index == 0) {
-      nature_indexes.map(function(ind) {
-        infos[ind].marker.setMap(null)
-        infos[ind].category_filtered = true;
-        hideItem(infos[ind]._id);
+      nature_indexes.map(function(id) {
+        (markers.find(function(mk) {
+          return mk.getTitle() == id
+        })).setMap(null);
+        $('#' + id).addClass('hidden').attr('category_filtered', true);
       });
     } else if (index == 1) {
-      sol_indexes.map(function(ind) {
-        infos[ind].marker.setMap(null)
-        infos[ind].category_filtered = true;
-        hideItem(infos[ind]._id);
+      sol_indexes.map(function(id) {
+        (markers.find(function(mk) {
+          return mk.getTitle() == id
+        })).setMap(null);
+        $('#' + id).addClass('hidden').attr('category_filtered', true);
       });
     } else if (index == 2) {
-      culture_indexes.map(function(ind) {
-        infos[ind].marker.setMap(null)
-        infos[ind].category_filtered = true;
-        hideItem(infos[ind]._id);
+      culture_indexes.map(function(id) {
+        (markers.find(function(mk) {
+          return mk.getTitle() == id
+        })).setMap(null);
+        $('#' + id).addClass('hidden').attr('category_filtered', true);
       });
     } else if (index == 3) {
-      child_indexes.map(function(ind) {
-        infos[ind].marker.setMap(null)
-        infos[ind].category_filtered = true;
-        hideItem(infos[ind]._id);
+      child_indexes.map(function(id) {
+        (markers.find(function(mk) {
+          return mk.getTitle() == id
+        })).setMap(null);
+        $('#' + id).addClass('hidden').attr('category_filtered', true);
       });
     } else if (index == 4) {
-      adult_indexes.map(function(ind) {
-        infos[ind].marker.setMap(null)
-        infos[ind].age_filtered = true;
-        hideItem(infos[ind]._id);
+      adult_indexes.map(function(id) {
+        (markers.find(function(mk) {
+          return mk.getTitle() == id
+        })).setMap(null);
+        $('#' + id).addClass('hidden').attr('age_filtered', true);
       });
     } else if (index == 5) {
-      ponctual_indexes.map(function(ind) {
-        infos[ind].marker.setMap(null)
-        infos[ind].type_filtered = true;
-        hideItem(infos[ind]._id);
+      $('[opp_type="activity"]').each(function() {
+        let id = $(this).attr('id');
+        $(this).attr('type_filtered', true).addClass('hidden');
+        (markers.find(function(mk) {
+          return mk.getTitle() == id
+        })).setMap(null);
       });
     } else if (index == 6) {
-      longterm_indexes.map(function(ind) {
-        infos[ind].marker.setMap(null)
-        infos[ind].type_filtered = true;
-        hideItem(infos[ind]._id);
+      $('[opp_type="longterm"]').each(function() {
+        let id = $(this).attr('id');
+        $(this).attr('type_filtered', true).addClass('hidden');
+        (markers.find(function(mk) {
+          return mk.getTitle() == id
+        })).setMap(null);
       });
     };
     filterOnLocation();
@@ -399,87 +408,94 @@ function initMap() {
 
   function showFromFilters(index) {
     if (index == 0) {
-      nature_indexes.map(function(ind) {
-        infos[ind].category_filtered = false;
-        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
-          infos[ind].marker.setMap(map);
-          showItem(infos[ind]._id);
+      nature_indexes.map(function(id) {
+        let item = $('#' + id);
+        item.attr('category_filtered', false);
+        if ((item.attr('category_filtered') == 'false') && (item.attr('type_filtered') == 'false') && (item.attr('age_filtered') == 'false')) {
+          (markers.find(function(mk) {
+            return mk.getTitle() == id
+          })).setMap(map);
+          item.removeClass('hidden');
         }
       });
     } else if (index == 1) {
-      sol_indexes.map(function(ind) {
-        infos[ind].category_filtered = false;
-        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
-          infos[ind].marker.setMap(map);
-          showItem(infos[ind]._id);
+      sol_indexes.map(function(id) {
+        let item = $('#' + id);
+        item.attr('category_filtered', false);
+        if ((item.attr('category_filtered') == 'false') && (item.attr('type_filtered') == 'false') && (item.attr('age_filtered') == 'false')) {
+          (markers.find(function(mk) {
+            return mk.getTitle() == id
+          })).setMap(map);
+          item.removeClass('hidden');
         }
       });
     } else if (index == 2) {
-      culture_indexes.map(function(ind) {
-        infos[ind].category_filtered = false;
-        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
-          infos[ind].marker.setMap(map);
-          showItem(infos[ind]._id);
+      culture_indexes.map(function(id) {
+        let item = $('#' + id);
+        item.attr('category_filtered', false);
+        if ((item.attr('category_filtered') == 'false') && (item.attr('type_filtered') == 'false') && (item.attr('age_filtered') == 'false')) {
+          (markers.find(function(mk) {
+            return mk.getTitle() == id
+          })).setMap(map);
+          item.removeClass('hidden');
         }
       });
     } else if (index == 3) {
-      child_indexes.map(function(ind) {
-        infos[ind].category_filtered = false;
-        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
-          infos[ind].marker.setMap(map);
-          showItem(infos[ind]._id);
+      child_indexes.map(function(id) {
+        let item = $('#' + id);
+        item.attr('category_filtered', false);
+        if ((item.attr('category_filtered') == 'false') && (item.attr('type_filtered') == 'false') && (item.attr('age_filtered') == 'false')) {
+          (markers.find(function(mk) {
+            return mk.getTitle() == id
+          })).setMap(map);
+          item.removeClass('hidden');
         }
       });
     } else if (index == 4) {
-      adult_indexes.map(function(ind) {
-        infos[ind].age_filtered = false;
-        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
-          infos[ind].marker.setMap(map);
-          showItem(infos[ind]._id);
+      adult_indexes.map(function(id) {
+        let item = $('#' + id);
+        item.attr('age_filtered', false);
+        if ((item.attr('category_filtered') == 'false') && (item.attr('type_filtered') == 'false') && (item.attr('age_filtered') == 'false')) {
+          (markers.find(function(mk) {
+            return mk.getTitle() == id
+          })).setMap(map);
+          item.removeClass('hidden');
         }
       });
     } else if (index == 5) {
-      ponctual_indexes.map(function(ind) {
-        infos[ind].type_filtered = false;
-        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
-          infos[ind].marker.setMap(map);
-          showItem(infos[ind]._id);
+      $('[opp_type="activity"]').each(function() {
+        let id = $(this).attr('id');
+        $(this).attr('type_filtered', false);
+        if (($(this).attr('category_filtered') == 'false') && ($(this).attr('type_filtered') == 'false') && ($(this).attr('age_filtered') == 'false')) {
+          (markers.find(function(mk) {
+            return mk.getTitle() == id
+          })).setMap(map);
         }
       });
     } else if (index == 6) {
-      longterm_indexes.map(function(ind) {
-        infos[ind].type_filtered = false;
-        if (!infos[ind].category_filtered && !infos[ind].type_filtered && !infos[ind].age_filtered) {
-          infos[ind].marker.setMap(map);
-          showItem(infos[ind]._id);
+      $('[opp_type="longterm"]').each(function() {
+        let id = $(this).attr('id');
+        $(this).attr('type_filtered', false);
+        if (($(this).attr('category_filtered') == 'false') && ($(this).attr('type_filtered') == 'false') && ($(this).attr('age_filtered') == 'false')) {
+          (markers.find(function(mk) {
+            return mk.getTitle() == id
+          })).setMap(map);
         }
       });
-    };
+    }
     filterOnLocation();
   };
 
-  function showItem(id) {
-    $('[id=' + id + ']').removeClass('hidden');
-  }
-
-  function hideItem(id) {
-    $('[id=' + id + ']').addClass('hidden');
-  }
-
 
   function filterOnLocation() {
-    infos.map(function(item) {
-      if (!item.category_filtered && !item.type_filtered && !item.age_filtered) {
-        if (map.getBounds().contains({
-            lat: item.lat,
-            lng: item.lon
-          })) {
-          if (!item.category_filtered && !item.type_filtered && !item.age_filtered) {
-            showItem(item._id);
-          }
-        } else {
-          hideItem(item._id);
-        }
+    $('[category_filtered="false"][type_filtered="false"][age_filtered="false"]').each(function() {
+      if (map.getBounds().contains({
+          lat: parseFloat($(this).attr('lat')),
+          lng: parseFloat($(this).attr('lon'))
+        })) {
+        $(this).removeClass('hidden');
+      } else {
+        $(this).addClass('hidden');
       }
     });
   };

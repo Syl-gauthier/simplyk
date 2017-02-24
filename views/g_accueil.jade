@@ -45,7 +45,7 @@ block content
             button.btn.btn-default(type='button', data-dismiss='modal') Fermer
             a#link-btn-ref.btn.btn-default(href='/all/activity/'+act._id) Plus d'infos
   each lt, index in longterms
-    div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id, id=lt.long_term._id)
+    div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id)
       .modal-dialog(role='document')
         .modal-content
           .modal-header
@@ -159,7 +159,7 @@ block content
                             h6.inline <b>#{days_name[correctDate(the_favo.days[0].day).getDay()]  + ' ' + (correctDate(the_favo.days[0].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[0].day).getMonth()]  + ' ' + correctDate(the_favo.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(the_favo.days[1].day).getDay()]  + ' ' + (correctDate(the_favo.days[1].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[1].day).getMonth()]  + ' ' + correctDate(the_favo.days[1].day).getFullYear()}</b>, ...
             each act, index in activities
               if act._id != the_favo._id
-                li.list-group-item(id= act._id, opp_type='activity', min_age= act.min_age, adult='')
+                li.list-group-item(id= act._id, opp_type='activity', lat=act.lat, lon=act.lon)
                   .panel.panel-default
                     .panel-heading
                       div.media-left.media-middle
@@ -195,7 +195,7 @@ block content
                             h5.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
 
             each lt, index in longterms
-                li.list-group-item(id= lt.long_term._id, opp_type='longterm', min_age=lt.long_term.min_age, adult='')
+                li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon)
                   .panel.panel-default
                     .panel-heading
                       div.media-left.media-middle
