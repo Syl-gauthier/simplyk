@@ -68,7 +68,6 @@ block content
             p.alert.alert-danger= error
           p #{longterm.description} <i class="fa fa-pencil edit" type='description' style="cursor: pointer"></i>
           p <b>#{longterm.vol_nb}</b> bénévoles recherchés <i class="fa fa-pencil edit" type='vol_nb' vol_nb=#{longterm.vol_nb} applicants=#{longterm.applicants.length} style="cursor: pointer"></i>
-          p <b>Places restantes : </b> #{longterm.vol_nb - longterm.applicants.length}
           p <b>Expiration de l'offre : </b> #{date.printDate(longterm.expiration_date)}
           if longterm.min_age
             p <b>Âge minimal : </b> #{longterm.min_age}
