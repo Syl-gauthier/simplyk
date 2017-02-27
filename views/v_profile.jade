@@ -6,6 +6,7 @@ block vars
   - /* parse a date in yyyy-mm-dd format*/ function parseDate(input) {var parts = input.match(/(\d+)/g);/* new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])*/return new Date(parts[0], parts[1]-1, parts[2]); /* months are 0-based*/}
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(parseDate(date).getTime() + tz_offset);return corrected_datetime}
   - function addHoursIfExists(arr){return arr.reduce(function(acc, curV, curI) {if(curV > 0 ){return acc + curV;} else {return acc;}})}
+  - function getNotifications(type){if(type == 'em'){if(volunteer.extras.filter(function(ext){return ext.status == 'denied'}).length < 1){return ''}else{return '#E33831'}}else if (type == 'el'){if(volunteer.events.filter(function(evt){return evt.status == 'denied'}).length < 1){if(volunteer.long_terms.filter(function(lt){return lt.status == 'denied'}).length < 1){return ''}else{return '#E33831'}}else{return '#E33831'}}}
 
 
 
@@ -98,7 +99,7 @@ block content
           li.active(role='navigation')
             a(href='#participations' aria-controls='participations' role='tab' data-toggle='tab') 
               h4 Mes participations 
-                span.badge= volunteer.events.length + volunteer.long_terms.length
+                span.badge(style='background-color: ' + getNotifications('el'))= volunteer.events.length + volunteer.long_terms.length
           li(role='navigation')
             a(href='#profile' aria-controls='profile' role='tab' data-toggle='tab') 
               h4 Mes informations
@@ -109,11 +110,11 @@ block content
                   if (client_schools.map(c => c.name).indexOf(volunteer.admin.school_name) != -1)
                     h4.school_name #{volunteer.admin.school_name} 
                       if volunteer.extras && volunteer.manuals
-                        span.badge= volunteer.extras.length + volunteer.manuals.length
+                        span.badge(style='background-color: ' + getNotifications('em'))= volunteer.extras.length + volunteer.manuals.length
                   else 
                     h4 Mon école 
                       if volunteer.extras && volunteer.manuals
-                        span.badge= volunteer.extras.length + volunteer.manuals.length
+                        span.badge(style='background-color: ' + getNotifications('em'))= volunteer.extras.length + volunteer.manuals.length
 
     .row
       .tab-content

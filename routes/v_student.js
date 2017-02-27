@@ -15,8 +15,17 @@ router.post('/volunteer/edit-student-feedbacks', permissions.requireGroup('volun
 	let update_pull_query = {};
 	let update_push_query = {};
 
-	let new_student_answers = req.body.new_response;
+	let new_student_answers = new Array();
+	if (typeof req.body.new_response == 'string'){
+		console.info('this is a string');
+		new_student_answers[0] = req.body.new_response;
+	} else {
+		console.info('this is another thing : ' + typeof req.body.new_response);
+		new_student_answers = req.body.new_response;
+	}
+
 	console.log('new_student_answers : ' + JSON.stringify(new_student_answers));
+
 
 	if (req.body.lt_id) {
 		//Find long_terms index in req.session.volunteer to apply to mongo search (DANGEROUS BUT AFTER MULTIPLE HOURS .........)
