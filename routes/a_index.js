@@ -12,6 +12,7 @@ var Organism = require('../models/organism_model.js');
 var Volunteer = require('../models/volunteer_model.js');
 var Admin = require('../models/admin_model.js');
 var Activity = require('../models/activity_model.js');
+var OrgTodo = require('../models/o_todo_model.js');
 
 
 router.get('/admin/classes', permissions.requireGroup('admin'), function(req, res, next) {
@@ -115,13 +116,21 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
         identifier: req.session.admin._id
       });
 
-      res.status(200).render('a_classes.jade', {
-        session: req.session,
-        admin: req.session.admin,
-        group: req.session.group,
-        volunteers,
-        classes_array,
-        hash
+      OrgTodo.find({
+        'org_id': req.session.organism._id
+      }, function(err, todos) {
+        if (err) {
+          console.error('ERROR : ' + err);
+        }
+        res.status(200).render('a_classes.jade', {
+          session: req.session,
+          admin: req.session.admin,
+          group: req.session.group,
+          volunteers,
+          classes_array,
+          todos,
+          hash
+        });
       });
     }
   });
@@ -181,14 +190,22 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
           secretKey: process.env.INTERCOM_SECRET_KEY,
           identifier: req.session.admin._id
         });
-        res.render('a_report.jade', {
-          volunteer: volunteer,
-          session: req.session,
-          admin: req.session.admin,
-          group: req.session.group,
-          events,
-          date,
-          hash
+        OrgTodo.find({
+          'org_id': req.session.organism._id
+        }, function(err, todos) {
+          if (err) {
+            console.error('ERROR : ' + err);
+          }
+          res.render('a_report.jade', {
+            volunteer: volunteer,
+            session: req.session,
+            admin: req.session.admin,
+            group: req.session.group,
+            events,
+            todos,
+            date,
+            hash
+          });
         });
       }).catch(err => {
         console.error('ERROR : ' + err);
