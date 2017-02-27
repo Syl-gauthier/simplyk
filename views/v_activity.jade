@@ -141,6 +141,7 @@ block content
 
 block footscript
   script(type="text/javascript").
+    'use strict';
     function validatePhone(day){
       const phone_number = $('#phone'+day).val();
       console.log('phone_number.length : ' + phone_number.length);

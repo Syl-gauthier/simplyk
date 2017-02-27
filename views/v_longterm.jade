@@ -272,7 +272,7 @@ block content
                   div.media-left.media-top
                     h4 <strong>Mon engagement</strong>
                   div.media-top.media-right
-                    button.btn.longterm(data-toggle='modal' data-target='#addLTHoursModal')
+                    div.btn.longterm(data-toggle='modal' data-target='#addLTHoursModal')
                       i.fa.fa-plus
                       p.inline Ajouter des heures
                 #addLTHoursModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="addLTHoursModalLabel")
@@ -345,6 +345,7 @@ block content
 
 block footscript
   script(type='text/javascript').
+    'use strict';
     function validatePhone(){
       const phone_number = $('#phone').val();
       console.log('phone_number.length : ' + phone_number.length);

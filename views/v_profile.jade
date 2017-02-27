@@ -647,6 +647,7 @@ block footscript
       $('#myInput').focus();
     });
   script(type='text/javascript').
+    'use strict';
     $(document).ready(function(){
       var clients = !{JSON.stringify(client_schools)};
       $('.edit-form').submit(function(event){

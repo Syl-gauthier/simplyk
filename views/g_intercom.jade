@@ -18,7 +18,7 @@ else if group == 'admin'
         console.log('hash : ' + has)
         window.intercomSettings = {
             app_id: "oora32p1",
-            name: adm.firstname + ' ' + adm.lastname, // Full name
+            name: adm.firstname + ' ' + adm.lastname + '(' + adm.name + ')', // Full name
             user_id: adm._id, // Email address
             user_hash: has
         };

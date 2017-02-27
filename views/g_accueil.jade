@@ -42,7 +42,7 @@ block content
                   #identifiant(style="display:none")
                     p= act._id
           .modal-footer
-            button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+            input.btn.btn-default(type='button', data-dismiss='modal', value='Fermer')
             a#link-btn-ref.btn.btn-default(href='/all/activity/'+act._id) Plus d'infos
   each lt, index in longterms
     div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id)
@@ -59,7 +59,7 @@ block content
             if lt.long_term.min_age
               p <b>Âge minimal : </b> #{lt.long_term.min_age} ans
           .modal-footer
-            button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+            input.btn.btn-default(type='button', data-dismiss='modal' value='Fermer')
             a#link-btn-ref.btn.btn-default(href='/all/longterm/'+lt.long_term._id) Plus d'infos
   .container-fluid
     #first_section.landing-section.row
@@ -143,7 +143,7 @@ block content
                           i.fa.fa-map-marker
                           p.inline Adresse : #{the_favo.address}
                       div.media-right.media-middle
-                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favo._id) Plus d'infos
+                        input.btn.btn-default.media-object(type='button' value='Plus d\'infos' data-toggle="modal" data-target= "."+the_favo._id)
                     .panel-body
                         h5 Dans le cadre de : <b>#{the_favo.event_intitule}</b>
                         if the_favo.days.length < 3
@@ -179,7 +179,7 @@ block content
                           i.fa.fa-map-marker
                           p.inline Adresse : #{act.address}
                       div.media-right.media-middle
-                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
+                        input.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id, value='Plus d\'infos')
                     .panel-body
                         h5 Dans le cadre de : <b>#{act.event_intitule}</b>
                         if act.days.length < 3
@@ -215,7 +215,7 @@ block content
                           i.fa.fa-map-marker
                           p.inline Adresse : #{lt.long_term.address}
                       div.media-right.media-middle
-                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+lt.long_term._id) Plus d'infos
+                        input.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+lt.long_term._id, value='Plus d\'infos')
             li.list-group-item
               .panel.panel-default
                 .panel-heading(style='min-height: 60vh;')
