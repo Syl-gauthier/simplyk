@@ -33,7 +33,7 @@ block content
               each day, nb in act.days
                 if day.day
                   tr
-                    td.text-center= day.vol_nb-day.applicants.length
+                    td.text-center= (day.vol_nb-day.applicants.length > -1 ? day.vol_nb-day.applicants.length : 0)
                     td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
                     td.text-center= day.start_time
                     td.text-center= day.end_time
@@ -189,7 +189,7 @@ block content
                                 h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
                                 h6.inline
                                   i.fa.fa-user
-                                  p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+                                  p.inline= ((day.vol_nb-day.applicants.length) > -1 ? (day.vol_nb-day.applicants.length) : 0)+' places restantes'
                         else
                           if act.days[0].day && act.days[1].day
                             h5.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
