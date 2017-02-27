@@ -59,6 +59,7 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 				tags: '',
 				applicants: []
 			};
+			console.info('INFO : longterm created : ' + JSON.stringify(newLongterm));
 			Organism.findOneAndUpdate({
 				'_id': req.session.organism._id
 			}, {

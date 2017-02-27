@@ -79,7 +79,6 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       var justMySchool = function(activity) {
         if (activity.school_id) {
           if (my_school) {
-            console.log('activity.school_id :' + activity.school_id + ' my_school : ' + my_school + 'activity.school_id == my_school' + (activity.school_id == my_school));
             return activity.school_id.toString() == my_school.toString();
           } else {
             return false;
@@ -113,7 +112,6 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         };
       };
       const favorites = acts.reduce(function(pre, cur, ind, arr) {
-        console.log('cur.intitule ' + cur.intitule + ' & cur.favorite : ' + cur.favorite);
         if (cur.favorite) {
           pre.push(cur);
           return pre;
@@ -255,9 +253,6 @@ router.get('/longterm/:lt_id', function(req, res) {
           return long._id.toString() == req.params.lt_id.toString();
         };
         var longterm = organism.long_terms.find(isRightLongterm);
-        console.log('+++++++++++++++++++++');
-        console.log('Longterm found in organism corresponding to lt_id : ' + longterm)
-        console.log('+++++++++++++++++++++');
         var slotJSON = rewindSlotString(longterm.slot);
         const alreadySubscribed = longterm.applicants.find(function(app) {
           return app.toString() == req.session.volunteer._id.toString();
