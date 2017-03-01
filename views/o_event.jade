@@ -83,7 +83,7 @@ block content
 								div.media-top.media-right
 									a.inline.btn.btn-warning.propose(act_id=act._id) Inviter à être bénévole
 									if isPast(act.days)
-									else
+									//else
 										i.fa.fa-times.fa-xs.fa-2x.edit.inline(style="cursor: pointer; color: red; margin-left:20px;" act_id=act._id, data-toggle='modal' data-target='#erase-modal'+act_i )
 										.modal.fade(id='erase-modal'+act_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+act_i)
 											.modal-dialog(role='document')
