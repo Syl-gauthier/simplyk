@@ -173,6 +173,9 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
                   new_event['activity_intitule'] = matching_activity.intitule;
                   new_event['org_phone'] = matching_organism.phone;
                   new_event['contact'] = matching_organism.firstname + ' ' + matching_organism.lastname;
+                  if ((new_event.status == 'subscribed') && (new Date(new_event.day) < new Date())) {
+                    new_event['status'] = 'past';
+                  }
                   console.log('new_event in resolve : ' + JSON.stringify(new_event));
                   resolve(new_event);
                 }
