@@ -186,19 +186,17 @@ block content
                     td
                       p
                       if lt.status == 'confirmed'
-                        span.badge(style='background-color: #113A20')= 'Confirmé'
+                        span.badge(style='background-color: #113A20')= 'Confirmé par l\'organisme'
                       else if (lt.status == 'validated')
                         span.badge(style='background-color: #113A20')= 'Validé'
                       else if (lt.status == 'pending')
                         span.badge(style='background-color: #FF800E')= 'Attente de confirmation par l\'organisme'
                       else if lt.status == 'subscribed'
-                        span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
+                        span.badge(style='background-color: #86C1CF')= 'Inscrit'
                       else if lt.status == 'corrected'
                         span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
                       else if lt.status == 'denied'
                         span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
-                      else
-                        span.badge(style='background-color: #E33831')= 'Indéfini'
                       if (lt.hours_pending > 0 || lt.hours_done > 0)
                         if (lt.hours_pending > 0)
                           span.badge(style='background-color: #FF800E')= lt.hours_pending + ' heures à confirmer'
