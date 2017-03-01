@@ -342,7 +342,8 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
         session: req.session,
         error: err,
         organism: req.session.organism,
-        group: req.session.group
+        group: req.session.group,
+        school_name: null
       });
     } else {
       //Create opps list
@@ -429,7 +430,8 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
               session: req.session,
               error: err,
               organism: req.session.organism,
-              group: req.session.group
+              group: req.session.group,
+              school_name: null
             });
           } else {
             //Filter organisms authorized to be seen by the volunteer
@@ -456,6 +458,11 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
             });
             console.info('hash : ' + hash);
             console.info('typeof hash : ' + typeof hash);
+            let school_name = null;
+            if (my_school){
+              console.info((/\(([^)]+)\)/).exec(req.session.organism.org_name)[1]);
+              school_name = (/\(([^)]+)\)/).exec(req.session.organism.org_name)[1];
+            }
             res.render('v_map.jade', {
               session: req.session,
               activities: acts,
@@ -463,6 +470,7 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
               error: req.query.error,
               success: req.query.success,
               group: req.session.group,
+              school_name,
               the_favorite,
               longterms,
               hash

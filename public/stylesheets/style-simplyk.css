@@ -148,6 +148,14 @@ body{
     color: #FF4F3C
 }
 
+.intern {
+    color: #8868D1
+}
+
+.unchecked {
+	color: #777;
+}
+
 #map-section{
 	height: 90%;
 }

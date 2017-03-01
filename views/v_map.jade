@@ -159,8 +159,10 @@ block content
                     .panel-heading
                       div.media-left.media-middle
                         a(href='#')
-                          if act.cause == 'Solidarité'
-                            i.fa.fa-heart
+                          if act.school_id
+                            i.fa.fa-graduation-cap.intern
+                          else if act.cause == 'Solidarité'
+                              i.fa.fa-heart
                           else if act.cause == 'Nature'
                             i.fa.fa-envira(style='color: #5BCF8F')
                           else if act.cause == 'Sport et Culture'
@@ -194,7 +196,9 @@ block content
                   .panel-heading
                     div.media-left.media-middle
                       a(href='#')
-                        if lt.cause == 'Solidarité'
+                        if lt.school_id
+                          i.fa.fa-graduation-cap.intern
+                        else if lt.cause == 'Solidarité'
                           i.fa.fa-heart
                         else if lt.cause == 'Nature'
                           i.fa.fa-envira(style='color: #5BCF8F')
@@ -224,10 +228,11 @@ block content
 
 block footscript
   script.
+    var page = 'map';
     var acts = !{JSON.stringify(activities)};
     var lts = !{JSON.stringify(longterms)};
     var the_fav = !{JSON.stringify(the_favorite)};
-    var page = 'map';
+    var school_name = !{JSON.stringify(school_name)};
   //clusterer api
   script(src="/javascripts/marker-clusterer.js", type="text/javascript")
 

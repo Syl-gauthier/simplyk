@@ -62,6 +62,9 @@ function initMap() {
   legend_content.push('<h5 class="soli legend" filter="checked" type="soli" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw soli"></i> <b>Solidarité</b> </h5><br>');
   legend_content.push('<h5 class="cult legend" filter="checked" type="cult" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw cult"></i> <b>Sport et culture</b> </h5><br>');
   legend_content.push('<h5 class="child legend" filter="checked" type="child" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw child"></i> <b>Enfance</b> </h5>');
+  if (school_name){
+    legend_content.push('<br><h5 class="intern legend" filter="checked" type="intern" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-graduation-cap fa-lg fa-fw intern"></i> <b>' + school_name + '</b> </h5>');
+  }
   legend.innerHTML = legend_content.join('');
   legend.index = 1;
 
@@ -70,13 +73,17 @@ function initMap() {
     if ($(this).attr('filter') == 'checked') {
       $(this).attr('filter', 'unchecked');
       $(this).removeClass('leaf');
+      $(this).addClass('unchecked');
       $(this).children().removeClass('leaf');
+      $(this).children().addClass('unchecked');
       $(this).children("i").removeClass('fa-check-square-o');
       $(this).children("i").addClass('fa-square-o');
       hideFromFilters(0);
     } else {
       $(this).attr('filter', 'checked');
+      $(this).removeClass('unchecked');
       $(this).addClass('leaf');
+      $(this).children().removeClass('unchecked');
       $(this).children().addClass('leaf');
       $(this).children("i").removeClass('fa-square-o');
       $(this).children("i").addClass('fa-check-square-o');
@@ -88,13 +95,17 @@ function initMap() {
     if ($(this).attr('filter') == 'checked') {
       $(this).attr('filter', 'unchecked');
       $(this).removeClass('soli');
+      $(this).addClass('unchecked');
       $(this).children().removeClass('soli');
+      $(this).children().addClass('unchecked');
       $(this).children("i").removeClass('fa-check-square-o');
       $(this).children("i").addClass('fa-square-o');
       hideFromFilters(1);
     } else {
       $(this).attr('filter', 'checked');
+      $(this).removeClass('unchecked');
       $(this).addClass('soli');
+      $(this).children().removeClass('unchecked');
       $(this).children().addClass('soli');
       $(this).children("i").removeClass('fa-square-o');
       $(this).children("i").addClass('fa-check-square-o');
@@ -106,13 +117,17 @@ function initMap() {
     if ($(this).attr('filter') == 'checked') {
       $(this).attr('filter', 'unchecked');
       $(this).removeClass('cult');
+      $(this).addClass('unchecked');
       $(this).children().removeClass('cult');
+      $(this).children().addClass('unchecked');
       $(this).children("i").removeClass('fa-check-square-o');
       $(this).children("i").addClass('fa-square-o');
       hideFromFilters(2);
     } else {
       $(this).attr('filter', 'checked');
+      $(this).removeClass('unchecked');
       $(this).addClass('cult');
+      $(this).children().removeClass('unchecked');
       $(this).children().addClass('cult');
       $(this).children("i").removeClass('fa-square-o');
       $(this).children("i").addClass('fa-check-square-o');
@@ -124,13 +139,17 @@ function initMap() {
     if ($(this).attr('filter') == 'checked') {
       $(this).attr('filter', 'unchecked');
       $(this).removeClass('child');
+      $(this).addClass('unchecked');
       $(this).children().removeClass('child');
+      $(this).children().addClass('unchecked');
       $(this).children("i").removeClass('fa-check-square-o');
       $(this).children("i").addClass('fa-square-o');
       hideFromFilters(3);
     } else {
       $(this).attr('filter', 'checked');
+      $(this).removeClass('unchecked');
       $(this).addClass('child');
+      $(this).children().removeClass('unchecked');
       $(this).children().addClass('child');
       $(this).children("i").removeClass('fa-square-o');
       $(this).children("i").addClass('fa-check-square-o');
@@ -166,6 +185,14 @@ function initMap() {
     url: '/images/Perso/yellow-icon-marker.svg', // image is 512 x 512
     scaledSize: new google.maps.Size(30, 36)
   };
+  const imageIntern = {
+    url: '/images/Perso/purple-icon-marker.svg', // image is 512 x 512
+    scaledSize: new google.maps.Size(30, 36)
+  };
+  const imageInternFlash = {
+    url: '/images/Perso/purple-icon-marker-flash.svg', // image is 512 x 512
+    scaledSize: new google.maps.Size(30, 36)
+  };
   const imageEnf = {
     url: '/images/Perso/red-icon-marker.svg', // image is 512 x 512
     scaledSize: new google.maps.Size(30, 36)
@@ -196,7 +223,9 @@ function initMap() {
 
     let marker_image = {};
 
-    if (act.cause == 'Nature') {
+    if (act.school_id) {
+      marker_image = imageIntern;
+    } else if (act.cause == 'Nature') {
       marker_image = imageEnvFlash;
       nature_indexes.push(act._id);
     } else if (act.cause == 'Solidarité') {
@@ -260,7 +289,10 @@ function initMap() {
 
     let marker_image = {};
 
-    if (lt.cause == 'Nature') {
+    if (lt.school_id) {
+      marker_image = imageInternFlash;
+      nature_indexes.push(lt.long_term._id);
+    } else if (lt.cause == 'Nature') {
       marker_image = imageEnv;
       nature_indexes.push(lt.long_term._id);
     } else if (lt.cause == 'Solidarité') {

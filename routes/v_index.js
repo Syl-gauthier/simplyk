@@ -35,7 +35,8 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         session: req.session,
         error: err,
         volunteer: req.session.volunteer,
-        group: req.session.group
+        group: req.session.group,
+        school_name: null
       });
     } else { //Create opps list
       const age = getAge(req.session.volunteer.birthdate);
@@ -142,7 +143,8 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
               session: req.session,
               error: err,
               volunteer: req.session.volunteer,
-              group: req.session.group
+              group: req.session.group,
+              school_name: null
             });
           } else {
             //Filter organisms authorized to be seen by the volunteer
@@ -169,6 +171,10 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
             });
             console.info('hash : ' + hash);
             console.info('typeof hash : ' + typeof hash);
+            let school_name = null;
+            if (req.session.volunteer.admin && req.session.volunteer.admin.school_name && req.session.volunteer.admin.school_id) {
+              school_name = req.session.volunteer.admin.school_name;
+            }
             res.render('v_map.jade', {
               session: req.session,
               activities: acts,
@@ -178,6 +184,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
               group: req.session.group,
               the_favorite,
               longterms,
+              school_name,
               hash
             });
           }
