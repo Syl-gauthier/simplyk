@@ -916,6 +916,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                     console.error(err);
                   } else {
                     req.session.volunteer = newVolunteer;
+                    sendEmailIfHoursNotValidated(req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname, newTodo._id);
                     req.session.save(function() {
                       res.render('v_postsubscription.jade', {
                         session: req.session,

@@ -213,6 +213,31 @@ function sendHoursPendingReminderOrgEmail(content) {
   });
 };
 
+function sendExtraHoursPendingReminderOrgEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'extrahourspendingorg';
+  content.title = 'En attente';
+  content.button = {
+    text: 'Valider la participation',
+    link: 'www.simplyk.io/organism/dashboard'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <francois@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: 'Valider la participation de ' + content.name, // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
 function sendHoursConfirmedVolEmail(content) {
   content.subtitle = ['Félicitation ' + content.firstname + ',', content.customMessage];
   content.type = 'hoursconfirmedvol';
@@ -379,5 +404,6 @@ module.exports = {
   sendOneDayReminderEmail,
   sendOneWeekReminderEmail,
   sendTomorrowReminderEmail,
-  sendHoursPendingReminderOrgEmail
+  sendHoursPendingReminderOrgEmail,
+  sendExtraHoursPendingReminderOrgEmail
 };
