@@ -70,7 +70,6 @@ router.get('/', function(req, res, next) {
           }
           const acts = activities.filter(isNotPassed).filter(isNotASchool).filter(isVerified);
           const favorites = acts.reduce(function(pre, cur, ind, arr) {
-            console.info('cur.intitule ' + cur.intitule + ' & cur.favorite : ' + cur.favorite);
             if (cur.favorite) {
               pre.push(cur);
               return pre;
@@ -282,10 +281,6 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
             res.redirect('/organism/dashboard?error=' + err);
           } else {
             var activities_list = activities;
-            console.info('ALL ACTIVITIES : ' + activities_list);
-            console.info('****************************');
-            console.info('ALL VOLUNTEERS : ' + volunteers);
-            console.info('****************************');
             event.acts = [];
             for (var actI = activities_list.length - 1; actI >= 0; actI--) {
               for (var daysI = activities_list[actI].days.length - 1; daysI >= 0; daysI--) {
