@@ -429,7 +429,8 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
             update_last_request_at: true
           });
           Organism.findById(event.org_id, {
-            email: true
+            email: true,
+            org_name: true
           }, function(err, orga) {
             if (err) {
               console.log('ERR: hourspendingOrg has not been sent !');
@@ -440,6 +441,12 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
                 lastname: req.session.volunteer.lastname,
                 recipient: orga.email,
                 customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+              });
+              emailer.sendHoursPendingVolEmail({
+                name: orga.org_name,
+                hours: req.body.hours_pending,
+                recipient: req.session.volunteer.email,
+                customMessage: ['Tes ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + ' ont bien été enregistrées.', orga.org_name + ' peut maintenant valider cette participation !']
               });
             };
           });

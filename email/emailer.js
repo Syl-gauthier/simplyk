@@ -238,6 +238,31 @@ function sendHoursPendingOrgEmail(content) {
   });
 };
 
+function sendHoursPendingVolEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'hourspendingvol';
+  content.title = 'Heures enregistrées';
+  content.button = {
+    text: 'Voir ma participation',
+    link: 'www.simplyk.io/volunteer/profile'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: content.name + ': ' + content.hours + ' heures enregistrées', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
 function sendHoursPendingReminderOrgEmail(content) {
   content.subtitle = content.customMessage;
   content.type = 'hourspendingorg';
@@ -442,12 +467,13 @@ function sendOneWeekReminderEmail(content) {
 
 
 module.exports = {
-  sendSubscriptionOrgEmail: sendSubscriptionOrgEmail,
-  sendSubscriptionVolEmail: sendSubscriptionVolEmail,
-  sendUnsubscriptionEmail: sendUnsubscriptionEmail,
-  sendVerifyEmail: sendVerifyEmail,
-  sendHoursPendingOrgEmail: sendHoursPendingOrgEmail,
-  sendHoursConfirmedVolEmail: sendHoursConfirmedVolEmail,
+  sendSubscriptionOrgEmail,
+  sendSubscriptionVolEmail,
+  sendUnsubscriptionEmail,
+  sendVerifyEmail,
+  sendHoursPendingVolEmail,
+  sendHoursPendingOrgEmail,
+  sendHoursConfirmedVolEmail,
   sendAutomaticSubscriptionOrgEmail,
   sendTransAddEvent,
   sendTransAddLongTerm,
