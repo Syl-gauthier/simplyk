@@ -254,7 +254,7 @@ function sendHoursPendingVolEmail(content) {
     var mailOptions = {
       from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
       to: content.recipient,
-      subject: content.name + ': ' + content.hours + ' heures enregistrées', // Subject line
+      subject: content.name + ': ' + content.hours + ' heures en attente de confirmation', // Subject line
       text: '', // plaintext body
       html: results.html
     };
