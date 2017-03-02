@@ -429,7 +429,8 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
             update_last_request_at: true
           });
           Organism.findById(event.org_id, {
-            email: true
+            email: true,
+            org_name: true
           }, function(err, orga) {
             if (err) {
               console.log('ERR: hourspendingOrg has not been sent !');
@@ -440,6 +441,12 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
                 lastname: req.session.volunteer.lastname,
                 recipient: orga.email,
                 customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+              });
+              emailer.sendHoursPendingVolEmail({
+                name: orga.org_name,
+                hours: req.body.hours_pending,
+                recipient: req.session.volunteer.email,
+                customMessage: ['Tes ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + ' ont bien été enregistrées.', orga.org_name + ' peut maintenant valider cette participation !']
               });
             };
           });
@@ -771,9 +778,9 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
         }]
       }, function(err, theOrg) {
         if (err) {
-          const err = 'Une erreur est survenu lors de la recherche de l\'organisme mentionné dans le formulaire';
-          console.error(err);
-          res.redirect('/volunteer/map?error=' + err);
+          const error = 'Une erreur est survenu lors de la recherche de l\'organisme mentionné dans le formulaire';
+          console.error('ERROR : ' + err);
+          res.redirect('/volunteer/map?error=' + error);
         } else {
           //If the organism already has an account, add it a orgTodo and send it an email
 
@@ -814,6 +821,13 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 lastname: req.session.volunteer.lastname,
                 recipient: req.body.org_email.toLowerCase(),
                 customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'En tant qu\'élève de ' + req.session.volunteer.admin.school_name + ', il a besoin que vous lui validiez ces heures s\'il les a réellement faites. Sinon, il est utile aussi que vous signaliez qu\'il y a une erreur ! :)', 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone, 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+              });
+
+              emailer.sendHoursPendingVolEmail({
+                name: theOrg.org_name,
+                hours: req.body.hours_pending,
+                recipient: req.session.volunteer.email,
+                customMessage: ['Tes ' + req.body.hours_pending + ' h  de participation à ' + req.body.intitule + ' ont bien été prises en compte.', theOrg.org_name + ' peut maintenant valider cette participation !', 'Si tes heures ne sont pas validées bientôt par l\'organisme, n\'hésite pas à le relancer sinon ce bénévolat ne sera jamais pris en compte :)']
               });
 
               console.info('INFO: student add extra hours to an organism which ALREADY exists : ' + req.body.org_name);
@@ -866,6 +880,13 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                     firstname: req.session.volunteer.firstname,
                     lastname: req.session.volunteer.lastname
                   });
+
+                  emailer.sendHoursPendingVolEmail({
+                    name: org_saved.org_name,
+                    hours: req.body.hours_pending,
+                    recipient: req.session.volunteer.email,
+                    customMessage: ['Tes ' + req.body.hours_pending + ' h  de participation à ' + req.body.intitule + ' ont bien été prises en compte.', 'Il semblerait, avec les informations que tu as fournis, que ' + org_saved.org_name + ' n\'était pas encore inscrit sur Simplyk. On lui a tout de même envoyé un courriel pour qu\'il puisse valider tes heures.', 'Si tes heures ne sont pas validées bientôt par l\'organisme, n\'hésite pas à le relancer pour que ton bénévolat soit pris en compte sur ton profil :)']
+                  });
                   console.info('INFO: student add extra hours to an organism which has NOT subscribed to the platform : ' + org_saved.org_name);
                   resolve();
                 }
@@ -916,6 +937,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                     console.error(err);
                   } else {
                     req.session.volunteer = newVolunteer;
+                    sendEmailIfHoursNotValidated(req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname, newTodo._id);
                     req.session.save(function() {
                       res.render('v_postsubscription.jade', {
                         session: req.session,
@@ -944,7 +966,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
             })
             .catch(err => {
               const error = 'Une erreur est survenu lors de la recherche de l\'organisme mentionné dans le formulaire';
-              console.error(err);
+              console.error('ERROR : ' + err);
               res.redirect('/volunteer/map?error=' + error);
             });
         }

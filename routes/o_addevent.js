@@ -1,6 +1,7 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
+var emailer = require('../email/emailer.js');
 var mongoose = require('mongoose');
 var gmaps = require('../middlewares/gmaps.js');
 var Intercom = require('intercom-client');
@@ -159,6 +160,12 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
               console.log('++++++++++++++++++++++++++++++');
               console.log('2 ++++++++++ activity : ' + i + JSON.stringify(activity));
               console.log('1 ++++++++ event : ' + JSON.stringify(event));
+              const content = {
+                recipient: req.session.organism.email,
+                event_name: req.body.intitule_event,
+                customMessage: ['L\'évènement ' + req.body.intitule_event + ' a été ajouté avec succès sur la plateforme Simplyk.', 'Comme vous pouvez le voir sur la carte, il est visible à l\'adresse : ' + req.body.address, 'Un courriel vous sera envoyé lorsqu\'un bénévole s\'inscrira, et vous serez alors invité à rentrer en contact avec lui !']
+              };
+              emailer.sendTransAddEvent(content);
               if (event.activities.length == nb_activities) {
                 organism.events.push(event);
                 organism.save(function(err, org) {
@@ -195,7 +202,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
   });
 });
 
-router.post('/test_address', function(req, res){
+router.post('/test_address', function(req, res) {
   //Transform address into lon/lat
   console.log('address sent to gmaps: ' + req.body.address);
   const error = 'La position de l\'adresse que vous avez mentionné n\'a pas été trouvé par Google Maps';

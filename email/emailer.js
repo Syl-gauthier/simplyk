@@ -163,6 +163,56 @@ function sendUnsubscriptionEmail(content) {
   });
 };
 
+function sendTransAddEvent(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'transaddevent';
+  content.title = 'Création d\'évènement';
+  content.button = {
+    text: 'Voir mon évènement',
+    link: 'www.simplyk.io/organism/dashboard'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: content.event_name + ': évènement créé avec succès ', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
+function sendTransAddLongTerm(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'transaddlongterm';
+  content.title = 'Création d\'engagement';
+  content.button = {
+    text: 'Voir mon engagement',
+    link: 'www.simplyk.io/organism/dashboard'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: content.longterm_name + ': engagement créé avec succès ', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
 function sendHoursPendingOrgEmail(content) {
   content.subtitle = content.customMessage;
   content.type = 'hourspendingorg';
@@ -188,6 +238,31 @@ function sendHoursPendingOrgEmail(content) {
   });
 };
 
+function sendHoursPendingVolEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'hourspendingvol';
+  content.title = 'Heures enregistrées';
+  content.button = {
+    text: 'Voir ma participation',
+    link: 'www.simplyk.io/volunteer/profile'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: content.name + ': ' + content.hours + ' heures en attente de confirmation', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
 function sendHoursPendingReminderOrgEmail(content) {
   content.subtitle = content.customMessage;
   content.type = 'hourspendingorg';
@@ -205,6 +280,31 @@ function sendHoursPendingReminderOrgEmail(content) {
       from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
       to: content.recipient,
       subject: content.name + ': ' + content.event_intitule, // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
+function sendExtraHoursPendingReminderOrgEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'extrahourspendingorg';
+  content.title = 'En attente';
+  content.button = {
+    text: 'Valider la participation',
+    link: 'www.simplyk.io/organism/dashboard'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <francois@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: 'Valider la participation de ' + content.name, // Subject line
       text: '', // plaintext body
       html: results.html
     };
@@ -367,17 +467,21 @@ function sendOneWeekReminderEmail(content) {
 
 
 module.exports = {
-  sendSubscriptionOrgEmail: sendSubscriptionOrgEmail,
-  sendSubscriptionVolEmail: sendSubscriptionVolEmail,
-  sendUnsubscriptionEmail: sendUnsubscriptionEmail,
-  sendVerifyEmail: sendVerifyEmail,
-  sendHoursPendingOrgEmail: sendHoursPendingOrgEmail,
-  sendHoursConfirmedVolEmail: sendHoursConfirmedVolEmail,
+  sendSubscriptionOrgEmail,
+  sendSubscriptionVolEmail,
+  sendUnsubscriptionEmail,
+  sendVerifyEmail,
+  sendHoursPendingVolEmail,
+  sendHoursPendingOrgEmail,
+  sendHoursConfirmedVolEmail,
   sendAutomaticSubscriptionOrgEmail,
+  sendTransAddEvent,
+  sendTransAddLongTerm,
   sendForgottenPasswordEmail,
   sendManualHoursEmail,
   sendOneDayReminderEmail,
   sendOneWeekReminderEmail,
   sendTomorrowReminderEmail,
-  sendHoursPendingReminderOrgEmail
+  sendHoursPendingReminderOrgEmail,
+  sendExtraHoursPendingReminderOrgEmail
 };

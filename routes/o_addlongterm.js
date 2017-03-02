@@ -2,6 +2,7 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
+var emailer = require('../email/emailer.js');
 var gmaps = require('../middlewares/gmaps.js');
 var sloter = require('../lib/slot.js');
 var Intercom = require('intercom-client');
@@ -91,6 +92,12 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 							longterm_name: newLongterm.intitule,
 						}
 					});
+					const content = {
+						recipient: req.session.organism.email,
+						longterm_name: req.body.title,
+						customMessage: ['L\'engagement ' + req.body.title + ' a été ajouté avec succès sur la plateforme Simplyk.', 'Comme vous pouvez le voir sur la carte, il est visible à l\'adresse : ' + req.body.address, 'Un courriel vous sera envoyé lorsqu\'un bénévole s\'inscrira, et vous serez alors invité à rentrer en contact avec lui !']
+					};
+					emailer.sendTransAddLongTerm(content);
 					req.session.organism = organism;
 					req.session.save(function() {
 						res.redirect('/organism/dashboard');
