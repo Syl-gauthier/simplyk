@@ -465,6 +465,56 @@ function sendOneWeekReminderEmail(content) {
   });
 }
 
+function sendFiveDaysLongTermExpirationEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'fivedayslongtermexpiration';
+  content.title = 'Bientôt expiré';
+  content.button = {
+    text: 'Voir mon engagement',
+    link: 'www.simplyk.io/organism/dashboard'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: content.lt_name + ': 5 jours avant la fermeture de l\'engagement !', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+}
+
+function sendLongTermExpirationEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'longtermexpiration';
+  content.title = 'Expiré';
+  content.button = {
+    text: 'Voir mon engagement',
+    link: 'www.simplyk.io/organism/dashboard'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: content.lt_name + ': fermeture des inscriptions !', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+}
+
 
 module.exports = {
   sendSubscriptionOrgEmail,
@@ -483,5 +533,7 @@ module.exports = {
   sendOneWeekReminderEmail,
   sendTomorrowReminderEmail,
   sendHoursPendingReminderOrgEmail,
-  sendExtraHoursPendingReminderOrgEmail
+  sendExtraHoursPendingReminderOrgEmail,
+  sendFiveDaysLongTermExpirationEmail,
+  sendLongTermExpirationEmail
 };

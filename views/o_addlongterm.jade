@@ -29,9 +29,10 @@ block content
           .form-group.conn-input
             label(for='description') Description de l'engagement
             textarea.form-control(id='description', name='description', rows="6" required)
-          .form-group.conn-input
+          .form-group.conn-input#address_container
             label(for='address') Adresse
             input.form-control(id='address', type='text', name='address', required)
+            p#address_result
           .row
             .col-md-6
               .form-group.conn-input
@@ -39,27 +40,14 @@ block content
                 input.form-control.datepicker(id='expiration_date', type='text', name='expiration_date' required)
             .col-md-6
               .form-group.conn-input
-                label(for='min_hours') Heures hebdomadaires d'engagement
-                input.form-control(id='min_hours', type='number', name='min_hours' required)
-          .form-group.conn-input
-            label(for='vol_nb') Nombre de bénévoles recherchés
-            input.form-control(id='vol_nb', type='number', name='vol_nb' required)
+                label(for='vol_nb') Nombre de bénévoles recherchés
+                input.form-control(id='vol_nb', type='number', name='vol_nb' required)
           .form-group.conn-input
             label(for='min_age') Ajouter un âge minimal
-            .input-group.conn-input
+            .input-group.conn-input#age_container
               span.input-group-addon
                 input#age-checkbox(type='checkbox')
               input.form-control(type='number', id='min_age', name='min_age', placeholder='De nombreux jeunes bénévoles motivés sont sur notre plateforme', disabled=true)
-          .input-group.conn-input.form-group
-                label.radio-inline
-                  input(type='radio', name='language', value='enfr', checked)
-                  p  Français/English
-                label.radio-inline
-                  input(type='radio', name='language', value='en')
-                  p English only
-                label.radio-inline
-                  input(type='radio', name='language', value='fr')
-                  p Seulement Français
           label(for='slot') Horaires disponibles
           table.table(id='slot')
             thead
@@ -134,21 +122,69 @@ block footscript
       types: ['address'],
       componentRestrictions: {country: 'ca'}
     };
+  script.
     function initAutocomplete(){
       input = (document.getElementById('address'));
       console.log(input);
+      var autocomplete_is_loading = false;
       var autocomplete = new google.maps.places.Autocomplete(input,options);
-    };
-  script.
-    $( document ).ready(function() {
-      var input = $('.datepicker');
-      input.pickadate({
-        firstDay: 1,
-        formatSubmit: 'yyyy-mm-dd'
+      autocomplete.addListener('place_changed', function() {
+        autocomplete_is_loading = true;
+        console.log('In the place_Changed listener !')
+        var place = autocomplete.getPlace();
+        console.log('place : ' + JSON.stringify(place));
+        if (!place.geometry) {
+          $('#address_container').removeClass('has-success');
+          $('#address_container').addClass('has-error');
+          autocomplete_is_loading = false;
+        } else {
+          $('#address_container').removeClass('has-error');
+          $('#address_container').addClass('has-success');
+          autocomplete_is_loading = false;
+          testAddress();
+        }
       });
-      var input = $('.timepicker');
-      input.pickatime({});
 
+      var testAddress = function(){
+        var place = autocomplete.getPlace();
+        var address_string = $('#address').val();
+        console.info('POST to test_address and place : ' + JSON.stringify(place));
+        console.info('POST to test_address and address_string : ' + JSON.stringify(address_string));
+          $.post('/test_address', {address: address_string}, function(data){
+            console.info('POST to test_address sent with datas : ' + JSON.stringify(address_string));
+            $('#address_result').removeClass('hidden');
+          })
+          .done(function(data){
+            console.log('There is a place.geometry !' + JSON.stringify(data));
+            if (!autocomplete_is_loading){
+              $('#address_container').removeClass('has-error');
+              $('#address_container').addClass('has-success');
+              $('#alert-maps').addClass('hidden');
+              $('#address_result').empty();
+              $('#address_result').append('Sur la carte, l\'adresse sera : ' + data.string);
+            }
+          })
+          .fail(function(data){
+            console.log('NO place or place.geometry !' + JSON.stringify(data));
+            if (!autocomplete_is_loading){
+              $('#address_container').removeClass('has-success');
+              $('#address_container').addClass('has-error');
+              $('#address_result').empty();
+              $('#alert-maps').removeClass('hidden');
+            }
+          })
+      };
+
+      $('#address').on('focusout', function(){
+        console.log('GET OUT !')
+        window.setTimeout(testAddress(), 1000);
+      });
+      $('#address').on('focusin', function(){
+        $('#address_result').empty();
+      });
+    };
+
+    $( document ).ready(function() {
       $('#creationlongtermform').on('keyup keypress', function(e) {
         var keyCode = e.keyCode || e.which;
         if (keyCode === 13) { 
@@ -156,14 +192,21 @@ block footscript
           return false;
         }
       });
+
+      var input = $('.datepicker');
+      input.pickadate({
+        firstDay: 1,
+        formatSubmit: 'yyyy-mm-dd',
+        min: new Date()
+      });
       
       $('#age-checkbox').click(function(){
-        if($(':checked').length > 1){
-          console.log($(':checked').length);
+        if($(this).prop('checked') > 0){
+          console.log($(this).prop('checked'));
           console.log('checked !')
           $('#min_age').prop('disabled', false);
         } else {
-          console.log($(':checked').length);
+          console.log($(this).prop('checked'));
           console.log('Not checked!')
           $('#min_age').prop('disabled', true);
         };
