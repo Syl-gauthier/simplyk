@@ -9,6 +9,8 @@ var Intercom = require('intercom-client');
 var client = new Intercom.Client({
 	token: process.env.INTERCOM_TOKEN
 });
+var agenda = require('../lib/agenda.js');
+var moment = require('moment');
 
 var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
@@ -78,6 +80,7 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 					});
 				} else {
 					//Intercom create addlongterm event
+					console.info('organism : ' + JSON.stringify(organism));
 					client.events.create({
 						event_name: 'org_addlongterm',
 						created_at: Math.round(Date.now() / 1000),
@@ -96,6 +99,27 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 						customMessage: ['L\'engagement ' + req.body.title + ' a été ajouté avec succès sur la plateforme Simplyk.', 'Comme vous pouvez le voir sur la carte, il est visible à l\'adresse : ' + req.body.address, 'Un courriel vous sera envoyé lorsqu\'un bénévole s\'inscrira, et vous serez alors invité à rentrer en contact avec lui !']
 					};
 					emailer.sendTransAddLongTerm(content);
+					//*************AGENDA
+					let send_date = new Date(req.body.expiration_date_submit).getTime();
+					send_date = moment(send_date).add(5, 'hours');
+					const fiveDaysBefore = moment(send_date).add(-5, 'days');
+
+					console.info('date when expiration date email will be sent : ' + moment(send_date).format('dddd D MMMM YYYY HH:mm'));
+					console.info('date when 5 days before expiration date email will be sent : ' + moment(fiveDaysBefore).format('dddd D MMMM YYYY HH:mm'));
+					const longterm_to_send = organism.long_terms.find(function(lt){return lt.description == newLongterm.description});
+					console.info('longterm_to_send : ' + JSON.stringify(longterm_to_send));
+
+					agenda.schedule(moment(send_date).toDate(), 'longTermExpirationEmail', {
+						lt_id: (longterm_to_send._id).toString(),
+						lt_name: longterm_to_send.intitule,
+						email: req.session.organism.email
+					});
+					agenda.schedule(moment(fiveDaysBefore).toDate(), 'fiveDaysLongTermExpirationEmail', {
+						lt_id: (longterm_to_send._id).toString(),
+						lt_name: longterm_to_send.intitule,
+						email: req.session.organism.email
+					});
+
 					req.session.organism = organism;
 					req.session.save(function() {
 						res.redirect('/organism/dashboard');
