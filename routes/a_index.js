@@ -113,7 +113,7 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
       });
 
       OrgTodo.find({
-        'org_id': 'req.session.organism._id'
+        'org_id': req.session.organism._id
       }, function(err, todos) {
         if (err) {
           err.type = 'MINOR';
