@@ -34,7 +34,7 @@ router.get('/legal', function(req, res) {
 });
 
 router.post('/login', function(req, res, next) {
-  passport.authenticate([ 'local-volunteer', 'local-admin', 'local-organism'], function(err, user, info) {
+  passport.authenticate(['local-volunteer', 'local-admin', 'local-organism'], function(err, user, info) {
     console.log(info);
     if (err) {
       return next(err);
@@ -153,9 +153,12 @@ router.post('*/logout', function(req, res, next) {
   }
   req.session.destroy(function(err) {
     if (err) {
-      return next(err);
+      err.type = 'CRASH';
+      err.print = 'Problème lors de la déconnexion';
+      next(err);
+    } else {
+      res.redirect('/');
     };
-    res.redirect('/');
   });
 });
 
@@ -166,15 +169,17 @@ router.get('/register_organism', function(req, res) {
   });
 });
 
-router.get('/register_volunteer', function(req, res) {
+router.get('/register_volunteer', function(req, res, next) {
   //Get schools_list
   school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
     if (err) {
-      console.error('ERROR : ' + err);
+      err.type = 'MINOR';
+      next(err);
     };
     client_school_list.getClientSchools(function(err, clients) {
       if (err) {
-        console.error('ERROR : ' + err);
+        err.type = 'MINOR';
+        next(err);
       };
       res.render('g_register.jade', {
         type: 'volunteer',
@@ -231,7 +236,9 @@ router.post('/register_volunteer', function(req, res) {
 
         newVolunteer.save(function(err, vol) {
           if (err) {
-            res.redirect('/register_volunteer?error=' + err);
+            err.type = 'CRASH';
+            err.print = 'Problème lors de l\'inscription';
+            next(err);
           } else {
             if (emailCredentials) {
               var hostname = req.headers.host;
@@ -289,7 +296,8 @@ router.post('/register_volunteer', function(req, res) {
           'name': school_name
         }, function(err, coordinator) {
           if (err) {
-            console.error('ERROR : ' + err);
+            err.type = 'MINOR';
+            next(err);
           }
 
           if (coordinator) {
@@ -308,7 +316,7 @@ router.post('/register_volunteer', function(req, res) {
 });
 
 /* Handle Registration POST for organism*/
-router.post('/register_organism', function(req, res) {
+router.post('/register_organism', function(req, res, next) {
   const randomString = randomstring.generate();
   const email = req.body.email;
   var org_name = req.body.name;
@@ -338,7 +346,9 @@ router.post('/register_organism', function(req, res) {
 
       newOrganism.save(function(err, org) {
         if (err) {
-          res.redirect('/?error=' + err);
+          err.type = 'CRASH';
+          err.print = 'Problème lors de la création de compte';
+          next(err);
         } else {
           if (emailCredentials) {
             var hostname = req.headers.host;
@@ -435,7 +445,7 @@ router.get('/waitforverifying', function(req, res) {
 });
 
 //Verify volunteer email address by random generated string
-router.get('/verifyV/:verifyString', function(req, res) {
+router.get('/verifyV/:verifyString', function(req, res, next) {
   console.log('String entered: ' + req.params.verifyString);
 
   //Look for the string entered in the database
@@ -445,10 +455,10 @@ router.get('/verifyV/:verifyString', function(req, res) {
   }, function(err, volunteer) {
     console.log(err);
     if (err) {
-      res.send(err);
-    }
-
-    if (volunteer) {
+      err.type = 'CRASH';
+      err.print = 'Problème lors de la validation du compte';
+      next(err);
+    } else {
       //If we found a volunteer with the corresponding verify string we verify the volunteer email
       if (volunteer.email_verified != true) {
         volunteer.email_verified = true;
@@ -463,15 +473,13 @@ router.get('/verifyV/:verifyString', function(req, res) {
           redirection: 'login'
         });
       }
-    } else {
-      res.render('404.jade');
     }
   });
   //return res.status(404).send('This page is not valid');
 });
 
 //Verify organism email address by random generated string
-router.get('/verifyO/:verifyString', function(req, res) {
+router.get('/verifyO/:verifyString', function(req, res, next) {
   console.log('String entered: ' + req.params.verifyString);
 
   //Look for the string entered in the database
@@ -481,10 +489,10 @@ router.get('/verifyO/:verifyString', function(req, res) {
   }, function(err, organism) {
     console.log(err);
     if (err) {
-      res.send(err);
-    }
-
-    if (organism) {
+      err.type = 'CRASH';
+      err.print = 'Problème lors de la validation du compte';
+      next(err);
+    } else {
       //If we found a organism with the corresponding verify string we verify the organism email
       if (organism.email_verified != true) {
         organism.email_verified = true;
@@ -499,14 +507,12 @@ router.get('/verifyO/:verifyString', function(req, res) {
           redirection: 'login'
         });
       }
-    } else {
-      res.render('404.jade');
     }
   });
   //return res.status(404).send('This page is not valid');
 });
 
-router.post('/forgottenpassword', function(req, res) {
+router.post('/forgottenpassword', function(req, res, next) {
   console.log('forgottenpassword beginning' + req.body.email);
   const newPassword = randomstring.generate().substring(0, 11);
   const passHash = crypt.generateHash(newPassword);
@@ -524,6 +530,9 @@ router.post('/forgottenpassword', function(req, res) {
     }
   }, function(err, doc) {
     if (err) {
+
+      err.type = 'MINOR';
+      next(err);
       console.error(err);
       res.status(404).send({
         error: 'Problème de serveur : réessayer et sinon contactez nous à francois@simplyk.org'
@@ -542,6 +551,9 @@ router.post('/forgottenpassword', function(req, res) {
         }
       }, function(err, doc) {
         if (err) {
+
+          err.type = 'MINOR';
+          next(err);
           console.error(err);
           res.status(404).send({
             error: 'Problème de serveur : réessayer et sinon contactez nous à francois@simplyk.org'
@@ -560,6 +572,9 @@ router.post('/forgottenpassword', function(req, res) {
             }
           }, function(err, doc) {
             if (err) {
+
+              err.type = 'MINOR';
+              next(err);
               console.error(err);
               res.status(404).send({
                 error: 'Problème de serveur : réessayer et sinon contactez nous à francois@simplyk.org'

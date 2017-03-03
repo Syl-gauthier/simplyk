@@ -27,17 +27,12 @@ const schools_res = require('../res/schools_res.js');
 var app = express();
 
 /*GET map page*/
-router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req, res) {
+router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req, res, next) {
   Activity.find({}, function(err, activities) {
     if (err) {
-      console.log(err);
-      res.render('v_map.jade', {
-        session: req.session,
-        error: err,
-        volunteer: req.session.volunteer,
-        group: req.session.group,
-        school_name: null
-      });
+      err.type = 'CRASH';
+      err.print = 'Problème avec la recherche des bénévolats';
+      next(err);
     } else { //Create opps list
       const age = getAge(req.session.volunteer.birthdate);
       let my_school = null;
@@ -138,14 +133,9 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         },
         function(err, organisms) {
           if (err) {
-            console.log(err);
-            res.render('v_map.jade', {
-              session: req.session,
-              error: err,
-              volunteer: req.session.volunteer,
-              group: req.session.group,
-              school_name: null
-            });
+            err.type = 'CRASH';
+            err.print = 'Problème avec la recherche des bénévolats';
+            next(err);
           } else {
             //Filter organisms authorized to be seen by the volunteer
             const lt_organisms = organisms.filter(function(orga) {
@@ -194,7 +184,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
 });
 
 
-router.get('/activity/:act_id', function(req, res) {
+router.get('/activity/:act_id', function(req, res, next) {
   console.log('In GET to an activity page with act_id:' + req.params.act_id);
   if (req.session.volunteer) {
     //Find organism corresponding to the activity
@@ -203,8 +193,9 @@ router.get('/activity/:act_id', function(req, res) {
         "events.activities": req.params.act_id
       }, function(err, organism) {
         if (err) {
-          console.log(err);
-          res.redirect('/volunteer/map?error=' + err);
+          err.type = 'CRASH'
+          err.print = 'Activité non trouvée dans la base de données'
+          next(err);
         } else {
           function isRightEvent(event) {
             return event.activities.indexOf(req.params.act_id) >= 0;
@@ -233,7 +224,7 @@ router.get('/activity/:act_id', function(req, res) {
 });
 
 
-router.get('/longterm/:lt_id', function(req, res) {
+router.get('/longterm/:lt_id', function(req, res, next) {
   console.log('In GET to a longterm page with lt_id:' + req.params.lt_id);
   if (req.session.volunteer) {
 
@@ -245,13 +236,14 @@ router.get('/longterm/:lt_id', function(req, res) {
     Organism.findOne({
       "long_terms": {
         "$elemMatch": {
-          "_id": req.params.lt_id
+          "_id": 'req.params.lt_id'
         }
       }
     }, function(err, organism) {
       if (err) {
-        console.log(err);
-        res.redirect('/volunteer/map?error=' + err);
+        err.type = 'CRASH'
+        err.print = 'Engagement non trouvé dans la base de données'
+        next(err);
       } else {
         console.log('Organism from longterm : ' + organism);
 
@@ -318,7 +310,7 @@ router.get('/longterm/:lt_id', function(req, res) {
 });
 
 
-router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requireGroup('volunteer'), function(req, res, next) {
   //Verify the volunteer is not already susbscribed to the activity
   function subscribeToActivity(student_q, organism_q) {
     function isActivity(activity) {
@@ -345,7 +337,9 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
 
       }, function(err, newActivity) {
         if (err) {
-          console.log(err);
+          err.type = 'CRASH'
+          err.print = 'Inscription annulée : problème dans la base de donnée';
+          next(err);
         } else {
           function isGoodDay(day) {
             return (Date.parse(day.day) === Date.parse(req.params.activity_day));
@@ -397,7 +391,9 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
             new: true
           }, function(err, newVolunteer) {
             if (err) {
-              console.log(err);
+              err.type = 'CRASH'
+              err.print = 'Inscription annulée : problème dans la base de donnée';
+              next(err);
             } else {
               console.log('**********************************');
               console.log('New Volunteer modified : ' + JSON.stringify(newVolunteer));
@@ -462,7 +458,9 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                 });
                 update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.events, 'EV', function(err) {
                   if (err) {
-                    console.log(err);
+                    err.type = 'MINOR';
+                    err.print = 'Inscription annulée : problème dans la base de donnée';
+                    next(err);
                   } else {
                     console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
                   };
@@ -488,7 +486,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
   }
 });
 
-router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
   console.log('lt_id : ' + req.params.lt_id + typeof req.params.lt_id);
 
   function isLongterm(lt) {
@@ -509,8 +507,9 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
 
     ltSubs.subscribe(req.session.volunteer, req.params.lt_id, req.headers.host, phone, function(err, results) {
       if (err) {
-        console.log(err);
-        res.redirect('/volunteer/map?error=' + err);
+        err.type = 'CRASH';
+        err.print = 'Inscription annulée : problème dans la base de donnée';
+        next(err);
       } else {
         req.session.volunteer = results.newVolunteer;
         req.session.save(function() {
@@ -533,7 +532,8 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
           });
           update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, 'LT', function(err) {
             if (err) {
-              console.log(err);
+              err.type = 'MINOR';
+              next(err);
             } else {
               console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
             };
@@ -635,7 +635,7 @@ router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volu
   };
 });
 
-router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'), function(req, res, next) {
   function isAKeyAnswer(key) {
     return key.search('answer') != -1;
   };
@@ -685,8 +685,9 @@ router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'
     new: true
   }, function(err, newVolunteer) {
     if (err) {
-      console.log(err);
-      res.redirect('/volunteer/map?error=' + err);
+      err.type = 'CRASH';
+      err.print = 'Problème lors de l\'enregistrement des réponses aux questions';
+      next(err);
     } else {
       req.session.volunteer = newVolunteer;
       console.log('newVolunteer : ' + newVolunteer);

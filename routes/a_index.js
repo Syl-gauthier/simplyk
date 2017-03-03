@@ -30,13 +30,9 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
   console.info(JSON.stringify(find_query));
   Volunteer.find(find_query, function(err, volunteers) {
     if (err) {
-      console.error('There is an error to access /listorganisms and get all the volunteers, the error is : ' + err);
-      res.render('a_classes.jade', {
-        error: err,
-        session: req.session,
-        admin: req.session.admin,
-        group: req.session.group
-      });
+      err.type = 'CRASH';
+      err.print = 'Problème avec la recherche des élèves';
+      next(err);
     } else {
       let classes_array = [];
       classes_array = JSON.parse(JSON.stringify(req.session.admin.classes));
@@ -117,10 +113,11 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
       });
 
       OrgTodo.find({
-        'org_id': req.session.organism._id
+        'org_id': 'req.session.organism._id'
       }, function(err, todos) {
         if (err) {
-          console.error('ERROR : ' + err);
+          err.type = 'MINOR';
+          next(err);
         }
         res.status(200).render('a_classes.jade', {
           session: req.session,
@@ -141,13 +138,9 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
 router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(req, res, next) {
   Volunteer.findById(req.params.vol_id, function(err, volunteer) {
     if (err) {
-      console.error('There is an error to access report, the error is : ' + err);
-      res.render('a_classes.jade', {
-        error: err,
-        session: req.session,
-        admin: req.session.admin,
-        group: req.session.group
-      });
+      err.type = 'CRASH';
+      err.print = 'Problème avec la recherche de l\'élève dans la base de données';
+      next(err);
     } else {
       //Add infos to each event from activity_id
 
@@ -197,7 +190,8 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
           'org_id': req.session.organism._id
         }, function(err, todos) {
           if (err) {
-            console.error('ERROR : ' + err);
+            err.type = 'MINOR';
+            err.print = 'Problème avec la recherche de l\'élève dans la base de données';
           }
           res.render('a_report.jade', {
             volunteer: volunteer,
@@ -248,7 +242,8 @@ router.post('/addmanualhours', permissions.requireGroup('admin'), function(req, 
     },
     function(err, new_vol) {
       if (err) {
-        console.error(err);
+        err.type = 'MINOR';
+        next(err);
         res.status(404).send({
           error: err
         });
@@ -277,6 +272,8 @@ router.post('/changeclass', permissions.requireGroup('admin'), function(req, res
     }
   }, function(err) {
     if (err) {
+      err.type = 'MINOR';
+      next(err);
       console.error(err);
       res.status(404).send(err);
     } else {
@@ -297,7 +294,8 @@ router.post('/changeclass', permissions.requireGroup('admin'), function(req, res
         multi: true
       }, function(err, report0) {
         if (err) {
-          console.error(err);
+          err.type = 'MINOR';
+          next(err);
           res.status(404).send(err);
         } else {
           console.info('SUCCESS : Remove the student volunteer to ancient admins. Report :' + report0);
@@ -317,7 +315,8 @@ router.post('/changeclass', permissions.requireGroup('admin'), function(req, res
             multi: true
           }, function(err, report1) {
             if (err) {
-              console.error(err);
+              err.type = 'MINOR';
+              next(err);
               res.status(404).send(err);
             } else {
               console.info('SUCCESS : Add the student volunteer to new admins. Report :' + report1);

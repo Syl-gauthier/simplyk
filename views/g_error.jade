@@ -3,6 +3,11 @@ block head
   title Erreur
   meta(name='description', content='Il y a eu une erreur')
 block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+  h1.text-center(style='margin-top: 10vh') Oupss ! Il y a eu une petite erreur...
+  div.icon-center(style='margin-top: 5vh')
+     i.fa.fa-hand-scissors-o.fa-5x
+  h2.text-center(style='margin-top: 5vh')= message
+  p.text-center(style='margin-top: 10vh') Cette erreur a été enregistrée par notre équipe technique et tout sera fait pour qu'elle ne se reproduise plus. Néanmoins, si jamais tu veux nous la signaler, tu peux nous envoyer un courriel à contact@simplyk.io ou nous parler directement dans le chat sur le site 
+    i.fa.fa-smile-o
+  div.text-center(style='margin-top: 5vh')
+    a.btn.btn-default(href='/') Continuer

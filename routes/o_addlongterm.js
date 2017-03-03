@@ -30,7 +30,7 @@ router.get('/organism/addlongterm', permissions.requireGroup('organism', 'admin'
 	});
 });
 
-router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
 	//Transform address into lon/lat
 	console.log('address sent to gmaps: ' + req.body.address);
 	console.log('DATAS : event in addlongterm: ' + JSON.stringify(req.body));
@@ -72,13 +72,9 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 				new: true
 			}, function(err, organism) {
 				if (err) {
-					res.render('o_addlongterm.jade', {
-						session: req.session,
-						error: err,
-						organism: req.session.organism,
-						admin: req.session.admin,
-						group: req.session.group
-					});
+					err.type = 'CRASH';
+					err.print = 'Problème lors de la création du bénévolat : nous avons néanmoins récupérer les informations nécessaires. Vous pouvez soit nous envoyer un courriel, soit recommencer l\'opération';
+					next(err);
 				} else {
 					//Intercom create addlongterm event
 					client.events.create({

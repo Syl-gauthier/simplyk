@@ -27,7 +27,7 @@ router.get('/organism/addevent', permissions.requireGroup('organism', 'admin'), 
 });
 
 
-router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   //Transform address into lon/lat
   console.log('address sent to gmaps: ' + req.body.address);
   console.log('DATAS : event in addevent: ' + JSON.stringify(req.body));
@@ -143,7 +143,9 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
           const newActivity = new Activity(activity);
           newActivity.save(function(err, act) {
             if (err) {
-              console.log(err);
+              err.type = 'CRASH';
+              err.print = 'Problème lors de la création du bénévolat : nous avons néanmoins récupérer les informations nécessaires. Vous pouvez soit nous envoyer un courriel, soit recommencer l\'opération';
+              next(err);
             } else {
               console.log('++++++++++++++++++++++++++++++');
               console.log('ACT._ID' + act._id);
@@ -161,17 +163,15 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
                 organism.events.push(event);
                 organism.save(function(err, org) {
                   if (err) {
-                    var error = 'Something bad happened! Try again!';
-                    res.render('o_addevent.jade', {
-                      session: req.session,
-                      error: err,
-                      organism: req.session.organism,
-                      group: req.session.group
-                    });
+                    err.type = 'CRASH';
+                    err.print = 'Problème lors de la création du bénévolat : nous avons néanmoins récupérer les informations nécessaires. Vous pouvez soit nous envoyer un courriel, soit recommencer l\'opération';
+                    next(err);
                   } else {
                     req.session.organism = org;
                     req.session.save(function(err) {
                       if (err) {
+                        err.type = 'MINOR';
+                        next(err);
                         res.render('o_addevent.jade', {
                           session: req.session,
                           error: err,

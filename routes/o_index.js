@@ -34,6 +34,8 @@ router.get('/', function(req, res, next) {
   console.log('Organism index');
   Activity.find({}, function(err, activities) {
     if (err) {
+      err.type = 'MINOR';
+      next(err);
       console.error(err);
       res.render('g_accueil.jade', {
         session: req.session,
@@ -102,7 +104,8 @@ router.get('/', function(req, res, next) {
             'admin_id': true
           }, function(err, organisms) {
             if (err) {
-              console.error(err);
+              err.type = 'MINOR';
+              next(err);
               res.render('g_accueil.jade', {
                 session: req.session,
                 error: err,
@@ -148,7 +151,7 @@ router.get('/', function(req, res, next) {
   });
 });
 
-router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   console.info('req.body : ' + req.body);
   if (req.body.org) {
     req.session.organism = req.body.org;
@@ -158,13 +161,9 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
     'org_id': req.session.organism._id
   }, function(err, activities) {
     if (err) {
-      console.error(err);
-      res.render('g_accueil.jade', {
-        session: req.session,
-        error: err,
-        organism: req.isAuthenticated(),
-        group: req.session.group
-      });
+      err.type = 'CRASH';
+      err.print = 'Problème lors de la lecture de vos bénévolats';
+      next(err);
     } else {
       var events = req.session.organism.events;
       var ev_past = [];
@@ -197,7 +196,8 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
         org_id: req.session.organism._id
       }, function(err, todos) {
         if (err) {
-          console.error(err);
+          err.type = 'MINOR';
+          next(err);
           res.render('g_accueil.jade', {
             session: req.session,
             error: err,
@@ -250,7 +250,7 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
   });
 });
 
-router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   function isEvent(event) {
     console.info('Test : ' + event._id + ' = ' + req.params.event_id + ' ?');
     return event._id.toString() === req.params.event_id;
@@ -264,8 +264,9 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
       }
     }, function(err, activities) {
       if (err) {
-        console.error(err);
-        res.redirect('/organism/dashboard?error=' + err);
+        err.type = 'CRASH';
+        err.print = 'Problème pour récupérer les informations du bénévolat';
+        next(err);
       } else {
         Volunteer.find({
           'events': {
@@ -277,8 +278,9 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
           }
         }, function(err, volunteers) {
           if (err) {
-            console.error(err);
-            res.redirect('/organism/dashboard?error=' + err);
+            err.type = 'CRASH';
+            err.print = 'Problème pour récupérer la liste des inscrits au bénévolat';
+            next(err);
           } else {
             var activities_list = activities;
             event.acts = [];
@@ -324,22 +326,19 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
     });
   } else {
     const err = 'Évènement non trouvé';
+    err.type = 'MINOR';
+    next(err);
     res.redirect('/organism/dashboard?error=' + err);
   }
 });
 
 /*GET map page*/
-router.get('/organism/map', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.get('/organism/map', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   Activity.find({}, function(err, activities) {
     if (err) {
-      console.log(err);
-      res.render('v_map.jade', {
-        session: req.session,
-        error: err,
-        organism: req.session.organism,
-        group: req.session.group,
-        school_name: null
-      });
+      err.type = 'CRASH';
+      err.print = 'Problème pour récupérer la liste des bénévolats';
+      next(err);
     } else {
       //Create opps list
       let my_school = null;
@@ -420,14 +419,9 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
         },
         function(err, organisms) {
           if (err) {
-            console.log(err);
-            res.render('v_map.jade', {
-              session: req.session,
-              error: err,
-              organism: req.session.organism,
-              group: req.session.group,
-              school_name: null
-            });
+            err.type = 'CRASH';
+            err.print = 'Problème pour récupérer la liste des organisms et de leurs activités';
+            next(err);
           } else {
             //Filter organisms authorized to be seen by the volunteer
             const lt_organisms = organisms.filter(function(orga) {
@@ -454,7 +448,7 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
             console.info('hash : ' + hash);
             console.info('typeof hash : ' + typeof hash);
             let school_name = null;
-            if (my_school){
+            if (my_school) {
               console.info((/\(([^)]+)\)/).exec(req.session.organism.org_name)[1]);
               school_name = (/\(([^)]+)\)/).exec(req.session.organism.org_name)[1];
             }
@@ -476,7 +470,7 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
   });
 });
 
-router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   console.info('In GET to a longterm page with lt_id:' + req.params.lt_id);
   let error = null;
   if (req.query.error) {
@@ -510,8 +504,9 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
       'phone': 1
     }, function(err, volunteers) {
       if (err) {
-        console.error(err);
-        res.redirect('/organism/dashboard?error=' + err);
+        err.type = 'CRASH';
+        err.print = 'Problème pour récupérer la liste des inscrits au bénévolat';
+        next(err);
       } else {
         var slotJSON = rewindSlotString(longterm.slot);
         res.render('o_longterm.jade', {
@@ -529,20 +524,24 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
     });
   } else {
     const err = 'Engagement non disponible';
+    err.type = 'MINOR';
+    next(err);
     res.redirect('/organism/dashboard?error=' + err);
   }
 });
 
 
-router.post('/organism/correcthours', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.post('/organism/correcthours', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   console.info('Correct Hours starts');
   const correct_hours = req.body.correct_hours;
+  console.info('DATAS : req.body : ' + JSON.stringify(req.body));
   console.info('Correct_hours: ' + correct_hours);
   Volunteer.findOne({
     _id: req.body.vol_id
   }, function(err, myVolunteer) {
     if (err) {
-      console.error(err);
+      err.type = 'MINOR';
+      next(err);
       res.sendStatus(404);
     } else if (myVolunteer) {
       var type = req.body.type;
@@ -686,7 +685,8 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
       if (!already_done) {
         Volunteer.findOneAndUpdate(query, update, function(err) {
           if (err) {
-            console.error(err);
+            err.type = 'MINOR';
+            next(err);
             res.sendStatus(404);
           } else {
             //Intercom create addlongterm event
@@ -724,24 +724,33 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
           }
         });
       } else {
+        err = {};
+        err.stack = 'It seems that the todo has already been done since the hours_pending in volunteer is less than the hours in the TODO';
+        err.type = 'MINOR';
+        next(err);
         console.error('ERR : It seems that the todo has already been done since the hours_pending in volunteer is less than the hours in the TODO');
         res.sendStatus(404);
       }
     } else {
+      err = {};
+      err.stack = 'Volunteer doesnt exist';
+      err.type = 'MINOR';
+      next(err);
       console.warn('MyVolunteer doesnt exist');
       res.sendStatus(404);
     }
   });
 });
 
-router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   console.info('Confirm Hours starts');
   Volunteer.findOne({
     _id: req.body.vol_id
   }, function(err, myVolunteer) {
     if (err) {
-      console.error(err);
-      res.redirect('/organism/dashboard?error=' + err);
+      err.type = 'CRASH';
+      err.print = 'Problème pour mettre à jour les informations du bénévole';
+      next(err);
     } else if (myVolunteer) {
       console.info('myvolunteer exists');
       console.info('MyVolunteer : ' + JSON.stringify(myVolunteer.email));
@@ -900,7 +909,8 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
       });
       Volunteer.findOneAndUpdate(query, update, function(err) {
         if (err) {
-          console.error(err);
+          err.type = 'MINOR';
+          next(err);
           res.sendStatus(404);
         } else {
           console.info('Hours_pending goes to hours_done : ' + hours_pending);
@@ -918,7 +928,10 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
         }
       });
     } else {
-      console.warn('MyVolunteer doesnt exist');
+      err = {};
+      err.stack = 'Volunteer doesnt exist';
+      err.type = 'MINOR';
+      next(err);
       res.sendStatus(404);
     }
   });

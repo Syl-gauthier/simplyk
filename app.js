@@ -260,22 +260,88 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('g_error', {
-      message: err.message,
-      error: err
-    });
+    console.error('ERROR MID : \n' + err + '\n ' + err.type + ' @ ' + req.method + req.originalUrl + '\n');
+    console.error('ERROR MID stack : \n' + err.stack + '\n');
+    var session = {};
+    var group = {};
+    var volunteer = {};
+    var organism = {};
+    var admin = {};
+    if (req.session) {
+      session = req.session;
+      if (req.session.group) {
+        group = req.session.group;
+        if (req.session.volunteer) {
+          volunteer = req.session.volunteer;
+          console.error('ERROR happened to : ' + req.session.volunteer.email + ' and message displayed : ' + err.print);
+        } else if (req.session.admin) {
+          admin = req.session.admin;
+          console.error('ERROR happened to : ' + req.session.admin.email + ' and message displayed : ' + err.print);
+          if (req.session.organism) {
+            organism = req.session.organism;
+          }
+        } else if (req.session.organism) {
+          organism = req.session.organism;
+          console.error('ERROR happened to : ' + req.session.organism.email + ' and message displayed : ' + err.print);
+        }
+      }
+    }
+    if (err.type == 'CRASH') { // CRASH OR MINOR
+      res.status(err.status || 500);
+      res.render('g_error', {
+        message: err.print,
+        error: err,
+        group,
+        organism,
+        volunteer,
+        admin,
+        session
+      });
+    }
   });
 }
 
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('g_error', {
-    message: err.message,
-    error: {}
-  });
+  console.error('ERROR MID : \n' + err + '\n ' + err.type + ' @ ' + req.method + req.originalUrl + '\n');
+  console.error('ERROR MID stack : \n' + err.stack + '\n');
+  var session = {};
+  var group = {};
+  var volunteer = {};
+  var organism = {};
+  var admin = {};
+  if (req.session) {
+    session = req.session;
+    if (req.session.group) {
+      group = req.session.group;
+      if (req.session.volunteer) {
+        volunteer = req.session.volunteer;
+        console.error('ERROR happened to : ' + req.session.volunteer.email + ' and message displayed : ' + err.print);
+      } else if (req.session.admin) {
+        admin = req.session.admin;
+        console.error('ERROR happened to : ' + req.session.admin.email + ' and message displayed : ' + err.print);
+        if (req.session.organism) {
+          organism = req.session.organism;
+        }
+      } else if (req.session.organism) {
+        organism = req.session.organism;
+        console.error('ERROR happened to : ' + req.session.organism.email + ' and message displayed : ' + err.print);
+      }
+    }
+  }
+  if (err.type == 'CRASH') { // CRASH OR MINOR
+    res.status(err.status || 500);
+    res.render('g_error', {
+      message: err.print,
+      error: err,
+      group,
+      organism,
+      volunteer,
+      admin,
+      session
+    });
+  }
 });
 
 module.exports = app;

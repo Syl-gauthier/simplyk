@@ -6,52 +6,48 @@ const Organism = require('../models/organism_model.js');
 var Activity = require('../models/activity_model.js');
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
 
-router.get('/listorganisms', function(req, res) {
-	Organism.find({
-		"school_id": {
-			$exists: false
-		},
-		"validation": true,
-		"cause": {
-			$exists: true
-		}
-	}, function(err, organisms) {
-		if (err) {
-			console.log('There is an error to access /listorganisms and get all the oragnisms, the error is : ' + err);
-			res.render('a_listorganisms.jade', {
-				error: err,
-				session: req.session,
-				admin: req.session.admin,
-				group: req.session.group
-			});
-		} else {
-			res.render('a_listorganisms.jade', {
-				organisms: organisms,
-				session: req.session,
-				admin: req.session.admin,
-				group: req.session.group
-			});
-		}
-	})
+router.get('/listorganisms', function(req, res, next) {
+  Organism.find({
+    "school_id": {
+      $exists: false
+    },
+    "validation": true,
+    "cause": {
+      $exists: true
+    }
+  }, function(err, organisms) {
+    if (err) {
+      err.type = 'CRASH';
+      err.print = 'Problème pour obtenir la liste des organismes';
+      next(err);
+    } else {
+      res.render('a_listorganisms.jade', {
+        organisms: organisms,
+        session: req.session,
+        admin: req.session.admin,
+        group: req.session.group
+      });
+    }
+  })
 });
 
 router.get('/contact', function(req, res) {
-	res.render('g_contact.jade', {
-		session: req.session,
-		admin: req.session.admin,
-		group: req.session.group
-	});
+  res.render('g_contact.jade', {
+    session: req.session,
+    admin: req.session.admin,
+    group: req.session.group
+  });
 });
 
 router.get('/us', function(req, res) {
-	res.render('g_us.jade', {
-		session: req.session,
-		admin: req.session.admin,
-		group: req.session.group
-	});
+  res.render('g_us.jade', {
+    session: req.session,
+    admin: req.session.admin,
+    group: req.session.group
+  });
 });
 
-router.get('/all/activity/:act_id', function(req, res) {
+router.get('/all/activity/:act_id', function(req, res, next) {
   console.log('In GET to an activity page with act_id:' + req.params.act_id);
   //Find organism corresponding to the activity
   if (req.session.volunteer) {
@@ -62,8 +58,9 @@ router.get('/all/activity/:act_id', function(req, res) {
         "events.activities": req.params.act_id
       }, function(err, organism) {
         if (err) {
-          console.log('ERROR : ' + err);
-          res.redirect('/');
+          err.type = 'CRASH';
+          err.print = 'Problème pour accéder aux informations du bénévolat';
+          next(err);
         } else {
           function isRightEvent(event) {
             return event.activities.indexOf(req.params.act_id) >= 0;
@@ -87,7 +84,7 @@ router.get('/all/activity/:act_id', function(req, res) {
 });
 
 
-router.get('/all/longterm/:lt_id', function(req, res) {
+router.get('/all/longterm/:lt_id', function(req, res, next) {
   console.log('In GET to a longterm page with lt_id:' + req.params.lt_id);
   if (req.session.volunteer) {
     res.redirect('/longterm/' + req.params.lt_id);
@@ -105,8 +102,9 @@ router.get('/all/longterm/:lt_id', function(req, res) {
       }
     }, function(err, organism) {
       if (err) {
-        console.log(err);
-        res.redirect('/');
+        err.type = 'CRASH';
+        err.print = 'Problème pour accéder aux informations de ce bénévolat';
+        next(err);
       } else {
         console.log('Organism from longterm : ' + organism);
 

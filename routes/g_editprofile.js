@@ -13,7 +13,7 @@ const Volunteer = require('../models/volunteer_model.js');
 const Organism = require('../models/organism_model.js');
 const Admin = require('../models/admin_model.js');
 
-router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'), function(req, res) {
+router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'), function(req, res, next) {
 	console.info('IN edit-form');
 	//VARIABLES
 	let find = {};
@@ -42,6 +42,8 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 			new: true
 		}, function(err, newVolunteer) {
 			if (err) {
+				err.type = 'MINOR';
+				next(err);
 				console.error(err);
 				return callback(err, null);
 			} else {
@@ -92,6 +94,8 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 						multi: true
 					}, function(err, admins_updated) {
 						if (err) {
+							err.type = 'MINOR';
+							next(err);
 							console.error(err);
 							return callback(err, null);
 						} else {
@@ -122,6 +126,8 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 
 			updateVolunteer(type, new_object, intercom_custom, path_to_new_object, path_to_new_object2, update_intercom, new_value, find, update, function(err, send) {
 				if (err) {
+					err.type = 'MINOR';
+					next(err);
 					res.status(404).send({
 						error: err
 					});
@@ -133,6 +139,8 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 		} else if (typeof req.body.school_name != 'undefined') {
 			getClientSchools(function(err, clients) {
 				if (err) {
+					err.type = 'MINOR';
+					next(err);
 					console.error(err);
 				}
 				let school_id = {};
@@ -170,6 +178,8 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 
 				updateVolunteer(type, new_object, intercom_custom, path_to_new_object, path_to_new_object2, update_intercom, new_value, find, update, function(err, send) {
 					if (err) {
+						err.type = 'MINOR';
+						next(err);
 						res.status(404).send({
 							error: err
 						});
@@ -181,6 +191,8 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 		} else {
 			let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)'
 			console.error(err);
+			err.type = 'MINOR';
+			next(err);
 			res.status(404).send({
 				error: err
 			});
@@ -253,6 +265,8 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 				},
 				function(err, newOrganism) {
 					if (err) {
+						err.type = 'MINOR';
+						next(err);
 						console.error(err);
 						res.status(404).send({
 							error: err
@@ -280,7 +294,9 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 				});
 		}
 	} else {
-		let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)'
+		let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)';
+		err.type = 'MINOR';
+		next(err);
 		console.error(err);
 		res.status(404).send({
 			error: err

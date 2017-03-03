@@ -23,7 +23,7 @@ const getClientSchools = require('../lib/ressources/client_school_list.js').getC
 
 
 
-router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function(req, res) {
+router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function(req, res, next) {
   console.log('Begin get /profile')
   console.log(req.session.volunteer);
   var events_past = [];
@@ -114,7 +114,8 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   //Get schools_list
   school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
     if (err) {
-      console.error('ERR : ' + err);
+      err.type = 'MINOR';
+      next(err);
     };
     const hash = require('intercom-client').SecureMode.userHash({
       secretKey: process.env.INTERCOM_SECRET_KEY,
@@ -122,7 +123,8 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
     });
     getClientSchools(function(err, client_schools) {
       if (err) {
-        console.error(err);
+        err.type = 'MINOR';
+        next(err);
       }
       //Sort extras by status
       req.session.volunteer.extras.sort((a, b) => {
@@ -184,7 +186,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
 });
 
 //Unsubscribe from an event
-router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res, next) {
   const activity_id = req.params.act_id,
     day = req.params.day;
   console.log('Unsubscribe process starts');
@@ -206,7 +208,9 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
     returnNewDocument: true
   }, function(err, newActivity) {
     if (err) {
-      console.log('Error in unsubscription process : ' + err);
+      err.type = 'CRASH';
+      err.print = 'Problème de recherche du bénévolat dans la base de données';
+      next(err);
     } else {
       console.log('newActivity after unsubscription process : ' + newActivity);
       Volunteer.findOneAndUpdate({
@@ -224,7 +228,9 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
         new: true
       }, function(err, newVolunteer) {
         if (err) {
-          console.log('Error in unsubscription process : ' + err);
+          err.type = 'CRASH';
+          err.print = 'Problème de mise à jour du bénévolat dans la base de données';
+          next(err);
         } else {
           function isNotActivity(activity) {
             return activity.activity_id != req.params.activity_id;
@@ -271,7 +277,7 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
 });
 
 //Unsubscribe from an event
-router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
   const lt_id = req.params.lt_id;
   console.log('Unsubscribe process starts');
   const lt_name = (req.session.volunteer.long_terms.find(lt => {
@@ -289,14 +295,16 @@ router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('
     new: true
   }, function(err, new_volunteer) {
     if (err) {
-      console.error('ERR : ' + err);
-      res.redirect('/volunteer/map?error=' + 'Un problème est survenu lors de la désinscription. Si le problème persite, n\'hésite pas à nous contacter ! :)');
+      err.type = 'CRASH';
+      err.print = 'Problème de mise à jour du bénévole dans la base de données';
+      next(err);
     } else {
       req.session.volunteer = new_volunteer;
       req.session.save(function(err) {
         if (err) {
-          console.error('ERR : ' + err);
-          res.redirect('/volunteer/map?error=' + 'Un problème est survenu lors de la désinscription. Si le problème persite, n\'hésite pas à nous contacter ! :)');
+          err.type = 'CRASH';
+          err.print = 'Problème de mise à jour du bénévole dans la base de données';
+          next(err);
         } else {
           Organism.findOneAndUpdate({
             'long_terms': {
@@ -312,8 +320,9 @@ router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('
             new: true
           }, function(err, new_organism) {
             if (err) {
-              console.error('ERR : ' + err);
-              res.redirect('/volunteer/map?error=' + 'Un problème est survenu lors de la désinscription. Si le problème persite, n\'hésite pas à nous contacter ! :)');
+              err.type = 'CRASH';
+              err.print = 'Problème de mise à jour du bénévolat dans la base de données';
+              next(err);
             } else {
               console.log('after longterm unsubscription process');
               res.render('v_postunsubscription.jade', {
@@ -324,7 +333,8 @@ router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('
               });
               update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, 'LT', function(err) {
                 if (err) {
-                  console.log(err);
+                  err.type = 'MINOR';
+                  next(err);
                 } else {
                   console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
                 };
@@ -345,7 +355,9 @@ router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('
 });
 
 //Add hours_pending to an activity
-router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res, next) {
+  console.info('DATAS : req.body : ' + JSON.stringify(req.body));
+  console.info('DATAS : req.params : ' + JSON.stringify(req.params));
   if (req.body.hours_pending) {
     Volunteer.findOneAndUpdate({
       "$and": [{
@@ -368,8 +380,9 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
       new: true
     }, function(err, newVolunteer) {
       if (err) {
-        console.log(err);
-        res.redirect('/volunteer/map?error=' + err);
+        err.type = 'CRASH';
+        err.print = 'Problème de mise à jour du bénévole dans la base de données';
+        next(err);
       } else {
         req.session.volunteer = newVolunteer;
         req.session.save(function() {
@@ -381,9 +394,6 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
           };
 
           function isDay(event) {
-            console.log('isDay ' + (event.day == req.params.day));
-            console.log('Date.parse(event.day) ' + Date.parse(event.day));
-            console.log('Date.parse(req.params.day) ' + Date.parse(req.params.day));
             return Date.parse(event.day) == Date.parse(req.params.day);
           };
           const event = newVolunteer.events.filter(isActivity).find(isDay);
@@ -433,8 +443,8 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
             org_name: true
           }, function(err, orga) {
             if (err) {
-              console.log('ERR: hourspendingOrg has not been sent !');
-              console.log(err);
+              err.type = 'MINOR';
+              next(err);
             } else {
               emailer.sendHoursPendingOrgEmail({
                 firstname: req.session.volunteer.firstname,
@@ -453,8 +463,9 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
           //TODO creation
           newTodo.save(function(err, todo) {
             if (err) {
-              console.log(err);
-              res.redirect('/volunteer/map?error=' + err);
+              err.type = 'CRASH';
+              err.print = 'Problème de création de la notification de l\'organisme dans la base de données';
+              next(err);
             } else {
               sendEmailIfHoursNotValidated(req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname, todo._id);
               if (event.student_questions) {
@@ -490,8 +501,9 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
       new: true
     }, function(err, newVolunteer) {
       if (err) {
-        console.log(err);
-        res.redirect('/volunteer/map?error=' + err);
+        err.type = 'CRASH';
+        err.print = 'Problème de mise à jour du bénévole dans la base de données';
+        next(err);
       } else {
         req.session.volunteer = newVolunteer;
         req.session.save(function() {
@@ -524,7 +536,7 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
 
 
 //Add hours_pending to an activity
-router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
   console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
   console.log('JSON.stringify(req.params) : ' + JSON.stringify(req.params));
   if (req.body.hours_pending) {
@@ -564,8 +576,9 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
       new: true
     }, function(err, newVolunteer) {
       if (err) {
-        console.log(err);
-        res.redirect('/volunteer/map?error=' + err);
+        err.type = 'CRASH';
+        err.print = 'Problème de mise à jour du bénévole dans la base de données';
+        next(err);
       } else {
         req.session.volunteer = newVolunteer;
         req.session.save(function() {
@@ -615,8 +628,9 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
             email: true
           }, function(err, orga) {
             if (err) {
-              console.log('ERR: hourspendingOrg has not been sent !');
-              console.log(err);
+              err.type = 'MINOR';
+              err.print = 'Problème de mise à jour du bénévole dans la base de données';
+              next(err);
             } else {
               emailer.sendHoursPendingOrgEmail({
                 firstname: req.session.volunteer.firstname,
@@ -628,7 +642,9 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
           });
           newTodo.save(function(err, todo) {
             if (err) {
-              console.log(err);
+              err.type = 'CRASH';
+              err.print = 'Problème de création de la notification de l\'organisme dans la base de données';
+              next(err);
             } else {
               console.log('INFO : Todo created : ' + todo);
               if (todo.organism_questions) {
@@ -649,7 +665,7 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
 });
 
 
-router.get('/volunteer/event/:event_id', permissions.requireGroup('volunteer'), function(req, res) {
+router.get('/volunteer/event/:event_id', permissions.requireGroup('volunteer'), function(req, res, next) {
 
   //Pour trouver l'event dasn le volunteer
   function isEvent(event) {
@@ -662,8 +678,9 @@ router.get('/volunteer/event/:event_id', permissions.requireGroup('volunteer'), 
     'events.activities': activity_id
   }, function(err, organism) {
     if (err) {
-      console.log(err);
-      res.redirect('/volunteer/map?error=' + err);
+      err.type = 'CRASH';
+      err.print = 'Problème de récupération des informations nécessaires';
+      next(err);
     } else {
       const org = organism;
       const event_organism = organism.events.find(ev => {
@@ -676,8 +693,9 @@ router.get('/volunteer/event/:event_id', permissions.requireGroup('volunteer'), 
         }
       }, function(err, activities) {
         if (err) {
-          console.log(err);
-          res.redirect('/volunteer/map?error=' + err);
+          err.type = 'CRASH';
+          err.print = 'Problème de récupération des informations nécessaires';
+          next(err);
         } else {
           var isActivity = function(activity) {
             return activity._id.toString() == activity_id.toString();
@@ -750,7 +768,8 @@ router.get('/volunteer/extra_simplyk_hours', permissions.requireGroup('volunteer
   }
 });
 
-router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), function(req, res, next) {
+  console.info('DATAS : req.body : ' + JSON.stringify(req.body));
   if (req.session.volunteer.student) {
 
     function isAKeyAnswer(key) {
@@ -778,9 +797,9 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
         }]
       }, function(err, theOrg) {
         if (err) {
-          const error = 'Une erreur est survenu lors de la recherche de l\'organisme mentionné dans le formulaire';
-          console.error('ERROR : ' + err);
-          res.redirect('/volunteer/map?error=' + error);
+          err.type = 'CRASH';
+          err.print = 'Problème lors de la recherche de l\'organisme rensigné';
+          next(err);
         } else {
           //If the organism already has an account, add it a orgTodo and send it an email
 
@@ -900,12 +919,14 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
 
               newTodo.save(function(err, newTodo_saved) {
                 if (err) {
-                  console.error(err);
+                  err.type = 'MINOR';
+                  next(err);
                 };
               });
               newActivity.save(function(err, activity_saved) {
                 if (err) {
-                  console.error(err);
+                  err.type = 'MINOR';
+                  next(err);
                 };
                 let extra_to_add = {
                   activity_id: activity_saved._id,
@@ -934,7 +955,9 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                   new: true
                 }, function(err, newVolunteer) {
                   if (err) {
-                    console.error(err);
+                    err.type = 'CRASH';
+                    err.print = 'Problème lors de la mise à jour des informations du bénévole';
+                    next(err);
                   } else {
                     req.session.volunteer = newVolunteer;
                     sendEmailIfHoursNotValidated(req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname, newTodo._id);
@@ -965,9 +988,9 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
 
             })
             .catch(err => {
-              const error = 'Une erreur est survenu lors de la recherche de l\'organisme mentionné dans le formulaire';
-              console.error('ERROR : ' + err);
-              res.redirect('/volunteer/map?error=' + error);
+              err.type = 'CRASH';
+              err.print = 'Problème lors de la mise à jour des informations dans la base de données';
+              next(err);
             });
         }
       });
