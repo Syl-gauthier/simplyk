@@ -33,6 +33,7 @@ router.get('/organism/addlongterm', permissions.requireGroup('organism', 'admin'
 router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin'), function(req, res) {
 	//Transform address into lon/lat
 	console.log('address sent to gmaps: ' + req.body.address);
+	console.log('DATAS : event in addlongterm: ' + JSON.stringify(req.body));
 
 	gmaps.codeAddress(req.body.address, function(lat, lon) {
 		if ('ZERO_RESULTS' === lat) {
@@ -80,7 +81,6 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 					});
 				} else {
 					//Intercom create addlongterm event
-					console.info('organism : ' + JSON.stringify(organism));
 					client.events.create({
 						event_name: 'org_addlongterm',
 						created_at: Math.round(Date.now() / 1000),
@@ -106,7 +106,9 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 
 					console.info('date when expiration date email will be sent : ' + moment(send_date).format('dddd D MMMM YYYY HH:mm'));
 					console.info('date when 5 days before expiration date email will be sent : ' + moment(fiveDaysBefore).format('dddd D MMMM YYYY HH:mm'));
-					const longterm_to_send = organism.long_terms.find(function(lt){return lt.description == newLongterm.description});
+					const longterm_to_send = organism.long_terms.find(function(lt) {
+						return lt.description == newLongterm.description
+					});
 					console.info('longterm_to_send : ' + JSON.stringify(longterm_to_send));
 
 					agenda.schedule(moment(send_date).toDate(), 'longTermExpirationEmail', {

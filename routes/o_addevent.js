@@ -30,6 +30,7 @@ router.get('/organism/addevent', permissions.requireGroup('organism', 'admin'), 
 router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'), function(req, res) {
   //Transform address into lon/lat
   console.log('address sent to gmaps: ' + req.body.address);
+  console.log('DATAS : event in addevent: ' + JSON.stringify(req.body));
 
   gmaps.codeAddress(req.body.address, function(lat, lon) {
     if ('ZERO_RESULTS' == lat) {
@@ -42,8 +43,6 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
       });
     } else {
       Organism.findById(req.session.organism._id, function(err, organism) {
-        console.log('****************************');
-        console.log('Organism : ' + organism);
         var keysList = Object.keys(req.body);
         var event = {
           intitule: req.body.intitule_event,
@@ -60,15 +59,12 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
         //Days number calculated
         var nb_days = 0;
         var days_iterator = -1;
-        console.log('Keylist.length : ' + keysList.length + ' and keylist = ' + keysList);
         do {
           nb_days++;
           var days_exists = false;
           for (var d = keysList.length - 1; d >= 0; d--) {
-            console.log('Keylist.searchday : ' + keysList[d].search('day' + (nb_days + 1)));
             if (keysList[d].search('day' + (nb_days + 1)) === 0) {
               days_exists = true;
-              console.log('On est dans le if days');
             }
           };
         }
@@ -83,7 +79,6 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
           for (var d = keysList.length - 1; d >= 0; d--) {
             if (keysList[d].search('activity' + (nb_activities + 1) + '_intitule_activity') === 0) {
               activities_exists = true;
-              console.log('On est dans le if activities');
             }
           };
         }
@@ -113,7 +108,6 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
           update_last_request_at: true
         });
         for (var i = 1; i < nb_activities + 1; i++) {
-          console.log('Activivity number ' + i)
           var activity = {
             lat: lat,
             lon: lon,
@@ -143,8 +137,6 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
               };
               event.dates.push(day.day);
               activity.days.push(day);
-              console.log('3 ++++++++++ activity : ' + i + JSON.stringify(activity));
-              console.log('3 +++++++  day : ' + j + JSON.stringify(day));
             };
           };
           //Create activity in Mongo
@@ -156,7 +148,6 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
               console.log('++++++++++++++++++++++++++++++');
               console.log('ACT._ID' + act._id);
               event.activities.push(act._id);
-              console.log('EVENT.ACTIVITIES : ' + event.activities);
               console.log('++++++++++++++++++++++++++++++');
               console.log('2 ++++++++++ activity : ' + i + JSON.stringify(activity));
               console.log('1 ++++++++ event : ' + JSON.stringify(event));
