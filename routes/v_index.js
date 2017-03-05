@@ -236,7 +236,7 @@ router.get('/longterm/:lt_id', function(req, res, next) {
     Organism.findOne({
       "long_terms": {
         "$elemMatch": {
-          "_id": 'req.params.lt_id'
+          "_id": req.params.lt_id
         }
       }
     }, function(err, organism) {
