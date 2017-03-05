@@ -304,43 +304,45 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  console.error('ERROR MID : \n' + err + '\n ' + err.type + ' @ ' + req.method + req.originalUrl + '\n');
-  console.error('ERROR MID stack : \n' + err.stack + '\n');
-  var session = {};
-  var group = {};
-  var volunteer = {};
-  var organism = {};
-  var admin = {};
-  if (req.session) {
-    session = req.session;
-    if (req.session.group) {
-      group = req.session.group;
-      if (req.session.volunteer) {
-        volunteer = req.session.volunteer;
-        console.error('ERROR happened to : ' + req.session.volunteer.email + ' and message displayed : ' + err.print);
-      } else if (req.session.admin) {
-        admin = req.session.admin;
-        console.error('ERROR happened to : ' + req.session.admin.email + ' and message displayed : ' + err.print);
-        if (req.session.organism) {
+  if (req.originalUrl != 'robots.txt') {
+    console.error('ERROR MID : \n' + err + '\n ' + err.type + ' @ ' + req.method + req.originalUrl + '\n');
+    console.error('ERROR MID stack : \n' + err.stack + '\n');
+    var session = {};
+    var group = {};
+    var volunteer = {};
+    var organism = {};
+    var admin = {};
+    if (req.session) {
+      session = req.session;
+      if (req.session.group) {
+        group = req.session.group;
+        if (req.session.volunteer) {
+          volunteer = req.session.volunteer;
+          console.error('ERROR happened to : ' + req.session.volunteer.email + ' and message displayed : ' + err.print);
+        } else if (req.session.admin) {
+          admin = req.session.admin;
+          console.error('ERROR happened to : ' + req.session.admin.email + ' and message displayed : ' + err.print);
+          if (req.session.organism) {
+            organism = req.session.organism;
+          }
+        } else if (req.session.organism) {
           organism = req.session.organism;
+          console.error('ERROR happened to : ' + req.session.organism.email + ' and message displayed : ' + err.print);
         }
-      } else if (req.session.organism) {
-        organism = req.session.organism;
-        console.error('ERROR happened to : ' + req.session.organism.email + ' and message displayed : ' + err.print);
       }
     }
-  }
-  if (err.type == 'CRASH') { // CRASH OR MINOR
-    res.status(err.status || 500);
-    res.render('g_error', {
-      message: err.print,
-      error: err,
-      group,
-      organism,
-      volunteer,
-      admin,
-      session
-    });
+    if (err.type == 'CRASH') { // CRASH OR MINOR
+      res.status(err.status || 500);
+      res.render('g_error', {
+        message: err.print,
+        error: err,
+        group,
+        organism,
+        volunteer,
+        admin,
+        session
+      });
+    }
   }
 });
 
