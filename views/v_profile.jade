@@ -104,7 +104,7 @@ block content
                 img(align='center', src='http://i.giphy.com/H16k14aEA6Vva.gif', style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
                 p.text-center Un évènement auquel tu étais inscrit est terminé. <br> Tu peux maintenant valider ta participation pour faire évoluer ton profil d'engagement, ainsi que le bilan d'impact de l'organisme !
                 li.list-group-item
-                  .panel.panel-default.notified
+                  .panel.panel-default(style='border: 1px solid green')
                     .panel-heading
                       div.media-left.media-middle
                         a(href='profile')
@@ -149,7 +149,7 @@ block content
                 img(align='center', src='/images/repair.svg', style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
                 p.text-center La personne responsable du bénévolat dans ton établissement attends une correction sur le retour d'expérience d'un de tes bénévolats.
                 li.list-group-item
-                  .panel.panel-default.notified
+                  .panel.panel-default(style='border: 1px solid red')
                     .panel-heading
                       div.media-left.media-middle
                         a(href='profile')
@@ -214,7 +214,7 @@ block content
                     h4 CONFIRMER TA VENUE
                   each event, index in events_past
                     li.list-group-item
-                      .panel.panel-default.notified
+                      .panel.panel-default(style='border: 1px solid green')
                         .panel-heading
                           div.media-left.media-middle
                             a(href='profile')
@@ -257,7 +257,7 @@ block content
                     h4 CORRIGER TON RETOUR
                   each event, index in events_denied
                     li.list-group-item
-                      .panel.panel-default.notified
+                      .panel.panel-default(style='border: 1px solid red')
                         .panel-heading
                           div.media-left.media-middle
                             a(href='profile')
@@ -801,8 +801,6 @@ block footscript
       $('#absenceNotificationModal').click(function(){
         $('#absenceNotificationDiv').removeClass('hidden');
       });
-
-      $('.notified').css({border: '1px solid red'});
 
 
       $('.edit').click(function(){
