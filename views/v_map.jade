@@ -21,6 +21,7 @@ block content
               #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
             .modal-body.my-modal-body
               h4 <b>#{act.intitule}</b>
+              p #{act.description}
               table.table
                 tr
                   th.text-center Places restantes
@@ -111,8 +112,14 @@ block content
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
               p.inline Engagements
+        #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;')
+          .col-sm-10.col-sm-offset-1
+            .input-group
+              span.input-group-addon
+                i.fa.fa-search
+              input.form-control(type="search" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
         #offers-list-logged.no-side-padding.scrollable.row
-          ul.list-group.list-opportunity
+          ul.list-group.list-opportunity(id="jetsContent")
             if error
               p.alert.alert-danger #{error}
             if success
@@ -188,6 +195,8 @@ block content
                         else
                           if act.days[0].day && act.days[1].day
                             h6.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
+                            each day, day_i in act.days
+                              p.hidden <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
             each lt, index in longterms
                 li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon)
                   .panel.panel-default
@@ -214,6 +223,7 @@ block content
         #map
 
 block footscript
+  script(src="/bower_components/jets/jets.min.js")
   script.
     var acts = !{JSON.stringify(activities)};
     var lts = !{JSON.stringify(longterms)};
@@ -230,4 +240,9 @@ block footscript
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
       $('#myInput').focus();
+    });
+    let jets = new Jets({
+      searchTag: '#jetsSearch',
+      contentTag: '#jetsContent',
+      searchSelector: '*'
     });
