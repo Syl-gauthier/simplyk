@@ -198,7 +198,7 @@ router.get('/register_admin', function(req, res) {
 });
 
 /* Handle Registration POST for volunteer*/
-router.post('/register_volunteer', function(req, res) {
+router.post('/register_volunteer', function(req, res, next) {
   const randomString = randomstring.generate();
   var email = req.body.email;
 
