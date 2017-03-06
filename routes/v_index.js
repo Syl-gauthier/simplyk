@@ -98,8 +98,9 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           }
         };
       } else {
-        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isNotAnExtra).filter(justMySchool);
+        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isNotAnExtra).filter(justMySchool).filter(isUnverified);
         lt_filter = {
+          'validation': true,
           'long_terms': {
             '$not': {
               '$size': 0
