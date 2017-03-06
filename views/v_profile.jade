@@ -90,7 +90,89 @@ block content
                 a.btn.btn-info.pull-right(href='/volunteer/extra_simplyk_hours', role='button')
                   h4.inline Ajouter une expérience de bénévolat
                   i.fa.fa-plus
-
+    if events_past.length || events_denied.length
+      if events_past.length
+        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="notificationModalLabel", id='notificationModal')
+          div.modal-dialog(role='document')
+            form.modal-content.notificationModalForm(id='notificationModalForm')
+              .modal-header
+                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden='true')
+                  h4.modal-title Valide ta participation
+              .modal-body
+                h3.text-center Valide ta participation !
+                img(align='center', src='http://i.giphy.com/H16k14aEA6Vva.gif', style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
+                p.text-center Un évènement auquel tu étais inscrit est terminé. <br> Tu peux maintenant valider ta participation pour faire évoluer ton profil d'engagement, ainsi que le bilan d'impact de l'organisme !
+                li.list-group-item
+                  .panel.panel-default.notified
+                    .panel-heading
+                      div.media-left.media-middle
+                        a(href='profile')
+                          img.media-object.little-img(src='/images/clouds.jpg')
+                      div.media-body
+                        h4.media-heading <b>#{events_past[0].intitule}</b> <small>(#{events_past[0].intitule_activity})</small>
+                        h6 <small>pour</small> #{events_past[0].org_name}
+                      div.media-right.media-top
+                        a.btn.btn-default(href='/volunteer/event/'+events_past[0]._id) Détails
+                    .panel-body
+                      h6
+                        i.fa.fa-map-marker
+                        p.inline Adresse : #{events_past[0].address}
+                      h6.inline
+                        i.fa.fa-calendar-o
+                        p.inline #{days_name[correctDate(events_past[0].day).getDay()]  + ' ' + (correctDate(events_past[0].day).getDate()) + ' ' + months_name[correctDate(events_past[0].day).getMonth()]  + ' ' + correctDate(events_past[0].day).getFullYear()}
+                    .panel-footer
+                      form(method='post' action='/volunteer/hours_pending/'+events_past[0].activity_id+'-'+events_past[0].day, id='hoursPendingForm'+events_past[0].activity_id+events_past[0].day)
+                        div.input-group
+                          input.form-control(id='input'+events_past[0]._id, type='number', min='0.5', max='50', step='0.5' placeholder='Heures réalisées' name='hours_pending', required)
+                          .input-group-btn
+                            input.btn.btn-default(type='submit', value='Confirmer' form='hoursPendingForm'+events_past[0].activity_id+events_past[0].day)
+                            input.btn.btn-warning(type='button' value='Absence' id='#absenceNotificationModal')
+                      div#absenceNotificationDiv.hidden
+                        form.absenceModalForm(id='absenceModalForm'+events_past[0]._id, method='post', action='/volunteer/hours_pending/'+events_past[0].activity_id+'-'+events_past[0].day)
+                          h4.modal-title Confirmes-tu ton absence ?
+                          input.hidden(value='a', name='absent')
+                          div.modal-footer
+                            input.btn.btn-warning(type='submit' form='absenceModalForm'+events_past[0]._id, value='Confirmer mon absence')
+              div.modal-footer
+                a.btn.btn-default(data-dismiss='modal') Fermer
+      else 
+        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="notificationModalLabel", id='notificationModal')
+          div.modal-dialog(role='document')
+            form.modal-content.notificationModalForm(id='notificationModalForm')
+              .modal-header
+                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden='true')
+                  h4.modal-title Corrige ton dossier
+              .modal-body
+                h3.text-center Corrige ton dossier !
+                img(align='center', src='/images/repair.svg', style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
+                p.text-center La personne responsable du bénévolat dans ton établissement attends une correction sur le retour d'expérience d'un de tes bénévolats.
+                li.list-group-item
+                  .panel.panel-default.notified
+                    .panel-heading
+                      div.media-left.media-middle
+                        a(href='profile')
+                          img.media-object.little-img(src='/images/clouds.jpg')
+                      div.media-body
+                        h4.media-heading <b>#{events_denied[0].intitule}</b> <small>(#{events_denied[0].intitule_activity})</small>
+                        h6 <small>pour</small> #{events_denied[0].org_name}
+                      if events_denied[0].status == 'denied'
+                        div.media-right.media-top
+                          span.badge(style='background-color: #E33831')= 'À corriger'
+                    .panel-body
+                      h6
+                        i.fa.fa-map-marker
+                        p.inline Adresse : #{events_denied[0].address}
+                      h6.inline
+                        i.fa.fa-calendar-o
+                        p.inline #{days_name[correctDate(events_denied[0].day).getDay()]  + ' ' + (correctDate(events_denied[0].day).getDate()) + ' ' + months_name[correctDate(events_denied[0].day).getMonth()]  + ' ' + correctDate(events_denied[0].day).getFullYear()}
+                    .panel-footer
+                      a.btn.btn-danger(href='/volunteer/event/'+events_denied[0]._id) Corriger
+                    #identifiant(style='display:none')
+                      p= events_denied[0]._id
+              div.modal-footer
+                a.btn.btn-default(data-dismiss='modal') Fermer
 
 
     .row
@@ -132,7 +214,7 @@ block content
                     h4 CONFIRMER TA VENUE
                   each event, index in events_past
                     li.list-group-item
-                      .panel.panel-default
+                      .panel.panel-default.notified
                         .panel-heading
                           div.media-left.media-middle
                             a(href='profile')
@@ -175,7 +257,7 @@ block content
                     h4 CORRIGER TON RETOUR
                   each event, index in events_denied
                     li.list-group-item
-                      .panel.panel-default
+                      .panel.panel-default.notified
                         .panel-heading
                           div.media-left.media-middle
                             a(href='profile')
@@ -650,6 +732,7 @@ block footscript
     'use strict';
     $(document).ready(function(){
       var clients = !{JSON.stringify(client_schools)};
+      $('#notificationModal').modal('show');
       $('.edit-form').submit(function(event){
         console.log('Submit an edit-form');
         console.log('$(this).attr("id) : ' + $(this).attr('id'))
@@ -714,6 +797,12 @@ block footscript
           }
         }
       });
+
+      $('#absenceNotificationModal').click(function(){
+        $('#absenceNotificationDiv').removeClass('hidden');
+      });
+
+      $('.notified').css({border: '1px solid red'});
 
 
       $('.edit').click(function(){
