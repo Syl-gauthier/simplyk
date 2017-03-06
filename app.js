@@ -304,8 +304,8 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  if (req.originalUrl != 'robots.txt') {
-    console.error('ERROR MID : \n' + err + '\n ' + err.type + ' @ ' + req.method + req.originalUrl + '\n');
+  if (req.originalUrl != '/robots.txt') {
+    console.error('ERROR MID : \n' + err + '\n ' + err.type + ' @  ' + req.method + '  ' + req.originalUrl + '\n');
     console.error('ERROR MID stack : \n' + err.stack + '\n');
     var session = {};
     var group = {};
