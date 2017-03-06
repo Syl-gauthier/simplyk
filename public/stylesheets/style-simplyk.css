@@ -170,11 +170,11 @@ body{
 
 
 #offers-list{
-	height: calc(100% - 131px);
+	height: calc(100% - 179px);
 }
 
 #offers-list-logged{
-	height: calc(100% - 71px);
+	height: calc(100% - 119px);
 }
 
 
