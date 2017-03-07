@@ -177,6 +177,25 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
           })
         });
       };
+      //Add infos to each event from activity_id
+
+      function getLongtermWithOrgInfos(lt) {
+        return new Promise((resolve, reject) => {
+          Organism.findOne({
+            '_id': lt.org_id
+          }, 'email phone firstname lastname', function(err, matching_organism) {
+            if (err) {
+              reject(err);
+            } else {
+              let new_lt = JSON.parse(JSON.stringify(lt));
+              new_lt['org_email'] = matching_organism.email;
+              new_lt['org_phone'] = matching_organism.phone;
+              new_lt['contact'] = matching_organism.firstname + ' ' + matching_organism.lastname;
+              resolve(new_lt);
+            }
+          })
+        });
+      };
 
       Promise.all(volunteer.events.map(event => {
         return getEventWithActivityInfos(event);
@@ -192,27 +211,32 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
           if (err) {
             err.type = 'MINOR';
             err.print = 'Problème avec la recherche de l\'élève dans la base de données';
+            next(err);
           }
-          res.render('a_report.jade', {
-            volunteer: volunteer,
-            session: req.session,
-            admin: req.session.admin,
-            group: req.session.group,
-            events,
-            todos,
-            date,
-            hash
+          Promise.all(volunteer.long_terms.map(lt => {
+            return getLongtermWithOrgInfos(lt);
+          })).then(complete_long_terms => {
+            res.render('a_report.jade', {
+              volunteer: volunteer,
+              session: req.session,
+              admin: req.session.admin,
+              group: req.session.group,
+              long_terms: complete_long_terms,
+              events,
+              todos,
+              date,
+              hash
+            });
+          }).catch(err => {
+            err.type = 'CRASH';
+            err.print = 'Problème avec la recherche de l\'élève dans la base de données';
+            next(err);
           });
         });
       }).catch(err => {
-        console.error('ERROR : ' + err);
-        res.render('a_classes.jade', {
-          error: err,
-          session: req.session,
-          admin: req.session.admin,
-          group: req.session.group,
-          date
-        });
+        err.type = 'CRASH';
+        err.print = 'Problème avec la recherche de l\'élève dans la base de données';
+        next(err);
       });
 
     }
