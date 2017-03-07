@@ -232,6 +232,20 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
             identifier: req.session.organism._id
           });
 
+          req.session.organism.long_terms.sort((a, b) => {
+            console.log(a.tags + ' vs ' + b.tags);
+            if (a.tags == 'archived' && b.tags != 'archived') {
+              console.log('-1');
+              return 1;
+            } else if (a.tags != 'archived' && b.tags == 'archived') {
+              console.log('1');
+              return -1;
+            } else {
+              console.log('0');
+              return 0;
+            }
+          });
+
           var todo_to_send = todos.map(addEventName);
           res.render('o_dashboard.jade', {
             ev_past: ev_past,
