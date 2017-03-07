@@ -91,6 +91,26 @@ router.post('/edit-longterm', permissions.requireGroup('organism', 'admin'), fun
       'long_terms.$.intitule': req.body.intitule
     };
     mongoOrganismUpdate(update);
+  } else if (req.body.expiration_date) {
+    update = {
+      'long_terms.$.expiration_date': req.body.expiration_date
+    };
+    mongoOrganismUpdate(update);
+  } else if (req.body.min_age) {
+    update = {
+      'long_terms.$.min_age': req.body.min_age
+    };
+    mongoOrganismUpdate(update);
+  } else if (req.body.archive) {
+    update = {
+      'long_terms.$.tags': 'archived'
+    };
+    mongoOrganismUpdate(update);
+  } else if (req.body.recover) {
+    update = {
+      'long_terms.$.tags': ''
+    };
+    mongoOrganismUpdate(update);
   }
 });
 
