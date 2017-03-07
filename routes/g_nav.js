@@ -130,5 +130,9 @@ router.get('/all/longterm/:lt_id', function(req, res, next) {
   }
 });
 
+router.get('/robots.txt', function(req, res) {
+  res.type('text/plain');
+  res.send("User-agent: *\nDisallow: /");
+});
 
 module.exports = router;
