@@ -297,6 +297,16 @@ if (app.get('env') === 'development') {
         admin,
         session
       });
+    } else {
+      res.status(err.status || 500);
+      res.render('g_error', {
+        message: err.print,
+        group,
+        organism,
+        volunteer,
+        admin,
+        session
+      });
     }
   });
 }
@@ -335,6 +345,16 @@ app.use(function(err, req, res, next) {
     res.render('g_error', {
       message: err.print,
       error: err,
+      group,
+      organism,
+      volunteer,
+      admin,
+      session
+    });
+  } else {
+    res.status(err.status || 500);
+    res.render('g_error', {
+      message: err.print,
       group,
       organism,
       volunteer,

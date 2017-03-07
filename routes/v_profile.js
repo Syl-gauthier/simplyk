@@ -114,7 +114,9 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   //Get schools_list
   school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
     if (err) {
-      err.type = 'MINOR';
+      let error = {};
+      error.print = err;
+      error.type = 'MINOR';
       next(err);
     };
     const hash = require('intercom-client').SecureMode.userHash({
@@ -123,7 +125,9 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
     });
     getClientSchools(function(err, client_schools) {
       if (err) {
-        err.type = 'MINOR';
+        let error = {};
+        error.print = err;
+        error.type = 'MINOR';
         next(err);
       }
       //Sort extras by status
@@ -333,7 +337,9 @@ router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('
               });
               update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, 'LT', function(err) {
                 if (err) {
-                  err.type = 'MINOR';
+                  let error = {};
+                  error.print = err;
+                  error.type = 'MINOR';
                   next(err);
                 } else {
                   console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
