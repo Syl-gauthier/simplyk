@@ -302,53 +302,7 @@ router.post('/changeclass', permissions.requireGroup('admin'), function(req, res
       res.status(404).send(err);
     } else {
       console.info('SUCCESS : Change class to ' + req.body.new_class + ' for the volunteer ' + req.body.volunteer);
-      Admin.update({
-        'name': req.session.admin,
-        'type': 'school-teacher',
-        'classes': {
-          $ne: req.body.new_class
-        }
-      }, {
-        $pull: {
-          'students': {
-            '_id': req.body.volunteer
-          }
-        }
-      }, {
-        multi: true
-      }, function(err, report0) {
-        if (err) {
-          err.type = 'MINOR';
-          next(err);
-          res.status(404).send(err);
-        } else {
-          console.info('SUCCESS : Remove the student volunteer to ancient admins. Report :' + report0);
-          const student_to_add = {
-            '_id': req.body.volunteer,
-            'status': 'automatic_subscription'
-          };
-          Admin.update({
-            'name': req.session.admin,
-            'type': 'school-teacher',
-            'classes': req.body.new_class
-          }, {
-            $push: {
-              'students': student_to_add
-            }
-          }, {
-            multi: true
-          }, function(err, report1) {
-            if (err) {
-              err.type = 'MINOR';
-              next(err);
-              res.status(404).send(err);
-            } else {
-              console.info('SUCCESS : Add the student volunteer to new admins. Report :' + report1);
-              res.status(200).end();
-            }
-          });
-        }
-      });
+      res.status(200).end();
     }
   });
 });
