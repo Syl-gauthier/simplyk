@@ -104,9 +104,15 @@ router.post('/login', function(req, res, next) {
         if (err) {
           return next(err);
         }
-        if (req.session.volunteer.events.find(function(ev) {
+        if ((req.session.volunteer.events.find(function(ev) {
             return (Date.parse(ev.day) < Date.now() && ev.status === 'subscribed')
-          }) != undefined) {
+          }) != undefined) || (req.session.volunteer.extras.find(function(ext) {
+            return (ext.status == 'denied')
+          }) != undefined) || (req.session.volunteer.events.find(function(ev) {
+            return (ev.status == 'denied')
+          }) != undefined) || (req.session.volunteer.long_terms.find(function(lt) {
+            return (lt.status == 'denied')
+          }) != undefined)) {
           res.redirect('/volunteer/profile');
         } else {
           res.redirect('/volunteer/map');

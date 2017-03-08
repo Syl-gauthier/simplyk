@@ -25,7 +25,6 @@ const getClientSchools = require('../lib/ressources/client_school_list.js').getC
 
 router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function(req, res, next) {
   console.log('Begin get /profile')
-  console.log(req.session.volunteer);
   var events_past = [];
   var events_pending = [];
   var events_subscribed = [];
@@ -160,7 +159,6 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
           }
         }
       });
-      console.log('extras sorted : ' + JSON.stringify(req.session.volunteer.extras));
       res.render('v_profile.jade', {
         session: req.session,
         volunteer: req.session.volunteer,
