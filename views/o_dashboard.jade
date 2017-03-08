@@ -5,6 +5,7 @@ block vars
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
   - function isOk(event){if (event.dates.indexOf(null) != -1){console.log(event.dates + ' false');return false;} else {console.log(event.dates + ' true');return true}}
+  - function activeTabs(todo){console.info(todo);if(todo > 0){console.info('todo == 0');return ['', 'active', '', 'active in']}else{console.info('todo else');return ['active', '', 'active in', '']}};
 
 block head
   title Tableau de bord
@@ -43,16 +44,16 @@ block content
         .row
           .col-md-10.col-md-offset-1
             ul.nav.nav-tabs(role='tablist')
-              li.active(role='presentation')
+              li(role='presentation' class=activeTabs(todos.length)[0])
                 a(href='#needs' aria-controls='needs' role='tab' data-toggle='tab') 
                   h4 Mes besoins
-              li(role='presentation')
+              li(role='presentation' class=activeTabs(todos.length)[1])
                 a(href='#todo' aria-controls='todo' role='tab' data-toggle='tab') 
                   h4 À faire 
                     span.badge(style='background-color: #C11')= todos.length
         .row
           .tab-content
-            #needs.tab-pane.fade.active.in(role='tabpanel')
+            #needs.tab-pane.fade(role='tabpanel' class=activeTabs(todos.length)[2])
               .col-md-4.col-md-offset-1
                 h2.page-header Mes bénévoles ponctuels
                 if error
@@ -140,7 +141,7 @@ block content
                             p.inline= lt.applicants.length+' bénévoles se sont inscrits'
                         .panel-footer
                           a.btn.infos-button-longterm.longterm(id= lt._id, href='/organism/longterm/'+lt._id) Informations
-            #todo.tab-pane.fade(role='tabpanel')
+            #todo.tab-pane.fade(role='tabpanel' class=activeTabs(todos.length)[3])
               .col-md-10.col-md-offset-1
                 if todos.length
                   each todo, todo_i in todos
