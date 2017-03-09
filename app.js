@@ -351,7 +351,7 @@ app.use(function(err, req, res, next) {
       admin,
       session
     });
-  } else {
+  } else if (err.type == 'MINOR') {} else {
     res.status(err.status || 500);
     res.render('g_error', {
       message: err.print,
