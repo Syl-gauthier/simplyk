@@ -243,6 +243,12 @@ class ActivityItem extends React.Component {
 				days_list: days_pushed
 			});
 			console.log('Had just push false in days_list and new days_list : ' + this.state.days_list);
+		} else if (this.props.days.length > nextProps.days.length){
+			this.state.days_list.pop();
+			const days_popped = this.state.days_list;
+			this.setState({
+				days_list: days_popped
+			});
 		}
 	}
 
@@ -275,8 +281,10 @@ class ActivityItem extends React.Component {
 					<div className="col-md-3"><p><strong>Nombres de bénévoles</strong></p></div>
 				</div>
 				{this.props.days.map(function(day, i){
+					console.info('this.state.days_list : ' + JSON.stringify(this.state.days_list));
 					if (this.state.days_list.indexOf(true) != -1){
 						if (this.state.days_list[i]){
+							console.info('this.state.days_list[i] : ' + JSON.stringify(this.state.days_list[i]));
 							return(
 								<DayInActivity i={i} onChange={()=>this.onChange(i)} activity={'activity' + (this.props.n+1)} day={'day'+(i+1)} required='true' checked='true'/>
 							)
@@ -356,6 +364,17 @@ class EventForm extends React.Component {
 		console.log('this.state.days ' + JSON.stringify(this.state.days));
 	}
 
+	removeADay(){
+		if (this.state.days.length > 1){
+			const new_days = this.state.days;
+			new_days.pop();
+			this.setState({
+				days: new_days
+			})
+			console.log('this.state.days ' + JSON.stringify(this.state.days));
+		}
+	}
+
 	addAnActivity() {
 		const new_nb_activities = this.state.nbActivities + 1;
 		this.setState({
@@ -396,7 +415,8 @@ class EventForm extends React.Component {
 							return <DayItem day={day} key={day.name}/>
 						})}
 					</div>
-					<div className="btn btn-default" onClick={() => {this.addADay()}} id="addADay"> Ajouter un jour</div>
+					<div className="btn btn-default" onClick={() => {this.addADay()}} id="addADay" style={{marginRight: '15px'}}> Ajouter un jour</div>
+					<div className="btn btn-default" onClick={() => {this.removeADay()}} id="removeADay"> Supprimer un jour</div>
 					<AgeItem />
 					<div style={{paddingBottom: '40px'}}>
 						{Array.apply(null, Array(this.state.nbActivities)).map(function(){return 1;}).map(function(d, i){
