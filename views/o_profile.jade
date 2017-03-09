@@ -16,7 +16,24 @@ block content
               .media-left.media-middle
                 img.media-object.img-profile(src='/images/rocket.png')
               .media-body.media-middle
-                  h4.media-heading= organism.org_name
+                  h4.media-heading.org_name.inline= organism.org_name
+                  a.inline.btn(data-toggle='modal' data-target='#org_name_edit_modal')
+                    i.fa.fa-pencil
+                  .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='org_name_edit_modal')
+                    div.modal-dialog(role='document')
+                      .modal-content
+                        form.edit-form#org_name-edit-form
+                          .modal-header
+                            button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                              span(aria-hidden='true')
+                              h4.modal-title Édition de mon nom d'organisme
+                          div.modal-body
+                              label(for='org_name') Nouveau nom d'organisme
+                              input.form-control(type='text', name='org_name', aria-describedby='basic-addon1' required) 
+                          .modal-footer
+                            input.btn.btn-warning(type='submit', form='org_name-edit-form', value='Valider')
+                            a.btn.btn-default(data-dismiss='modal') Fermer
+              li.list-group-item#password-group(style='margin-bottom: 60px')
                   a(href='http://www.'+organism.website)= organism.website
                   h4
                     i.fa.fa-phone
@@ -267,12 +284,18 @@ block footscript
             class_to_modify = '.description';
           } else if ($(this).attr('id') == 'name-edit-form'){
             console.log('The edit-form submit is a name one');
-            console.log('form_datas : ' + JSON.stringify(form_datas));
             datas.firstname = form_datas[0].value;
             datas.lastname = form_datas[1].value;
             string_success = ' Nom du responsable modifiée avec succès pour : ';
             new_data_key = "newName";
             class_to_modify = '.name';
+          } else if ($(this).attr('id') == 'org_name-edit-form'){
+            console.log('The edit-form submit is a org_name one');
+            console.log('form_datas : ' + JSON.stringify(form_datas));
+            datas.org_name = form_datas[0].value;
+            string_success = ' Nom de l\'organisme modifiée avec succès pour : ';
+            new_data_key = "newOrgName";
+            class_to_modify = '.org_name';
           };
           $.post('/edit-profile', datas)
             .done(function(data){
