@@ -460,7 +460,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                 update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.events, 'EV', function(err) {
                   if (err) {
                     err.type = 'MINOR';
-                    err.print = 'Inscription annulée : problème dans la base de donnée';
+                    err.print = 'Mise à jour des inscriptions Intercom : problème ';
                     next(err);
                   } else {
                     console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
