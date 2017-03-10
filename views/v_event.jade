@@ -119,7 +119,7 @@ block content
 													h4 <b>Passé</b>
 				if (student_questions.length > 0 && student_answers.length > 0)
 					div.panel.panel-default
-						form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
+						form#correct_answers_form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
 							div.panel-heading
 								h4 Ton retour d'expérience
 								if status == 'denied'
@@ -245,6 +245,10 @@ block footscript
 	script(type='text/javascript').
 		'use strict';
 		$(document).ready(function(){
+			$('#correct_answers_form').submit(function(){
+				amplitude.getInstance().logEvent('Visit_add_event');
+			});
+		
 			const event_id = !{JSON.stringify(event_id)};
 			$('.edit').click(function(){
 				$('.edit').removeClass('fa').removeClass('fa-pencil');
