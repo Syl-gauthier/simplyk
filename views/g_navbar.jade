@@ -50,7 +50,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
               a(href='/volunteer/map') Carte
           li(role='presentation')
             form.navbar-form( method='post', action='./logout')
-              button.btn.btn-default(type='submit') Déconnexion
+              button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
         else if group == 'organism'
           li(role='presentation')
             form.navbar-form
@@ -74,7 +74,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
               a(href='/organism/map') Carte
           li(role='presentation')
             form.navbar-form( method='post', action='./logout')
-              button.btn.btn-default(type='submit') Déconnexion
+              button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
         else if group == 'admin'
           unless page == 'students'
             li.navbar-link(role='presentation')
@@ -102,7 +102,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                     a.toggle-but(href='/us') À propos
           li(role='presentation')
             form.navbar-form( method='post', action='/logout')
-              button.btn.btn-default(type='submit') Déconnexion
+              button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
         else
           li.navbar-link(role='presentation')
             a(href='/register_organism') Je cherche des bénévoles !
@@ -125,13 +125,13 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                   span.caret
                 ul.dropdown-menu#drop-down-but
                   li
-                    a.toggle-but(href='/register_organism') Organismes
+                    a.toggle-but#org_register_btn(href='/register_organism') Organismes
                   li
-                    a.toggle-but(href='/register_volunteer') Bénévoles
+                    a.toggle-but#vol_register_btn(href='/register_volunteer') Bénévoles
           unless page == 'accueil'
             li.navbar-link(role='presentation')
               a(href='/') Accueil
           unless page=='login'
             li(role='presentation')
               form.navbar-form(method='get', action='/login')
-                button.btn.btn-default(type='submit') Connexion
+                button.btn.btn-default#login_visit_btn(type='submit') Connexion

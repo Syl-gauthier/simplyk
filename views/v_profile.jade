@@ -125,17 +125,17 @@ block content
                         p.inline #{days_name[correctDate(events_past[0].day).getDay()]  + ' ' + (correctDate(events_past[0].day).getDate()) + ' ' + months_name[correctDate(events_past[0].day).getMonth()]  + ' ' + correctDate(events_past[0].day).getFullYear()}
                     .panel-footer
                       div.input-group
-                        form(method='post' action='/volunteer/hours_pending/'+events_past[0].activity_id+'-'+events_past[0].day, id='hoursPendingNotificationForm'+events_past[0].activity_id)
+                        form.event_hours_pending_modal_form(method='post' action='/volunteer/hours_pending/'+events_past[0].activity_id+'-'+events_past[0].day, id='hoursPendingNotificationForm'+events_past[0].activity_id)
                           .input-group-btn
                             input.form-control(id='input'+events_past[0]._id, type='number', min='0.5', max='50', step='0.5' placeholder='Heures réalisées' name='hours_pending', required)
-                            input.btn.btn-default(type='submit', value='Confirmer' form='hoursPendingNotificationForm'+events_past[0].activity_id)
+                            input.btn.btn-default.hours_pending_btn(type='submit', value='Confirmer' form='hoursPendingNotificationForm'+events_past[0].activity_id)
                             input.btn.btn-warning.absenceNotificationButton(type='button' value='Absence' id='absenceNotificationDiv'+events_past[0]._id)
                       div.hidden(class='absenceNotificationDiv'+events_past[0]._id)
-                        form.absenceModalForm(id='absenceNotificationModalForm'+events_past[0]._id, method='post', action='/volunteer/hours_pending/'+events_past[0].activity_id+'-'+events_past[0].day)
+                        form.event_absence_modal_form(id='absenceNotificationModalForm'+events_past[0]._id, method='post', action='/volunteer/hours_pending/'+events_past[0].activity_id+'-'+events_past[0].day)
                           h4.modal-title(style='margin-top: 20px') Confirmes-tu ton absence ?
                           input.hidden(value='a', name='absent')
                           div.modal-footer
-                            input.btn.btn-warning(type='submit' form='absenceNotificationModalForm'+events_past[0]._id, value='Confirmer mon absence')
+                            input.btn.btn-warning.absence_btn(type='submit' form='absenceNotificationModalForm'+events_past[0]._id, value='Confirmer mon absence')
       else if events_denied.length
         .modal.fade(tabindex='-1', role='dialog' aria-labelledby="notificationModalLabel", id='notificationModal')
           div.modal-dialog(role='document')
@@ -244,7 +244,7 @@ block content
                   h4 Retours d'expériences
                   if (first_ext_denied.student_questions.length > 0 && first_ext_denied.student_answers.length > 0)
                     div.panel.panel-default
-                      form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
+                      form.edit_extra_student_notification_form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
                         div.panel-heading
                           h4 Ton retour d'expérience
                           span.badge(style='background-color: #E33831')= 'À corriger'
@@ -328,15 +328,15 @@ block content
                             i.fa.fa-calendar-o
                             p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
                         .panel-footer
-                          form(method='post' action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day, id='hoursPendingForm'+event.activity_id+event.day)
+                          form.event_hours_pending_modal_form(method='post' action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day, id='hoursPendingForm'+event.activity_id+event.day)
                             div.input-group
                               input.form-control(id='input'+event._id, type='number', min='0.5', max='50', step='0.5' placeholder='Heures réalisées' name='hours_pending', required)
                               .input-group-btn
-                                input.btn.btn-default(type='submit', value='Confirmer' form='hoursPendingForm'+event.activity_id+event.day)
+                                input.btn.btn-default.hours_pending_btn(type='submit', value='Confirmer' form='hoursPendingForm'+event.activity_id+event.day)
                                 input.btn.btn-warning(type='button' value='Absence' data-toggle='modal' data-target='#absenceModal'+event._id)
                         .modal.fade(tabindex='-1', role='dialog' aria-labelledby="absenceModalLabel", id='absenceModal'+event._id)
                           div.modal-dialog(role='document')
-                            form.modal-content.absenceModalForm(id='absenceModalForm'+event._id, method='post', action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day)
+                            form.modal-content.event_absence_modal_form(id='event_absence_modal_form'+event._id, method='post', action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day)
                               .modal-header
                                 button(type='button' class="close" data-dismiss="modal" aria-label="Close")
                                   span(aria-hidden='true')
@@ -344,7 +344,7 @@ block content
                                   input.hidden(value='a', name='absent')
                               div.modal-footer
                                 a.btn.btn-default(data-dismiss='modal') Annuler
-                                input.btn.btn-warning(type='submit' form='absenceModalForm'+event._id, value='Confirmer mon absence')
+                                input.btn.btn-warning(type='submit' form='event_absence_modal_form'+event._id, value='Confirmer mon absence')
                         #identifiant(style='display:none')
                           p= event._id
 
@@ -442,7 +442,7 @@ block content
                                     span(aria-hidden='true') &times;
                                   h4.modal-title(id='myModalLabel'+index) Es-tu sûr de vouloir te désinscrire de cette activité ?
                                 .modal-footer
-                                  form.inline(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post')
+                                  form.inline.activity_unsubscribe_form(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post')
                                     .btn-group
                                       a.btn.btn-warning(data-dismiss='modal') Annuler
                                       input.btn.btn-default(type='submit' value='Oui' role='button')
@@ -547,7 +547,7 @@ block content
                                         span(aria-hidden='true') &times;
                                       h4.modal-title(id='myModalLabel'+lt_i) Es-tu sûr de vouloir te désinscrire de cet engagement ? <br> Si tu as des heures enregistrées, elles seront définitivement perdues !
                                     .modal-footer
-                                      form.inline(action='/volunteer/unsubscribe/longterm/'+lt._id, method='post')
+                                      form.inline.longterm_unsubscribe_form(action='/volunteer/unsubscribe/longterm/'+lt._id, method='post')
                                         .btn-group
                                           a.btn.btn-warning(data-dismiss='modal') Annuler
                                           input.btn.btn-default(type='submit' value='Oui' role='button')
@@ -754,7 +754,7 @@ block content
                             div.modal-body
                               if (ext.student_questions.length > 0 && ext.student_answers.length > 0)
                                 div.panel.panel-default
-                                  form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
+                                  form.edit_extra_student_notification_form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
                                     div.panel-heading
                                       h4 Ton retour d'expérience
                                       if ext.status == 'denied'
@@ -902,6 +902,25 @@ block footscript
       $('.notificationCorrection').click(function(){
         $('#notificationCorrection').removeClass('hidden');
       });
+      $('.edit_extra_student_notification_form').submit(function(){
+        amplitude.getInstance().logEvent('Extra_correct');
+      });
+      $('.event_absence_modal_form').submit(function(){
+        amplitude.getInstance().logEvent('Activity_absence');
+      });
+      $('.activity_unsubscribe_form').submit(function(){
+        amplitude.getInstance().logEvent('Activity_unsubscribe');
+      });
+      $('.longterm_unsubscribe_form').submit(function(){
+        amplitude.getInstance().logEvent('Longterm_unsubscribe');
+      });
+      $('.event_hours_pending_modal_form').submit(function(){
+        amplitude.getInstance().logEvent('Activity_hours_pending');
+      });
+      $('.addLTHoursForm').submit(function(){
+        amplitude.getInstance().logEvent('Longterm_hours_pending');
+      });
+
 
 
       $('.edit').click(function(){

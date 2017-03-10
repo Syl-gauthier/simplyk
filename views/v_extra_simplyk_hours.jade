@@ -111,6 +111,11 @@ block footscript
 
     script(type='text/javascript').
         $(document).ready(function(){
+            amplitude.getInstance().logEvent('Visit_add_extra');
+
+            $('#addextrahours').submit(function(){
+                amplitude.getInstance().logEvent('Add_extra_hours');
+            });
             $('#warningModal').modal('show');
             var input = $('.datepicker');
             input.pickadate({

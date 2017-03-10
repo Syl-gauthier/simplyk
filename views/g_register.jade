@@ -128,6 +128,14 @@ block footscript
           yearRange: "1950:2020"
         });
       }
+      $('#submit-button').click(function(){
+        if (window.location.pathname == '/register_organism'){
+          amplitude.getInstance().logEvent('Org_register');
+        } else if (window.location.pathname == '/register_volunteer') {
+          amplitude.getInstance().logEvent('Vol_register');
+        }
+        amplitude.getInstance().logEvent('Register');
+      });
       $('#admin_checkbox').click(function(){
         $('#admin_dropdown').removeClass('hidden');
         $('#admin_dropdown').toggle(this.checked);

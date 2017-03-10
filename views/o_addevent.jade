@@ -88,6 +88,8 @@ block footscript
 					})
 			};
 
+      		amplitude.getInstance().logEvent('Visit_add_event');
+
 			$('#address').on('focusout', function(){
 				console.log('GET OUT !')
 				window.setTimeout(testAddress(), 1000);
@@ -116,6 +118,7 @@ block footscript
 						console.info('days_total : ' + days_total);
 					}
 				});
+          		amplitude.getInstance().logEvent('Org_add_event');
 				if(days_defined != days_total) {
 					$('html,body').animate({
 						scrollTop: 0

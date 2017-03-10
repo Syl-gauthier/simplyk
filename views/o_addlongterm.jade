@@ -185,12 +185,17 @@ block footscript
     };
 
     $( document ).ready(function() {
+      amplitude.getInstance().logEvent('Visit_add_longterm');
       $('#creationlongtermform').on('keyup keypress', function(e) {
         var keyCode = e.keyCode || e.which;
         if (keyCode === 13) { 
           e.preventDefault();
           return false;
         }
+      });
+
+      $('#creationlongtermform').submit(function(){
+        amplitude.getInstance().logEvent('Org_add_longterm');
       });
 
       var input = $('.datepicker');

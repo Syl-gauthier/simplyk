@@ -365,6 +365,7 @@ block footscript
   script.
     $(document).ready(function(){
       'use strict';
+      amplitude.getInstance().logEvent('Visit_org_dashboard');
       $('.correctHoursForm').submit(function(){
         let vol_id = $(this).attr('vol');
         let todo_id = $(this).attr('todo');

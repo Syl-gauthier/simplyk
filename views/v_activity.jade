@@ -134,7 +134,7 @@ block content
                                         input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone'+day.day.getTime())
                                 .modal-footer
                                   a.btn.btn-warning(data-dismiss='modal') Annuler
-                                  input.btn.btn-default(type='submit' value='Oui' role='button')
+                                  input.btn.btn-default#activity_subscribe(type='submit' value='Oui' role='button')
                     else
                       h4 Passé
                   else
@@ -151,4 +151,7 @@ block footscript
       };
     };
     $(document).ready(function(){
+      $('#activity_subscribe').click(function(){
+        amplitude.getInstance().logEvent('Activity_subscribe');
+      })
     });

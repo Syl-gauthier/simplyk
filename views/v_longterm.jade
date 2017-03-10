@@ -258,7 +258,7 @@ block content
                               input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone')
                       .modal-footer
                         a.btn.btn-warning(data-dismiss='modal') Annuler
-                        input.btn.btn-default(type='submit' value='Oui' role='button')
+                        input.btn.btn-default#longterm_subscribe(type='submit' value='Oui' role='button')
             else
               button.center-block.btn.btn-default(type='button' disabled='disabled' style='margin-top: 10px') Complet
         if ((student_questions && student_answers && student_questions.length > 0 && student_answers.length > 0) || (organism_questions && organism_answers && organism_questions.length > 0 && organism_answers.length > 0))
@@ -358,6 +358,7 @@ block footscript
   script(type='text/javascript').
     'use strict';
     $(document).ready(function(){
+      amplitude.getInstance().logEvent('Visit_longterm');
       const lt_id = !{JSON.stringify(longterm._id)};
       $('.edit').click(function(){
         $('.edit').removeClass('fa').removeClass('fa-pencil');
@@ -365,5 +366,12 @@ block footscript
           $(this).html("<p>Correction de la réponse</p><textarea rows='4' name='new_response'>"+$(this).text()+"</textarea>");
         });
         $('.submit-button').html("<input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='lt_id' value="+lt_id+"></input><input type='submit' value='Envoyer les corrections' class='btn btn-warning'></input>");
+      });
+      $('#longterm_subscribe').click(function(){
+        amplitude.getInstance().logEvent('Longterm_subscribe');
+      });
+      $('.addLTHoursForm').submit(function(){
+        console.info('Send amplitude addLTHoursForm');
+        amplitude.getInstance().logEvent('Longterm_hours_pending');
       });
     });

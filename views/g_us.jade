@@ -220,6 +220,7 @@ block content
 block footscript
   script.
     $( document ).ready(function() {
+      amplitude.getInstance().logEvent('Visit_us');
       $('#history-button').click(function(){
         $('html, body').animate({
           scrollTop: $('#history').offset().top - 50

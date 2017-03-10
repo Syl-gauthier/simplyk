@@ -267,6 +267,7 @@ block footscript
   script(type='text/javascript').
     'use strict';
     $(document).ready(function(){
+      amplitude.getInstance().logEvent('Visit_org_longterm');
       $(function () {
         $('[data-toggle="tooltip"]').tooltip({container: 'body'})
       })
