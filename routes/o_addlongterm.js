@@ -96,27 +96,33 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 					};
 					emailer.sendTransAddLongTerm(content);
 					//*************AGENDA
-					let send_date = new Date(req.body.expiration_date_submit).getTime();
-					send_date = moment(send_date).add(5, 'hours');
-					const fiveDaysBefore = moment(send_date).add(-5, 'days');
+					console.info('req.body.expiration_date : ' + req.body.expiration_date);
+					console.info('req.body.expiration_date != "" : ' + (req.body.expiration_date != ""));
 
-					console.info('date when expiration date email will be sent : ' + moment(send_date).format('dddd D MMMM YYYY HH:mm'));
-					console.info('date when 5 days before expiration date email will be sent : ' + moment(fiveDaysBefore).format('dddd D MMMM YYYY HH:mm'));
-					const longterm_to_send = organism.long_terms.find(function(lt) {
-						return lt.description == newLongterm.description
-					});
-					console.info('longterm_to_send : ' + JSON.stringify(longterm_to_send));
+					if (req.body.expiration_date != "") {
+						let send_date = new Date(req.body.expiration_date_submit).getTime();
+						send_date = moment(send_date).add(5, 'hours');
+						const fiveDaysBefore = moment(send_date).add(-5, 'days');
 
-					agenda.schedule(moment(send_date).toDate(), 'longTermExpirationEmail', {
-						lt_id: (longterm_to_send._id).toString(),
-						lt_name: longterm_to_send.intitule,
-						email: req.session.organism.email
-					});
-					agenda.schedule(moment(fiveDaysBefore).toDate(), 'fiveDaysLongTermExpirationEmail', {
-						lt_id: (longterm_to_send._id).toString(),
-						lt_name: longterm_to_send.intitule,
-						email: req.session.organism.email
-					});
+						console.info('date when expiration date email will be sent : ' + moment(send_date).format('dddd D MMMM YYYY HH:mm'));
+						console.info('date when 5 days before expiration date email will be sent : ' + moment(fiveDaysBefore).format('dddd D MMMM YYYY HH:mm'));
+						const longterm_to_send = organism.long_terms.find(function(lt) {
+							return lt.description == newLongterm.description
+						});
+						console.info('longterm_to_send : ' + JSON.stringify(longterm_to_send));
+
+						agenda.schedule(moment(send_date).toDate(), 'longTermExpirationEmail', {
+							lt_id: (longterm_to_send._id).toString(),
+							lt_name: longterm_to_send.intitule,
+							email: req.session.organism.email
+						});
+
+						agenda.schedule(moment(fiveDaysBefore).toDate(), 'fiveDaysLongTermExpirationEmail', {
+							lt_id: (longterm_to_send._id).toString(),
+							lt_name: longterm_to_send.intitule,
+							email: req.session.organism.email
+						});
+					}
 
 					req.session.organism = organism;
 					req.session.save(function() {
