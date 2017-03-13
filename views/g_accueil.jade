@@ -65,7 +65,7 @@ block content
             a#link-btn-ref.btn.btn-default(href='/all/longterm/'+lt.long_term._id, target='_blank') Plus d'infos
   .container-fluid
     #first_section.landing-section.row
-      .col-sm-5.col-xs-offset-1.col-xs-11.section-div
+      .col-sm-5.col-xs-offset-1.col-xs-11.section-div.hidden-xs
         .logo.section__sentence
           div
             h1 TROUVE TON <br> BÉNÉVOLAT <br>
@@ -73,9 +73,18 @@ block content
             h4 Simplyk te connecte avec l'organisme qui te correspond <br><br>
           div.hidden-xs
             button.landing-buttons__item.btn.btn-warning.btn-lg#letsgo JE CONNAIS
-            button.landing-buttons__item.btn.btn-warning.btn-lg#more <b>C'EST PARTI !</b>
+            button.landing-buttons__item.btn.btn-warning.btn-lg.more#more <b>C'EST PARTI !</b>
+      .col-sm-5.col-xs-offset-1.col-xs-11.section-div-xs.visible-xs
+        .logo.section__sentence
+          div.text-center
+            h1 TROUVE TON <br> BÉNÉVOLAT <br>
+          div.text-center
+            h4 Simplyk te connecte avec l'organisme qui te correspond <br><br>
       .col-sm-6.col-sm-offset-0.col-xs-offset-1.col-xs-11.section-div.hidden-xs
         img#landscape(src='images/happy_city.svg', align='middle')
+      .col-xs-12.section-div-xs.visible-xs.text-center
+        img#landscape-xs(src='images/happy_city.svg', align='middle')
+        button.landing-buttons__item.btn.btn-warning.btn-lg.more#more-xs <b>C'EST PARTI !</b>
     #type-section.row.landing-section.hidden-xs
       .col-sm-5.col-sm-offset-1.col-xs-offset-1.col-xs-10.section-div
         .section__sentence.section__sentence--grouped
@@ -121,9 +130,9 @@ block content
         #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;')
           .col-sm-10.col-sm-offset-1
             .input-group
+              input.form-control(type="search" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
               span.input-group-addon.btn.btn-default
                 i.fa.fa-search
-              input.form-control(type="search" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
         #offers-list.no-side-padding.scrollable.row
           ul.list-group.list-opportunity(id="jetsContent")
             if error
@@ -266,7 +275,7 @@ block footscript
   script(src="/bower_components/jets/jets.min.js")
   script.
     $( document ).ready(function() {
-      $('#letsgo, .age-button').click(function(){
+      $('#letsgo, .age-button, #more-xs').click(function(){
         $('html, body').animate({
           scrollTop: $('#map').offset().top - 50
         }, 500)

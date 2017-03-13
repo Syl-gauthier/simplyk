@@ -23,7 +23,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
         else
           a.navbar-brand(href='/')
             img(alt='Brand', src='/images/simplyk-text-egg-hor.png', style= 'color: #F5F5F5')
-      ul.nav.navbar-nav.navbar-left
+      ul.nav.navbar-left
         li.navbar-brand(role='presentation')
           span.label.label-beta BETA 
     #myNavbar.collapse.navbar-collapse
@@ -33,7 +33,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                div.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
                   span.caret
                 ul.dropdown-menu#drop-down-bu
                   li
@@ -55,7 +55,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                div.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
                   span.caret
                 ul.dropdown-menu#drop-down-bu
                   li
@@ -74,7 +74,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
               a(href='/organism/map') Carte
           li(role='presentation')
             form.navbar-form( method='post', action='./logout')
-              button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
+              div.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
         else if group == 'admin'
           unless page == 'students'
             li.navbar-link(role='presentation')
@@ -87,7 +87,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                div.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
                   span.caret
                 ul.dropdown-menu#drop-down-bu
                   li
@@ -102,14 +102,14 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                     a.toggle-but(href='/us') À propos
           li(role='presentation')
             form.navbar-form( method='post', action='/logout')
-              button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
+              div.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
         else
           li.navbar-link(role='presentation')
             a(href='/register_organism') Je cherche des bénévoles !
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                div.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
                   span.caret
                 ul.dropdown-menu#drop-down-bu
                   li
@@ -121,7 +121,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                button.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Inscris-toi ! 
+                div.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Inscris-toi ! 
                   span.caret
                 ul.dropdown-menu#drop-down-but
                   li
@@ -134,4 +134,4 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           unless page=='login'
             li(role='presentation')
               form.navbar-form(method='get', action='/login')
-                button.btn.btn-default#login_visit_btn(type='submit') Connexion
+                input.btn.btn-default#login_visit_btn(type='submit', value='Connexion')
