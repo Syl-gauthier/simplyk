@@ -167,7 +167,7 @@ block footscript
 	script('type'='text/javascript').
 		'use strict';
 		$(document).ready(function(){
-      amplitude.getInstance().logEvent('Visit_org_event');
+			amplitude.getInstance().logEvent('Visit_org_event');
 			$('.edit').click(function(){
 				const type = $(this).attr('type');
 				if(type == 'vol_nb'){
