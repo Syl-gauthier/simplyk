@@ -18,6 +18,8 @@ block content
             .row
               .col-md-7
                 h1.page-header.firstColor Mes élèves
+                p.alert.alert-success#success-general.hidden
+                p.alert.alert-warning#warning-general.hidden
               .col-md-5
                 .panel.panel-default
                   .panel-header
@@ -36,6 +38,8 @@ block content
                   if classes_array.length > 1
                     th.text-center(rowspan='2') Changement de classe
                   th.text-center(rowspan='2') Ajout d'heures
+                  if admin.type == 'school-coordinator'
+                    th.text-center(rowspan='2') Suppression de l'élève
                 tr
                   th.text-center(style='font-weight: 700; font-size: 13px' data-toggle="tooltip" data-placement="left" title='Bénévolats auxquels l\'élève est inscrit mais n\'a pas encore fait d\'heure') Inscriptions
                   th.text-center(data-toggle="tooltip" data-placement="left" title='Bénévolats en attente de validation par l\'organisme (nombre d\'heures correspondantes)')
@@ -54,6 +58,8 @@ block content
                       td(style="width:10%")
                       if classes_array.length > 1
                         td
+                      if admin.type == 'school-coordinator'
+                        td.text-center
                     each vol, vol_i in volunteers
                       if ((typeof vol.admin.class != undefined) && (classe != 'Autres'))
                         if vol.admin.class == classe
@@ -80,8 +86,6 @@ block content
                                     each classe, classe_i in classes_array
                                       li
                                         a.change_class(style="cursor: pointer;", new_class=classe.toString(), vol=vol._id)= classe.toString()
-                                    li
-                                      a.change_class(style="cursor: pointer;", new_class='banned', vol=vol._id) Supprimer de l'école
                             td.text-center
                               div.btn-group
                                 div.btn.btn-warning.center-block.btn-xs(data-toggle='modal' data-target='#manualHoursModal' + vol_i)
@@ -103,6 +107,23 @@ block content
                                       div.modal-footer
                                         input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
                                         a.btn.btn-default(data-dismiss='modal') Fermer
+                            if admin.type == 'school-coordinator'
+                              td.text-center
+                                .btn-group
+                                  div.btn.btn-danger.center-block.btn-xs(data-toggle='modal' data-target='#banFromSchoolModal' + vol_i)
+                                    i.fa.fa-times
+                              .modal.fade.ban_modal(tabindex='-1', role='dialog' aria-labelledby="banFromSchoolModalLabel", id='banFromSchoolModal' + vol_i)
+                                div.modal-dialog(role='document')
+                                  .modal-content
+                                    .modal-header
+                                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                        span(aria-hidden='true')
+                                        h4.modal-title Supprimer l'élève
+                                    div.modal-body
+                                      p Attention, le fait de supprimer un élève de l'école est une action définitive
+                                    div.modal-footer
+                                      input.btn.btn-danger.change_class(value='Supprimer de l\'école', new_class='banned', vol=vol._id)
+                                      a.btn.btn-default(data-dismiss='modal') Fermer
                       else if (((!vol.admin.class) || (vol.admin.class == 'Autres')) && (classe == 'Autres'))
                         tr.student-row(class=vol.status)
                           td.text-center
@@ -150,6 +171,23 @@ block content
                                     div.modal-footer
                                       input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
                                       a.btn.btn-default(data-dismiss='modal') Fermer
+                            if admin.type == 'school-coordinator'
+                              td.text-center
+                                .btn-group
+                                  div.btn.btn-danger.center-block.btn-xs(data-toggle='modal' data-target='#banFromSchoolModal' + vol_i)
+                                    i.fa.fa-times
+                              .modal.fade.ban_modal(tabindex='-1', role='dialog' aria-labelledby="banFromSchoolModalLabel", id='banFromSchoolModal' + vol_i)
+                                div.modal-dialog(role='document')
+                                  .modal-content
+                                    .modal-header
+                                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                        span(aria-hidden='true')
+                                        h4.modal-title Supprimer l'élève
+                                    div.modal-body
+                                      p Attention, le fait de supprimer un élève de l'école est une action définitive
+                                    div.modal-footer
+                                      input.btn.btn-danger.change_class(value='Supprimer de l\'école', new_class='banned', vol=vol._id)
+                                      a.btn.btn-default(data-dismiss='modal') Fermer
 
 block footscript
   // jQuery (necessary for Bootstrap's JavaScript plugins)
@@ -163,12 +201,20 @@ block footscript
           new_class,
           volunteer
         };
+        const modal = $('.in');
+        modal.css('color: red');
         $.post('/changeclass', datas)
         .done(function(){
           console.log('This is successful !!');
+          if (new_class == 'banned'){
+            console.log('In banned');
+            modal.modal('hide');
+          }
+          $('#success-general').text('Opération réussie').removeClass('hidden');
         })
         .fail(function(){
-          console.log('This is not successful at all motherfucker !!');
+          console.log('This is not successful at all !!');
+          $('#warning-general').text('Opération avortée. Prévenez-nous si cette erreur se manifeste de nouveau').removeClass('hidden');
         });
         console.info('Click to change class to ' + JSON.stringify($(this).attr('new_class')));
       });
