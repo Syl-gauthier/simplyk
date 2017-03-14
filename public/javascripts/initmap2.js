@@ -164,7 +164,7 @@ function initMap() {
   const localization_bar_div = document.createElement('div');
   localization_bar_div.id = 'localization_bar_div';
   let loc_bar_content = [];
-  loc_bar_content.push('<div id="localization_bar_div" class="center-block" style="margin-right: 5px; margin-left: 5px;">');
+  loc_bar_content.push('<div id="localization_bar_div" class="center-block hidden-xs" style="margin-right: 5px; margin-left: 5px;">');
   loc_bar_content.push('<form class="form-inline" style="margin-top:10px;"><div class="input-group" style="min-width: 25%">');
   loc_bar_content.push('<input id="address_field" class="form-control" placeholder="Chercher une adresse">');
   loc_bar_content.push('<span id="loc_submit" class="btn btn-default input-group-addon"><i class="fa fa-search"></i></span>');

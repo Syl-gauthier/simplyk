@@ -168,13 +168,12 @@ body{
     font-family: Arial, sans-serif;
 }
 
-
 #offers-list{
-	height: calc(100% - 179px);
+	height: calc(100% - 224px);
 }
 
 #offers-list-logged{
-	height: calc(100% - 119px);
+	height: calc(100% - 164px);
 }
 
 

@@ -114,21 +114,21 @@ block content
     .row.fill
       .col-sm-4.col-xs-12#map-left.hidden-xs
         #filter_div.row
-          .col-md-5.col-md-offset-1.col-sm-6.col-sm-offset-0.col-xs-10.col-xs-offset-1#acts_filter(style='cursor: pointer;')
+          .col-sm-12.col-md-5.col-md-offset-1#acts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-acts
               i.inline.fa.fa-check-square-o#acts_check
               p.inline PONCTUEL
               i.inline.fa.fa-bolt
-          .col-md-5.col-sm-6.col-sm-offset-0.col-xs-10.col-xs-offset-1#lts_filter(style='cursor: pointer;')
+          .col-sm-12.col-md-5#lts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
               p.inline LONG TERME
-          .col-md-10.col-md-offset-1.col-sm-12.col-sm-offset-0.col-xs-10.col-xs-offset-1#age_filter(style='cursor: pointer;')
+          .col-sm-12.col-md-10.col-md-offset-1#age_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-age
               i.inline.fa.fa-check-square-o#age_check
               p.inline J'AI MOINS DE 16 ANS
         #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;')
-          .col-sm-10.col-sm-offset-1
+          .col-sm-12.col-md-10.col-md-offset-1
             .input-group
               input.form-control(type="search" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
               span.input-group-addon.btn.btn-default
@@ -176,7 +176,7 @@ block content
                             h6.inline <b>#{days_name[correctDate(the_favo.days[0].day).getDay()]  + ' ' + (correctDate(the_favo.days[0].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[0].day).getMonth()]  + ' ' + correctDate(the_favo.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(the_favo.days[1].day).getDay()]  + ' ' + (correctDate(the_favo.days[1].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[1].day).getMonth()]  + ' ' + correctDate(the_favo.days[1].day).getFullYear()}</b>, ...
             each act, index in activities
               if act._id != the_favo._id
-                li.list-group-item(id= act._id, opp_type='activity', lat=act.lat, lon=act.lon)
+                li.list-group-item(id= act._id, opp_type='activity', lat=act.lat, lon=act.lon, data-target= "."+act._id, style='cursor: pointer;')
                   .panel.panel-default
                     .panel-heading
                       div.media-left.media-middle
@@ -192,11 +192,6 @@ block content
                       div.media-body
                         h5.media-heading <b>#{act.org_name}</b>
                         h6.media-heading <b>#{act.intitule}</b>
-                        //h6
-                          i.fa.fa-map-marker
-                          p.inline Adresse : #{act.address}
-                      div.media-right.media-middle
-                        input.btn.btn-default.media-object.act_infos_btn(type='button' data-toggle="modal" data-target= "."+act._id, value='Plus d\'infos')
                     .panel-body
                         h5 Dans le cadre de : <b>#{act.event_intitule}</b>
                         if act.days.length < 3
@@ -214,7 +209,7 @@ block content
                               p.hidden <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
 
             each lt, index in longterms
-                li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon)
+                li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon, data-target= "."+lt.long_term._id, style='cursor: pointer;')
                   .panel.panel-default
                     .panel-heading
                       div.media-left.media-middle
@@ -233,8 +228,6 @@ block content
                         h6
                           i.fa.fa-map-marker
                           p.inline Adresse : #{lt.long_term.address}
-                      div.media-right.media-middle
-                        input.btn.btn-default.media-object.lt_infos_btn(type='button' data-toggle="modal" data-target= "."+lt.long_term._id, value='Plus d\'infos')
             li.list-group-item
               .panel.panel-default
                 .panel-heading(style='min-height: 60vh;')
@@ -277,6 +270,9 @@ block footscript
   script(src="/bower_components/jets/jets.min.js")
   script.
     $( document ).ready(function() {
+      $('.list-group-item').click(function(){
+        $('' + $(this).attr('data-target')).modal('show');
+      });
       $('#letsgo, .age-button, #more-xs').click(function(){
         $('html, body').animate({
           scrollTop: $('#map').offset().top - 50
