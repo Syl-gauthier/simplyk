@@ -224,7 +224,7 @@ function initMap() {
     let marker_image = {};
 
     if (act.school_id) {
-      marker_image = imageIntern;
+      marker_image = imageInternFlash;
     } else if (act.cause == 'Nature') {
       marker_image = imageEnvFlash;
       nature_indexes.push(act._id);
@@ -290,8 +290,7 @@ function initMap() {
     let marker_image = {};
 
     if (lt.school_id) {
-      marker_image = imageInternFlash;
-      nature_indexes.push(lt.long_term._id);
+      marker_image = imageIntern;
     } else if (lt.cause == 'Nature') {
       marker_image = imageEnv;
       nature_indexes.push(lt.long_term._id);
