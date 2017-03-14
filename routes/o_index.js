@@ -339,7 +339,8 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
       }
     });
   } else {
-    const err = 'Évènement non trouvé';
+    const err = {};
+    err.print = 'Évènement non trouvé';
     err.type = 'MINOR';
     next(err);
     res.redirect('/organism/dashboard?error=' + err);
@@ -537,7 +538,8 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
       }
     });
   } else {
-    const err = 'Engagement non disponible';
+    const err = {};
+    err.print= 'Engagement non disponible';
     err.type = 'MINOR';
     next(err);
     res.redirect('/organism/dashboard?error=' + err);
