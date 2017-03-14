@@ -254,14 +254,6 @@ body{
 	margin-left: auto;
 }
 
-#landscape-xs {
-	max-width: 125%;
-	max-height: 125%;
-	display: block;
-	margin-right: auto;
-	margin-left: auto;
-}
-
 .landing-section {
 	height: calc(100vh - 50px);
 	border-bottom: 1px solid #bbb;
@@ -319,10 +311,6 @@ body{
 
 .section-div{
 	height: 100%;
-}
-
-.section-div-xs{
-	height: 35%;
 }
 
 #type-section{
@@ -423,10 +411,6 @@ body{
 	margin-left: 70px;
 	border-color: #FFC518;
 	color: black;
-}
-
-#more-xs {
-	margin-left: 0px;
 }
 
 .more:hover{
