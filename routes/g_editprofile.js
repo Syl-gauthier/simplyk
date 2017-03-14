@@ -12,6 +12,7 @@ const permissions = require('../middlewares/permissions.js');
 const Volunteer = require('../models/volunteer_model.js');
 const Organism = require('../models/organism_model.js');
 const Admin = require('../models/admin_model.js');
+const Activity = require('../models/activity_model.js');
 
 router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'), function(req, res, next) {
 	console.info('IN edit-form');
@@ -251,6 +252,15 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 			};
 			intercom_custom = 'description';
 			path_to_new_object = type;
+		} else if (typeof req.body.org_name != 'undefined') {
+			console.log(req.body.lastname);
+			type = 'org_name';
+			new_object = 'newOrgName';
+			update.$set = {
+				org_name: req.body.org_name
+			};
+			intercom_custom = 'description';
+			path_to_new_object = type;
 		} else {
 			let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)'
 			console.error(err);
@@ -261,37 +271,57 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 		};
 		if (ok) {
 			Organism.findOneAndUpdate(find, update, {
-					new: true
-				},
-				function(err, newOrganism) {
-					if (err) {
-						err.type = 'MINOR';
-						next(err);
-						console.error(err);
-						res.status(404).send({
-							error: err
-						});
+				new: true
+			}, function(err, newOrganism) {
+				if (err) {
+					err.type = 'MINOR';
+					next(err);
+					console.error(err);
+					res.status(404).send({
+						error: err
+					});
+				} else {
+					if (path_to_new_object2.length > 0) {
+						new_value = newOrganism[path_to_new_object][path_to_new_object2];
+					} else if (typeof req.body.firstname != 'undefined') {
+						new_value = newOrganism.firstname + ' ' + newOrganism.lastname;
 					} else {
-						if (path_to_new_object2.length > 0) {
-							new_value = newOrganism[path_to_new_object][path_to_new_object2];
-						} else if (typeof req.body.firstname != 'undefined') {
-							new_value = newOrganism.firstname + ' ' + newOrganism.lastname;
-						} else {
-							new_value = newOrganism[path_to_new_object];
-						};
-						send[new_object] = new_value;
-						if (intercom_custom.length > 0) {
-							update_intercom.custom_attributes[intercom_custom] = new_value;
-						};
-						if (intercom_main.length > 0) {
-							update_intercom[intercom_main] = new_value;
-						}
+						new_value = newOrganism[path_to_new_object];
+					};
+					send[new_object] = new_value;
+					if (intercom_custom.length > 0) {
+						update_intercom.custom_attributes[intercom_custom] = new_value;
+					};
+					if (intercom_main.length > 0) {
+						update_intercom[intercom_main] = new_value;
+					}
+					if (typeof req.body.org_name != 'undefined') {
+						Activity.update({
+							'org_id': req.session.organism._id
+						}, {
+							'org_name': req.body.org_name
+						}, {
+							multi: true
+						}, function(err, info) {
+							console.log('Infos from activities update org_name : ' + JSON.stringify(info));
+							if (err) {
+								err.type = 'CRASH';
+								next(err);
+							} else {
+								console.info('Organism ' + type + ' updated ' + new_value);
+								req.session.organism = newOrganism;
+								res.status(200).send(send);
+								client.users.update(update_intercom);
+							}
+						})
+					} else {
 						console.info('Organism ' + type + ' updated ' + new_value);
 						req.session.organism = newOrganism;
 						res.status(200).send(send);
 						client.users.update(update_intercom);
 					}
-				});
+				}
+			});
 		}
 	} else {
 		let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)';
