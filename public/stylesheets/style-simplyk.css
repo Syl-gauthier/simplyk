@@ -168,13 +168,12 @@ body{
     font-family: Arial, sans-serif;
 }
 
-
 #offers-list{
-	height: calc(100% - 179px);
+	height: calc(100% - 224px);
 }
 
 #offers-list-logged{
-	height: calc(100% - 119px);
+	height: calc(100% - 164px);
 }
 
 
@@ -406,14 +405,14 @@ body{
 	border-radius: 0px;
 }
 
-#more{
+.more{
 	background-color: #FFC518;
 	margin-left: 70px;
 	border-color: #FFC518;
 	color: black;
 }
 
-#more:hover{
+.more:hover{
 	background-color: #FFA510;
 	border-color: #FFC518;
 }
