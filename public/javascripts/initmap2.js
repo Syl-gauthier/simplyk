@@ -12,6 +12,7 @@ function initMap() {
   let child_indexes = new Array();
   let adult_indexes = new Array();
   let markers = new Array();
+  let mobile = false;
 
   if (page == 'landing') {
     age_checked = true;
@@ -31,6 +32,9 @@ function initMap() {
   if (page == 'landing') {
     scrollable = false;
   };
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    mobile = true;
+  }
   const mapDiv = document.getElementById('map');
   const map = new google.maps.Map(mapDiv, {
     center: {
@@ -64,7 +68,7 @@ function initMap() {
   legend_content.push('<h5 class="soli legend" filter="checked" type="soli" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw soli"></i> <b>Solidarité</b> </h5><br>');
   legend_content.push('<h5 class="cult legend" filter="checked" type="cult" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw cult"></i> <b>Sport et culture</b> </h5><br>');
   legend_content.push('<h5 class="child legend" filter="checked" type="child" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw child"></i> <b>Enfance</b> </h5>');
-  if (school_name){
+  if (school_name) {
     legend_content.push('<br><h5 class="intern legend" filter="checked" type="intern" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-graduation-cap fa-lg fa-fw intern"></i> <b>' + school_name + '</b> </h5>');
   }
   legend.innerHTML = legend_content.join('');
@@ -366,12 +370,14 @@ function initMap() {
       marker.addListener('click', function() {
         $("." + opp_id).modal();
       });
-      marker.addListener('mouseover', function() {
-        infoWindow.open(map, marker);
-      });
-      marker.addListener('mouseout', function() {
-        infoWindow.close();
-      });
+      if (!mobile) {
+        marker.addListener('mouseover', function() {
+          infoWindow.open(map, marker);
+        });
+        marker.addListener('mouseout', function() {
+          infoWindow.close();
+        });
+      }
       $('[id=' + opp_id.toString() + ']').unbind('mouseenter mouseleave');
       $('[id=' + opp_id.toString() + ']').hover(function(e) {
         infoWindow.open(map, marker);
