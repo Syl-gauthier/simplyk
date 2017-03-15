@@ -792,13 +792,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
     function addOrganismIfDoesntExist(questions) {
       //Ajouter organism s'il n'existe pas
       Organism.findOne({
-        '$or': [{
-          'email': req.body.org_email.toLowerCase()
-        }, {
-          'org_name': req.body.org_name
-        }, {
-          'phone': req.body.org_phone
-        }]
+        'email': req.body.org_email.toLowerCase()
       }, function(err, theOrg) {
         if (err) {
           err.type = 'CRASH';
