@@ -38,8 +38,7 @@ block content
                   if classes_array.length > 1
                     th.text-center(rowspan='2') Changement de classe
                   th.text-center(rowspan='2') Ajout d'heures
-                  if admin.type == 'school-coordinator'
-                    th.text-center(rowspan='2') Suppression de l'élève
+                  th.text-center(rowspan='2') Suppression de l'élève
                 tr
                   th.text-center(style='font-weight: 700; font-size: 13px' data-toggle="tooltip" data-placement="left" title='Bénévolats auxquels l\'élève est inscrit mais n\'a pas encore fait d\'heure') Inscriptions
                   th.text-center(data-toggle="tooltip" data-placement="left" title='Bénévolats en attente de validation par l\'organisme (nombre d\'heures correspondantes)')
