@@ -58,8 +58,7 @@ block content
                       td(style="width:10%")
                       if classes_array.length > 1
                         td
-                      if admin.type == 'school-coordinator'
-                        td.text-center
+                      td.text-center
                     each vol, vol_i in volunteers
                       if ((typeof vol.admin.class != undefined) && (classe != 'Autres'))
                         if vol.admin.class == classe
@@ -107,23 +106,22 @@ block content
                                       div.modal-footer
                                         input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
                                         a.btn.btn-default(data-dismiss='modal') Fermer
-                            if admin.type == 'school-coordinator'
-                              td.text-center
-                                .btn-group
-                                  div.btn.btn-danger.center-block.btn-xs(data-toggle='modal' data-target='#banFromSchoolModal' + vol_i)
-                                    i.fa.fa-times
-                              .modal.fade.ban_modal(tabindex='-1', role='dialog' aria-labelledby="banFromSchoolModalLabel", id='banFromSchoolModal' + vol_i)
-                                div.modal-dialog(role='document')
-                                  .modal-content
-                                    .modal-header
-                                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                                        span(aria-hidden='true')
-                                        h4.modal-title Supprimer l'élève
-                                    div.modal-body
-                                      p Attention, le fait de supprimer un élève de l'école est une action définitive
-                                    div.modal-footer
-                                      input.btn.btn-danger.change_class(value='Supprimer de l\'école', new_class='banned', vol=vol._id)
-                                      a.btn.btn-default(data-dismiss='modal') Fermer
+                            td.text-center
+                              .btn-group
+                                div.btn.btn-danger.center-block.btn-xs(data-toggle='modal' data-target='#banFromSchoolModal' + vol_i)
+                                  i.fa.fa-times
+                            .modal.fade.ban_modal(tabindex='-1', role='dialog' aria-labelledby="banFromSchoolModalLabel", id='banFromSchoolModal' + vol_i)
+                              div.modal-dialog(role='document')
+                                .modal-content
+                                  .modal-header
+                                    button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                      span(aria-hidden='true')
+                                      h4.modal-title Supprimer l'élève
+                                  div.modal-body
+                                    p Attention, le fait de supprimer un élève de l'école est une action définitive
+                                  div.modal-footer
+                                    input.btn.btn-danger.change_class(value='Supprimer de l\'école', new_class='banned', vol=vol._id)
+                                    a.btn.btn-default(data-dismiss='modal') Fermer
                       else if (((!vol.admin.class) || (vol.admin.class == 'Autres')) && (classe == 'Autres'))
                         tr.student-row(class=vol.status)
                           td.text-center
@@ -169,23 +167,22 @@ block content
                                     div.modal-footer
                                       input.btn.btn-warning(type='submit', form='manualHoursForm' + vol_i, value='Ajouter les heures')
                                       a.btn.btn-default(data-dismiss='modal') Fermer
-                            if admin.type == 'school-coordinator'
-                              td.text-center
-                                .btn-group
-                                  div.btn.btn-danger.center-block.btn-xs(data-toggle='modal' data-target='#banFromSchoolModal' + vol_i)
-                                    i.fa.fa-times
-                              .modal.fade.ban_modal(tabindex='-1', role='dialog' aria-labelledby="banFromSchoolModalLabel", id='banFromSchoolModal' + vol_i)
-                                div.modal-dialog(role='document')
-                                  .modal-content
-                                    .modal-header
-                                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
-                                        span(aria-hidden='true')
-                                        h4.modal-title Supprimer l'élève
-                                    div.modal-body
-                                      p Attention, le fait de supprimer un élève de l'école est une action définitive
-                                    div.modal-footer
-                                      input.btn.btn-danger.change_class(value='Supprimer de l\'école', new_class='banned', vol=vol._id)
-                                      a.btn.btn-default(data-dismiss='modal') Fermer
+                            td.text-center
+                              .btn-group
+                                div.btn.btn-danger.center-block.btn-xs(data-toggle='modal' data-target='#banFromSchoolModal' + vol_i)
+                                  i.fa.fa-times
+                            .modal.fade.ban_modal(tabindex='-1', role='dialog' aria-labelledby="banFromSchoolModalLabel", id='banFromSchoolModal' + vol_i)
+                              div.modal-dialog(role='document')
+                                .modal-content
+                                  .modal-header
+                                    button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                      span(aria-hidden='true')
+                                      h4.modal-title Supprimer l'élève
+                                  div.modal-body
+                                    p Attention, le fait de supprimer un élève de l'école est une action définitive
+                                  div.modal-footer
+                                    input.btn.btn-danger.change_class(value='Supprimer de l\'école', new_class='banned', vol=vol._id)
+                                    a.btn.btn-default(data-dismiss='modal') Fermer
 
 block footscript
   // jQuery (necessary for Bootstrap's JavaScript plugins)
