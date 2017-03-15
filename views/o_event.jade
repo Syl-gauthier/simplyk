@@ -65,7 +65,9 @@ block content
 					h1.inline.intitule= event.intitule
 					i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='intitule')
 				p Adresse: #{event.address}
-				p #{event.description}
+				p
+					p.inline.description= event.description
+					i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='description')
 				if (error && (error.length > 0))
 					p.alert.alert-danger= error
 				each act, act_i in event.acts
@@ -100,6 +102,11 @@ block content
 																a.btn.btn-warning(data-dismiss='modal') Annuler
 																input.btn.btn-default(type='submit' value='Oui' role='button')
 							.panel-body
+								if act.description
+									h6
+										i.fa.fa-info
+										p.inline #{act.description}
+										p <br>
 								each day, day_i in act.days
 									h4
 										h4.inline <b>#{date.printDate(day.day)} : </b>
@@ -177,6 +184,11 @@ block footscript
 					let div = $('h1.intitule');
 					console.info(div.text());
 					div.html("<form name='edit-form' method='post' action='/edit-event'><input type='text' value='"+div.text()+"' name='intitule'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+				} else if (type == 'description'){
+					let div = $('p.description');
+					const text_textarea = div.text();
+					div.html("<form name='edit-form' method='post' action='/edit-event'><textarea name='description' id='des'></textarea><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+					$('#des').val(text_textarea);
 				}
 			});
 			$(function () {
