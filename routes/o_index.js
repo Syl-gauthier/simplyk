@@ -190,7 +190,6 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
           ev_past.push(events[eventI]);
         }
       }
-      console.info('ev_past : ' + ev_past + ' ev_to_come :' + JSON.stringify(ev_to_come));
       //Find TODO
       OrgTodo.find({
         org_id: req.session.organism._id

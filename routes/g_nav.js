@@ -135,4 +135,20 @@ router.get('/robots.txt', function(req, res) {
   res.send("User-agent: *\nDisallow: /");
 });
 
+router.get('/nexmo_inbound', function(req, res) {
+  console.info('In nexmo_inbound : ' + JSON.stringify(req.body));
+  console.info('In nexmo_inbound : ' + JSON.stringify(req.query));
+  res.status(200).end();
+});
+
+router.post('/nexmo_inbound', function(req, res) {
+  console.info('In nexmo_inbound : ' + JSON.stringify(req.body));
+  res.status(200).end();
+});
+
+router.post('/nexmo_receipt', function(req, res) {
+  console.info('In nexmo_receipt : ' + JSON.stringify(req.body));
+  res.status(200).end();
+});
+
 module.exports = router;
