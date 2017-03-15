@@ -135,4 +135,8 @@ router.get('/robots.txt', function(req, res) {
   res.send("User-agent: *\nDisallow: /");
 });
 
+router.get('/nexmo_inbound', function(req, res) {
+  res.status(200).end();
+});
+
 module.exports = router;
