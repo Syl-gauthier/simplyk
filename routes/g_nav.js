@@ -139,4 +139,8 @@ router.get('/nexmo_inbound', function(req, res) {
   res.status(200).end();
 });
 
+router.post('/nexmo_inbound', function(req, res) {
+  res.status(200).end();
+});
+
 module.exports = router;
