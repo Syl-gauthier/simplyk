@@ -583,7 +583,7 @@ router.get('/volunteer/student_questions/:act_id-:act_day', permissions.requireG
   console.log('event_answered.length = ' + event_answered.length);
   var event = req.session.volunteer.events.find(goodEvent);
   if (event_answered.length > 0 || (event.student_questions.length < 1)) {
-    res.redirect('/volunteer/map');
+    res.redirect('/volunteer/profile');
   } else {
     Activity.findById(req.params.act_id, function(err, activity) {
       res.render('v_questions.jade', {
@@ -623,7 +623,7 @@ router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volu
   console.log('lt_answered = ' + JSON.stringify(lt_answered));
   console.log('lt_answered.length = ' + lt_answered.length);
   if (lt_answered.length > 0 || (longterm.student_questions.length < 1)) {
-    res.redirect('/volunteer/map');
+    res.redirect('/volunteer/profile');
   } else {
     res.render('v_questions.jade', {
       session: req.session,
@@ -694,7 +694,7 @@ router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'
       console.log('newVolunteer : ' + newVolunteer);
       console.log('newVolunteer === req.session.volunteer : ' + (req.session.volunteer === newVolunteer));
       const message = encodeURIComponent('Tes réponses ont bien été prises en compte');
-      res.redirect('/volunteer/map?success=' + message);
+      res.redirect('/volunteer/profile?success=' + message);
     }
   });
 });

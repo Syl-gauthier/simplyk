@@ -30,7 +30,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                div.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
                   span.caret
                 ul.dropdown-menu#drop-down-bu
                   li
@@ -52,7 +52,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                div.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
                   span.caret
                 ul.dropdown-menu#drop-down-bu
                   li
@@ -71,7 +71,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
               a(href='/organism/map') Carte
           li(role='presentation')
             form.navbar-form( method='post', action='./logout')
-              div.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
+              button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
         else if group == 'admin'
           unless page == 'students'
             li.navbar-link(role='presentation')
@@ -84,7 +84,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                div.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
                   span.caret
                 ul.dropdown-menu#drop-down-bu
                   li
@@ -99,14 +99,14 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                     a.toggle-but(href='/us') À propos
           li(role='presentation')
             form.navbar-form( method='post', action='/logout')
-              div.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
+              button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
         else
           li.navbar-link(role='presentation')
             a(href='/register_organism') Je cherche des bénévoles !
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                div.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
                   span.caret
                 ul.dropdown-menu#drop-down-bu
                   li
@@ -118,7 +118,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                div.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Inscris-toi ! 
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Inscris-toi ! 
                   span.caret
                 ul.dropdown-menu#drop-down-but
                   li

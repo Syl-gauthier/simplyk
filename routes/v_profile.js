@@ -475,7 +475,7 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
               if (event.student_questions) {
                 res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
               } else {
-                res.redirect('/volunteer/map');
+                res.redirect('/volunteer/profile');
               }
             }
           })
@@ -654,7 +654,7 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
               if (todo.organism_questions) {
                 res.redirect('/volunteer/student_questions/' + req.params.lt_id);
               } else {
-                res.redirect('/volunteer/map');
+                res.redirect('/volunteer/profile');
               }
             }
           })
@@ -792,13 +792,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
     function addOrganismIfDoesntExist(questions) {
       //Ajouter organism s'il n'existe pas
       Organism.findOne({
-        '$or': [{
-          'email': req.body.org_email.toLowerCase()
-        }, {
-          'org_name': req.body.org_name
-        }, {
-          'phone': req.body.org_phone
-        }]
+        'email': req.body.org_email.toLowerCase()
       }, function(err, theOrg) {
         if (err) {
           err.type = 'CRASH';

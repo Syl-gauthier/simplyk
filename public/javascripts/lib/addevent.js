@@ -384,6 +384,12 @@ var ActivityItem = function (_React$Component6) {
 					days_list: days_pushed
 				});
 				console.log('Had just push false in days_list and new days_list : ' + this.state.days_list);
+			} else if (this.props.days.length > nextProps.days.length) {
+				this.state.days_list.pop();
+				var days_popped = this.state.days_list;
+				this.setState({
+					days_list: days_popped
+				});
 			}
 		}
 	}, {
@@ -482,8 +488,10 @@ var ActivityItem = function (_React$Component6) {
 				this.props.days.map(function (day, i) {
 					var _this10 = this;
 
+					console.info('this.state.days_list : ' + JSON.stringify(this.state.days_list));
 					if (this.state.days_list.indexOf(true) != -1) {
 						if (this.state.days_list[i]) {
+							console.info('this.state.days_list[i] : ' + JSON.stringify(this.state.days_list[i]));
 							return _react2.default.createElement(DayInActivity, { i: i, onChange: function onChange() {
 									return _this10.onChange(i);
 								}, activity: 'activity' + (this.props.n + 1), day: 'day' + (i + 1), required: 'true', checked: 'true' });
@@ -598,6 +606,18 @@ var EventForm = function (_React$Component8) {
 			console.log('this.state.days ' + JSON.stringify(this.state.days));
 		}
 	}, {
+		key: 'removeADay',
+		value: function removeADay() {
+			if (this.state.days.length > 1) {
+				var new_days = this.state.days;
+				new_days.pop();
+				this.setState({
+					days: new_days
+				});
+				console.log('this.state.days ' + JSON.stringify(this.state.days));
+			}
+		}
+	}, {
 		key: 'addAnActivity',
 		value: function addAnActivity() {
 			var new_nb_activities = this.state.nbActivities + 1;
@@ -665,8 +685,15 @@ var EventForm = function (_React$Component8) {
 						'div',
 						{ className: 'btn btn-default', onClick: function onClick() {
 								_this13.addADay();
-							}, id: 'addADay' },
+							}, id: 'addADay', style: { marginRight: '15px' } },
 						' Ajouter un jour'
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'btn btn-default', onClick: function onClick() {
+								_this13.removeADay();
+							}, id: 'removeADay' },
+						' Supprimer un jour'
 					),
 					_react2.default.createElement(AgeItem, null),
 					_react2.default.createElement(
