@@ -14,6 +14,10 @@ router.post('/volunteer/edit-student-feedbacks', permissions.requireGroup('volun
 	let find_query = {};
 	let update_pull_query = {};
 	let update_push_query = {};
+	let status = req.body.status;
+	if (status == 'denied') {
+		status = 'corrected';
+	}
 
 	let new_student_answers = new Array();
 	if (typeof req.body.new_response == 'string') {
@@ -37,9 +41,9 @@ router.post('/volunteer/edit-student-feedbacks', permissions.requireGroup('volun
 		update_pull_query = {
 			'$set': {
 				'long_terms.$.student_answers': [],
-				'long_terms.$.status': 'corrected'
+				'long_terms.$.status': status
 			}
-		};
+		}
 		update_push_query = {
 			'$push': {
 				'long_terms.$.student_answers': {
@@ -59,9 +63,9 @@ router.post('/volunteer/edit-student-feedbacks', permissions.requireGroup('volun
 		update_pull_query = {
 			'$set': {
 				'events.$.student_answers': [],
-				'events.$.status': 'corrected'
+				'events.$.status': status
 			}
-		};
+		}
 		update_push_query = {
 			'$push': {
 				'events.$.student_answers': {
@@ -81,7 +85,7 @@ router.post('/volunteer/edit-student-feedbacks', permissions.requireGroup('volun
 		update_pull_query = {
 			'$set': {
 				'extras.$.student_answers': [],
-				'extras.$.status': 'corrected'
+				'extras.$.status': status
 			}
 		};
 		update_push_query = {

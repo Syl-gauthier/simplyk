@@ -763,6 +763,12 @@ block content
                                       else if ext.status == 'corrected'
                                         span.badge(style='background-color: #FF800E')= 'Corrigé'
                                         i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=ext._id)
+                                      else if ext.status == 'confirmed'
+                                        span.badge(style='background-color: #113A20')= 'Confirmé par l\'organisme'
+                                        i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=ext._id)
+                                      else if ext.status == 'pending'
+                                        span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
+                                        i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=ext._id)
                                     div.panel-body
                                       each question, q_I in ext.student_questions
                                         div.panel.panel-warning
