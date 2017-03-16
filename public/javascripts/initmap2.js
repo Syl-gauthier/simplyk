@@ -32,9 +32,16 @@ function initMap() {
   if (page == 'landing') {
     scrollable = false;
   };
-  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+  if (/iPad|Tablet/i.test(navigator.userAgent)) {
+    //Do tablet stuff
     mobile = true;
+  } else if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    //Do mobile stuff
+    mobile = true;
+    age_checked = true;
+    first_age_filtered = false;
   }
+
   const mapDiv = document.getElementById('map');
   const map = new google.maps.Map(mapDiv, {
     center: {

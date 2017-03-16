@@ -71,7 +71,7 @@ block content
   .container-fluid
     .row.activity__header
       .col-md-5.col-md-offset-1
-        img(src='/images/happy_city_white.svg', align='middle', style='max-height:30vh; padding-top:3vh')
+        img.center-block(src='/images/happy_city_white.svg', align='middle', style='max-height:30vh; padding-top:3vh')
       .col-md-5.col-md-offset-1
         .page-header
           h4 L'organisme :
@@ -92,7 +92,7 @@ block content
             div(style='margin-top: 10px;')
               a.btn.btn-warning#propose Proposer à des amis
     .row.activity__background
-      .col-md-6.col-md-offset-1
+      .col-lg-6.col-lg-offset-1.col-md-8.col-md-offset-1
         .page-header.activity__unit
           span.badge(style='background-color: '+getCauseDesign(organism.cause))= organism.cause
           if (alreadySubscribed)
@@ -110,134 +110,132 @@ block content
           p <b>Adresse : </b> #{longterm.address}
           if error
             p.alert.alert-danger= error
-          li.list-group-item
-            div.media-left.media-middle
-              i.fa.fa-calendar
-            div.media-body
-              h4 Horaires possibles :
-              table.table(id='slot')
-                thead
-                  tr
-                    th.text-center #
-                    th.text-center Lundi
-                    th.text-center Mardi
-                    th.text-center Mercredi
-                    th.text-center Jeudi
-                    th.text-center Vendredi
-                    th.text-center Samedi
-                    th.text-center Dimanche
-                tbody
-                  tr.text-center
-                    th.text-center(scope='row') AM
-                    td
-                      if slotJSON['mondayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['tuesdayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['wednesdayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['thursdayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['fridayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['saturdayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['sundayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                  tr.text-center
-                    th.text-center(scope='row') PM
-                    td
-                      if slotJSON['mondayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['tuesdayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['wednesdayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['thursdayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['fridayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['saturdayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['sundayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                  tr.text-center
-                    th.text-center(scope='row')= 'Soir (>16h)'
-                    td
-                      if slotJSON['mondayEVE']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['tuesdayEVE']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['wednesdayEVE']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['thursdayEVE']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['fridayEVE']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['saturdayEVE']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['sundayEVE']
-                        i.fa.fa-check
-                      else
-                        p
+          div.media-left.media-middle
+            i.fa.fa-calendar
+          div.media-body
+            table.table(id='slot')
+              thead
+                tr
+                  th.text-center #
+                  th.text-center#monday Lundi
+                  th.text-center#tuesday Mardi
+                  th.text-center#wednesday Mercr.
+                  th.text-center#thursday Jeudi
+                  th.text-center#friday Vendr.
+                  th.text-center#saturday Samedi
+                  th.text-center#sunday Dimanche
+              tbody
+                tr.text-center
+                  th.text-center(scope='row') AM
+                  td
+                    if slotJSON['mondayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['tuesdayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['wednesdayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['thursdayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['fridayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['saturdayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['sundayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                tr.text-center
+                  th.text-center(scope='row') PM
+                  td
+                    if slotJSON['mondayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['tuesdayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['wednesdayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['thursdayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['fridayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['saturdayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['sundayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                tr.text-center
+                  th.text-center(scope='row')= 'Soir (>16h)'
+                  td
+                    if slotJSON['mondayEVE']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['tuesdayEVE']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['wednesdayEVE']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['thursdayEVE']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['fridayEVE']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['saturdayEVE']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['sundayEVE']
+                      i.fa.fa-check
+                    else
+                      p
           if (!alreadySubscribed && volunteer)
             if (longterm.vol_nb - longterm.applicants.length) >= 0
               input.center-block.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#longterm-modal' style='margin-top: 10px')
@@ -374,4 +372,21 @@ block footscript
         console.info('Send amplitude addLTHoursForm');
         amplitude.getInstance().logEvent('Longterm_hours_pending');
       });
+      if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+        $('#slot').addClass('table-xs');
+        $('.activity__unit').css('padding', '20px');
+        $('.media-left').addClass('hidden');
+        $('#monday').text('L.');
+        $('#tuesday').text('Ma.');
+        $('#wednesday').text('Me.');
+        $('#thursday').text('J.');
+        $('#friday').text('V.');
+        $('#saturday').text('S.');
+        $('#sunday').text('D.');
+      } else if (/iPad|Tablet/i.test(navigator.userAgent)) {
+        $('#slot').css('font-size', '12px');
+      } else {
+        $('#slot').css('font-size', '10px');
+      };
+
     });
