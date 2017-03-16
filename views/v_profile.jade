@@ -755,6 +755,7 @@ block content
                               if (ext.student_questions.length > 0 && ext.student_answers.length > 0)
                                 div.panel.panel-default
                                   form.edit_extra_student_notification_form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
+                                    input.hidden(name='status' value=ext.status)
                                     div.panel-heading
                                       h4 Ton retour d'expérience
                                       if ext.status == 'denied'
@@ -775,7 +776,7 @@ block content
                                           div.panel-heading
                                             h6= question 
                                           div.panel-body
-                                            if ((ext.status == 'denied') || (ext.status == 'corrected'))
+                                            if ((ext.status == 'denied') || (ext.status == 'corrected') || (ext.status == 'pending') || (ext.status == 'confirmed'))
                                               h6.answer_to_edit #{ext.student_answers[q_I]}
                                             else
                                               h6 #{ext.student_answers[q_I]}

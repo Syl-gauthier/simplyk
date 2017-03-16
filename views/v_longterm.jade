@@ -100,7 +100,13 @@ block content
               if status == 'denied'
                 span.badge(style='background-color: #E33831')= 'À corriger'
               else if status == 'corrected'
-                span.badge(style='background-color: #113A20')= 'Corrigé'
+                span.badge(style='background-color: #FF800E')= 'Corrigé'
+              else if status == 'validated'
+                span.badge(style='background-color: #113A20')= 'Validé'
+              else if status == 'confirmed'
+                span.badge(style='background-color: #113A20')= 'Confirmé par l\'organisme'
+              else if status == 'pending'
+                span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
               else
                 span.badge Inscrit
           else
@@ -259,7 +265,7 @@ block content
                         input.btn.btn-default#longterm_subscribe(type='submit' value='Oui' role='button')
             else
               button.center-block.btn.btn-default(type='button' disabled='disabled' style='margin-top: 10px') Complet
-        if ((student_questions && student_answers && student_questions.length > 0 && student_answers.length > 0) || (organism_questions && organism_answers && organism_questions.length > 0 && organism_answers.length > 0))
+        if (student_questions && student_questions.length > 0 && ((status =='denied')||(status =='pending')||(status =='corrected')||(status =='validated')||(status =='confirmed')))
           h2 Questionnaire
       .col-md-4.col-md-offset-1
         if (alreadySubscribed)
@@ -307,7 +313,7 @@ block content
                             p.text-center 0h
     .row.background__color
       .col-md-10.col-md-offset-1
-        if (student_questions && student_answers && student_questions.length > 0 && student_answers.length > 0)
+        if (student_questions && student_questions.length > 0 && ((status =='denied')||(status =='pending')||(status =='corrected')||(status =='validated')||(status =='confirmed')))
           div.panel.panel-default
             form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
               div.panel-heading
@@ -316,7 +322,13 @@ block content
                   span.badge(style='background-color: #E33831')= 'À corriger'
                   i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
                 else if status == 'corrected'
-                  span.badge(style='background-color: #113A20')= 'Corrigé'
+                  span.badge(style='background-color: #FF800E')= 'Corrigé'
+                  i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
+                else if status == 'confirmed'
+                  span.badge(style='background-color: #113A20')= 'Confirmé par l\'organisme'
+                  i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
+                else if status == 'pending'
+                  span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
                   i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
               div.panel-body
                 each question, q_I in student_questions
@@ -324,7 +336,7 @@ block content
                     div.panel-heading
                       h6= question 
                     div.panel-body
-                      if ((status == 'denied') || (status == 'corrected'))
+                      if ((status == 'pending') || (status == 'confirmed') || (status == 'denied') || (status == 'corrected'))
                         h6.answer_to_edit #{student_answers[q_I]}
                       else
                         h6 #{student_answers[q_I]}
@@ -358,12 +370,13 @@ block footscript
     $(document).ready(function(){
       amplitude.getInstance().logEvent('Visit_longterm');
       const lt_id = !{JSON.stringify(longterm._id)};
+      const status = !{JSON.stringify(status)};
       $('.edit').click(function(){
         $('.edit').removeClass('fa').removeClass('fa-pencil');
         $('.answer_to_edit').each(function(index){
           $(this).html("<p>Correction de la réponse</p><textarea rows='4' name='new_response'>"+$(this).text()+"</textarea>");
         });
-        $('.submit-button').html("<input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='lt_id' value="+lt_id+"></input><input type='submit' value='Envoyer les corrections' class='btn btn-warning'></input>");
+        $('.submit-button').html("<input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='status' value="+status+"></input></input><input class='hidden' name='lt_id' value="+lt_id+"></input><input type='submit' value='Envoyer les corrections' class='btn btn-warning'></input>");
       });
       $('#longterm_subscribe').click(function(){
         amplitude.getInstance().logEvent('Longterm_subscribe');
