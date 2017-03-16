@@ -515,6 +515,31 @@ function sendLongTermExpirationEmail(content) {
   });
 }
 
+function sendInboundSMSEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'inboundsms';
+  content.title = 'Inbound';
+  content.button = {
+    text: 'Ne rien voir',
+    link: 'www.rien.com'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: 'contact@simplyk.io',
+      subject: 'SMS reçu ', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+}
+
 
 module.exports = {
   sendSubscriptionOrgEmail,
@@ -535,5 +560,6 @@ module.exports = {
   sendHoursPendingReminderOrgEmail,
   sendExtraHoursPendingReminderOrgEmail,
   sendFiveDaysLongTermExpirationEmail,
-  sendLongTermExpirationEmail
+  sendLongTermExpirationEmail,
+  sendInboundSMSEmail
 };

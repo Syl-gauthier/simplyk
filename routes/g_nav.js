@@ -4,6 +4,7 @@ const router = express.Router();
 
 const Organism = require('../models/organism_model.js');
 var Activity = require('../models/activity_model.js');
+var emailer = require('../email/emailer.js');
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
 
 router.get('/listorganisms', function(req, res, next) {
@@ -106,8 +107,6 @@ router.get('/all/longterm/:lt_id', function(req, res, next) {
         err.print = 'Problème pour accéder aux informations de ce bénévolat';
         next(err);
       } else {
-        console.log('Organism from longterm : ' + organism);
-
         function isRightLongterm(long) {
           console.log('long._id == req.params.lt_id : ' + (long._id.toString() == req.params.lt_id.toString()) + long._id + '  ' + req.params.lt_id)
           return long._id.toString() == req.params.lt_id.toString();
@@ -135,14 +134,12 @@ router.get('/robots.txt', function(req, res) {
   res.send("User-agent: *\nDisallow: /");
 });
 
-router.get('/nexmo_inbound', function(req, res) {
-  console.info('In nexmo_inbound : ' + JSON.stringify(req.body));
-  console.info('In nexmo_inbound : ' + JSON.stringify(req.query));
-  res.status(200).end();
-});
-
 router.post('/nexmo_inbound', function(req, res) {
   console.info('In nexmo_inbound : ' + JSON.stringify(req.body));
+  var sms_content = {
+    customMessage: JSON.stringify(req.body)
+  };
+  emailer.sendInboundSMSEmail(sms_content);
   res.status(200).end();
 });
 

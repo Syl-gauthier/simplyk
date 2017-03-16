@@ -61,11 +61,11 @@ var nexmo = new Nexmo({
   debug: true
 });
 
-nexmo.message.sendSms('12262424040', '+15145703045', 'Salut, c\'est encore Simplyk !', {
+/*nexmo.message.sendSms('12262424040', '+15145703045', 'Salut, c\'est encore Simplyk !', {
   'status-report-req': 1
 }, function(err) {
   console.info('In nexmo callback with err : ' + JSON.stringify(err));
-});
+});*/
 
 //Init agendas
 require('./lib/agenda.js');
