@@ -176,7 +176,8 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
               the_favorite,
               longterms,
               school_name,
-              hash
+              hash,
+              age
             });
           }
         });
