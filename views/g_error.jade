@@ -11,3 +11,8 @@ block content
     i.fa.fa-smile-o
   div.text-center(style='margin-top: 5vh')
     a.btn.btn-default(href='/') Continuer
+block footscript
+  script(type='text/javascript').
+    $(document).ready(function(){
+      amplitude.getInstance().logEvent('g_visit_error');
+    });

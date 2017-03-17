@@ -365,7 +365,18 @@ block footscript
   script.
     $(document).ready(function(){
       'use strict';
-      amplitude.getInstance().logEvent('Visit_org_dashboard');
+      let group = !{JSON.stringify(group)};
+      if (group == 'organism') {
+        let user_id = !{JSON.stringify(organism._id)};
+        let email = !{JSON.stringify(organism.email)};
+        let org_name = !{JSON.stringify(organism.org_name)};
+        amplitude.getInstance().setUserId(user_id);
+        let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', org_name).setOnce('group', group);
+        amplitude.getInstance().identify(identify);
+        amplitude.getInstance().logEvent('o_visit_dashboard');
+      } else {
+        amplitude.getInstance().logEvent('a_visit_dashboard');
+      };
       $('.correctHoursForm').submit(function(){
         let vol_id = $(this).attr('vol');
         let todo_id = $(this).attr('todo');
@@ -374,12 +385,15 @@ block footscript
         let hours_before = $(this).attr('hours');
         let correct_hours = $(this).find('.correction_input').val();
         let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
+        let event_props = {};
 
         if ($(this).attr('act')){
           let act_id = $(this).attr('act');
           let day = $(this).attr('day');
           $.post('/organism/correcthours', {vol_id: vol_id, type: type, act_id: act_id, day: day, todo: todo_id, correct_hours: correct_hours, hours_before: hours_before})
           .done(function(data, status){
+            event_props.type = type;
+            amplitude.getInstance().logEvent('o_correcthours', event_props);
             console.log("Remarque: " + status);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
@@ -391,6 +405,8 @@ block footscript
           let lt_id = $(this).attr('lt');
           $.post('/organism/correcthours', {vol_id: vol_id, type: type, lt_id: lt_id, todo: todo_id, correct_hours: correct_hours, hours_before: hours_before})
           .done(function(data, status){
+            event_props.type = type;
+            amplitude.getInstance().logEvent('o_correcthours', event_props);
             console.log("Remarque: " + status);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
@@ -414,8 +430,11 @@ block footscript
           let todo_id = $(this).attr('todo');
           let hours = $(this).attr('hours');
           let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
+          let event_props = {};
           $.post('/organism/confirmhours', {vol_id: vol_id, type: type, act_id: act_id, day: day, todo: todo_id, hours: hours})
           .done(function(data, status){
+            event_props.type = type;
+            amplitude.getInstance().logEvent('o_confirmhours', event_props);
             console.log("Remarque: " + status);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
@@ -432,6 +451,8 @@ block footscript
           let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
           $.post('/organism/confirmhours', {vol_id: vol_id, type: type, lt_id: lt_id, todo: todo_id, hours: hours})
           .done(function(data, status){
+            event_props.type = type;
+            amplitude.getInstance().logEvent('o_confirmhours', event_props);
             console.log("Remarque: " + status);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
@@ -455,6 +476,7 @@ block footscript
         let answers_input = $(this).find('.confirmation_text');
         let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
         let answers_json = $(this).serializeArray();
+        let event_props = {};
         console.log('answers_json : ' + JSON.stringify(answers_json));
         console.log('$(this).attr("act") : ' + $(this).attr("act"));
         console.log('$(this).attr("lt") : ' + $(this).attr("lt"));
@@ -466,6 +488,8 @@ block footscript
           let day = $(this).attr('day');
           $.post('/organism/confirmhours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, answers: answers_json, hours: hours, type: type})
           .done(function(data, status){
+            event_props.type = type;
+            amplitude.getInstance().logEvent('o_confirmhours', event_props);
             console.log("Remarque: " + status);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
@@ -478,6 +502,8 @@ block footscript
           let lt_id = $(this).attr('lt');
           $.post('/organism/confirmhours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, answers: answers_json, hours: hours, type: type})
           .done(function(data, status){
+            event_props.type = type;
+            amplitude.getInstance().logEvent('o_confirmhours', event_props);
             console.log("Remarque: " + status);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
@@ -498,6 +524,7 @@ block footscript
         let answers_input = $(this).find('.correction_text');
         let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
         let answers_json = $(this).serializeArray();
+        let event_props = {};
         console.log('answers_json : ' + JSON.stringify(answers_json));
         let correct_hours = ($(this).find('.correctionStudentHoursInput')).val();
         if($(this).attr('act')){
@@ -506,6 +533,8 @@ block footscript
           $.post('/organism/correcthours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, answers: answers_json, correct_hours: correct_hours, hours_before: hours_before, type: type})
           .done(function(data, status){
             console.log("Remarque: " + status);
+            event_props.type = type;
+            amplitude.getInstance().logEvent('o_correcthours', event_props);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
           .fail(function(data, status){
@@ -517,6 +546,8 @@ block footscript
           $.post('/organism/correcthours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, answers: answers_json, correct_hours: correct_hours, hours_before: hours_before, type: type})
           .done(function(data, status){
             console.log("Remarque: " + status);
+            event_props.type = type;
+            amplitude.getInstance().logEvent('o_correcthours', event_props);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
           .fail(function(data, status){

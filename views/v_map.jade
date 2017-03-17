@@ -245,6 +245,24 @@ block footscript
          
   //Modal bootstrap
   script(type='text/javascript').
+    'use strict';
+    let group = !{JSON.stringify(group)};
+    $(document).ready(function(){
+      if (group == 'volunteer'){
+        let user_id = !{JSON.stringify(volunteer._id)};
+        let email = !{JSON.stringify(volunteer.email)};
+        let firstname = !{JSON.stringify(volunteer.firstname)};
+        let lastname = !{JSON.stringify(volunteer.lastname)};
+        amplitude.getInstance().setUserId(user_id);
+        let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', firstname + ' ' + lastname).setOnce('group', group);
+        amplitude.getInstance().identify(identify);
+        amplitude.getInstance().logEvent('v_visit_map');
+      } else if (group == 'organism') {
+        amplitude.getInstance().logEvent('o_visit_map');
+      } else if (group == 'admin') {
+        amplitude.getInstance().logEvent('a_visit_map');
+      }
+    });
     $('#myModal').on('shown.bs.modal', function () {
       $('#myInput').focus();
     });

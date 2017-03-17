@@ -909,23 +909,32 @@ block footscript
       $('.notificationCorrection').click(function(){
         $('#notificationCorrection').removeClass('hidden');
       });
+
+
+      var event_props = {};
+      amplitude.getInstance().logEvent('v_visit_dashboard');
       $('.edit_extra_student_notification_form').submit(function(){
-        amplitude.getInstance().logEvent('Extra_correct');
+        event_props.type = 'extra';
+        amplitude.getInstance().logEvent('v_correct_opp', event_props);
       });
       $('.event_absence_modal_form').submit(function(){
-        amplitude.getInstance().logEvent('Activity_absence');
+        amplitude.getInstance().logEvent('v_absence_event');
       });
       $('.activity_unsubscribe_form').submit(function(){
-        amplitude.getInstance().logEvent('Activity_unsubscribe');
+        event_props.type = 'event';
+        amplitude.getInstance().logEvent('v_unsubscribe_opp', event_props);
       });
       $('.longterm_unsubscribe_form').submit(function(){
-        amplitude.getInstance().logEvent('Longterm_unsubscribe');
+        event_props.type = 'longterm';
+        amplitude.getInstance().logEvent('v_unsubscribe_opp', event_props);
       });
       $('.event_hours_pending_modal_form').submit(function(){
-        amplitude.getInstance().logEvent('Activity_hours_pending');
+        event_props.type = 'event';
+        amplitude.getInstance().logEvent('v_hourspending_opp', event_props);
       });
       $('.addLTHoursForm').submit(function(){
-        amplitude.getInstance().logEvent('Longterm_hours_pending');
+        event_props.type = 'longterm';
+        amplitude.getInstance().logEvent('v_hourspending_opp', event_props);
       });
 
 
