@@ -248,7 +248,7 @@ block content
               .modal.fade(id='longterm-modal' tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
                 .modal-dialog(role='document')
                   .modal-content
-                    form.inline(action='/volunteer/longterm/subscribe/'+longterm._id, method='post', onsubmit='return validatePhone()')
+                    form.subscribe_form.inline(action='/volunteer/longterm/subscribe/'+longterm._id, method='post', onsubmit='return validatePhone()')
                       .modal-header
                         button.close(type='button' data-dismiss="modal" aria-label="Close")
                           span(aria-hidden='true')&times;
@@ -315,7 +315,7 @@ block content
       .col-md-10.col-md-offset-1
         if (student_questions && student_questions.length > 0 && ((status =='denied')||(status =='pending')||(status =='corrected')||(status =='validated')||(status =='confirmed')))
           div.panel.panel-default
-            form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
+            form.edit_form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
               div.panel-heading
                 h4 Ton retour d'expérience
                 if status == 'denied'
@@ -368,7 +368,26 @@ block footscript
   script(type='text/javascript').
     'use strict';
     $(document).ready(function(){
-      amplitude.getInstance().logEvent('Visit_longterm');
+      //--------AMPLITUDE
+      amplitude.getInstance().logEvent('v_visit_longterm');
+
+      $('.subscribe_form').submit(function(){
+        let event_props = {};
+        event_props.type = 'longterm';
+        amplitude.getInstance().logEvent('v_subscribe_opp', event_props);
+        amplitude.getInstance().logEvent('g_revenue');
+      });
+      $('.edit_form').submit(function(){
+        let event_props = {};
+        event_props.type = 'longterm';
+        amplitude.getInstance().logEvent('v_correct_opp', event_props);
+      });
+      $('.addLTHoursForm').submit(function(){
+        let event_props = {};
+        event_props.type = 'longterm';
+        amplitude.getInstance().logEvent('v_hourspending_opp', event_props);
+      });
+
       const lt_id = !{JSON.stringify(longterm._id)};
       const status = !{JSON.stringify(status)};
       $('.edit').click(function(){
@@ -377,13 +396,6 @@ block footscript
           $(this).html("<p>Correction de la réponse</p><textarea rows='4' name='new_response'>"+$(this).text()+"</textarea>");
         });
         $('.submit-button').html("<input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='status' value="+status+"></input></input><input class='hidden' name='lt_id' value="+lt_id+"></input><input type='submit' value='Envoyer les corrections' class='btn btn-warning'></input>");
-      });
-      $('#longterm_subscribe').click(function(){
-        amplitude.getInstance().logEvent('Longterm_subscribe');
-      });
-      $('.addLTHoursForm').submit(function(){
-        console.info('Send amplitude addLTHoursForm');
-        amplitude.getInstance().logEvent('Longterm_hours_pending');
       });
       if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
         $('#slot').addClass('table-xs');

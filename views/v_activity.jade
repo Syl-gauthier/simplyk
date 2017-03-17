@@ -121,7 +121,7 @@ block content
                         .modal.fade(id='activity-modal'+index, tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
                           .modal-dialog(role='document')
                             .modal-content
-                              form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone('+day.day.getTime()+')')
+                              form#activity_subscribe_form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone('+day.day.getTime()+')')
                                 .modal-header
                                   button.close(type='button' data-dismiss="modal" aria-label="Close")
                                     span(aria-hidden='true')&times;
@@ -152,7 +152,12 @@ block footscript
       };
     };
     $(document).ready(function(){
-      $('#activity_subscribe').click(function(){
-        amplitude.getInstance().logEvent('Activity_subscribe');
+      amplitude.getInstance().logEvent('v_visit_event');
+
+      let event_props = {};
+      event_props.type = 'event';
+      $('#activity_subscribe_form').submit(function(){
+        amplitude.getInstance().logEvent('v_subscribe_opp', event_props);
+        amplitude.getInstance().logEvent('g_revenue');
       })
     });

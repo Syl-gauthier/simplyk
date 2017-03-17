@@ -1,15 +1,6 @@
 script(type='text/javascript').
     $( document ).ready(function() {
-      $('#org_register_btn').click(function(){
-        amplitude.getInstance().logEvent('Visit_org_register');
-      });
-      $('#vol_register_btn').click(function(){
-        amplitude.getInstance().logEvent('Visit_vol_register');
-      });
-      $('#login_visit_btn').click(function(){
-        amplitude.getInstance().logEvent('Visit_log');
-      });
       $('.logout_nav_btn').click(function(){
-        amplitude.getInstance().logEvent('Logout');
+        amplitude.getInstance().logEvent('logout');
       });
     })

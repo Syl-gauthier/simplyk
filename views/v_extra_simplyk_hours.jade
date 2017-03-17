@@ -111,10 +111,10 @@ block footscript
 
     script(type='text/javascript').
         $(document).ready(function(){
-            amplitude.getInstance().logEvent('Visit_add_extra');
+            amplitude.getInstance().logEvent('v_visit_addextra');
 
             $('#addextrahours').submit(function(){
-                amplitude.getInstance().logEvent('Add_extra_hours');
+                amplitude.getInstance().logEvent('v_add_extra');
             });
             $('#warningModal').modal('show');
             var input = $('.datepicker');

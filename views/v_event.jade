@@ -99,7 +99,7 @@ block content
 													.modal.fade(id='activity-modal'+activity._id+day_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+activity._id+day_i)
 														.modal-dialog(role='document')
 															.modal-content
-																form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone1('+day_i+');')
+																form.subscribe_form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone1('+day_i+');')
 																	.modal-header
 																		button.close(type='button' data-dismiss="modal" aria-label="Close")
 																			span(aria-hidden='true') &times;
@@ -196,7 +196,7 @@ block content
 														input.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#activity-modal'+act_i+other_day_i)
 														.modal.fade(tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+act_i+other_day_i, id='activity-modal'+act_i+other_day_i)
 															.modal-dialog(role='document')
-																form.inline(action='/volunteer/event/subscribe/'+act._id+'-'+other_day.day, method='post', onsubmit='return validatePhone2('+other_day_i+');')
+																form.subscribe_form.inline(action='/volunteer/event/subscribe/'+act._id+'-'+other_day.day, method='post', onsubmit='return validatePhone2('+other_day_i+');')
 																	.modal-content
 																		.modal-header
 																			button.close(type='button' data-dismiss="modal" aria-label="Close")
@@ -248,11 +248,24 @@ block footscript
 				return false;
 			};
 		};
+
 	script(type='text/javascript').
 		'use strict';
+
 		$(document).ready(function(){
+			//--------AMPLITUDE
+			amplitude.getInstance().logEvent('v_visit_event');
+
+			$('.subscribe_form').submit(function(){
+				let event_props = {};
+				event_props.type = 'event';
+				amplitude.getInstance().logEvent('v_subscribe_opp', event_props);
+				amplitude.getInstance().logEvent('g_revenue');
+			});
 			$('#correct_answers_form').submit(function(){
-				amplitude.getInstance().logEvent('Visit_add_event');
+				let event_props = {};
+				event_props.type = 'event';
+				amplitude.getInstance().logEvent('v_correct_opp', event_props);
 			});
 		
 			const event_id = !{JSON.stringify(event_id)};
@@ -263,8 +276,5 @@ block footscript
 					$(this).html("<p>Correction de la réponse</p><textarea rows='4' name='new_response'>"+$(this).text()+"</textarea>");
 				});
 				$('.submit-button').html("<input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='status' value="+status+"></input><input class='hidden' name='event_id' value="+event_id+"></input><input type='submit' value='Envoyer les corrections' class='btn btn-warning'></input>");
-			});
-			$('#activity_subscribe').click(function(){
-				amplitude.getInstance().logEvent('Activity_subscribe');
 			});
 		});

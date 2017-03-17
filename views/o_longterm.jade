@@ -267,10 +267,10 @@ block footscript
   script(type='text/javascript').
     'use strict';
     $(document).ready(function(){
-      amplitude.getInstance().logEvent('Visit_org_longterm');
+      amplitude.getInstance().logEvent('o_visit_longterm');
       $(function () {
         $('[data-toggle="tooltip"]').tooltip({container: 'body'})
-      })
+      });
       $('.edit').click(function(){
         const type = $(this).attr('type');
         if(type == 'vol_nb'){

@@ -120,6 +120,16 @@ block footscript
   script(src="/bower_components/jquery-ui/ui/widgets/datepicker.js")
   script.
     $(document).ready(function(){
+      'use strict';
+      var event_props = {};
+      if (window.location.pathname == '/register_organism'){
+        event_props.type = 'org';
+      } else if (window.location.pathname == '/register_volunteer') {
+        event_props.type = 'vol';
+      } else {
+        event_props.type = 'prob';
+      }
+      amplitude.getInstance().logEvent('g_visit_register', event_props);
       var clients = !{JSON.stringify(clients)};
       if ( $('#birthdate').prop('type') != 'date' ) {
         $('#birthdate').datepicker({
@@ -128,14 +138,6 @@ block footscript
           yearRange: "1950:2020"
         });
       }
-      $('#submit-button').click(function(){
-        if (window.location.pathname == '/register_organism'){
-          amplitude.getInstance().logEvent('Org_register');
-        } else if (window.location.pathname == '/register_volunteer') {
-          amplitude.getInstance().logEvent('Vol_register');
-        }
-        amplitude.getInstance().logEvent('Register');
-      });
       $('#admin_checkbox').click(function(){
         $('#admin_dropdown').removeClass('hidden');
         $('#admin_dropdown').toggle(this.checked);
@@ -162,6 +164,14 @@ block footscript
     })
     var password = document.getElementById('password');
   script.
+    var event_props = {};
+    if (window.location.pathname == '/register_organism'){
+      event_props.type = 'org';
+    } else if (window.location.pathname == '/register_volunteer') {
+      event_props.type = 'vol';
+    } else {
+      event_props.type = 'prob';
+    }
     $('form#registerform').submit(function(e) {
         e.preventDefault(); // Prevent default post
         var form = $(this);
@@ -176,6 +186,7 @@ block footscript
                 //Remove the current event handler and submit
                 $('form#registerform').unbind('submit'); 
                 $('form#registerform').submit();
+                amplitude.getInstance().logEvent('g_register', event_props);
             }
         }
 

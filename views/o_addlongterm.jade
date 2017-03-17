@@ -122,6 +122,7 @@ block footscript
       types: ['address'],
       componentRestrictions: {country: 'ca'}
     };
+
   script.
     function initAutocomplete(){
       input = (document.getElementById('address'));
@@ -185,7 +186,10 @@ block footscript
     };
 
     $( document ).ready(function() {
-      amplitude.getInstance().logEvent('Visit_add_longterm');
+      let event_props = {};
+      event_props.type = 'longterm';
+
+      amplitude.getInstance().logEvent('o_visit_addopp', event_props);
       $('#creationlongtermform').on('keyup keypress', function(e) {
         var keyCode = e.keyCode || e.which;
         if (keyCode === 13) { 
@@ -195,7 +199,8 @@ block footscript
       });
 
       $('#creationlongtermform').submit(function(){
-        amplitude.getInstance().logEvent('Org_add_longterm');
+        amplitude.getInstance().logEvent('o_add_opp', event_props);
+        amplitude.getInstance().logEvent('g_revenue');
       });
 
       var input = $('.datepicker');
@@ -204,7 +209,7 @@ block footscript
         formatSubmit: 'yyyy-mm-dd',
         min: new Date()
       });
-      
+
       $('#age-checkbox').click(function(){
         if($(this).prop('checked') > 0){
           console.log($(this).prop('checked'));

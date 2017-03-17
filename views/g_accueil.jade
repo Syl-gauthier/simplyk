@@ -270,6 +270,7 @@ block footscript
   script(src="/bower_components/jets/jets.min.js")
   script.
     $( document ).ready(function() {
+      amplitude.getInstance().logEvent('g_landing');
       $('.list-group-item').click(function(){
         $('' + $(this).attr('data-target')).modal('show');
       });
@@ -282,14 +283,6 @@ block footscript
         $('html, body').animate({
           scrollTop: $('#age-section').offset().top - 50
         }, 500)
-      });
-      $('.act_infos_btn').click(function(){
-        amplitude.getInstance().logEvent('Activity_infos_out');
-        amplitude.getInstance().logEvent('Infos_out');
-      });
-      $('.lt_infos_btn').click(function(){
-        amplitude.getInstance().logEvent('Longterm_infos_out');
-        amplitude.getInstance().logEvent('Infos_out');
       });
       $('#age-button--plus').click(function(){
         $('.btn-filter-age').trigger("click");
