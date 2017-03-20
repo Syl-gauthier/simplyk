@@ -759,13 +759,16 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
     start_date_to_send = moment(start_date).format('dddd D MMMM');
   }
 
+
+
   agenda.schedule(moment(dayBefore).toDate(), 'sendDayBeforeEmail', {
     firstname: volunteer.firstname,
     lastname: volunteer.lastname,
     org_name: activity.org_name,
     address: activity.address,
     start_date: start_date_to_send,
-    email: volunteer.email
+    email: volunteer.email,
+    phone: volunteer.phone
   });
 
   agenda.schedule(moment(fiveDaysBefore).toDate(), 'sendOneWeekBeforeEmail', {
@@ -775,7 +778,8 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
     address: activity.address,
     start_date: start_date_to_send,
     event_intitule: activity.event_intitule,
-    email: volunteer.email
+    email: volunteer.email,
+    phone: volunteer.phone
   });
 
   agenda.schedule(moment(dayAfter).toDate(), 'sendDayAfterEmail', {

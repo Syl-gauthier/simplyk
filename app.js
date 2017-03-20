@@ -9,7 +9,6 @@ var session = require('express-session');
 var flash = require('connect-flash');
 const MongoStore = require('connect-mongo')(session);
 var helmet = require('helmet');
-var Nexmo = require('nexmo');
 
 //Auth
 var passport = require('passport');
@@ -37,6 +36,7 @@ var Organism = require('./models/organism_model.js');
 var Volunteer = require('./models/volunteer_model.js');
 var Admin = require('./models/admin_model.js');
 
+
 var app = express();
 app.locals.moment = require('moment');
 
@@ -54,18 +54,6 @@ if (typeof db_credentials === 'undefined') {
 
 mongoose.connect('mongodb://' + db_credentials);
 
-var nexmo = new Nexmo({
-  apiKey: process.env.NEXMO_API_KEY,
-  apiSecret: process.env.NEXMO_API_SECRET
-}, {
-  debug: true
-});
-
-/*nexmo.message.sendSms('12262424040', '+15145703045', 'Salut, c\'est encore Simplyk !', {
-  'status-report-req': 1
-}, function(err) {
-  console.info('In nexmo callback with err : ' + JSON.stringify(err));
-});*/
 
 //Init agendas
 require('./lib/agenda.js');
