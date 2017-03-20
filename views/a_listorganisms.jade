@@ -42,5 +42,6 @@ block content
 block footscript
   script.
     jQuery( document ).ready(function( $ ) {
+      amplitude.getInstance().logEvent('g_visit_listorganisms');
       $('[data-toggle="tooltip"]').tooltip();
     });
