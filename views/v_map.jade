@@ -45,7 +45,7 @@ block content
             .modal-footer
               input.btn.btn-default(type='button', data-dismiss='modal', value='Fermer')
               if volunteer
-                a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act._id, target='_blank') Plus d'infos
+                a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act._id) Plus d'infos
   each lt, index in longterms
     div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id)
       .modal-dialog(role='document')
@@ -63,7 +63,7 @@ block content
           .modal-footer
             input.btn.btn-default(type='button', data-dismiss='modal' value='Fermer')
             if volunteer
-              a.subscribe-button-longterm.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id, href='/longterm/'+lt.long_term._id, target='_blank') Plus d'infos
+              a.subscribe-button-longterm.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id, href='/longterm/'+lt.long_term._id) Plus d'infos
   if (typeof the_favo !== 'undefined') && the_favo.days
     div(tabindex='-1', role='dialog', class='modal fade ' + the_favo._id)
       .modal-dialog(role='document')
@@ -98,7 +98,7 @@ block content
           .modal-footer
             input.btn.btn-default(type='button', data-dismiss='modal', value='Fermer')
             if volunteer
-              a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = the_favo._id, href='/activity/'+the_favo._id, target='_blank') Plus d'infos
+              a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = the_favo._id, href='/activity/'+the_favo._id) Plus d'infos
   .container-fluid
     .row.fill
       .col-sm-4.col-xs-12#map-left.hidden-xs
