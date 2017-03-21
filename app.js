@@ -9,6 +9,7 @@ var session = require('express-session');
 var flash = require('connect-flash');
 const MongoStore = require('connect-mongo')(session);
 var helmet = require('helmet');
+var compression = require('compression');
 
 //Auth
 var passport = require('passport');
@@ -224,7 +225,8 @@ app.use(session({
 
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public/images/favicon', 'favicon.ico')));
+app.use(compression());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
