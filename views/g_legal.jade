@@ -79,5 +79,7 @@ block content
 block footscript
 	script.
 		$( document ).ready(function(){
-			amplitude.getInstance().logEvent('g_visit_legal');
+			if (env == 'prod') {
+				amplitude.getInstance().logEvent('g_visit_legal');
+			}
 		});

@@ -14,5 +14,7 @@ block content
 block footscript
   script(type='text/javascript').
     $(document).ready(function(){
-      amplitude.getInstance().logEvent('g_visit_error');
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('g_visit_error');
+      }  
     });

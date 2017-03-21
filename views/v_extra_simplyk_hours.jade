@@ -111,11 +111,13 @@ block footscript
 
     script(type='text/javascript').
         $(document).ready(function(){
-            amplitude.getInstance().logEvent('v_visit_addextra');
-
-            $('#addextrahours').submit(function(){
-                amplitude.getInstance().logEvent('v_add_extra');
-            });
+            if (env == 'prod') {
+                amplitude.getInstance().logEvent('v_visit_addextra');
+                $('#addextrahours').submit(function(){
+                    amplitude.getInstance().logEvent('v_add_extra');
+                });
+            };
+            
             $('#warningModal').modal('show');
             var input = $('.datepicker');
             input.pickadate({

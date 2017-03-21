@@ -369,24 +369,26 @@ block footscript
     'use strict';
     $(document).ready(function(){
       //--------AMPLITUDE
-      amplitude.getInstance().logEvent('v_visit_longterm');
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('v_visit_longterm');
 
-      $('.subscribe_form').submit(function(){
-        let event_props = {};
-        event_props.type = 'longterm';
-        amplitude.getInstance().logEvent('v_subscribe_opp', event_props);
-        amplitude.getInstance().logEvent('g_revenue');
-      });
-      $('.edit_form').submit(function(){
-        let event_props = {};
-        event_props.type = 'longterm';
-        amplitude.getInstance().logEvent('v_correct_opp', event_props);
-      });
-      $('.addLTHoursForm').submit(function(){
-        let event_props = {};
-        event_props.type = 'longterm';
-        amplitude.getInstance().logEvent('v_hourspending_opp', event_props);
-      });
+        $('.subscribe_form').submit(function(){
+          let event_props = {};
+          event_props.type = 'longterm';
+          amplitude.getInstance().logEvent('v_subscribe_opp', event_props);
+          amplitude.getInstance().logEvent('g_revenue');
+        });
+        $('.edit_form').submit(function(){
+          let event_props = {};
+          event_props.type = 'longterm';
+          amplitude.getInstance().logEvent('v_correct_opp', event_props);
+        });
+        $('.addLTHoursForm').submit(function(){
+          let event_props = {};
+          event_props.type = 'longterm';
+          amplitude.getInstance().logEvent('v_hourspending_opp', event_props);
+        });
+      };
 
       const lt_id = !{JSON.stringify(longterm._id)};
       const status = !{JSON.stringify(status)};

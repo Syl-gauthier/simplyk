@@ -27,4 +27,6 @@ block footscript
     } else {
       event_props.type = 'prob';
     }
-    amplitude.getInstance().logEvent('g_visit_verify', event_props);
+    if (env == 'prod') {
+      amplitude.getInstance().logEvent('g_visit_verify', event_props);
+    }

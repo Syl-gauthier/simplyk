@@ -152,12 +152,13 @@ block footscript
       };
     };
     $(document).ready(function(){
-      amplitude.getInstance().logEvent('v_visit_event');
-
-      let event_props = {};
-      event_props.type = 'event';
-      $('#activity_subscribe_form').submit(function(){
-        amplitude.getInstance().logEvent('v_subscribe_opp', event_props);
-        amplitude.getInstance().logEvent('g_revenue');
-      })
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('v_visit_event');
+        let event_props = {};
+        event_props.type = 'event';
+        $('#activity_subscribe_form').submit(function(){
+          amplitude.getInstance().logEvent('v_subscribe_opp', event_props);
+          amplitude.getInstance().logEvent('g_revenue');
+        })
+      }
     });

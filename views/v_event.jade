@@ -254,19 +254,20 @@ block footscript
 
 		$(document).ready(function(){
 			//--------AMPLITUDE
-			amplitude.getInstance().logEvent('v_visit_event');
-
-			$('.subscribe_form').submit(function(){
-				let event_props = {};
-				event_props.type = 'event';
-				amplitude.getInstance().logEvent('v_subscribe_opp', event_props);
-				amplitude.getInstance().logEvent('g_revenue');
-			});
-			$('#correct_answers_form').submit(function(){
-				let event_props = {};
-				event_props.type = 'event';
-				amplitude.getInstance().logEvent('v_correct_opp', event_props);
-			});
+			if (env == 'prod') {
+				amplitude.getInstance().logEvent('v_visit_event');
+				$('.subscribe_form').submit(function(){
+					let event_props = {};
+					event_props.type = 'event';
+					amplitude.getInstance().logEvent('v_subscribe_opp', event_props);
+					amplitude.getInstance().logEvent('g_revenue');
+				});
+				$('#correct_answers_form').submit(function(){
+					let event_props = {};
+					event_props.type = 'event';
+					amplitude.getInstance().logEvent('v_correct_opp', event_props);
+				});
+			};
 		
 			const event_id = !{JSON.stringify(event_id)};
 			const status = !{JSON.stringify(status)};
