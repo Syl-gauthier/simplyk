@@ -43,7 +43,7 @@
     "mongoose": "^4.4.17",
     "morgan": "~1.7.0",
     "newrelic": "^1.35.1",
-    "nexmo": "^1.2.0",
+    "nexmo": "^2.0.2",
     "node-schedule": "^1.2.0",
     "nodemailer": "^2.5.0",
     "passport": "^0.3.2",
