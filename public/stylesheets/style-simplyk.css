@@ -175,10 +175,10 @@ body{
     font-size: 12px;
     font-family: Arial, sans-serif;
 }
-
+/*
 #offers-list{
 	height: calc(100% - 164px);
-}
+}*/
 
 #offers-list-logged{
 	height: calc(100% - 104px);

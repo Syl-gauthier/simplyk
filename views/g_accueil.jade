@@ -152,10 +152,10 @@ block content
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
               p.inline LONG TERME
-        #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;')
+        #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').hidden-xs
           .col-sm-12.col-md-10.col-md-offset-1
             .input-group
-              input.form-control(type="submit" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
+              input.form-control(type="search" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
               span.input-group-addon.btn.btn-default
                 i.fa.fa-search
         #offers-list.no-side-padding.scrollable.row
@@ -304,16 +304,26 @@ block footscript
     var school_name = null;
   //clusterer api
   //script(src="/javascripts/marker-clusterer.js", type="text/javascript")
+  script(src="/bower_components/jets/jets.min.js")
   script.
+    var on_mobile = false;
     if ((/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
+      on_mobile = true;
       console.log('On mobile');
       document.write('<script src="/javascripts/initmap_mobile.js"><\/script>');
     } else {
       console.log('On desktop or tablet');
       document.write('<script src="/javascripts/initmap2.js"><\/script>');
       document.write('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap" async defer><\/script>');
+      let jets = new Jets({
+        searchTag: '#jetsSearch',
+        contentTag: '#jetsContent',
+        searchSelector: '*'
+      });
+      window.intercomSettings = {
+        app_id: "oora32p1"
+      };
     }
-  script(src="/bower_components/jets/jets.min.js")
   script.
     $( document ).ready(function() {
       if (env == 'prod') {
@@ -361,21 +371,13 @@ block footscript
           $('.navbar-toggle').click();
         }
       });
+      $('#offers-list').outerHeight(($('#map-left').outerHeight(true) - $('#filter_div').outerHeight(true)) - $('#search_div').outerHeight(true));
     });
   //Modal bootstrap
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
       $('#myInput').focus();
     });
-    let jets = new Jets({
-      searchTag: '#jetsSearch',
-      contentTag: '#jetsContent',
-      searchSelector: '*'
-    });
-  script(type='text/javascript' async).
-    window.intercomSettings = {
-      app_id: "oora32p1"
-    };
     
   script(type='text/javascript' async).
     (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/oora32p1';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()
