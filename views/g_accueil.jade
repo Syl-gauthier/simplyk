@@ -155,7 +155,7 @@ block content
         #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;')
           .col-sm-12.col-md-10.col-md-offset-1
             .input-group
-              input.form-control(type="search" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
+              input.form-control(type="submit" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
               span.input-group-addon.btn.btn-default
                 i.fa.fa-search
         #offers-list.no-side-padding.scrollable.row
@@ -354,6 +354,12 @@ block footscript
         };
         console.log('isAdult : ' + isAdult);
         return isAdult;
+      });
+      $('#jetsSearch').on('keyup', function(e){
+        if(e.keyCode==13) {
+          $(this).blur();
+          $('.navbar-toggle').click();
+        }
       });
     });
   //Modal bootstrap
