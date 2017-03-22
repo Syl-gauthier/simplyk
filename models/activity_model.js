@@ -22,6 +22,7 @@ var ActivitySchema = new Schema({
 	favorite: Boolean,
 	extra: Boolean,
 	school_id: {type: Schema.Types.ObjectId, ref:'Admin'},
+	archived: Boolean,
 	days: [{
 		start_time: String,
 		end_time: String,

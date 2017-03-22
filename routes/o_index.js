@@ -32,7 +32,17 @@ var opp_management = require('../middlewares/opp_management.js');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   console.log('Organism index');
-  Activity.find({}, function(err, activities) {
+  Activity.find({
+    'archived': {
+      $ne: true
+    },
+    'validation': true,
+    'school_id': {
+      $not: {
+        $type: 7
+      }
+    }
+  }, function(err, activities) {
     if (err) {
       err.type = 'MINOR';
       next(err);
@@ -64,32 +74,17 @@ router.get('/', function(req, res, next) {
             });
             return days_length.length > 0;
           };
-          var isNotASchool = function(activity) {
-            return !(activity.school_id);
-          };
-          const isVerified = function(activity) {
-            return activity.validation;
-          }
-          const acts = activities.filter(isNotPassed).filter(isNotASchool).filter(isVerified);
-          const favorites = acts.reduce(function(pre, cur, ind, arr) {
-            if (cur.favorite) {
-              pre.push(cur);
-              return pre;
-            } else {
-              return pre;
-            }
-          }, []);
-          const fav_index = Math.floor(Math.random() * (favorites.length));
-          console.info('favorites.length : ' + favorites.length);
-          console.info('fav_index : ' + fav_index);
-          let the_favorite = {};
-          if (favorites.length != 0) {
-            the_favorite = favorites[fav_index];
-          }
-          console.log('The favorite is :' + the_favorite.intitule);
+          console.log('activities.length : ' + activities.length);
+          const acts = activities.filter(isNotPassed);
+          console.log('acts.length : ' + acts.length);
           //Select organisms who have longterms and are not admin ones
           Organism.find({
             'validation': true,
+            'school_id': {
+              $not: {
+                $type: 7
+              }
+            },
             'long_terms': {
               '$not': {
                 '$size': 0
@@ -123,7 +118,6 @@ router.get('/', function(req, res, next) {
               }), null);
               res.render('g_accueil.jade', {
                 activities: acts,
-                the_favorite: the_favorite,
                 session: req.session,
                 longterms: longterms,
                 error: req.query.error,
@@ -348,7 +342,12 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
 
 /*GET map page*/
 router.get('/organism/map', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
-  Activity.find({}, function(err, activities) {
+  Activity.find({
+    'archived': {
+      $ne: true
+    },
+    'validation': true
+  }, function(err, activities) {
     if (err) {
       err.type = 'CRASH';
       err.print = 'Problème pour récupérer la liste des bénévolats';
@@ -364,18 +363,6 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
           return day.day > Date.now();
         });
         return days_length.length > 0;
-      };
-
-      var isUnverified = function(activity) {
-        return activity.validation;
-      };
-
-      const isNotTheFav = function(activity) {
-        if (the_favorite) {
-          return activity._id != the_favorite._id;
-        } else {
-          return true;
-        }
       };
 
       const isNotAnExtra = function(activity) {
@@ -398,7 +385,7 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
       //If user is under 16, he can't see the activities of unverified organisms
       let acts = {};
       let lt_filter = {};
-      acts = activities.filter(isNotPassed).filter(isNotAnExtra).filter(isUnverified).filter(justMySchool);
+      acts = activities.filter(isNotPassed).filter(isNotAnExtra).filter(justMySchool);
       lt_filter = {
         'long_terms': {
           '$not': {
@@ -406,23 +393,6 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
           }
         }
       };
-      const favorites = acts.reduce(function(pre, cur, ind, arr) {
-        console.log('cur.intitule ' + cur.intitule + ' & cur.favorite : ' + cur.favorite);
-        if (cur.favorite) {
-          pre.push(cur);
-          return pre;
-        } else {
-          return pre;
-        };
-      }, []);
-      const fav_index = Math.floor(Math.random() * (favorites.length));
-      console.log('favorites.length : ' + favorites.length);
-      console.log('fav_index : ' + fav_index);
-      let the_favorite = {};
-      if (favorites.length != 0) {
-        the_favorite = favorites[fav_index];
-      };
-      //acts = acts.filter(isNotTheFav);
       Organism.find(lt_filter, {
         'org_name': true,
         '_id': true,
@@ -474,7 +444,6 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
             success: req.query.success,
             group: req.session.group,
             school_name,
-            the_favorite,
             longterms,
             hash
           });

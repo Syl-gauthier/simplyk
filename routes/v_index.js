@@ -28,7 +28,15 @@ var app = express();
 
 /*GET map page*/
 router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req, res, next) {
-  Activity.find({}, function(err, activities) {
+  Activity.find({
+    'archived': {
+      $ne: true
+    },
+    'extra': {
+      $ne: true
+    },
+    'validation': true
+  }, function(err, activities) {
     if (err) {
       err.type = 'CRASH';
       err.print = 'Problème avec la recherche des bénévolats';
@@ -56,22 +64,6 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         return days_length.length > 0;
       };
 
-      var isUnverified = function(activity) {
-        return activity.validation;
-      };
-
-      const isNotTheFav = function(activity) {
-        if (the_favorite) {
-          return activity._id != the_favorite._id;
-        } else {
-          return true;
-        }
-      };
-
-      const isNotAnExtra = function(activity) {
-        return !activity.extra;
-      };
-
       var justMySchool = function(activity) {
         if (activity.school_id) {
           if (my_school) {
@@ -88,7 +80,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       let acts = {};
       let lt_filter = {};
       if (age < 16) {
-        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(justMySchool).filter(isNotAnExtra);
+        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool);
         lt_filter = {
           'validation': true,
           'long_terms': {
@@ -98,7 +90,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           }
         };
       } else {
-        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isNotAnExtra).filter(justMySchool).filter(isUnverified);
+        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool);
         lt_filter = {
           'validation': true,
           'long_terms': {
@@ -108,79 +100,62 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           }
         };
       };
-      const favorites = acts.reduce(function(pre, cur, ind, arr) {
-        if (cur.favorite) {
-          pre.push(cur);
-          return pre;
-        } else {
-          return pre;
-        };
-      }, []);
-      const fav_index = Math.floor(Math.random() * (favorites.length));
-      console.log('favorites.length : ' + favorites.length);
-      console.log('fav_index : ' + fav_index);
-      let the_favorite = {};
-      if (favorites.length != 0) {
-        the_favorite = favorites[fav_index];
-      };
-      //acts = acts.filter(isNotTheFav);
+
       Organism.find(lt_filter, {
-          'org_name': true,
-          '_id': true,
-          'cause': true,
-          'long_terms': true,
-          'school_id': true,
-          'admin_id': true
-        },
-        function(err, organisms) {
-          if (err) {
-            err.type = 'CRASH';
-            err.print = 'Problème avec la recherche des bénévolats';
-            next(err);
-          } else {
-            //Filter organisms authorized to be seen by the volunteer
-            const lt_organisms = organisms.filter(function(orga) {
-              if (orga.school_id || orga.admin_id) {
-                if (orga.school_id) {
-                  var the_school = orga.school_id;
-                } else {
-                  var the_school = orga.admin_id;
-                };
-                if (my_school) {
-                  return the_school.toString() == my_school.toString();
-                } else {
-                  return false;
-                }
+        'org_name': true,
+        '_id': true,
+        'cause': true,
+        'long_terms': true,
+        'school_id': true,
+        'admin_id': true
+      }, function(err, organisms) {
+        if (err) {
+          err.type = 'CRASH';
+          err.print = 'Problème avec la recherche des bénévolats';
+          next(err);
+        } else {
+          //Filter organisms authorized to be seen by the volunteer
+          const lt_organisms = organisms.filter(function(orga) {
+            if (orga.school_id || orga.admin_id) {
+              if (orga.school_id) {
+                var the_school = orga.school_id;
               } else {
-                return true;
+                var the_school = orga.admin_id;
+              };
+              if (my_school) {
+                return the_school.toString() == my_school.toString();
+              } else {
+                return false;
               }
-            });
-            var longterms = longtermsList(lt_organisms, age);
-            const hash = require('intercom-client').SecureMode.userHash({
-              secretKey: process.env.INTERCOM_SECRET_KEY,
-              identifier: req.session.volunteer.email
-            });
-            console.info('hash : ' + hash);
-            console.info('typeof hash : ' + typeof hash);
-            let school_name = null;
-            if (req.session.volunteer.admin && req.session.volunteer.admin.school_name && req.session.volunteer.admin.school_id) {
-              school_name = req.session.volunteer.admin.school_name;
+            } else {
+              return true;
             }
-            res.render('v_map.jade', {
-              session: req.session,
-              activities: acts,
-              volunteer: req.session.volunteer,
-              error: req.query.error,
-              success: req.query.success,
-              group: req.session.group,
-              the_favorite,
-              longterms,
-              school_name,
-              hash,
-              age
-            });
+          });
+          var longterms = longtermsList(lt_organisms, age);
+          const hash = require('intercom-client').SecureMode.userHash({
+            secretKey: process.env.INTERCOM_SECRET_KEY,
+            identifier: req.session.volunteer.email
+          });
+          console.info('hash : ' + hash);
+          console.info('typeof hash : ' + typeof hash);
+          let school_name = null;
+          if (req.session.volunteer.admin && req.session.volunteer.admin.school_name && req.session.volunteer.admin.school_id) {
+            school_name = req.session.volunteer.admin.school_name;
           }
-        });
+          res.render('v_map.jade', {
+            session: req.session,
+            activities: acts,
+            volunteer: req.session.volunteer,
+            error: req.query.error,
+            success: req.query.success,
+            group: req.session.group,
+            longterms,
+            school_name,
+            hash,
+            age
+          });
+        }
+      });
     }
   });
 });
