@@ -249,6 +249,44 @@ router.post('/edit-event', permissions.requireGroup('organism', 'admin'), functi
   }
 });
 
+
+router.post('/edit-activity', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
+  console.info('DATAS : req.body : ' + JSON.stringify(req.body));
+  const act_id = req.body.act_id;
+  console.log('act_id to update : ' + act_id);
+  let update = {};
+
+  function mongoOrganismUpdate(update) {
+    Activity.findOneAndUpdate({
+      '_id': act_id
+    }, update, function(err) {
+      if (err) {
+        err.type = 'MINOR';
+        next(err);
+        const err_string = encodeURIComponent('Une erreur est survenue. Essaye de nouveau ou sinon, contacte nous par téléphone ou courriel :)')
+        res.redirect(req.body.url + '?error=' + err_string);
+      } else {
+        console.info('SUCCESS : we have updated activity with activity_id =  ' + act_id);
+        req.session.save(function() {
+          res.redirect(req.body.url);
+        });
+      }
+    })
+  };
+
+  if (req.body.archive) {
+    update = {
+      'archived': true
+    };
+    mongoOrganismUpdate(update);
+  } else if (req.body.recover) {
+    update = {
+      'archived': false
+    };
+    mongoOrganismUpdate(update);
+  }
+});
+
 router.post('/remove-activity:act_id', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   console.log('DATAS : req.params : ' + JSON.stringify(req.params));
   let error = {};

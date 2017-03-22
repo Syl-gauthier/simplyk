@@ -3,7 +3,6 @@ block vars
   - var page = 'map'
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
-  - var the_favo = {}; if (typeof the_favorite !== 'undefined') {the_favo = the_favorite; console.log('the_favo : ' + the_favo)} else {the_favo = {}; console.log('the_favo : ' + the_favo)};
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
 
 block head
@@ -11,41 +10,40 @@ block head
   meta(name='description', content='Opportunités de bénévolat à Montréal')
 block content
   each act, index in activities
-    if act._id != the_favo._id
-      div(tabindex='-1', role='dialog', class='modal fade ' + act._id)
-        .modal-dialog(role='document')
-          .modal-content
-            .modal-header
-              button.close(type='button', data-dismiss='modal', aria-label='Close')
-                span(aria-hidden='true') &times;        
-              #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
-            .modal-body.my-modal-body
-              h4 <b>#{act.intitule}</b>
-              p #{act.description}
-              table.table
-                tr
-                  th.text-center Places restantes
-                  th.text-center Date
-                  th.text-center Heure de début
-                  th.text-center Heure de fin
-                  if act.min_age
-                    th.text-center Âge minimal
-                each day, nb in act.days
-                  if day.day
-                    tr
-                      td.text-center= (day.vol_nb-day.applicants.length)
-                      td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
-                      td.text-center= day.start_time
-                      td.text-center= day.end_time
-                      if act.min_age
-                        td.text-center= act.min_age
-                    #identifiant(style="display:none")
-                      p= act._id
-                p <b>Adresse : </b> #{act.address}
-            .modal-footer
-              input.btn.btn-default(type='button', data-dismiss='modal', value='Fermer')
-              if volunteer
-                a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act._id, target='_blank') Plus d'infos
+    div(tabindex='-1', role='dialog', class='modal fade ' + act._id)
+      .modal-dialog(role='document')
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              span(aria-hidden='true') &times;        
+            #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
+          .modal-body.my-modal-body
+            h4 <b>#{act.intitule}</b>
+            p #{act.description}
+            table.table
+              tr
+                th.text-center Places restantes
+                th.text-center Date
+                th.text-center Heure de début
+                th.text-center Heure de fin
+                if act.min_age
+                  th.text-center Âge minimal
+              each day, nb in act.days
+                if day.day
+                  tr
+                    td.text-center= (day.vol_nb-day.applicants.length)
+                    td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
+                    td.text-center= day.start_time
+                    td.text-center= day.end_time
+                    if act.min_age
+                      td.text-center= act.min_age
+                  #identifiant(style="display:none")
+                    p= act._id
+              p <b>Adresse : </b> #{act.address}
+          .modal-footer
+            input.btn.btn-default(type='button', data-dismiss='modal', value='Fermer')
+            if volunteer
+              a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act._id, target='_blank') Plus d'infos
   each lt, index in longterms
     div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id)
       .modal-dialog(role='document')
@@ -64,41 +62,6 @@ block content
             input.btn.btn-default(type='button', data-dismiss='modal' value='Fermer')
             if volunteer
               a.subscribe-button-longterm.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id, href='/longterm/'+lt.long_term._id, target='_blank') Plus d'infos
-  if (typeof the_favo !== 'undefined') && the_favo.days
-    div(tabindex='-1', role='dialog', class='modal fade ' + the_favo._id)
-      .modal-dialog(role='document')
-        .modal-content
-          .modal-header
-            button.close(type='button', data-dismiss='modal', aria-label='Close')
-              span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{the_favo.event_intitule} <small>par</small> <b>#{the_favo.org_name}</b>
-          .modal-body.my-modal-body
-            h4 <b>#{the_favo.intitule}</b>
-            table.table
-              tr
-                th.text-center Places restantes
-                th.text-center Date
-                th.text-center Heure de début
-                th.text-center Heure de fin
-                if the_favo.min_age
-                  th.text-center Âge minimal
-              if (typeof the_favo !== 'undefined')
-                each day, nb in the_favo.days
-                  if day.day
-                    tr
-                      td.text-center= (day.vol_nb-day.applicants.length)
-                      td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
-                      td.text-center= day.start_time
-                      td.text-center= day.end_time
-                      if the_favo.min_age
-                        td.text-center= the_favo.min_age + ' ans'
-                    #identifiant(style="display:none")
-                      p= the_favo._id
-              p <b>Adresse : </b> #{the_favo.address}
-          .modal-footer
-            input.btn.btn-default(type='button', data-dismiss='modal', value='Fermer')
-            if volunteer
-              a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = the_favo._id, href='/activity/'+the_favo._id, target='_blank') Plus d'infos
   .container-fluid
     .row.fill
       .col-sm-4.col-xs-12#map-left.hidden-xs
@@ -124,76 +87,40 @@ block content
               p.alert.alert-danger #{error}
             if success
               p.alert.alert-success #{success}
-            if (typeof the_favo !== 'undefined') && the_favo.days
-              li.list-group-item(id='the_favo', opp_type='activity')
-                  .panel.panel-default
-                    .panel-heading
-                      div.media-left.media-middle
-                        a(href='#')
-                          if the_favo.cause == 'Solidarité'
-                            i.fa.fa-heart
-                          else if the_favo.cause == 'Nature'
-                            i.fa.fa-envira(style='color: #5BCF8F')
-                          else if the_favo.cause == 'Sport et Culture'
-                            i.fa.fa-institution(style='color: #FFC858')
-                          else if the_favo.cause == 'Enfance'
-                            i.fa.fa-child(style='color: #FF4F3C')
-                      div.media-body
-                        h5.media-heading <b>#{the_favo.org_name}</b>
-                        h6.media-heading <b>#{the_favo.intitule}</b>
-                        //h6
-                          i.fa.fa-map-marker
-                          p.inline Adresse : #{the_favo.address}
-                      div.media-right.media-middle
-                        input.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favo._id, value='Plus d\'infos')
-                    .panel-body
-                        h5 Dans le cadre de : <b>#{the_favo.event_intitule}</b>
-                        if the_favo.days.length < 3
-                          each day, day_i in the_favo.days
-                            if day.day
-                              h4
-                                h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                                h6.inline
-                                  i.fa.fa-user
-                                  p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-                        else
-                          if the_favo.days[0].day && the_favo.days[1].day
-                            h6.inline <b>#{days_name[correctDate(the_favo.days[0].day).getDay()]  + ' ' + (correctDate(the_favo.days[0].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[0].day).getMonth()]  + ' ' + correctDate(the_favo.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(the_favo.days[1].day).getDay()]  + ' ' + (correctDate(the_favo.days[1].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[1].day).getMonth()]  + ' ' + correctDate(the_favo.days[1].day).getFullYear()}</b>, ...
             each act, index in activities
-              if act._id != the_favo._id
-                li.list-group-item(id= act._id, opp_type='activity', lat=act.lat, lon=act.lon, data-target= "."+act._id, style='cursor: pointer;')
-                  .panel.panel-default
-                    .panel-heading
-                      div.media-left.media-middle
-                        a(href='#')
-                          if act.school_id
-                            i.fa.fa-graduation-cap.intern
-                          else if act.cause == 'Solidarité'
-                              i.fa.fa-heart
-                          else if act.cause == 'Nature'
-                            i.fa.fa-envira(style='color: #5BCF8F')
-                          else if act.cause == 'Sport et Culture'
-                            i.fa.fa-institution(style='color: #FFC858')
-                          else if act.cause == 'Enfance'
-                            i.fa.fa-child(style='color: #FF4F3C')
-                      div.media-body
-                        h5.media-heading <b>#{act.org_name}</b>
-                        h6.media-heading <b>#{act.intitule}</b>
-                    .panel-body
-                        h5 Dans le cadre de : <b>#{act.event_intitule}</b>
-                        if act.days.length < 3
+              li.list-group-item(id= act._id, opp_type='activity', lat=act.lat, lon=act.lon, data-target= "."+act._id, style='cursor: pointer;')
+                .panel.panel-default
+                  .panel-heading
+                    div.media-left.media-middle
+                      a(href='#')
+                        if act.school_id
+                          i.fa.fa-graduation-cap.intern
+                        else if act.cause == 'Solidarité'
+                            i.fa.fa-heart
+                        else if act.cause == 'Nature'
+                          i.fa.fa-envira(style='color: #5BCF8F')
+                        else if act.cause == 'Sport et Culture'
+                          i.fa.fa-institution(style='color: #FFC858')
+                        else if act.cause == 'Enfance'
+                          i.fa.fa-child(style='color: #FF4F3C')
+                    div.media-body
+                      h5.media-heading <b>#{act.org_name}</b>
+                      h6.media-heading <b>#{act.intitule}</b>
+                  .panel-body
+                      h5 Dans le cadre de : <b>#{act.event_intitule}</b>
+                      if act.days.length < 3
+                        each day, day_i in act.days
+                          if day.day
+                            h4
+                              h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                              h6.inline
+                                i.fa.fa-user
+                                p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+                      else
+                        if act.days[0].day && act.days[1].day
+                          h6.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
                           each day, day_i in act.days
-                            if day.day
-                              h4
-                                h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                                h6.inline
-                                  i.fa.fa-user
-                                  p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-                        else
-                          if act.days[0].day && act.days[1].day
-                            h6.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
-                            each day, day_i in act.days
-                              p.hidden <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                            p.hidden <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
             each lt, index in longterms
               li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon, data-target= "."+lt.long_term._id, style='cursor: pointer;')
                 .panel.panel-default
@@ -234,7 +161,6 @@ block footscript
     var page = 'map';
     var acts = !{JSON.stringify(activities)};
     var lts = !{JSON.stringify(longterms)};
-    var the_fav = !{JSON.stringify(the_favorite)};
     var school_name = !{JSON.stringify(school_name)};
   //clusterer api
   script(src="/javascripts/marker-clusterer.js", type="text/javascript")
@@ -266,6 +192,7 @@ block footscript
         }
       }
     });
+  script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
       $('#myInput').focus();
     });

@@ -82,8 +82,15 @@ block content
 									h6
 										i.fa.fa-map-marker
 										p.inline Adresse : #{event.address}
-								div.media-top.media-right
-									a.inline.btn.btn-warning.propose(act_id=act._id) Inviter à être bénévole
+								div.media-top.media-right.text-center
+									if act.archived
+										h4
+										span.inline.badge(style='background-color: #E33831') Archivé
+										i.fa.fa-refresh.recover(type='recover' style="cursor: pointer" data-toggle="tooltip" data-placement="top" title='Republier l\'engagement' act_id=act._id)
+									else 
+										a.inline.btn.btn-warning.propose(act_id=act._id) Inviter à être bénévole
+										div(style='padding-top: 7px;')
+											a.btn.btn-danger.archive(act_id=act._id) Archiver l'opportunité
 									if isPast(act.days)
 									//else
 										i.fa.fa-times.fa-xs.fa-2x.edit.inline(style="cursor: pointer; color: red; margin-left:20px;" act_id=act._id, data-toggle='modal' data-target='#erase-modal'+act_i )
@@ -196,4 +203,20 @@ block footscript
 			$(function () {
 				$('[data-toggle="tooltip"]').tooltip()
 			})
+			$('.archive').click(function(){
+				let div = $(this).parent();
+				let act_id = $(this).attr('act_id');
+				div.html("<form name='edit-form' method='post' action='/edit-activity'><p>Êtes-vous de vouloir archiver cet engagement ? Il ne sera alors plus visible des bénévoles </p><input class='hidden' name='archive' value='a'></input><input class='hidden' name='act_id' value='" + act_id + "'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input style='width: 50%' class='btn btn-danger' type='submit' value='Oui'></input><input style='width: 50%' class='btn btn-info no-archive' value='Non'></input></form>");
+				$('.no-archive').click(function(){
+					div.html("<a class='inline btn btn-danger archive'> Archiver l'opportunité </a>");
+				})
+			});
+			$('.recover').click(function(){
+				let div = $(this).parent();
+				let act_id = $(this).attr('act_id');
+				div.html("<form name='edit-form' method='post' action='/edit-activity'><p>Êtes-vous de vouloir republier cet engagement ? Il sera alors visible des bénévoles </p><input class='hidden' name='recover' value='a'></input><input class='hidden' name='act_id' value='" + act_id + "'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input style='width: 50%' class='btn btn-info' type='submit' value='Oui'></input><input style='width: 50%' class='btn btn-danger no-recover' value='Non'></input></form>");
+				$('.no-recover').click(function(){
+					div.html('<h4><span style="background-color: #E33831" class="badge">Archivé</span><i type="recover" style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="Republier l\'engagement" class="fa fa-refresh recover"></i></h4>');
+				})
+			});
 		})

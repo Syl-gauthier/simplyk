@@ -11,7 +11,6 @@ block vars
   - var page = 'accueil'
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
-  - var the_favo = {}; if (typeof the_favorite !== 'undefined') {the_favo = the_favorite} else {the_favo = {}};
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
   - function isAdult(ageMin){var result=false;if(ageMin>=16){result=true}return result;}
   - var school_name = ""; if (volunteer && volunteer.admin.school_name){school_name = volunteer.admin.school_name};
@@ -164,76 +163,40 @@ block content
               p.alert.alert-danger #{error}
             if success
               p.alert.alert-success #{success}
-            if (typeof the_favo !== 'undefined') && the_favo.days
-              li.list-group-item(id='the_favo', opp_type='activity', min_age=the_favo.min_age, adult='')
-                  .panel.panel-default
-                    .panel-heading
-                      div.media-left.media-middle
-                        a(href='#')
-                          if the_favo.cause == 'Solidarité'
-                            i.fa.fa-heart
-                          else if the_favo.cause == 'Nature'
-                            i.fa.fa-envira(style='color: #5BCF8F')
-                          else if the_favo.cause == 'Sport et Culture'
-                            i.fa.fa-institution(style='color: #FFC858')
-                          else if the_favo.cause == 'Enfance'
-                            i.fa.fa-child(style='color: #FF4F3C')
-                      div.media-body
-                        h5.media-heading <b>#{the_favo.org_name}</b>
-                        h6.media-heading <b>#{the_favo.intitule}</b>
-                        //h6
-                          i.fa.fa-map-marker
-                          p.inline Adresse : #{the_favo.address}
-                      div.media-right.media-middle
-                        input.btn.btn-default.media-object(type='button' value='Plus d\'infos' data-toggle="modal" data-target= "."+the_favo._id)
-                    .panel-body
-                        h5 Dans le cadre de : <b>#{the_favo.event_intitule}</b>
-                        if the_favo.days.length < 3
-                          each day, day_i in the_favo.days
-                            if day.day
-                              h4
-                                h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                                h6.inline
-                                  i.fa.fa-user
-                                  p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-                        else
-                          if the_favo.days[0].day && the_favo.days[1].day
-                            h6.inline <b>#{days_name[correctDate(the_favo.days[0].day).getDay()]  + ' ' + (correctDate(the_favo.days[0].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[0].day).getMonth()]  + ' ' + correctDate(the_favo.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(the_favo.days[1].day).getDay()]  + ' ' + (correctDate(the_favo.days[1].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[1].day).getMonth()]  + ' ' + correctDate(the_favo.days[1].day).getFullYear()}</b>, ...
             each act, index in activities
-              if act._id != the_favo._id
-                li.list-group-item(id= act._id, opp_type='activity', lat=act.lat, lon=act.lon, data-target= "."+act._id, style='cursor: pointer;')
-                  .panel.panel-default
-                    .panel-heading
-                      div.media-left.media-middle
-                        a(href='#')
-                          if act.cause == 'Solidarité'
-                            i.fa.fa-heart
-                          else if act.cause == 'Nature'
-                            i.fa.fa-envira(style='color: #5BCF8F')
-                          else if act.cause == 'Sport et Culture'
-                            i.fa.fa-institution(style='color: #FFC858')
-                          else if act.cause == 'Enfance'
-                            i.fa.fa-child(style='color: #FF4F3C')
-                      div.media-body
-                        h5.media-heading <b>#{act.org_name}</b>
-                        h6.media-heading <b>#{act.intitule}</b>
-                      div.media-right.media-top
-                        span.badge.activity Ponctuel
-                    .panel-body
-                        h5 Dans le cadre de : <b>#{act.event_intitule}</b>
-                        if act.days.length < 3
+              li.list-group-item(id= act._id, opp_type='activity', lat=act.lat, lon=act.lon, data-target= "."+act._id, style='cursor: pointer;')
+                .panel.panel-default
+                  .panel-heading
+                    div.media-left.media-middle
+                      a(href='#')
+                        if act.cause == 'Solidarité'
+                          i.fa.fa-heart
+                        else if act.cause == 'Nature'
+                          i.fa.fa-envira(style='color: #5BCF8F')
+                        else if act.cause == 'Sport et Culture'
+                          i.fa.fa-institution(style='color: #FFC858')
+                        else if act.cause == 'Enfance'
+                          i.fa.fa-child(style='color: #FF4F3C')
+                    div.media-body
+                      h5.media-heading <b>#{act.org_name}</b>
+                      h6.media-heading <b>#{act.intitule}</b>
+                    div.media-right.media-top
+                      span.badge.activity Ponctuel
+                  .panel-body
+                      h5 Dans le cadre de : <b>#{act.event_intitule}</b>
+                      if act.days.length < 3
+                        each day, day_i in act.days
+                          if day.day
+                            h4
+                              h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                              h6.inline
+                                i.fa.fa-user
+                                p.inline= ((day.vol_nb-day.applicants.length) > -1 ? (day.vol_nb-day.applicants.length) : 0)+' places restantes'
+                      else
+                        if act.days[0].day && act.days[1].day
+                          h5.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
                           each day, day_i in act.days
-                            if day.day
-                              h4
-                                h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                                h6.inline
-                                  i.fa.fa-user
-                                  p.inline= ((day.vol_nb-day.applicants.length) > -1 ? (day.vol_nb-day.applicants.length) : 0)+' places restantes'
-                        else
-                          if act.days[0].day && act.days[1].day
-                            h5.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
-                            each day, day_i in act.days
-                              p.hidden <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                            p.hidden <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
 
             each lt, index in longterms
                 li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon, data-target= "."+lt.long_term._id, style='cursor: pointer;')
@@ -300,7 +263,6 @@ block footscript
     var page = 'landing';
     var acts = !{JSON.stringify(activities)};
     var lts = !{JSON.stringify(longterms)};
-    var the_fav = !{JSON.stringify(the_favorite)};
     var school_name = null;
   //clusterer api
   //script(src="/javascripts/marker-clusterer.js", type="text/javascript")
@@ -365,12 +327,13 @@ block footscript
         console.log('isAdult : ' + isAdult);
         return isAdult;
       });
+      /* To close keyboard on mobile
       $('#jetsSearch').on('keyup', function(e){
         if(e.keyCode==13) {
           $(this).blur();
           $('.navbar-toggle').click();
         }
-      });
+      });*/
       $('#offers-list').outerHeight(($('#map-left').outerHeight(true) - $('#filter_div').outerHeight(true)) - $('#search_div').outerHeight(true));
     });
   //Modal bootstrap
