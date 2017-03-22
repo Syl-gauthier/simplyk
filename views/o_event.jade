@@ -174,7 +174,9 @@ block footscript
 	script('type'='text/javascript').
 		'use strict';
 		$(document).ready(function(){
-			amplitude.getInstance().logEvent('o_visit_event');
+			if (env == 'prod') {
+				amplitude.getInstance().logEvent('o_visit_event');
+			}
 			$('.edit').click(function(){
 				const type = $(this).attr('type');
 				if(type == 'vol_nb'){

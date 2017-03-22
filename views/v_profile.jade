@@ -910,32 +910,34 @@ block footscript
         $('#notificationCorrection').removeClass('hidden');
       });
 
-
-      var event_props = {};
-      amplitude.getInstance().logEvent('v_visit_dashboard');
-      $('.edit_extra_student_notification_form').submit(function(){
-        event_props.type = 'extra';
-        amplitude.getInstance().logEvent('v_correct_opp', event_props);
-      });
-      $('.event_absence_modal_form').submit(function(){
-        amplitude.getInstance().logEvent('v_absence_event');
-      });
-      $('.activity_unsubscribe_form').submit(function(){
-        event_props.type = 'event';
-        amplitude.getInstance().logEvent('v_unsubscribe_opp', event_props);
-      });
-      $('.longterm_unsubscribe_form').submit(function(){
-        event_props.type = 'longterm';
-        amplitude.getInstance().logEvent('v_unsubscribe_opp', event_props);
-      });
-      $('.event_hours_pending_modal_form').submit(function(){
-        event_props.type = 'event';
-        amplitude.getInstance().logEvent('v_hourspending_opp', event_props);
-      });
-      $('.addLTHoursForm').submit(function(){
-        event_props.type = 'longterm';
-        amplitude.getInstance().logEvent('v_hourspending_opp', event_props);
-      });
+      if (env == 'prod') {
+        console.info('IN AMPLITUDE');
+        var event_props = {};
+        amplitude.getInstance().logEvent('v_visit_dashboard');
+        $('.edit_extra_student_notification_form').submit(function(){
+          event_props.type = 'extra';
+          amplitude.getInstance().logEvent('v_correct_opp', event_props);
+        });
+        $('.event_absence_modal_form').submit(function(){
+          amplitude.getInstance().logEvent('v_absence_event');
+        });
+        $('.activity_unsubscribe_form').submit(function(){
+          event_props.type = 'event';
+          amplitude.getInstance().logEvent('v_unsubscribe_opp', event_props);
+        });
+        $('.longterm_unsubscribe_form').submit(function(){
+          event_props.type = 'longterm';
+          amplitude.getInstance().logEvent('v_unsubscribe_opp', event_props);
+        });
+        $('.event_hours_pending_modal_form').submit(function(){
+          event_props.type = 'event';
+          amplitude.getInstance().logEvent('v_hourspending_opp', event_props);
+        });
+        $('.addLTHoursForm').submit(function(){
+          event_props.type = 'longterm';
+          amplitude.getInstance().logEvent('v_hourspending_opp', event_props);
+        });
+      }
 
 
 

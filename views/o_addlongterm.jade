@@ -188,8 +188,13 @@ block footscript
     $( document ).ready(function() {
       let event_props = {};
       event_props.type = 'longterm';
-
-      amplitude.getInstance().logEvent('o_visit_addopp', event_props);
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('o_visit_addopp', event_props);
+        $('#creationlongtermform').submit(function(){
+          amplitude.getInstance().logEvent('o_add_opp', event_props);
+          amplitude.getInstance().logEvent('g_revenue');
+        });
+      }
       $('#creationlongtermform').on('keyup keypress', function(e) {
         var keyCode = e.keyCode || e.which;
         if (keyCode === 13) { 
@@ -198,10 +203,6 @@ block footscript
         }
       });
 
-      $('#creationlongtermform').submit(function(){
-        amplitude.getInstance().logEvent('o_add_opp', event_props);
-        amplitude.getInstance().logEvent('g_revenue');
-      });
 
       var input = $('.datepicker');
       input.pickadate({

@@ -270,7 +270,9 @@ block footscript
   script(src="/bower_components/jets/jets.min.js")
   script.
     $( document ).ready(function() {
-      amplitude.getInstance().logEvent('g_landing');
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('g_landing');
+      }
       $('.list-group-item').click(function(){
         $('' + $(this).attr('data-target')).modal('show');
       });
@@ -320,7 +322,7 @@ block footscript
   script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap"
          async defer)
   //Modal bootstrap
-  script(type='text/javascript' async).
+  script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
       $('#myInput').focus();
     });

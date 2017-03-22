@@ -424,62 +424,62 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
       };
       //acts = acts.filter(isNotTheFav);
       Organism.find(lt_filter, {
-          'org_name': true,
-          '_id': true,
-          'cause': true,
-          'long_terms': true,
-          'school_id': true,
-          'admin_id': true
-        },
-        function(err, organisms) {
-          if (err) {
-            err.type = 'CRASH';
-            err.print = 'Problème pour récupérer la liste des organisms et de leurs activités';
-            next(err);
-          } else {
-            //Filter organisms authorized to be seen by the volunteer
-            const lt_organisms = organisms.filter(function(orga) {
-              if (orga.school_id || orga.admin_id) {
-                if (orga.school_id) {
-                  var the_school = orga.school_id;
-                } else {
-                  var the_school = orga.admin_id;
-                };
-                if (my_school) {
-                  return the_school.toString() == my_school.toString();
-                } else {
-                  return false;
-                }
+        'org_name': true,
+        '_id': true,
+        'cause': true,
+        'long_terms': true,
+        'school_id': true,
+        'admin_id': true
+      }, function(err, organisms) {
+        if (err) {
+          err.type = 'CRASH';
+          err.print = 'Problème pour récupérer la liste des organisms et de leurs activités';
+          next(err);
+        } else {
+          //Filter organisms authorized to be seen by the volunteer
+          const lt_organisms = organisms.filter(function(orga) {
+            if (orga.school_id || orga.admin_id) {
+              if (orga.school_id) {
+                var the_school = orga.school_id;
               } else {
-                return true;
+                var the_school = orga.admin_id;
+              };
+              if (my_school) {
+                return the_school.toString() == my_school.toString();
+              } else {
+                return false;
               }
-            });
-            var longterms = longtermsList(lt_organisms, 80);
-            const hash = require('intercom-client').SecureMode.userHash({
-              secretKey: process.env.INTERCOM_SECRET_KEY,
-              identifier: req.session.organism._id
-            });
-            console.info('hash : ' + hash);
-            console.info('typeof hash : ' + typeof hash);
-            let school_name = null;
-            if (my_school) {
-              console.info((/\(([^)]+)\)/).exec(req.session.organism.org_name)[1]);
-              school_name = (/\(([^)]+)\)/).exec(req.session.organism.org_name)[1];
+            } else {
+              return true;
             }
-            res.render('v_map.jade', {
-              session: req.session,
-              activities: acts,
-              organism: req.session.organism,
-              error: req.query.error,
-              success: req.query.success,
-              group: req.session.group,
-              school_name,
-              the_favorite,
-              longterms,
-              hash
-            });
-          }
-        });
+          });
+          var longterms = longtermsList(lt_organisms, 80);
+          const hash = require('intercom-client').SecureMode.userHash({
+            secretKey: process.env.INTERCOM_SECRET_KEY,
+            identifier: req.session.organism._id
+          });
+          console.info('hash : ' + hash);
+          console.info('typeof hash : ' + typeof hash);
+          let school_name = null;
+          if (my_school) {
+            console.info((/\(([^)]+)\)/).exec(req.session.organism.org_name)[1]);
+            school_name = (/\(([^)]+)\)/).exec(req.session.organism.org_name)[1];
+          };
+          res.render('v_map.jade', {
+            session: req.session,
+            activities: acts,
+            volunteer: {},
+            organism: req.session.organism,
+            error: req.query.error,
+            success: req.query.success,
+            group: req.session.group,
+            school_name,
+            the_favorite,
+            longterms,
+            hash
+          });
+        }
+      });
     }
   });
 });
@@ -490,13 +490,12 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
   if (req.query.error) {
     error = req.query.error;
   };
-  var organism = req.session.organism;
 
   function isRightLongterm(long) {
     console.info('long._id == req.params.lt_id : ' + (long._id.toString() == req.params.lt_id) + long._id + '  ' + req.params.lt_id);
     return long._id.toString() == req.params.lt_id;
   }
-  var longterm = organism.long_terms.find(isRightLongterm);
+  var longterm = req.session.organism.long_terms.find(isRightLongterm);
   console.info('+++++++++++++++++++++');
   console.info('Longterm corresponding to lt_id : ' + longterm);
   console.info('+++++++++++++++++++++');
@@ -526,7 +525,7 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
         res.render('o_longterm.jade', {
           session: req.session,
           lt_id: req.params.lt_id,
-          organism: organism,
+          organism: req.session.organism,
           longterm: longterm,
           slotJSON: slotJSON,
           volunteers: volunteers,
@@ -538,7 +537,7 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
     });
   } else {
     const err = {};
-    err.print= 'Engagement non disponible';
+    err.print = 'Engagement non disponible';
     err.type = 'MINOR';
     next(err);
     res.redirect('/organism/dashboard?error=' + err);
