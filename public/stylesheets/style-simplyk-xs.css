@@ -7,27 +7,51 @@
 }
 
 .section-div-xs{
-	height: 35%;
+	height: 30%;
+}
+
+#landscape_div--xs {
+	max-height: 30%;
+}
+
+#landscape-xs {
+	max-height: 25vh;
+	margin-bottom: 5%;
+}
+
+#landscape-xs-img {
+	height: inherit;
+}
+
+#title-xs {
+	min-height: 30%;
+}
+
+#button__title--xs {
+	min-height: 30%;
 }
 
 #more-xs {
 	margin-left: 0px;
 }
 
-.section__sentence-xs{
+.section__sentence-xs {
 	color: white;
 }
 
 .section__sentence-xs h2{
-	font-weight: 300;
 	letter-spacing: 10px;
+	font-weight: 300;
+}
+
+.section__sentence-xs h3{
+	font-weight: 300;
 }
 
 .section__sentence-xs h5{
 	font-weight: 300;
 	letter-spacing: 3px;
 	margin-top: 0px;
-	margin-bottom: 40px;
 }
 
 .table-xs {

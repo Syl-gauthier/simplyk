@@ -74,59 +74,79 @@ block content
           div.hidden-xs
             button.landing-buttons__item.btn.btn-warning.btn-lg#letsgo JE CONNAIS
             button.landing-buttons__item.btn.btn-warning.btn-lg.more#more <b>C'EST PARTI !</b>
-      .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
+      .col-sm-6.col-sm-offset-0.col-xs-offset-1.col-xs-11.section-div.hidden-xs
+        img#landscape(src='images/happy_city.svg', align='middle')
+      .col-xs-offset-1.col-xs-10.visible-xs#title-xs
         .section__sentence-xs
           div.text-center
             h2 TROUVE TON BÉNÉVOLAT
           div.text-center
             h5 Simplyk te connecte avec l'organisme qui te correspond <br><br>
-      .col-sm-6.col-sm-offset-0.col-xs-offset-1.col-xs-11.section-div.hidden-xs
-        img#landscape(src='images/happy_city.svg', align='middle')
-      .col-xs-12.section-div-xs.visible-xs.text-center
+      .col-xs-12.text-center.visible-xs#landscape_div--xs
         img#landscape-xs(src='images/happy_city.svg', align='middle')
+      .col-xs-12.text-center.visible-xs#button__title--xs
         button.landing-buttons__item.btn.btn-warning.btn-lg.more#more-xs <b>C'EST PARTI !</b>
-    #type-section.row.landing-section.hidden-xs
-      .col-sm-5.col-sm-offset-1.col-xs-offset-1.col-xs-10.section-div
+    #type-section.row.landing-section
+      .col-sm-5.col-sm-offset-1.section-div.hidden-xs
         .section__sentence.section__sentence--grouped
           div
             h1 CHOISIS TON TYPE <br> D'ENGAGEMENT <br>
           div
             h4
-      .col-sm-3.col-sm-offset-2.col-xs-offset-1.col-xs-10.section-div
+      .col-sm-3.col-sm-offset-2.section-div.hidden-xs
         div.landing-buttons
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button#type-button--ev
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--ev
               p.inline PONCTUEL
               i.inline.fa.fa-bolt(style='color: yellow;')
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button#type-button--lt LONG TERME
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button#type-button--all PEU IMPORTE
-    #age-section.landing-section.row.hidden-xs
-      .col-sm-5.col-sm-offset-1.col-xs-offset-1.col-xs-10.section-div
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--lt LONG TERME
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--all PEU IMPORTE
+      .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
+        .section__sentence-xs
+          div.text-center
+            h3 CHOISIS TON TYPE <br> D'ENGAGEMENT <br>
+      .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
+        div
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--ev
+              p.inline PONCTUEL
+              i.inline.fa.fa-bolt(style='color: yellow;')
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--lt LONG TERME
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--all PEU IMPORTE
+    #age-section.landing-section.row
+      .col-sm-5.col-sm-offset-1.col-xs-offset-1.col-xs-10.section-div.hidden-xs
         .section__sentence.section__sentence--grouped
           div
             h1 FILTRE SELON <br> TON ÂGE <br>
           div
             h4 
-      .col-sm-3.col-sm-offset-2.col-xs-offset-1.col-xs-10.section-div
+      .col-sm-3.col-sm-offset-2.section-div.hidden-xs
         div.landing-buttons
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button#age-button--plus J'ai 16 ans ou plus
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button#age-button--less J'ai moins de 16 ans
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--plus J'ai 16 ans ou plus
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--less J'ai moins de 16 ans
+      .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
+        .section__sentence-xs
+          div.text-center
+            h3 FILTRE SELON <br> TON ÂGE <br>
+      .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
+        div
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--plus J'ai 16 ans ou plus
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--less J'ai moins de 16 ans
   .container-fluid
     .row.fill
-      .col-sm-4.col-xs-12#map-left.hidden-xs
+      .col-sm-4.col-xs-12#map-left
         #filter_div.row
-          .col-sm-12.col-md-5.col-md-offset-1#acts_filter(style='cursor: pointer;')
+          .col-xs-12.col-sm-12.col-md-10.col-md-offset-1#age_filter(style='cursor: pointer;')
+            h5.text-center.btn-filter.btn-filter-age
+              i.inline.fa.fa-check-square-o#age_check
+              p.inline J'AI MOINS DE 16 ANS
+          .col-xs-6.col-sm-12.col-md-5.col-md-offset-1#acts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-acts
               i.inline.fa.fa-check-square-o#acts_check
               p.inline PONCTUEL
               i.inline.fa.fa-bolt
-          .col-sm-12.col-md-5#lts_filter(style='cursor: pointer;')
+          .col-xs-6.col-sm-12.col-md-5#lts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
               p.inline LONG TERME
-          .col-sm-12.col-md-10.col-md-offset-1#age_filter(style='cursor: pointer;')
-            h5.text-center.btn-filter.btn-filter-age
-              i.inline.fa.fa-check-square-o#age_check
-              p.inline J'AI MOINS DE 16 ANS
         #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;')
           .col-sm-12.col-md-10.col-md-offset-1
             .input-group
@@ -192,6 +212,8 @@ block content
                       div.media-body
                         h5.media-heading <b>#{act.org_name}</b>
                         h6.media-heading <b>#{act.intitule}</b>
+                      div.media-right.media-top
+                        span.badge.activity Ponctuel
                     .panel-body
                         h5 Dans le cadre de : <b>#{act.event_intitule}</b>
                         if act.days.length < 3
@@ -228,6 +250,8 @@ block content
                         h6
                           i.fa.fa-map-marker
                           p.inline Adresse : #{lt.long_term.address}
+                      div.media-right.media-top
+                        span.badge.longterm Engagement
             li.list-group-item
               .panel.panel-default
                 .panel-heading(style='min-height: 60vh;')
@@ -237,7 +261,7 @@ block content
                   h5.text-center Modifie tes filtres de recherche
                   h5.text-center Dézoome la carte
                   h5.text-center Demande nous des idées de bénévolat à contact@simplyk.io
-      .col-sm-8.col-xs-12.no-side-padding
+      .col-sm-8.col-xs-12.no-side-padding.hidden-xs
         #map
   .container-fluid.footer
     .row
@@ -267,6 +291,24 @@ block content
 
 
 block footscript
+  script.
+    var page = 'landing';
+    var acts = !{JSON.stringify(activities)};
+    var lts = !{JSON.stringify(longterms)};
+    var the_fav = !{JSON.stringify(the_favorite)};
+    var school_name = null;
+  //clusterer api
+  //script(src="/javascripts/marker-clusterer.js", type="text/javascript")
+  script.
+    if ((/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
+      console.log('On mobile');
+      document.write('<script src="/javascripts/initmap_mobile.js"><\/script>');
+      document.write('<link href="/stylesheets/style-simplyk-xs.css", type="text/css", rel="stylesheet"><\/link>');
+    } else {
+      console.log('On desktop or tablet');
+      document.write('<script src="/javascripts/initmap2.js"><\/script>');
+      document.write('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap" async defer><\/script>');
+    }
   script(src="/bower_components/jets/jets.min.js")
   script.
     $( document ).ready(function() {
@@ -276,9 +318,14 @@ block footscript
       $('.list-group-item').click(function(){
         $('' + $(this).attr('data-target')).modal('show');
       });
-      $('#letsgo, .age-button, #more-xs').click(function(){
+      $('#letsgo, .age-button').click(function(){
         $('html, body').animate({
-          scrollTop: $('#map').offset().top - 50
+          scrollTop: $('#map-left').offset().top - 50
+        }, 500)
+      });
+      $('.more').click(function(){
+        $('html, body').animate({
+          scrollTop: $('#type-section').offset().top - 50
         }, 500)
       });
       $('.type-button').click(function(){
@@ -286,19 +333,14 @@ block footscript
           scrollTop: $('#age-section').offset().top - 50
         }, 500)
       });
-      $('#age-button--plus').click(function(){
+      $('.age-button--plus').click(function(){
         $('.btn-filter-age').trigger("click");
       });
-      $('#type-button--lt').click(function(){
+      $('.type-button--lt').click(function(){
         $('.btn-filter-acts').trigger("click");
       });
-      $('#type-button--ev').click(function(){
+      $('.type-button--ev').click(function(){
         $('.btn-filter-lts').trigger("click");
-      });
-      $('#more').click(function(){
-        $('html, body').animate({
-          scrollTop: $('#type-section').offset().top - 50
-        }, 500)
       });
       $('.list-group-item').attr('adult', function(i, val){
         var minAge = $(this).attr('min_age');
@@ -310,17 +352,6 @@ block footscript
         return isAdult;
       });
     });
-  script.
-    var page = 'landing';
-    var acts = !{JSON.stringify(activities)};
-    var lts = !{JSON.stringify(longterms)};
-    var the_fav = !{JSON.stringify(the_favorite)};
-    var school_name = null;
-  //clusterer api
-  //script(src="/javascripts/marker-clusterer.js", type="text/javascript")
-  script(src='/javascripts/initmap2.js')
-  script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap"
-         async defer)
   //Modal bootstrap
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
