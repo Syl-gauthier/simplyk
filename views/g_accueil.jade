@@ -300,14 +300,14 @@ block footscript
   //clusterer api
   //script(src="/javascripts/marker-clusterer.js", type="text/javascript")
   script.
-    if (!(/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
-      console.log('On desktop or tablet');
-      document.write('<script src="/javascripts/initmap2.js"><\/script>');
-      document.write('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap" async defer><\/script>');
-    } else {
+    if ((/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
       console.log('On mobile');
       document.write('<script src="/javascripts/initmap_mobile.js"><\/script>');
       document.write('<link href="/stylesheets/style-simplyk-xs.css", type="text/css", rel="stylesheet"><\/link>');
+    } else {
+      console.log('On desktop or tablet');
+      document.write('<script src="/javascripts/initmap2.js"><\/script>');
+      document.write('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap" async defer><\/script>');
     }
   script(src="/bower_components/jets/jets.min.js")
   script.
