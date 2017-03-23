@@ -206,25 +206,6 @@ function synthesis() {
   });
 };
 
-//Geolocalization
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(function(position) {
-    var pos = {
-      lat: position.coords.latitude,
-      lng: position.coords.longitude
-    };
-    var to_send = new google.maps.LatLng(pos);
-    //$('#info__geolocatlisation').text('Tu es géolocalisé')
-    console.info('In navigator.geolocation !');
-    handleGeolocation(to_send);
-  });
-} else {
-  to_send = new google.maps.LatLng({
-    lat: 45.503,
-    lng: -73.613
-  });
-  handleGeolocation(to_send);
-}
 
 
 //---------------------------------------------------------------------------------------------------------------------------HANDLE EVENTS ON FILTER BUTTONS
@@ -313,31 +294,39 @@ var loc_bar_options = {
 };
 
 function handleGeolocation(pos) {
-  console.log('pos : ' + JSON.stringify(pos));
-  $("li", "#jetsContent").each(function() {
-    var distb = {};
-    distb.lat = Number($(this).attr('lat'));
-    distb.lng = Number($(this).attr('lon'));
-    var dist = google.maps.geometry.spherical.computeDistanceBetween(pos, new google.maps.LatLng(distb));
-    if (dist == NaN) {
-      $(this).find('.dist').text('Nombre inconnu de ');
-    } else {
-      $(this).find('.dist').text(Math.round(dist / 100) / 10);
-    }
-  });
-  $("li", "#jetsContent").sort(function(a, b) {
-    var at = $(a).find('.dist').text();
-    var bt = $(b).find('.dist').text();
-    if ((Number(at) <= Number(bt)) || (bt == 'NaN')) {
-      return -1;
-    } else if (Number(at) > Number(bt) || (at == 'NaN')) {
-      return 1;
-    } else {
-      console.log('at : ' + at);
-      console.log('bt : ' + bt);
-      return 0;
-    }
-  }).appendTo("#jetsContent");
+  if (pos) {
+    console.log('pos : ' + JSON.stringify(pos));
+    $("li", "#jetsContent").each(function() {
+      var distb = {};
+      distb.lat = Number($(this).attr('lat'));
+      distb.lng = Number($(this).attr('lon'));
+      var dist = google.maps.geometry.spherical.computeDistanceBetween(pos, new google.maps.LatLng(distb));
+      if (dist == NaN) {
+        $(this).find('.dist').text('Nombre inconnu de ');
+      } else {
+        $(this).find('.dist').text(Math.round(dist / 100) / 10);
+      $(this).find('.dist_reference').text('km de toi');
+      }
+    });
+    $("li", "#jetsContent").sort(function(a, b) {
+      var at = $(a).find('.dist').text();
+      var bt = $(b).find('.dist').text();
+      if ((Number(at) <= Number(bt)) || (bt == 'NaN')) {
+        return -1;
+      } else if (Number(at) > Number(bt) || (at == 'NaN')) {
+        return 1;
+      } else {
+        console.log('at : ' + at);
+        console.log('bt : ' + bt);
+        return 0;
+      }
+    }).appendTo("#jetsContent");
+  } else {
+    $("li", "#jetsContent").each(function() {
+      $(this).find('.dist').text('Tu n\'es pas géolocalisé');
+      $(this).find('.dist_reference').text(' ');
+    });
+  }
 };
 
 
@@ -369,6 +358,29 @@ function initAutocomplete() {
       geocodeAddress(geocoder, map);
     }
   });
+
+
+  //Geolocalization
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      console.info('navigator has a position');
+      var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      var to_send = new google.maps.LatLng(pos);
+      //$('#info__geolocatlisation').text('Tu es géolocalisé')
+      console.info('In navigator.geolocation !');
+      handleGeolocation(to_send);
+    }, function(error) {
+      var to_send = null;
+      handleGeolocation(to_send);
+      console.info('navigator has no a position ' + JSON.stringify(error));
+    });
+  } else {
+    var to_send = null;
+    handleGeolocation(to_send);
+  }
 
   function geocodeAddress(geocoder, resultsMap) {
     var address = document.getElementById('address_field').value;
