@@ -47,7 +47,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 //connect to mongo
-var db_credentials = 'simplyk-platform:Oeuf2lepou@ds021999.mlab.com:21999/heroku_ggjmn8rl?connectTimeoutMS=70000';
+var db_credentials = process.env.MONGO_DB_CREDENTIALS;
 if (typeof db_credentials === 'undefined') {
   console.log("DB credentials not defined, use test DB localhost/test");
   db_credentials = 'localhost/test';
