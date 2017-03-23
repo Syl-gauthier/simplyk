@@ -64,18 +64,18 @@ block content
               a.subscribe-button-longterm.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id, href='/longterm/'+lt.long_term._id, target='_blank') Plus d'infos
   .container-fluid
     .row.fill
-      .col-sm-4.col-xs-12#map-left.hidden-xs
+      .col-sm-4.col-xs-12#map-left
         #filter_div.row
-          .col-sm-12.col-md-5.col-md-offset-1#acts_filter(style='cursor: pointer;')
+          .col-xs-6.col-sm-12.col-md-5.col-md-offset-1#acts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-acts
               i.inline.fa.fa-check-square-o#acts_check
-              p.inline Ponctuels
+              p.inline Ponctuel
               i.inline.fa.fa-bolt
-          .col-sm-12.col-md-5#lts_filter(style='cursor: pointer;')
+          .col-xs-6.col-sm-12.col-md-5#lts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
-              p.inline Engagements
-        #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;')
+              p.inline Engagement
+        #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').hidden-xs
           .col-sm-12.col-md-10.col-md-offset-1
             .input-group
               input.form-control(type="search" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
@@ -152,22 +152,34 @@ block content
                   h5.text-center Modifie tes filtres de recherche
                   h5.text-center Dézoome la carte
                   h5.text-center Demande nous des idées de bénévolat à contact@simplyk.io
-      .col-sm-8.col-xs-12.no-side-padding
+      .col-sm-8.col-xs-12.no-side-padding.hidden-xs
         #map
 
 block footscript
-  script(src="/bower_components/jets/jets.min.js")
   script.
     var page = 'map';
     var acts = !{JSON.stringify(activities)};
     var lts = !{JSON.stringify(longterms)};
     var school_name = !{JSON.stringify(school_name)};
   //clusterer api
-  script(src="/javascripts/marker-clusterer.js", type="text/javascript")
-
-  script(src='/javascripts/initmap2.js')
-  script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap"
-         async defer)
+  script(src="/bower_components/jets/jets.min.js")
+  script.
+    var on_mobile = false;
+    if ((/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
+      on_mobile = true;
+      console.log('On mobile');
+      document.write('<script src="/javascripts/initmap_mobile.js"><\/script>');
+    } else {
+      console.log('On desktop or tablet');
+      document.write('<script src="/javascripts/initmap2.js"><\/script>');
+      document.write('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap" async defer><\/script>');
+      let jets = new Jets({
+        searchTag: '#jetsSearch',
+        contentTag: '#jetsContent',
+        searchSelector: '*'
+      });
+    }
+  //script(src="/javascripts/marker-clusterer.js", type="text/javascript")
          
   //Modal bootstrap
   script(type='text/javascript').
@@ -199,8 +211,6 @@ block footscript
     $('.list-group-item').click(function(){
       $('' + $(this).attr('data-target')).modal('show');
     });
-    let jets = new Jets({
-      searchTag: '#jetsSearch',
-      contentTag: '#jetsContent',
-      searchSelector: '*'
-    });
+    window.intercomSettings = {
+      app_id: "oora32p1"
+    };
