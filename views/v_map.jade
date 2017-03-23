@@ -75,6 +75,13 @@ block content
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
               p.inline Engagement
+        #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').visible-xs
+          .col-xs-12.text-center
+            form.form-inline
+              .input-group
+                input.form-control(id="address_field" placeholder="Changer d'adresse")
+                span.input-group-addon.btn.btn-default#loc_submit
+                  i.fa.fa-search
         #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').hidden-xs
           .col-sm-12.col-md-10.col-md-offset-1
             .input-group
@@ -106,6 +113,11 @@ block content
                     div.media-body
                       h5.media-heading <b>#{act.org_name}</b>
                       h6.media-heading <b>#{act.intitule}</b>
+                      i.fa.fa-compass.inline
+                      h6.dist.inline
+                      h6.inline km de toi
+                    div.media-right.media-top
+                      span.badge.activity Ponctuel
                   .panel-body
                       h5 Dans le cadre de : <b>#{act.event_intitule}</b>
                       if act.days.length < 3
@@ -143,10 +155,16 @@ block content
                       h6
                         i.fa.fa-map-marker
                         p.inline Adresse : #{lt.long_term.address}
+                      i.fa.fa-compass.inline
+                      h6.dist.inline.strong
+                      h6.inline km de toi
+                    div.media-right.media-top
+                      span.badge.longterm Engagement
             li.list-group-item
               .panel.panel-default
                 .panel-heading(style='height: 60vh;')
                   h3.text-center(style='margin-top: 20vh') Tu veux plus d'offres ?
+                  p.hidden.dist 10000000000
                   p.text-center
                     i.fa.fa-refresh.fa-4x
                   h5.text-center Modifie tes filtres de recherche
@@ -169,6 +187,7 @@ block footscript
       on_mobile = true;
       console.log('On mobile');
       document.write('<script src="/javascripts/initmap_mobile.js"><\/script>');
+      document.write('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&signed_in=true&libraries=places,geometry&callback=initAutocomplete" async defer><\/script>');
     } else {
       console.log('On desktop or tablet');
       document.write('<script src="/javascripts/initmap2.js"><\/script>');

@@ -67,6 +67,19 @@ function initMap() {
   };
   let displayMarkerOn = map;
 
+
+  //Geolocalization
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      console.info('In navigator.geolocation !');
+      map.setCenter(pos);
+    });
+  } else {}
+
   // Create legend
   const legend = document.createElement('div');
   legend.id = 'legend';
