@@ -237,6 +237,7 @@ app.use(passport.session());
 app.use(flash());
 app.use(helmet());
 
+
 app.use('/', a_routes);
 app.use('/', o_routes);
 app.use('/', g_auth);
@@ -256,6 +257,12 @@ app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
+  if (app.get('env') !== 'development') {
+    if (req.headers['x-forwarded-proto'] != 'https')
+      res.redirect('https://' + req.hostname + req.url)
+    else
+      next()
+  }
 });
 
 // error handlers
