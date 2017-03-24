@@ -336,6 +336,11 @@ block footscript
       $('.type-button--ev').click(function(){
         $('.btn-filter-lts').trigger("click");
       });
+      $('body').on('submit_an_address', function(){
+        $('html, body').animate({
+          scrollTop: $('#map-left').offset().top - 50
+        }, 500)
+      });
       $('.list-group-item').attr('adult', function(i, val){
         var minAge = $(this).attr('min_age');
         var isAdult = false;
