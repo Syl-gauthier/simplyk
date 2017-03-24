@@ -316,8 +316,6 @@ function handleGeolocation(pos) {
       } else if (Number(at) > Number(bt) || (at == 'NaN')) {
         return 1;
       } else {
-        console.log('at : ' + at);
-        console.log('bt : ' + bt);
         return 0;
       }
     }).appendTo("#jetsContent");
@@ -388,6 +386,7 @@ function initAutocomplete() {
       'address': address
     }, function(results, status) {
       if (status === google.maps.GeocoderStatus.OK) {
+        $("body").trigger("submit_an_address");
         console.log('results[0].geometry.location : ' + results[0].geometry.location);
         handleGeolocation(results[0].geometry.location);
         /*resultsMap.setCenter(results[0].geometry.location);
