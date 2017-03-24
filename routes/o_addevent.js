@@ -43,11 +43,22 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
       });
     } else {
       Organism.findById(req.session.organism._id, function(err, organism) {
+        //Verify min_age is a number
+        let min_age = req.body.min_age;
+        if (typeof min_age !== 'number') {
+          min_age = parseInt(min_age.toString());
+          console.info('min_age is not a number : ' + req.body.min_age + ' and now with parseInt : ' + min_age);
+          if (isNaN(min_age)) {
+            min_age = 26;
+            console.info('parseInt didnt work so we put min_age : ' + min_age);
+          }
+          console.info('min_age == NaN : ' + min_age == NaN);
+        }
         var keysList = Object.keys(req.body);
         var event = {
           intitule: req.body.intitule_event,
           dates: [],
-          min_age: req.body.min_age,
+          min_age,
           address: req.body.address,
           language: req.body.language,
           description: req.body.event_description,
@@ -115,7 +126,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
             org_name: req.session.organism.org_name,
             event_intitule: req.body.intitule_event,
             address: req.body.address,
-            min_age: req.body.min_age,
+            min_age: min_age,
             language: req.body.language,
             cause: req.session.organism.cause,
             email: req.session.organism.email,
