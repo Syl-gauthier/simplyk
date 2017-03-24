@@ -223,6 +223,14 @@ app.use(session({
   })
 }));
 
+if (app.get('env') !== 'development') {
+  if (req.headers['x-forwarded-proto'] != 'https'){
+    res.redirect('https://' + req.hostname + req.url)
+  }
+  else{
+    next()
+  }
+}
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public/images/favicon', 'favicon.ico')));
@@ -257,12 +265,6 @@ app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
-  if (app.get('env') !== 'development') {
-    if (req.headers['x-forwarded-proto'] != 'https')
-      res.redirect('https://' + req.hostname + req.url)
-    else
-      next()
-  }
 });
 
 // error handlers
