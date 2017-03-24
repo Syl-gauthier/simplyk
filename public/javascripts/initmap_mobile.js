@@ -334,7 +334,7 @@ function initAutocomplete() {
   var geocoder = new google.maps.Geocoder();
 
   console.info('In initAutocomplete');
-  var localization_bar = document.getElementById('address_field');
+  var localization_bar = document.getElementById('address_field-xs');
   console.log('localization_bar ' + localization_bar);
   var autocomplete = new google.maps.places.Autocomplete(localization_bar, loc_bar_options);
 
@@ -351,7 +351,7 @@ function initAutocomplete() {
     geocodeAddress(geocoder, map);
   });
 
-  $('#address_field').on('keyup keypress', function(e) {
+  $('#address_field-xs').on('keyup keypress', function(e) {
     var keyCode = e.keyCode || e.which;
     if (keyCode === 13) {
       e.preventDefault();
@@ -383,7 +383,7 @@ function initAutocomplete() {
   }
 
   function geocodeAddress(geocoder, resultsMap) {
-    var address = document.getElementById('address_field').value;
+    var address = document.getElementById('address_field-xs').value;
     geocoder.geocode({
       'address': address
     }, function(results, status) {

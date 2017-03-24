@@ -151,19 +151,20 @@ block content
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
               p.inline Engagement
-        #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').visible-xs
-          .col-xs-12.text-center
-            form.form-inline
+        #search_div
+          .row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').visible-xs
+            .col-xs-12.text-center
+              form.form-inline
+                .input-group
+                  input.form-control(id="address_field-xs" placeholder="Changer d'adresse")
+                  span.input-group-addon.btn.btn-default#loc_submit
+                    i.fa.fa-search
+          .row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').hidden-xs
+            .col-sm-12.col-md-10.col-md-offset-1
               .input-group
-                input.form-control(id="address_field" placeholder="Changer d'adresse")
-                span.input-group-addon.btn.btn-default#loc_submit
+                input.form-control(type="search" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
+                span.input-group-addon.btn.btn-default
                   i.fa.fa-search
-        #search_div.row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').hidden-xs
-          .col-sm-12.col-md-10.col-md-offset-1
-            .input-group
-              input.form-control(type="search" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
-              span.input-group-addon.btn.btn-default
-                i.fa.fa-search
         #offers-list.no-side-padding.scrollable.row
           ul.list-group.list-opportunity(id="jetsContent")
             if error
@@ -187,9 +188,10 @@ block content
                     div.media-body
                       h5.media-heading <b>#{act.org_name}</b>
                       h6.media-heading <b>#{act.intitule}</b>
-                      i.fa.fa-compass.inline
-                      h6.dist.inline.strong
-                      h6.inline.dist_reference km de toi
+                      div.visible-xs
+                        i.fa.fa-compass.inline
+                        h6.dist.inline.strong
+                        h6.inline.dist_reference km de toi
                     div.media-right.media-top
                       span.badge.activity Ponctuel
                   .panel-body
@@ -228,9 +230,10 @@ block content
                         h6
                           i.fa.fa-map-marker
                           p.inline Adresse : #{lt.long_term.address}
-                        i.fa.fa-compass.inline
-                        h6.dist.inline.strong
-                        h6.inline.dist_reference km de toi
+                        div.visible-xs
+                          i.fa.fa-compass.inline
+                          h6.dist.inline
+                          h6.inline.dist_reference km de toi
                       div.media-right.media-top
                         span.badge.longterm Engagement
             li.list-group-item
