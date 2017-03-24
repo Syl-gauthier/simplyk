@@ -382,11 +382,11 @@ function initAutocomplete() {
 
   function geocodeAddress(geocoder, resultsMap) {
     var address = document.getElementById('address_field-xs').value;
+    $("body").trigger("submit_an_address");
     geocoder.geocode({
       'address': address
     }, function(results, status) {
       if (status === google.maps.GeocoderStatus.OK) {
-        $("body").trigger("submit_an_address");
         console.log('results[0].geometry.location : ' + results[0].geometry.location);
         handleGeolocation(results[0].geometry.location);
         /*resultsMap.setCenter(results[0].geometry.location);
