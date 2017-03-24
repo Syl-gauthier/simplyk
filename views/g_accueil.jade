@@ -191,7 +191,7 @@ block content
                       div.visible-xs
                         i.fa.fa-compass.inline
                         h6.dist.inline.strong
-                        h6.inline km de toi
+                        h6.inline.dist_reference km de toi
                     div.media-right.media-top
                       span.badge.activity Ponctuel
                   .panel-body
@@ -232,8 +232,8 @@ block content
                           p.inline Adresse : #{lt.long_term.address}
                         div.visible-xs
                           i.fa.fa-compass.inline
-                          h6.dist.inline.strong
-                          h6.inline km de toi
+                          h6.dist.inline
+                          h6.inline.dist_reference km de toi
                       div.media-right.media-top
                         span.badge.longterm Engagement
             li.list-group-item
@@ -335,6 +335,11 @@ block footscript
       });
       $('.type-button--ev').click(function(){
         $('.btn-filter-lts').trigger("click");
+      });
+      $('body').on('submit_an_address', function(){
+        $('html, body').animate({
+          scrollTop: $('#map-left').offset().top - 50
+        }, 500)
       });
       $('.list-group-item').attr('adult', function(i, val){
         var minAge = $(this).attr('min_age');
