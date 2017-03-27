@@ -105,7 +105,7 @@ block content
                           else if (event.status == 'subscribed')
                             span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
                           else if event.status == 'past'
-                            span.badge(style='background-color: #FF800E')= 'Passé, à confirmé par l\'élève'
+                            span.badge(style='background-color: #FF800E')= 'Passé, à confirmer par l\'élève'
                           else if event.status == 'corrected'
                             span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
                           else if event.status == 'denied'
@@ -138,7 +138,7 @@ block content
                             p= event._id
                           h6= event.description
                     td
-                      if event.student_answers.length > 0
+                      if event.student_questions && event.student_questions.length > 0 && (event.status != 'past' && event.status != 'subscribed' && event.status != 'absent')
                         div.panel.panel-default
                           div.panel-heading
                             h4 Retour de l’élève sur lui-même 
@@ -148,8 +148,11 @@ block content
                                   div.panel-heading
                                     h6= question
                                   div.panel-body
-                                    h6= event.student_answers[q_I]
-                      if event.organism_answers.length > 0
+                                    if event.student_answers[q_I]
+                                      h6= event.student_answers[q_I]
+                                    else
+                                      h6.text-center Non répondu
+                      if event.organism_questions && event.organism_questions.length > 0 && (event.status != 'past' && event.status != 'subscribed' && event.status != 'absent' && event.status != 'pending')
                         div.panel.panel-default
                           div.panel-heading
                             h4 Retour de l'organisme sur l'élève
@@ -159,7 +162,10 @@ block content
                                   div.panel-heading
                                     h6= question
                                   div.panel-body
-                                    h6= event.organism_answers[q_I]
+                                    if event.organism_answers[q_I]
+                                      h6= event.organism_answers[q_I]
+                                    else
+                                      h6 Non répondu
                     td(align='center')
                       if ((event.status == 'confirmed') || (event.status == 'corrected') || (event.status == 'validated') || (event.status == 'denied'))
                         .btn-group(role='group')
@@ -223,9 +229,7 @@ block content
                             i.fa.fa-user
                             h6.inline= lt.contact
                     td
-                      unless (lt.hours_pending > 0 || lt.hours_done > 0)
-                        h6= lt.description
-                      if lt.student_answers.length > 0
+                      if lt.student_questions && lt.student_questions.length > 0 && (lt.hours_pending > 0 || lt.hours_done > 0)
                         div.panel.panel-default
                           div.panel-heading
                             h4 Retour de l’élève sur lui-même 
@@ -235,8 +239,11 @@ block content
                                   div.panel-heading
                                     h6= question
                                   div.panel-body
-                                    h6= lt.student_answers[q_I]
-                      if lt.organism_answers.length > 0
+                                    if lt.student_answers[q_I]
+                                      h6= lt.student_answers[q_I]
+                                    else
+                                      h6.text-center Non répondu
+                      if lt.organism_questions && lt.organism_questions.length > 0 && (lt.hours_done > 0)
                         div.panel.panel-default
                           div.panel-heading
                             h4 Retour de l'organisme sur l'élève
@@ -246,7 +253,10 @@ block content
                                   div.panel-heading
                                     h6= question
                                   div.panel-body
-                                    h6= lt.organism_answers[q_I]
+                                    if lt.organism_answers[q_I]
+                                      h6= lt.organism_answers[q_I]
+                                    else
+                                      h6.text-center Non répondu
                     td(align='center')
                       if ((lt.status == 'confirmed') || (lt.status == 'corrected') || (lt.status == 'validated') || (lt.status == 'denied'))
                         .btn-group(role='group')
