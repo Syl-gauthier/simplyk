@@ -62,3 +62,11 @@ block content
           a.btn.btn-default.icon-center(href='/volunteer/profile') Suivant
 
 block footscript
+  script(type='text/javascript').
+    'use strict';
+    $(document).ready(function(){
+      //--------AMPLITUDE
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('v_visit_sharewithfriends');
+      };
+    });
