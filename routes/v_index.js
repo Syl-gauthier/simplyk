@@ -617,7 +617,10 @@ router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volu
 router.get('/volunteer/sharewithfriends', permissions.requireGroup('volunteer'), function(req, res) {
   if (req.query.link) {
     res.render('v_sharewithfriends.jade', {
-      link: req.query.link
+      volunteer: req.session.volunteer,
+      session: req.session,
+      link: req.query.link,
+      group: req.session.group
     });
   } else {
     res.redirect('/volunteer/profile');
