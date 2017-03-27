@@ -400,6 +400,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                   org_phone: organism.phone,
                   org_name: newActivity.org_name,
                   day: dayString,
+                  link_to_share: '/activity/' + req.params.act_id,
                   start_time: newActivity.days.find(isGoodDay).start_time,
                   end_time: newActivity.days.find(isGoodDay).end_time,
                   address: newActivity.address,
@@ -516,6 +517,7 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
             };
           });
           res.render('v_postsubscription.jade', {
+            link_to_share: '/longterm/' + req.params.lt_id,
             org_phone: results.newOrganism.phone,
             session: req.session,
             org_name: results.newOrganism.org_name,
@@ -610,6 +612,16 @@ router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volu
       group: req.session.group
     });
   };
+});
+
+router.get('/volunteer/sharewithfriends', permissions.requireGroup('volunteer'), function(req, res) {
+  if (req.query.link) {
+    res.render('v_sharewithfriends.jade', {
+      link: req.query.link
+    });
+  } else {
+    res.redirect('/volunteer/profile');
+  }
 });
 
 router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'), function(req, res, next) {
