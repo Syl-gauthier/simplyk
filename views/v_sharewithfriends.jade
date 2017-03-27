@@ -14,7 +14,7 @@ block share
         version    : 'v2.8'
       });
       FB.AppEvents.logPageView();
-      var url = window.location.hostname + !{JSON.stringify(link)};
+      var url = 'https://' + window.location.hostname + !{JSON.stringify(link)};
       console.log('url : ' + url);
       var bitly_address = 'https://api-ssl.bitly.com/v3/shorten?access_token='+bitly_token+'&longURL='+url;
       console.log('bitly_address : ' + bitly_address);
