@@ -21,7 +21,7 @@ block share
       $.get(bitly_address, function(datas){
         console.info('bitly : ' + JSON.stringify(datas));
         if(datas.status_code < 400){
-          $('#share_div').html("<div class='alert alert-info text-center'><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> Par Messenger</a><p> Ou partage ce lien : </p><input type='text' id='link_to_share'></input></div>");
+          $('#share_div').html("<div class='alert alert-info text-center'><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> Par Messenger</a><p> Ou partage ce lien : </p><input type='text' style='margin-top: 10px' id='link_to_share'></input></div>");
           console.info('We are in the status_code OK !');
           $('#link_to_share').val(datas.data.url);
           $('#messenger').click(function(){
@@ -52,13 +52,13 @@ block share
 block content
   .container-fluid
     .row
-      .col-md-6.col-md-offset-3
+      .col-md-8.col-md-offset-2
         .page-header.jumbotron
           h1.text-center Vas-y avec des amis !
           div.icon-center
             img(src='/images/friends.svg')
           h2.text-center C'est toujours mieux à plusieurs !
-          h4.text-center#share_div(style='margin-top: 50px;')
+          h4.text-center#share_div(style='margin-top: 25px;')
           a.btn.btn-default.icon-center(href='/volunteer/profile') Suivant
 
 block footscript
