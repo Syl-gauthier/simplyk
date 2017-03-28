@@ -45,7 +45,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
       Organism.findById(req.session.organism._id, function(err, organism) {
         //Verify min_age is a number
         let min_age = req.body.min_age;
-        if (typeof min_age !== 'number') {
+        if ((typeof min_age !== 'number') && min_age != '') {
           min_age = parseInt(min_age.toString());
           console.info('min_age is not a number : ' + req.body.min_age + ' and now with parseInt : ' + min_age);
           if (isNaN(min_age)) {
