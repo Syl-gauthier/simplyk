@@ -686,6 +686,11 @@ router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'
       console.log('newVolunteer === req.session.volunteer : ' + (req.session.volunteer === newVolunteer));
       const message = encodeURIComponent('Tes réponses ont bien été prises en compte');
       res.redirect('/volunteer/profile?success=' + message);
+      let email_content = {
+        recipient: newVolunteer.email,
+        customMessage: [newVolunteer.firstname + ', tes retours sur ton bénévolat ont bien été pris en compte et sont désormais visible par la personne responsable du bénévolat dans ton école.', 'Néanmoins, en revenant sur la plateforme, tu peux quand même les modifier s\'ils ne te satisfont pas ! :)'],
+      };
+      emailer.sendStudentQuestionsEmail(email_content);
     }
   });
 });
