@@ -76,11 +76,10 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           unless page == 'students'
             li.navbar-link(role='presentation')
               a(href='/admin/classes') Mes élèves
-          if session.organism
-            li.navbar-link(role='presentation')
-              a(href='/organism/dashboard') Mon bénévolat interne 
-                if (todos && (todos.length > 0))
-                  p.badge(style='background-color: #E33831; padding: 0px 4px')= todos.length
+          li.navbar-link(role='presentation')
+            a(href='/organism/dashboard') Mon bénévolat interne 
+              if (todos && (todos.length > 0))
+                p.badge(style='background-color: #E33831; padding: 0px 4px')= todos.length
           li(role='presentation')
             form.navbar-form
               li.dropdown

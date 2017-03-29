@@ -88,6 +88,21 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   }, 0);
 
 
+  //FIND A LONGTERM WHICH NEED ACTION
+  let longterm_waiting = null;
+  if (req.session.longterm_interaction) {
+    console.info('INFO : req.session.longterm_interaction is already TRUE');
+  } else {
+    longterm_waiting = volunteer.long_terms.find(function(lt) {
+      console.info('moment(lt.last_interaction).add(1, onths) : ' + moment(lt.last_interaction).add(1, 'months'));
+      console.info('moment() : ' + moment());
+      console.info('(moment(lt.last_interaction).add(1, "months")) < moment() : ' + ((moment(lt.last_interaction).add(1, 'months')) < moment()));
+      return (lt.status != 'pending' && (!(lt.last_interaction) || ((moment(lt.last_interaction).add(1, 'months')) < moment())));
+    })
+  }
+  console.info('longterm_waiting : ' + longterm_waiting);
+
+
   //VOLUNTEERING_LEVEL
   var vol_level;
   if (volunteer.events.length == 0 && lt_nb == 0) {
@@ -181,7 +196,8 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
         extras_hours_done,
         hash,
         client_schools,
-        events_denied
+        events_denied,
+        longterm_waiting
       });
     });
   });
@@ -282,6 +298,7 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
 router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
   const lt_id = req.params.lt_id;
   console.log('Unsubscribe process starts');
+  req.session.longterm_interaction = true;
   const lt_name = (req.session.volunteer.long_terms.find(lt => {
     return lt._id == lt_id;
   })).intitule;
@@ -543,6 +560,7 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
 router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
   console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
   console.log('JSON.stringify(req.params) : ' + JSON.stringify(req.params));
+  req.session.longterm_interaction = true;
   if (req.body.hours_pending) {
 
     function isLongTerm(longterm) {
@@ -573,7 +591,8 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
     }, {
       "$set": {
         "long_terms.$.hours_pending": new_hours_pending,
-        "long_terms.$.status": 'pending'
+        "long_terms.$.status": 'pending',
+        "long_terms.$.last_interaction": new Date()
       }
     }, {
       returnNewDocument: true,
@@ -666,6 +685,47 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
     console.error(err);
     res.redirect('/volunteer/map?error=' + err);
   }
+});
+
+
+router.post('/volunteer/notyet/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
+  console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
+  console.log('JSON.stringify(req.params) : ' + JSON.stringify(req.params));
+  let date_to_report_as_last_interaction = new Date();
+  if (req.body.finished) {
+    date_to_report_as_last_interaction = moment(date_to_report_as_last_interaction).add(100, 'y');
+  }
+  console.log('Date reported as last_interaction : ' + moment(date_to_report_as_last_interaction).format());
+  req.session.longterm_interaction = true;
+  Volunteer.findOneAndUpdate({
+    "$and": [{
+      "_id": req.session.volunteer._id
+    }, {
+      "long_terms": {
+        '$elemMatch': {
+          '_id': req.params.lt_id
+        }
+      }
+    }]
+  }, {
+    "$set": {
+      "long_terms.$.last_interaction": date_to_report_as_last_interaction
+    }
+  }, {
+    returnNewDocument: true,
+    new: true
+  }, function(err, newVolunteer) {
+    if (err) {
+      err.type = 'CRASH';
+      err.print = 'Problème de mise à jour du bénévole dans la base de données';
+      next(err);
+    } else {
+      req.session.volunteer = newVolunteer;
+      req.session.save(function() {
+        res.sendStatus(200).end();
+      })
+    }
+  });
 });
 
 

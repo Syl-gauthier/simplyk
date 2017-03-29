@@ -263,6 +263,31 @@ function sendHoursPendingVolEmail(content) {
   });
 };
 
+function sendStudentQuestionsEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'studentquestions';
+  content.title = 'Retours enregistrés';
+  content.button = {
+    text: 'Voir mes retours',
+    link: 'www.simplyk.io/volunteer/profile'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: 'Les retours sur ton bénévolat sont éditables', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
 function sendHoursPendingReminderOrgEmail(content) {
   content.subtitle = content.customMessage;
   content.type = 'hourspendingorg';
@@ -561,5 +586,6 @@ module.exports = {
   sendExtraHoursPendingReminderOrgEmail,
   sendFiveDaysLongTermExpirationEmail,
   sendLongTermExpirationEmail,
-  sendInboundSMSEmail
+  sendInboundSMSEmail,
+  sendStudentQuestionsEmail
 };

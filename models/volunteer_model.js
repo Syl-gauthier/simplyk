@@ -62,6 +62,7 @@ var VolunteerSchema = new Schema({
     slot: String,
     hours_pending: Number,
     hours_done: Number,
+    last_interaction: Date,
     status: String, //confirmed, pending, validated, denied, subscribed, corrected
     student_questions: [String],
     student_answers: [String],

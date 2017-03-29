@@ -92,7 +92,7 @@ block content
                 a.btn.btn-info.pull-right(href='/volunteer/extra_simplyk_hours', role='button')
                   h4.inline Ajouter une expérience de bénévolat
                   i.fa.fa-plus
-    if events_past.length || events_denied.length || first_lt_denied || first_ext_denied
+    if events_past.length || events_denied.length || first_lt_denied || first_ext_denied || longterm_waiting
       if events_past.length
         .modal.fade(tabindex='-1', role='dialog' aria-labelledby="notificationModalLabel", id='notificationModal')
           div.modal-dialog(role='document')
@@ -269,6 +269,68 @@ block content
                     h4 <b>En attente des retours de l'organisme...</b>
               div.modal-footer
                 a.btn.btn-default(data-dismiss='modal') Fermer
+      else if longterm_waiting
+        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="notificationModalLabel", id='notificationModal')
+          div.modal-dialog(role='document')
+            .modal-content(id='notificationModalForm')
+              .modal-header
+                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden='true')
+                  h4.modal-title As-tu fais des heures ?
+              .modal-body
+                h3.text-center As-tu fais des heures avec eux récemment ?
+                img(align='center', src='/images/air_balloon.svg', style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
+                p.text-center Tu es inscrit à cet engagement. <br>  Met-le à jour !
+                li.list-group-item
+                  .panel.panel-default(style='border: 1px solid green')
+                    .panel-heading
+                      div.media-left.media-top
+                        a(href='profile')
+                          img.media-object.little-img(src='/images/clouds.jpg')
+                      div.media-body
+                        h4.media-heading <b>#{longterm_waiting.intitule}</b>
+                        h6 <small>pour</small> #{longterm_waiting.org_name}
+                      if longterm_waiting.status == 'corrected'
+                        div.media-right.media-top
+                          span.badge(style='background-color: #FF800E')= 'Corrigé'
+                      else if longterm_waiting.status == 'validated'
+                        div.media-right.media-top
+                          span.badge(style='background-color: #113A20')= 'Validé'
+                    .panel-body
+                      h6
+                        i.fa.fa-map-marker
+                        p.inline Adresse : #{longterm_waiting.address}
+                      h6.inline
+                        i.fa.fa-info
+                        p.inline= longterm_waiting.description
+                      if longterm_waiting.hours_done || longterm_waiting.hours_pending
+                        h4
+                          if longterm_waiting.hours_done
+                            span.badge(style='background-color: #113A20')= longterm_waiting.hours_done + ' heures réalisées '
+                          if longterm_waiting.hours_pending
+                            span.badge(style='background-color: #FF800E')= longterm_waiting.hours_pending + ' heures à confirmer '
+                    .panel-footer
+                      form.event_hours_pending_modal_form(method='post' action='/volunteer/LThours_pending/'+longterm_waiting._id, id='hoursPendingNotificationForm'+longterm_waiting._id)
+                        div.input-group
+                          input.form-control(id='input'+longterm_waiting._id, type='number', min='0.5', max='50', step='0.5' placeholder='Heures réalisées' name='hours_pending', required)
+                          .input-group-btn
+                            input.btn.btn-default.hours_pending_btn(type='submit', value='Confirmer' form='hoursPendingNotificationForm'+longterm_waiting._id)
+                            input.btn.btn-info.notYetNotificationButton(type='button' value='Aucune' lt_id=longterm_waiting._id, data-toggle="tooltip" data-placement="top" title='Je n\'ai aucune heure à ajouter à cet engagement')
+                            if (!longterm_waiting.hours_done && !longterm_waiting.hours_pending)
+                              input.btn.btn-warning.absenceNotificationButton(type='button' value='Se désinscrire' data-toggle="tooltip" data-placement="top" title='Je veux me désinscrire définitivement de cet engagement'  id='absenceNotificationDiv'+longterm_waiting._id)
+                            else
+                              input.btn.btn-warning.notYetNotificationButton(type='button' finished='yes' value='Je n\'irai plus' data-toggle="tooltip" data-placement="top" title='Je ne vais plus aller à cet engagement' lt_id=longterm_waiting._id)
+                      if (!longterm_waiting.hours_done && !longterm_waiting.hours_pending)
+                        div.hidden(class='absenceNotificationDiv'+longterm_waiting._id)
+                          form.inline.longterm_unsubscribe_form(action='/volunteer/unsubscribe/longterm/'+longterm_waiting._id, method='post')
+                            .panel.panel-default
+                              .panel-body
+                                h4.text-center Es-tu sûr de vouloir te désinscrire de cet engagement ?
+                              .panel-footer
+                                .btn-group.text-center
+                                  a.btn.btn-warning(data-dismiss='modal') Annuler
+                                  input.btn.btn-default(type='submit' value='Oui' role='button')
+                         
 
 
     .row
@@ -906,6 +968,19 @@ block footscript
         $('.'+div_id).removeClass('hidden');
       });
 
+      $('.notYetNotificationButton').click(function(){
+        let datas = {};
+        if ($(this).attr('finished') == 'yes') {
+          datas.finished = 'yes'
+        }
+        const modal = $(this).closest('.modal');
+        modal.modal('toggle');
+        $.post('/volunteer/notyet/'+$(this).attr('lt_id'), datas)
+        .done(function(data){
+          console.info('Not Yet POST success');
+        })
+      });
+
       $('.notificationCorrection').click(function(){
         $('#notificationCorrection').removeClass('hidden');
       });
@@ -939,7 +1014,9 @@ block footscript
         });
       }
 
-
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip({container: 'body'})
+      })
 
       $('.edit').click(function(){
         const ext_id = $(this).attr('ext_id');

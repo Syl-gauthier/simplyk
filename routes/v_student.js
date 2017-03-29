@@ -33,6 +33,7 @@ router.post('/volunteer/edit-student-feedbacks', permissions.requireGroup('volun
 
 	if (req.body.lt_id) {
 		//Find long_terms index in req.session.volunteer to apply to mongo search (DANGEROUS BUT AFTER MULTIPLE HOURS .........)
+		req.session.longterm_interaction = true;
 		console.info('We are starting to update answers to a longterm');
 		find_query = {
 			'_id': req.session.volunteer._id,

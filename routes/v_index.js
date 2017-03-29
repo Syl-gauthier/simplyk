@@ -466,6 +466,8 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
 
 router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
   console.log('lt_id : ' + req.params.lt_id + typeof req.params.lt_id);
+  req.session.longterm_interaction = true;
+  
 
   function isLongterm(lt) {
     return (lt._id.toString() === req.params.lt_id.toString());
@@ -686,6 +688,11 @@ router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'
       console.log('newVolunteer === req.session.volunteer : ' + (req.session.volunteer === newVolunteer));
       const message = encodeURIComponent('Tes réponses ont bien été prises en compte');
       res.redirect('/volunteer/profile?success=' + message);
+      let email_content = {
+        recipient: newVolunteer.email,
+        customMessage: [newVolunteer.firstname + ', tes retours sur ton bénévolat ont bien été pris en compte et sont désormais visible par la personne responsable du bénévolat dans ton école.', 'Néanmoins, en revenant sur la plateforme, tu peux quand même les modifier s\'ils ne te satisfont pas ! :)'],
+      };
+      emailer.sendStudentQuestionsEmail(email_content);
     }
   });
 });
