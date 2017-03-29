@@ -35,6 +35,18 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 	console.log('address sent to gmaps: ' + req.body.address);
 	console.log('DATAS : event in addlongterm: ' + JSON.stringify(req.body));
 
+	//Verify min_age is a number
+	let min_age = req.body.min_age;
+	if ((typeof min_age !== 'number') && min_age != '') {
+		min_age = parseInt(min_age.toString());
+		console.info('min_age is not a number : ' + req.body.min_age + ' and now with parseInt : ' + min_age);
+		if (isNaN(min_age)) {
+			min_age = 26;
+			console.info('parseInt didnt work so we put min_age : ' + min_age);
+		}
+		console.info('min_age == NaN : ' + min_age == NaN);
+	}
+
 	gmaps.codeAddress(req.body.address, function(lat, lon) {
 		if ('ZERO_RESULTS' === lat) {
 			var error = 'La position de l\'adresse que vous avez mentionné n\'a pas été trouvé par Google Maps';
@@ -56,7 +68,7 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 				expiration_date: req.body.expiration_date_submit,
 				slot: slotString,
 				vol_nb: req.body.vol_nb,
-				min_age: req.body.min_age,
+				min_age,
 				antecedents: false,
 				tags: '',
 				applicants: []
