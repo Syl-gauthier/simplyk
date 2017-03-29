@@ -121,18 +121,24 @@ block content
                         .modal.fade(id='activity-modal'+index, tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
                           .modal-dialog(role='document')
                             .modal-content
-                              form#activity_subscribe_form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone('+day.day.getTime()+')')
+                              form#activity_subscribe_form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone('+index+')')
                                 .modal-header
                                   button.close(type='button' data-dismiss="modal" aria-label="Close")
                                     span(aria-hidden='true')&times;
                                   h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cette activité ?
-                                  if !volunteer.phone
-                                    .modal-body
-                                      h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
-                                      p.alert.alert-danger.hidden(class='phone_alert'+day.day.getTime()) Entrer un numéro de téléphone
-                                      .form-group.conn-input
-                                        label.control-label Téléphone
-                                        input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone'+day.day.getTime())
+                                    if !volunteer.phone
+                                      .modal-body
+                                        h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
+                                        p.alert.alert-danger.hidden(class='phone_alert'+index) Entrer un numéro de téléphone
+                                        .form-group.conn-input
+                                          label.control-label Téléphone
+                                          input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phonea'+index)
+                                    else if (!volunteer.parents_email && (volunteer.admin && volunteer.admin.school_id))
+                                      .modal-body
+                                        h6 Afin que tes parents soient aussi au courant des endroits où tu vas faire du bénévolat, tu peux rajouter leur adresse courriel
+                                        .form-group.conn-input
+                                          label.control-label Courriel des parents (optionnel)
+                                          input.form-control(type='email', placeholder='', name='parents_email', aria-describedby='basic-addon1', id='parents_email'+index)
                                 .modal-footer
                                   a.btn.btn-warning(data-dismiss='modal') Annuler
                                   input.btn.btn-default#activity_subscribe(type='submit' value='Oui' role='button')
