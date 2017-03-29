@@ -37,14 +37,7 @@ block share
           console.info('We are in the status_code not OK !');
           $('#share_div').html("<div class='alert alert-info'><p>Problème avec réseaux sociaux, néanmoins possibilité de partager directement ce lien <br> <b>Voici le lien</b> : </p><input type='text' id='link_to_share'></input></div>");
           $('#link_to_share').val(url);
-          if (env == 'prod') {
-            $('#link_to_share').focus(function(){
-              amplitude.getInstance().logEvent('v_share_link_postsub');
-            });
-            $('#messenger').click(function(){
-              amplitude.getInstance().logEvent('v_share_messenger_postsub');
-            });
-          }
+          $('body').trigger('addListeners');
         }
       });
     };
@@ -76,5 +69,14 @@ block footscript
       //--------AMPLITUDE
       if (env == 'prod') {
         amplitude.getInstance().logEvent('v_visit_sharewithfriends');
+        $('body').on('addListeners', function(){
+          $('#link_to_share').focus(function(){
+            console.log('In link to share');
+            amplitude.getInstance().logEvent('v_share_link_postsub');
+          });
+          $('#messenger').click(function(){
+            amplitude.getInstance().logEvent('v_share_messenger_postsub');
+          });
+        })
       };
     });
