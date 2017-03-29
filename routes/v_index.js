@@ -466,6 +466,8 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
 
 router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
   console.log('lt_id : ' + req.params.lt_id + typeof req.params.lt_id);
+  req.session.longterm_interaction = true;
+  
 
   function isLongterm(lt) {
     return (lt._id.toString() === req.params.lt_id.toString());
