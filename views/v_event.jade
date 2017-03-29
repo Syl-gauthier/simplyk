@@ -106,11 +106,17 @@ block content
 																		h4.modal-title(id='myModalLabel'+activity._id+day_i) Es-tu sûr de vouloir t'inscrire à cette activité ?
 																	if !volunteer.phone
 																		.modal-body
-																			h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
-																			p.alert.alert-danger.hidden(class='phone_alerta'+day_i) Entrer un numéro de téléphone
-																			.form-group.conn-input
-																				label.control-label Téléphone
-																				input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phonea'+day_i)
+																				h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
+																				p.alert.alert-danger.hidden(class='phone_alert'+day_i) Entrer un numéro de téléphone
+																				.form-group.conn-input
+																					label.control-label Téléphone
+																					input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phonea'+day_i)
+																	else if (!volunteer.parents_email && (volunteer.admin && volunteer.admin.school_id))
+																		.modal-body
+																				h6 Afin que tes parents soient aussi au courant des endroits où tu vas faire du bénévolat, tu peux rajouter leur adresse courriel
+																				.form-group.conn-input
+																					label.control-label Courriel des parents (optionnel)
+																					input.form-control(type='email', placeholder='', name='parents_email', aria-describedby='basic-addon1' id='parents_email'+day_i)
 																	.modal-footer
 																		a.btn.btn-warning(data-dismiss='modal') Annuler
 																		input.btn.btn-default(type='submit' value='Oui' role='button')

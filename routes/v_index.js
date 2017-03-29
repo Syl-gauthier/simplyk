@@ -323,12 +323,20 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
           };
           console.log('Isgood day result : ' + newActivity.days.find(isGoodDay));
           let phone = {};
+          let parents_email = {};
           if (req.session.volunteer.phone) {
             phone = req.session.volunteer.phone;
           } else if (req.body.phone) {
             phone = req.body.phone;
           } else {
             phone = null;
+          };
+          if (req.session.volunteer.parents_email) {
+            parents_email = req.session.volunteer.parents_email;
+          } else if (req.body.parents_email) {
+            parents_email = req.body.parents_email;
+          } else {
+            parents_email = null;
           };
           const start_time = newActivity.days.find(isGoodDay).start_time;
           const end_time = newActivity.days.find(isGoodDay).end_time;
@@ -361,7 +369,8 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               }
             },
             "$set": {
-              "phone": phone
+              "phone": phone,
+              "parents_email": parents_email
             }
           }, {
             returnNewDocument: true,

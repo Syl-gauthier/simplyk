@@ -112,7 +112,8 @@ var VolunteerSchema = new Schema({
       ref: 'Admin'
     },
     added: Date
-  }]
+  }],
+  parents_email: String
 });
 
 VolunteerSchema.methods.generateHash = crypt.generateHash;
