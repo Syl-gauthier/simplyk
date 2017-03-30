@@ -66,6 +66,10 @@ function initMap() {
     imagePath: '/images/m'
   };
   let displayMarkerOn = map;
+  //Info window creation
+  let info_window = new google.maps.InfoWindow({
+    disableAutoPan: true
+  });
 
 
   //Geolocalization
@@ -243,10 +247,11 @@ function initMap() {
   //---------------------------------------------------------------------------------------------------------------------------GATHER INFOS AND CREATE MARKERS
   //Gather infos and create marker to each activities
   acts.map(function(act, act_i) {
-    const activity_info_window = new google.maps.InfoWindow({
+    let list_item = $('#' + act._id);
+    /*//////const activity_info_window = new google.maps.InfoWindow({
       content: '<b>' + act.org_name + '</b>' + '<br>' + act.intitule,
       disableAutoPan: true
-    });
+    });*/
 
     let marker_image = {};
 
@@ -270,10 +275,10 @@ function initMap() {
 
     if (act.min_age >= 16) {
       adult_indexes.push(act._id);
-      $('#' + act._id).attr('age_filtered', first_age_filtered);
+      list_item.attr('age_filtered', first_age_filtered);
       //act.age_filtered = first_age_filtered;
     } else {
-      $('#' + act._id).attr('age_filtered', false);
+      list_item.attr('age_filtered', false);
       //act.age_filtered = false;
     }
 
@@ -282,7 +287,7 @@ function initMap() {
 
     if (first_age_filtered && act.min_age >= 16) {
       displayMarkerOn = null;
-      $('#' + act._id).addClass('hidden');
+      list_item.addClass('hidden');
     } else {
       displayMarkerOn = map;
     }
@@ -297,22 +302,23 @@ function initMap() {
       icon: marker_image,
       clickable: true
     })
-
-    attachInfoWindow(activity_marker, activity_info_window, act._id);
+    const info_content = '<b>' + act.org_name + '</b>' + '<br>' + act.intitule;
+    attachInfoWindow(activity_marker, list_item, info_content, act._id);
 
     markers.push(activity_marker);
 
-    $('#' + act._id).attr('type_filtered', false);
-    $('#' + act._id).attr('category_filtered', false);
+    list_item.attr('type_filtered', false);
+    list_item.attr('category_filtered', false);
     //act.type_filtered = false;
     //act.category_filtered = false;
   });
   //Gather infos and create marker to each longterms
   lts.map(function(lt, lt_i) {
-    const longterm_info_window = new google.maps.InfoWindow({
+    let list_item = $('#' + lt.long_term._id);
+    /*/////const longterm_info_window = new google.maps.InfoWindow({
       content: '<b>' + lt.org_name + '</b>' + '<br>' + lt.long_term.intitule,
       disableAutoPan: true
-    });
+    });*/
 
     let marker_image = {};
 
@@ -335,12 +341,12 @@ function initMap() {
     }
 
     if (lt.long_term.min_age >= 16) {
-      $('#' + lt.long_term._id).attr('age_filtered', first_age_filtered);
+      list_item.attr('age_filtered', first_age_filtered);
       adult_indexes.push(lt.long_term._id);
       //lt.age_filtered = first_age_filtered;
     } else {
       //lt.age_filtered = false;
-      $('#' + lt.long_term._id).attr('age_filtered', false);
+      list_item.attr('age_filtered', false);
     }
 
     const lati = lt.long_term.lat + 0.005 * (Math.random() - 0.5);
@@ -348,7 +354,7 @@ function initMap() {
 
     if (first_age_filtered && lt.long_term.min_age >= 16) {
       displayMarkerOn = null;
-      $('#' + lt.long_term._id).addClass('hidden');
+      list_item.addClass('hidden');
     } else {
       displayMarkerOn = map;
     }
@@ -362,13 +368,13 @@ function initMap() {
       title: lt.long_term._id,
       icon: marker_image,
       clickable: true
-    })
-
-    attachInfoWindow(longterm_marker, longterm_info_window, lt.long_term._id);
+    });
+    const info_content = '<b>' + lt.org_name + '</b>' + '<br>' + lt.long_term.intitule;
+    attachInfoWindow(longterm_marker, list_item, info_content, lt.long_term._id);
 
     markers.push(longterm_marker);
-    $('#' + lt.long_term._id).attr('type_filtered', false);
-    $('#' + lt.long_term._id).attr('category_filtered', false);
+    list_item.attr('type_filtered', false);
+    list_item.attr('category_filtered', false);
     //lt.type_filtered = false;
     //lt.category_filtered = false;
   });
@@ -385,24 +391,26 @@ function initMap() {
 
 
 
-  function attachInfoWindow(marker, infoWindow, opp_id) {
+  function attachInfoWindow(marker, list_item, infos, opp_id) {
     if (marker) {
       marker.addListener('click', function() {
         $("." + opp_id).modal();
       });
       if (!mobile) {
         marker.addListener('mouseover', function() {
-          infoWindow.open(map, marker);
+          info_window.setContent(infos);
+          info_window.open(map, marker);
         });
         marker.addListener('mouseout', function() {
-          infoWindow.close();
+          info_window.close();
         });
-      }
-      $('[id=' + opp_id.toString() + ']').unbind('mouseenter mouseleave');
-      $('[id=' + opp_id.toString() + ']').hover(function(e) {
-        infoWindow.open(map, marker);
+      };
+      list_item.unbind('mouseenter mouseleave');
+      list_item.hover(function(e) {
+        info_window.setContent(infos);
+        info_window.open(map, marker);
       }, function(e) {
-        infoWindow.close();
+        info_window.close();
       });
     } else {
       console.log('Marker is not defined in attachInfoWindow');

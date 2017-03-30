@@ -294,18 +294,18 @@ var loc_bar_options = {
 };
 
 function handleGeolocation(pos) {
+  console.log('pos : ' + JSON.stringify(pos));
   if (pos) {
-    console.log('pos : ' + JSON.stringify(pos));
     $("li", "#jetsContent").each(function() {
       var distb = {};
       distb.lat = Number($(this).attr('lat'));
       distb.lng = Number($(this).attr('lon'));
       var dist = google.maps.geometry.spherical.computeDistanceBetween(pos, new google.maps.LatLng(distb));
-      if (dist == NaN) {
+      if (dist == NaN || (typeof dist != 'number')) {
         $(this).find('.dist').text('Nombre inconnu de ');
       } else {
         $(this).find('.dist').text(Math.round(dist / 100) / 10);
-      $(this).find('.dist_reference').text('km de toi');
+        $(this).find('.dist_reference').text('km de toi');
       }
     });
     $("li", "#jetsContent").sort(function(a, b) {
