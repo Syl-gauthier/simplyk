@@ -74,8 +74,16 @@ router.get('/', function(req, res, next) {
             });
             return days_length.length > 0;
           };
+          let remainingPlaces = function(activity) {
+            let remain = (activity.days.filter(function(day) {
+              console.log('In days : ' + (day.vol_nb > day.applicants.length));
+              return day.vol_nb > day.applicants.length;
+            })).length;
+            console.log('remain : ' + remain);
+            return remain > 0;
+          };
           console.log('activities.length : ' + activities.length);
-          const acts = activities.filter(isNotPassed);
+          const acts = activities.filter(isNotPassed).filter(remainingPlaces);
           console.log('acts.length : ' + acts.length);
           //Select organisms who have longterms and are not admin ones
           Organism.find({

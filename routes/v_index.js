@@ -76,11 +76,17 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         }
       };
 
+      let remainingPlaces = function(activity) {
+        return (activity.days.map(function(day) {
+          return day.vol_nb > day.applicants.length;
+        })).length > 0
+      };
+
       //If user is under 16, he can't see the activities of unverified organisms
       let acts = {};
       let lt_filter = {};
       if (age < 16) {
-        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool);
+        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool).filter(remainingPlaces);
         lt_filter = {
           'validation': true,
           'long_terms': {
@@ -90,7 +96,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           }
         };
       } else {
-        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool);
+        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool).filter(remainingPlaces);
         lt_filter = {
           'validation': true,
           'long_terms': {
@@ -476,7 +482,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
 router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
   console.log('lt_id : ' + req.params.lt_id + typeof req.params.lt_id);
   req.session.longterm_interaction = true;
-  
+
 
   function isLongterm(lt) {
     return (lt._id.toString() === req.params.lt_id.toString());
