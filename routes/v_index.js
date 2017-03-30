@@ -148,7 +148,35 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           let school_name = null;
           if (req.session.volunteer.admin && req.session.volunteer.admin.school_name && req.session.volunteer.admin.school_id) {
             school_name = req.session.volunteer.admin.school_name;
-          }
+          };
+          const first_age_filtered = false;
+          let nature_indexes = new Array();
+          let sol_indexes = new Array();
+          let culture_indexes = new Array();
+          let child_indexes = new Array();
+          let adult_indexes = new Array();
+          longterms.map(function(lt) {
+            if (lt.cause == 'Nature') {
+              nature_indexes.push(lt.long_term._id);
+            } else if (lt.cause == 'Solidarité') {
+              sol_indexes.push(lt.long_term._id);
+            } else if (lt.cause == 'Sport et Culture') {
+              culture_indexes.push(lt.long_term._id);
+            } else if (lt.cause == 'Enfance') {
+              child_indexes.push(lt.long_term._id);
+            }
+          });
+          acts.map(function(act) {
+            if (act.cause == 'Nature') {
+              nature_indexes.push(act._id);
+            } else if (act.cause == 'Solidarité') {
+              sol_indexes.push(act._id);
+            } else if (act.cause == 'Sport et Culture') {
+              culture_indexes.push(act._id);
+            } else if (act.cause == 'Enfance') {
+              child_indexes.push(act._id);
+            }
+          });
           res.render('v_map.jade', {
             session: req.session,
             activities: acts,
@@ -159,7 +187,13 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
             longterms,
             school_name,
             hash,
-            age
+            age,
+            first_age_filtered,
+            nature_indexes,
+            sol_indexes,
+            culture_indexes,
+            child_indexes,
+            adult_indexes
           });
         }
       });

@@ -2,20 +2,12 @@
 let lts_checked = true;
 let acts_checked = true;
 let age_checked = false;
-let first_age_filtered = false;
 let markerCluster = {};
-let infos = new Array(); //For each activities and longterm, there will be an object in infos with the marker, the infos, the info_window and the filter grid
-let nature_indexes = new Array();
-let sol_indexes = new Array();
-let culture_indexes = new Array();
-let child_indexes = new Array();
-let adult_indexes = new Array();
 let markers = new Array();
 let mobile = false;
 
 if (page == 'landing') {
   age_checked = true;
-  first_age_filtered = true;
 }
 /*
 0. 1 = Nature, 0 = Non-Nature
@@ -51,61 +43,18 @@ map.controls[google.maps.ControlPosition.TOP_CENTER].push(localization_bar_div);
 //---------------------------------------------------------------------------------------------------------------------------GATHER INFOS AND CREATE MARKERS
 //Gather infos and create marker to each activities
 acts.map(function(act, act_i) {
-  if (act.min_age >= 16) {
-    adult_indexes.push(act._id);
-    $('#' + act._id).attr('age_filtered', first_age_filtered);
-    //act.age_filtered = first_age_filtered;
-  } else {
-    $('#' + act._id).attr('age_filtered', false);
-    //act.age_filtered = false;
-  }
-
-  const lati = act.lat + 0.005 * (Math.random() - 0.5);
-  const longi = act.lon + 0.005 * (Math.random() - 0.5);
-
+  const list_item = $('#' + act._id);
   if (first_age_filtered && act.min_age >= 16) {
-    $('#' + act._id).addClass('hidden');
+    list_item.addClass('hidden');
   }
-
-  $('#' + act._id).attr('type_filtered', false);
-  $('#' + act._id).attr('category_filtered', false);
-  //act.type_filtered = false;
-  //act.category_filtered = false;
 });
 //Gather infos and create marker to each longterms
 lts.map(function(lt, lt_i) {
-
-  if (lt.long_term.min_age >= 16) {
-    $('#' + lt.long_term._id).attr('age_filtered', first_age_filtered);
-    adult_indexes.push(lt.long_term._id);
-    //lt.age_filtered = first_age_filtered;
-  } else {
-    //lt.age_filtered = false;
-    $('#' + lt.long_term._id).attr('age_filtered', false);
-  }
-
-  const lati = lt.long_term.lat + 0.005 * (Math.random() - 0.5);
-  const longi = lt.long_term.lon + 0.005 * (Math.random() - 0.5);
-
+  const list_item = $('#' + lt.long_term._id);
   if (first_age_filtered && lt.long_term.min_age >= 16) {
-    $('#' + lt.long_term._id).addClass('hidden');
+    list_item.addClass('hidden');
   }
-
-  $('#' + lt.long_term._id).attr('type_filtered', false);
-  $('#' + lt.long_term._id).attr('category_filtered', false);
-  //lt.type_filtered = false;
-  //lt.category_filtered = false;
 });
-
-/*markerCluster = new MarkerClusterer(map, function() {
-  let markers = new Array();
-  infos.map(function(item) {
-    if ((infos.marker).getMap()) {
-      markers.push(infos.marker)
-    }
-  });
-  return markers;
-}, options);*/
 
 //---------------------------------------------------------------------------------------------------------------------------DEFINE FILTERS FUNCTION
 

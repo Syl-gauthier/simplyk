@@ -172,7 +172,7 @@ block content
             if success
               p.alert.alert-success #{success}
             each act, index in activities
-              li.list-group-item(id= act._id, opp_type='activity', lat=act.lat, lon=act.lon, data-target= "."+act._id, style='cursor: pointer;')
+              li.list-group-item(id= act._id, opp_type='activity', lat=act.lat, lon=act.lon, data-target= "."+act._id, style='cursor: pointer;', age_filtered=act.min_age<16 ? 'false' : 'true', type_filtered='false', category_filtered='false')
                 .panel.panel-default
                   .panel-heading
                     div.media-left.media-middle
@@ -211,7 +211,7 @@ block content
                             p.hidden <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
 
             each lt, index in longterms
-                li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon, data-target= "."+lt.long_term._id, style='cursor: pointer;')
+                li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon, data-target= "."+lt.long_term._id, style='cursor: pointer;', category_filtered='false', type_filtered='false', age_filtered=lt.long_term.min_age ? (lt.long_term.min_age<16 ? 'false' : 'true') : 'false')
                   .panel.panel-default
                     .panel-heading
                       div.media-left.media-middle
@@ -280,7 +280,13 @@ block footscript
     var page = 'landing';
     var acts = !{JSON.stringify(activities)};
     var lts = !{JSON.stringify(longterms)};
+    var first_age_filtered = !{JSON.stringify(first_age_filtered)};
     var school_name = null;
+    var nature_indexes = !{JSON.stringify(nature_indexes)};
+    var sol_indexes = !{JSON.stringify(sol_indexes)};
+    var culture_indexes = !{JSON.stringify(culture_indexes)};
+    var child_indexes = !{JSON.stringify(child_indexes)};
+    var adult_indexes = !{JSON.stringify(adult_indexes)};
   //clusterer api
   //script(src="/javascripts/marker-clusterer.js", type="text/javascript")
   script(src="/bower_components/jets/jets.min.js")

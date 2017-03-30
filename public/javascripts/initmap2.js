@@ -3,20 +3,12 @@ function initMap() {
   let lts_checked = true;
   let acts_checked = true;
   let age_checked = false;
-  let first_age_filtered = false;
   let markerCluster = {};
-  let infos = new Array(); //For each activities and longterm, there will be an object in infos with the marker, the infos, the info_window and the filter grid
-  let nature_indexes = new Array();
-  let sol_indexes = new Array();
-  let culture_indexes = new Array();
-  let child_indexes = new Array();
-  let adult_indexes = new Array();
   let markers = new Array();
   let mobile = false;
 
   if (page == 'landing') {
     age_checked = true;
-    first_age_filtered = true;
   }
   /*
   0. 1 = Nature, 0 = Non-Nature
@@ -35,11 +27,6 @@ function initMap() {
   if (/iPad|Tablet/i.test(navigator.userAgent)) {
     //Do tablet stuff
     mobile = true;
-  } else if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    //Do mobile stuff
-    mobile = true;
-    age_checked = true;
-    first_age_filtered = false;
   }
 
   const mapDiv = document.getElementById('map');
@@ -248,10 +235,6 @@ function initMap() {
   //Gather infos and create marker to each activities
   acts.map(function(act, act_i) {
     let list_item = $('#' + act._id);
-    /*//////const activity_info_window = new google.maps.InfoWindow({
-      content: '<b>' + act.org_name + '</b>' + '<br>' + act.intitule,
-      disableAutoPan: true
-    });*/
 
     let marker_image = {};
 
@@ -259,27 +242,14 @@ function initMap() {
       marker_image = imageInternFlash;
     } else if (act.cause == 'Nature') {
       marker_image = imageEnvFlash;
-      nature_indexes.push(act._id);
     } else if (act.cause == 'Solidarité') {
       marker_image = imageSolFlash;
-      sol_indexes.push(act._id);
     } else if (act.cause == 'Sport et Culture') {
       marker_image = imageCulFlash;
-      culture_indexes.push(act._id);
     } else if (act.cause == 'Enfance') {
       marker_image = imageEnfFlash;
-      child_indexes.push(act._id);
     } else {
       marker_image = null;
-    }
-
-    if (act.min_age >= 16) {
-      adult_indexes.push(act._id);
-      list_item.attr('age_filtered', first_age_filtered);
-      //act.age_filtered = first_age_filtered;
-    } else {
-      list_item.attr('age_filtered', false);
-      //act.age_filtered = false;
     }
 
     const lati = act.lat + 0.005 * (Math.random() - 0.5);
@@ -306,19 +276,10 @@ function initMap() {
     attachInfoWindow(activity_marker, list_item, info_content, act._id);
 
     markers.push(activity_marker);
-
-    list_item.attr('type_filtered', false);
-    list_item.attr('category_filtered', false);
-    //act.type_filtered = false;
-    //act.category_filtered = false;
   });
   //Gather infos and create marker to each longterms
   lts.map(function(lt, lt_i) {
     let list_item = $('#' + lt.long_term._id);
-    /*/////const longterm_info_window = new google.maps.InfoWindow({
-      content: '<b>' + lt.org_name + '</b>' + '<br>' + lt.long_term.intitule,
-      disableAutoPan: true
-    });*/
 
     let marker_image = {};
 
@@ -326,27 +287,14 @@ function initMap() {
       marker_image = imageIntern;
     } else if (lt.cause == 'Nature') {
       marker_image = imageEnv;
-      nature_indexes.push(lt.long_term._id);
     } else if (lt.cause == 'Solidarité') {
       marker_image = imageSol;
-      sol_indexes.push(lt.long_term._id);
     } else if (lt.cause == 'Sport et Culture') {
       marker_image = imageCul;
-      culture_indexes.push(lt.long_term._id);
     } else if (lt.cause == 'Enfance') {
       marker_image = imageEnf;
-      child_indexes.push(lt.long_term._id);
     } else {
       marker_image = null;
-    }
-
-    if (lt.long_term.min_age >= 16) {
-      list_item.attr('age_filtered', first_age_filtered);
-      adult_indexes.push(lt.long_term._id);
-      //lt.age_filtered = first_age_filtered;
-    } else {
-      //lt.age_filtered = false;
-      list_item.attr('age_filtered', false);
     }
 
     const lati = lt.long_term.lat + 0.005 * (Math.random() - 0.5);
@@ -373,10 +321,6 @@ function initMap() {
     attachInfoWindow(longterm_marker, list_item, info_content, lt.long_term._id);
 
     markers.push(longterm_marker);
-    list_item.attr('type_filtered', false);
-    list_item.attr('category_filtered', false);
-    //lt.type_filtered = false;
-    //lt.category_filtered = false;
   });
 
   /*markerCluster = new MarkerClusterer(map, function() {
