@@ -76,10 +76,8 @@ router.get('/', function(req, res, next) {
           };
           let remainingPlaces = function(activity) {
             let remain = (activity.days.filter(function(day) {
-              console.log('In days : ' + (day.vol_nb > day.applicants.length));
               return day.vol_nb > day.applicants.length;
             })).length;
-            console.log('remain : ' + remain);
             return remain > 0;
           };
           console.log('activities.length : ' + activities.length);

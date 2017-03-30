@@ -77,9 +77,10 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       };
 
       let remainingPlaces = function(activity) {
-        return (activity.days.map(function(day) {
+        let remain = (activity.days.filter(function(day) {
           return day.vol_nb > day.applicants.length;
-        })).length > 0
+        })).length;
+        return remain > 0;
       };
 
       //If user is under 16, he can't see the activities of unverified organisms
