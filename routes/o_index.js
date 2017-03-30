@@ -122,12 +122,52 @@ router.get('/', function(req, res, next) {
                   return true;
                 }
               }), null);
+              let nature_indexes = new Array();
+              let sol_indexes = new Array();
+              let culture_indexes = new Array();
+              let child_indexes = new Array();
+              let adult_indexes = new Array();
+              longterms.map(function(lt) {
+                if (lt.cause == 'Nature') {
+                  nature_indexes.push(lt.long_term._id);
+                } else if (lt.cause == 'Solidarité') {
+                  sol_indexes.push(lt.long_term._id);
+                } else if (lt.cause == 'Sport et Culture') {
+                  culture_indexes.push(lt.long_term._id);
+                } else if (lt.cause == 'Enfance') {
+                  child_indexes.push(lt.long_term._id);
+                }
+                if (lt.long_term.min_age >= 16) {
+                  adult_indexes.push(lt.long_term._id);
+                }
+              });
+              acts.map(function(act) {
+                if (act.cause == 'Nature') {
+                  nature_indexes.push(act._id);
+                } else if (act.cause == 'Solidarité') {
+                  sol_indexes.push(act._id);
+                } else if (act.cause == 'Sport et Culture') {
+                  culture_indexes.push(act._id);
+                } else if (act.cause == 'Enfance') {
+                  child_indexes.push(act._id);
+                }
+                if (act.min_age >= 16) {
+                  adult_indexes.push(act._id);
+                }
+              })
+              const first_age_filtered = true;
               res.render('g_accueil.jade', {
                 activities: acts,
                 session: req.session,
                 longterms: longterms,
                 error: req.query.error,
-                group: req.session.group
+                group: req.session.group,
+                first_age_filtered,
+                nature_indexes,
+                sol_indexes,
+                culture_indexes,
+                child_indexes,
+                adult_indexes
               });
             }
           });
