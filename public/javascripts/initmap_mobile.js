@@ -308,22 +308,27 @@ function initAutocomplete() {
 
 
   //Geolocalization
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      console.info('navigator has a position');
-      var pos = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
-      var to_send = new google.maps.LatLng(pos);
-      //$('#info__geolocatlisation').text('Tu es géolocalisé')
-      console.info('In navigator.geolocation !');
-      handleGeolocation(to_send);
-    }, function(error) {
+  if ('geolocation' in navigator) {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        console.info('navigator has a position');
+        var pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        var to_send = new google.maps.LatLng(pos);
+        //$('#info__geolocatlisation').text('Tu es géolocalisé')
+        console.info('In navigator.geolocation !');
+        handleGeolocation(to_send);
+      }, function(error) {
+        var to_send = null;
+        handleGeolocation(to_send);
+        console.info('navigator has no a position ' + JSON.stringify(error));
+      });
+    } else {
       var to_send = null;
       handleGeolocation(to_send);
-      console.info('navigator has no a position ' + JSON.stringify(error));
-    });
+    }
   } else {
     var to_send = null;
     handleGeolocation(to_send);
