@@ -125,8 +125,59 @@ router.get('/all/longterm/:lt_id', function(req, res, next) {
         });
       }
     });
-
   }
+});
+
+
+router.get('/all/organism/:org_id', function(req, res, next) {
+  console.log('In GET to a organism page with lt_id:' + req.params.org_id);
+  let error = '';
+  if (req.query.error) {
+    error = req.query.error;
+  }
+  //Find organism corresponding to the activity
+  Organism.findOne({
+    "_id": req.params.org_id
+  }, function(err, organism) {
+    if (err) {
+      err.type = 'CRASH';
+      err.print = 'Problème pour accéder aux informations de ce bénévolat';
+      next(err);
+    } else {
+      let activity_ids = new Array();
+      organism.events.map(function(ev) {
+        ev.activities.map(function(act) {
+          activity_ids.push(act);
+        })
+      });
+      console.log('activity_ids' + JSON.stringify(activity_ids));
+      Activity.find({
+        _id: {
+          $in: activity_ids
+        }
+      }, function(err, activities) {
+        if (err) {
+          err.type = 'CRASH';
+          err.print = 'Problème pour accéder aux informations de ce bénévolat';
+          next(err);
+        } else {
+          console.log(JSON.stringify(organism));
+          let organism_to_send = JSON.parse(JSON.stringify(organism));
+          console.log(JSON.stringify(organism_to_send));
+          organism_to_send.events.map(function(ev) {
+            ev.activitiesFull = activities.filter(function(act) {
+              return ev.activities.indexOf(act._id.toString()) > -1;
+            });
+            console.log(ev.activitiesFull);
+          });
+          res.render('g_organism.jade', {
+            organism: organism_to_send,
+            error
+          });
+        }
+      });
+    }
+  });
 });
 
 router.get('/robots.txt', function(req, res) {

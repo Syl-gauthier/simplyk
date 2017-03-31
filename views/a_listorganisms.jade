@@ -29,7 +29,7 @@ block content
                 if organisms
                   each org, org_i in organisms
                     .col-md-4.col-xs-10.col-xs-offset-1.col-md-offset-0
-                      .panel.panel-default.panel-organism
+                      .panel.panel-default.panel-organism(org_id=org._id)
                         .panel-heading
                           h3.text-center= org.org_name
                         .panel-body.text-center
@@ -61,9 +61,11 @@ block footscript
         searchSelector: '*'
       });
       $('.panel-organism').each(function(){
-          $(this).outerHeight(300);
-          $(this).find('.description').css({'overflow-y': 'auto'});
-          $(this).find('.description').css({'overflow-x': 'hidden'});
-          $(this).find('.description').outerHeight(300 - $(this).find('.panel-heading').outerHeight() - 80)
+        $(this).outerHeight(300).css('cursor', 'pointer').click(function(){
+          window.location.href = '/all/organism/'+$(this).attr('org_id');
+        }).hover(function(e){
+          $(this).css('border-color', e.type === "mouseenter"?"#aaa":"#ddd");
+        });
+        $(this).find('.description').css('overflow-y', 'auto').css('overflow-x', 'hidden').outerHeight(300 - $(this).find('.panel-heading').outerHeight() - 80);
       })
     });
