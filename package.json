@@ -39,7 +39,7 @@
     "intercom-client": "^2.8.4",
     "jade": "~1.11.0",
     "less-middleware": "^2.2.0",
-    "libphonenumber-js": "^0.3.14",
+    "libphonenumber-js": "^0.4.5",
     "moment": "^2.17.1",
     "mongoose": "^4.4.17",
     "morgan": "~1.7.0",
