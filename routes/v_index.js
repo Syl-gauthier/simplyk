@@ -28,6 +28,7 @@ var app = express();
 
 /*GET map page*/
 router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req, res, next) {
+  res.setLocale(req.cookies.i18n);
   Activity.find({
     'archived': {
       $ne: true

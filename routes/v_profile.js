@@ -195,6 +195,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
         manuals_hours_done,
         extras_hours_done,
         hash,
+        i18n: res,
         client_schools,
         events_denied,
         longterm_waiting

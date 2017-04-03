@@ -10,6 +10,7 @@ var flash = require('connect-flash');
 const MongoStore = require('connect-mongo')(session);
 var helmet = require('helmet');
 var compression = require('compression');
+var i18n = require('i18n');
 
 //Auth
 var passport = require('passport');
@@ -208,6 +209,18 @@ passport.deserializeUser(function(req, id, done) {
   }
 });
 
+//Localization module
+i18n.configure({
+  //define how many languages we would support in our application
+  locales: ['fr', 'en'],
+  //define the path to language json files, default is /locales
+  directory: __dirname + '/locales',
+  //define the default language
+  defaultLocale: 'fr',
+  // define a custom cookie name to parse locale settings from 
+  cookie: 'i18n'
+});
+
 
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -224,8 +237,8 @@ app.use(session({
 }));
 
 if (app.get('env') !== 'development') {
-  app.get('*',function(req,res,next){
-    if(req.headers['x-forwarded-proto']!='https')
+  app.get('*', function(req, res, next) {
+    if (req.headers['x-forwarded-proto'] != 'https')
       res.redirect('https://' + req.hostname + req.url);
     else
       next() /* Continue to other routes if we're not redirecting */
@@ -240,6 +253,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
+app.use(i18n.init);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
