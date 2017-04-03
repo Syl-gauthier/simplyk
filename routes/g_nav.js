@@ -171,6 +171,8 @@ router.get('/all/organism/:org_id', function(req, res, next) {
             console.log(ev.activitiesFull);
           });
           res.render('g_organism.jade', {
+            group: req.session.group,
+            session: req.session,
             organism: organism_to_send,
             error
           });
