@@ -11,6 +11,7 @@ const MongoStore = require('connect-mongo')(session);
 var helmet = require('helmet');
 var compression = require('compression');
 var i18n = require('i18n');
+const cookieParser = require('cookie-parser');
 
 //Auth
 var passport = require('passport');
@@ -224,6 +225,7 @@ i18n.configure({
 
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
 app.use(session({
   secret: 'rcmscgsamfon81152627lolmamparohu,,loui',
   cookie: {
