@@ -8,6 +8,9 @@ block vars
 block head
   title Bénévolat long terme
   meta(name='description', content='Information sur l\'opportunité de bénévolat long terme')
+  style.
+    .org_name {color:#5BCF8F}
+    .org_name:hover {text-decoration: none; color: #FFC518}
 block share
   script.
     var bitly_token = '074139d6c2b2511f886ae9e554856c4ecf3ca141';
@@ -74,8 +77,8 @@ block content
         img.center-block#city(src='/images/happy_city_white.svg', align='middle', style='max-height:30vh; padding-top:3vh')
       .col-md-5.col-md-offset-1
         .page-header
-          h4 L'organisme :
-          h2= organism.org_name
+          a.org_name(href='/all/organism/'+organism._id)
+            h2(style='margin-top: 10%')= organism.org_name
           p(style = 'white-space: pre-wrap') <b>Mission:</b> #{organism.description}
           p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
           if volunteer

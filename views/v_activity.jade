@@ -8,6 +8,10 @@ block vars
 block head
   title Activité de bénévolat
   meta(name='description', content='Informations sur les activités de bénévolat ')
+  style.
+    .org_name {color:#5BCF8F}
+    .org_name:hover {text-decoration: none; color: #FFC518}
+
 block share
   script.
     var bitly_token = '074139d6c2b2511f886ae9e554856c4ecf3ca141';
@@ -72,10 +76,11 @@ block content
         img.center-block(src='/images/happy_city_white.svg', align='middle', style='max-height:30vh; padding-top:3vh')
       .col-md-5.col-md-offset-1.col-xs-12
         .page-header
-          h2(style='margin-top: 10%')= organism.org_name
+          a.org_name(href='/all/organism/'+organism._id)
+            h2(style='margin-top: 10%')= organism.org_name
           p(style = 'white-space: pre-wrap') <b>Mission:</b> #{organism.description}
           p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
-          if volunteer
+          if group
             p <b>Courriel:</b> #{organism.email}
             if organism.phone
               p <b>Téléphone:</b> #{organism.phone}

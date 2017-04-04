@@ -212,12 +212,13 @@ block content
                   img.center-block(src='http://cibl1015.com/wp-content/uploads/2016/09/Logo_CIBL_2016.png', style='max-width:100%; max-height:10vh; padding-top: auto; margin-bottom: auto')
                 .panel-body.text-center(style='height: calc(100% - 12vh);')
                   p(style='color: black') Simplyk chez CIBL après sa victoire à À go on change le monde
-        .row(style='padding-top: 5vh')
-          h4.text-center <b>Démarrer l'aventure</b>
-        .row.text-center
-          a.btn.btn-default(href='/register_volunteer' style='margin-top: 5px') En tant que bénévole
-        .row.text-center
-          a.btn.btn-info(href='/register_volunteer' style='margin-top: 5px') En tant qu'organisme
+        unless group
+          .row(style='padding-top: 5vh')
+            h4.text-center <b>Démarrer l'aventure</b>
+          .row.text-center
+            a.btn.btn-default(href='/register_volunteer' style='margin-top: 5px') En tant que bénévole
+          .row.text-center
+            a.btn.btn-info(href='/register_volunteer' style='margin-top: 5px') En tant qu'organisme
     #footer.row(style='background-color: black; min-height: 15vh; color: white;')
       .col-md-2
       .col-md-8

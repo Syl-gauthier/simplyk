@@ -75,6 +75,7 @@ router.get('/all/activity/:act_id', function(req, res, next) {
           res.render('v_activity.jade', {
             act_id: req.params.act_id,
             event: event_filtered,
+            group: req.session.group,
             organism: organism[0],
             activity: activity
           });
