@@ -31,6 +31,7 @@ var opp_management = require('../middlewares/opp_management.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  res.setLocale(req.cookies.i18n);
   console.log('Organism index');
   Activity.find({
     'archived': {
@@ -192,6 +193,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
+  res.setLocale(req.cookies.i18n);
   console.info('req.body : ' + req.body);
   if (req.body.org) {
     req.session.organism = req.body.org;

@@ -46,6 +46,16 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
             li.navbar-link(role='presentation')
               a(href='/volunteer/map') Carte
           li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("language_initiales")} 
+                  span.caret
+                ul.dropdown-menu#drop-down-but
+                  li
+                    a.toggle-but#org_register_btn(href='/fr') FR
+                  li
+                    a.toggle-but#vol_register_btn(href='/en') EN
+          li(role='presentation')
             form.navbar-form( method='post', action='./logout')
               button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
         else if group == 'organism'
@@ -69,6 +79,16 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           unless page=='map'
             li.navbar-link(role='presentation')
               a(href='/organism/map') Carte
+          li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("language_initiales")} 
+                  span.caret
+                ul.dropdown-menu#drop-down-but
+                  li
+                    a.toggle-but#org_register_btn(href='/fr') FR
+                  li
+                    a.toggle-but#vol_register_btn(href='/en') EN
           li(role='presentation')
             form.navbar-form( method='post', action='./logout')
               button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
@@ -97,6 +117,16 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                   li
                     a.toggle-but(href='/us') À propos
           li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("language_initiales")} 
+                  span.caret
+                ul.dropdown-menu#drop-down-but
+                  li
+                    a.toggle-but#org_register_btn(href='/fr') FR
+                  li
+                    a.toggle-but#vol_register_btn(href='/en') EN
+          li(role='presentation')
             form.navbar-form( method='post', action='/logout')
               button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
         else
@@ -124,6 +154,16 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                     a.toggle-but#org_register_btn(href='/register_organism') Organismes
                   li
                     a.toggle-but#vol_register_btn(href='/register_volunteer') Bénévoles
+          li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("language_initiales")} 
+                  span.caret
+                ul.dropdown-menu#drop-down-but
+                  li
+                    a.toggle-but#org_register_btn(href='/fr') FR
+                  li
+                    a.toggle-but#vol_register_btn(href='/en') EN
           unless page=='login'
             li(role='presentation')
               form.navbar-form(method='get', action='/login')

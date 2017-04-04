@@ -129,14 +129,24 @@ router.get('/all/longterm/:lt_id', function(req, res, next) {
   }
 });
 
-router.get('/fr', function (req, res) {
-    res.cookie('i18n', 'fr');
-    res.redirect('/')
+router.get('/fr', function(req, res) {
+  res.cookie('i18n', 'fr');
+  let backUrl = req.header('Referer') || '/';
+  if (backUrl && backUrl != '/fr' && backUrl != '/en') {
+    res.redirect(backUrl);
+  } else {
+    res.redirect('/');
+  }
 });
 
-router.get('/en', function (req, res) {
-    res.cookie('i18n', 'en');
-    res.redirect('/')
+router.get('/en', function(req, res) {
+  res.cookie('i18n', 'en');
+  let backUrl = req.header('Referer') || '/';
+  if (backUrl && backUrl != '/fr' && backUrl != '/en') {
+    res.redirect(backUrl);
+  } else {
+    res.redirect('/');
+  }
 });
 
 router.get('/robots.txt', function(req, res) {
