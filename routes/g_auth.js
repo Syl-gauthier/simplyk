@@ -213,6 +213,7 @@ router.get('/register_admin', function(req, res) {
 router.post('/register_volunteer', function(req, res, next) {
   const randomString = randomstring.generate();
   var email = req.body.email;
+  console.info('IN register req.body.email : ' + JSON.stringify(req.body.email));
 
   function handleVolunteerCreation(exists) {
     if (exists) {
@@ -223,8 +224,12 @@ router.post('/register_volunteer', function(req, res, next) {
       let student = false;
       let school_name = null;
       let phone = req.body.phone;
-      let birthdate = new Date(req.body.birthdate).getTime();
+      let birthdate_date = new Date(req.body.birthdate_year, req.body.birthdate_month - 1, req.body.birthdate_day);
+      
+      console.log('birthdate_string : ' + birthdate_date);
+      let birthdate = birthdate_date.getTime();
       birthdate = birthdate / 1000;
+      console.log('birthdate : ' + birthdate);
 
       function createVolunteer(student, admin) {
         let newVolunteer = new Volunteer({
@@ -233,7 +238,7 @@ router.post('/register_volunteer', function(req, res, next) {
           email_verify_string: randomString,
           lastname: req.body.lastname,
           firstname: req.body.firstname,
-          birthdate: req.body.birthdate,
+          birthdate: birthdate_date,
           password: req.body.password,
           events: [],
           long_terms: [],
