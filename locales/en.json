@@ -1,4 +1,23 @@
 {
 	"addextra": "Add a volunteering experience",
-	"language_initiales": "EN"
+	"language_initiales": "EN",
+    "g_acc_title": "WHERE TO VOLUNTEER ?",
+    "g_acc_know_btn": "I ALREADY KNOW",
+    "g_acc_go_btn": "LET'S GO !",
+    "g_acc_subtitle": "Simplyk connects you with your matching organization",
+    "g_nav_contact": "Contact us",
+    "g_nav_us": "About",
+    "g_nav_explore": "Explore",
+    "g_nav_dashboard": "My dashboard",
+    "g_nav_map": "Map",
+    "g_nav_logout": "Logout",
+    "g_nav_profil": "My profile",
+    "g_nav_students": "My students",
+    "g_nav_intern": "My internal opportunities",
+    "g_nav_lookfor": "I'm looking for volunteers !",
+    "g_nav_subscribe": "Sign up ",
+    "g_nav_login": "Login",
+    "g_org": "Organization",
+    "g_vol": "Volunteer",
+    "g_nav_listorg": "List of organizations"
 }

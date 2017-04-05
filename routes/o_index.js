@@ -31,7 +31,7 @@ var opp_management = require('../middlewares/opp_management.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.setLocale(req.cookies.i18n);
+  //res.setLocale(req.cookies.i18n);
   console.log('Organism index');
   Activity.find({
     'archived': {

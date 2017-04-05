@@ -1,4 +1,23 @@
 {
-    "addextra": "Ajouter une expérience de bénévolat",
-    "language_initiales": "FR"
+	"addextra": "Ajouter une expérience de bénévolat",
+	"language_initiales": "FR",
+    "g_acc_title": "TROUVE TON BÉNÉVOLAT",
+    "g_acc_know_btn": "JE CONNAIS",
+    "g_acc_go_btn": "C'EST PARTI !",
+    "g_acc_subtitle": "Simplyk te connecte avec l'organisme qui te correspond",
+    "g_nav_contact": "Contactez-nous",
+    "g_nav_us": "À propos",
+    "g_nav_explore": "Explore",
+    "g_nav_dashboard": "Mon tableau de bord",
+    "g_nav_map": "Carte",
+    "g_nav_logout": "Déconnexion",
+    "g_nav_profil": "Mon profil",
+    "g_nav_students": "Mes élèves",
+    "g_nav_intern": "Mon bénévolat interne",
+    "g_nav_lookfor": "Je cherche des bénévoles !",
+    "g_nav_subscribe": "Inscris-toi ",
+    "g_nav_login": "Connexion",
+    "g_org": "Organismes",
+    "g_vol": "Bénévoles",
+    "g_nav_listorg": "Liste des organismes"
 }
