@@ -142,6 +142,15 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
       err.print = 'Problème avec la recherche de l\'élève dans la base de données';
       next(err);
     } else {
+      //Remove opps with status refused
+      function removeRefused(opp) {
+        return opp.status != 'refused';
+      }
+
+      volunteer.events = volunteer.events.filter(removeRefused);
+      volunteer.long_terms = volunteer.long_terms.filter(removeRefused);
+      volunteer.extras = volunteer.extras.filter(removeRefused);
+
       //Add infos to each event from activity_id
 
       function getEventWithActivityInfos(event) {
@@ -350,6 +359,31 @@ router.post('/admin/deny', permissions.requireGroup('admin'), function(req, res,
   update_query[req.body.type + '.$.status'] = 'denied';
   console.info('C\'est dans deny update_query! : ' + JSON.stringify(update_query));
   console.info('C\'est dans deny find_query! : ' + JSON.stringify(find_query));
+  Volunteer.findOneAndUpdate(find_query, update_query, function(err, response) {
+    if (err) {
+      console.error('ERROR : ' + err);
+      res.status(404).send({
+        message: 'Erreur lors de l\'opération'
+      });
+    } else {
+      console.info('MESSAGE : ' + err);
+      res.status(200).send({
+        message: 'À REVOIR'
+      });
+    }
+  })
+});
+
+router.post('/admin/refuse', permissions.requireGroup('admin'), function(req, res, next) {
+  console.info('In refuse with req.body ! : ' + JSON.stringify(req.body));
+  let find_query = {
+    '_id': req.body.vol
+  };
+  find_query[req.body.type + '._id'] = req.body.id;
+  let update_query = {};
+  update_query[req.body.type + '.$.status'] = 'refused';
+  console.info('C\'est dans refuse update_query! : ' + JSON.stringify(update_query));
+  console.info('C\'est dans refuse find_query! : ' + JSON.stringify(find_query));
   Volunteer.findOneAndUpdate(find_query, update_query, function(err, response) {
     if (err) {
       console.error('ERROR : ' + err);
