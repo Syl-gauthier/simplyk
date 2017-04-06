@@ -22,6 +22,9 @@ router.get('/listorganisms', function(req, res, next) {
       err.print = 'Problème pour obtenir la liste des organismes';
       next(err);
     } else {
+      organisms.sort((a, b) => {
+        return (b.events.length + b.long_terms.length) - (a.events.length + a.long_terms.length);
+      });
       res.render('a_listorganisms.jade', {
         organisms: organisms,
         session: req.session,
@@ -75,6 +78,7 @@ router.get('/all/activity/:act_id', function(req, res, next) {
           res.render('v_activity.jade', {
             act_id: req.params.act_id,
             event: event_filtered,
+            group: req.session.group,
             organism: organism[0],
             activity: activity
           });
@@ -125,8 +129,89 @@ router.get('/all/longterm/:lt_id', function(req, res, next) {
         });
       }
     });
-
   }
+});
+
+
+router.get('/all/organism/:org_id', function(req, res, next) {
+  console.log('In GET to a organism page with lt_id:' + req.params.org_id);
+  let error = '';
+  if (req.query.error) {
+    error = req.query.error;
+  }
+  //Find organism corresponding to the activity
+  Organism.findOne({
+    "_id": req.params.org_id
+  }, function(err, organism) {
+    if (err) {
+      err.type = 'CRASH';
+      err.print = 'Problème pour accéder aux informations de ce bénévolat';
+      next(err);
+    } else {
+      let activity_ids = new Array();
+      organism.events.map(function(ev) {
+        ev.activities.map(function(act) {
+          activity_ids.push(act);
+        })
+      });
+      console.log('activity_ids' + JSON.stringify(activity_ids));
+      Activity.find({
+        _id: {
+          $in: activity_ids
+        },
+        archived: {
+          $ne: true
+        }
+      }, function(err, activities) {
+        if (err) {
+          err.type = 'CRASH';
+          err.print = 'Problème pour accéder aux informations de ce bénévolat';
+          next(err);
+        } else {
+          let organism_to_send = JSON.parse(JSON.stringify(organism));
+          organism_to_send.events.map(function(ev) {
+            let ev_past = true;
+            ev.activitiesFull = activities.filter(function(act) {
+              return ev.activities.indexOf(act._id.toString()) > -1;
+            });
+            ev.activitiesFull.map(function(act) {
+              act.days.map(function(day) {
+                if (day.day > Date.now()) {
+                  act['past'] = false;
+                  ev_past = false;
+                } else {
+                  act['past'] = true;
+                };
+              });
+            });
+            ev['past'] = ev_past;
+          });
+          organism_to_send.events.sort((a, b) => {
+            if (a.past && !b.past) {
+              return 1;
+            } else if (!a.past && b.past) {
+              return -1;
+            } else {
+              return 0;
+            }
+          });
+          organism_to_send.long_terms = organism_to_send.long_terms.filter(lt => {
+            return lt.tags != 'archived';
+          })
+          organism_to_send.long_terms.sort((a, b) => {
+            return new Date(b.expiration_date).getTime() - new Date(a.expiration_date).getTime();
+          });
+          console.log(JSON.stringify(organism));
+          res.render('g_organism.jade', {
+            group: req.session.group,
+            session: req.session,
+            organism: organism_to_send,
+            error
+          });
+        }
+      });
+    }
+  });
 });
 
 router.get('/robots.txt', function(req, res) {

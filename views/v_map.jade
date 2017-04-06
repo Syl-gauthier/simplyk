@@ -51,7 +51,8 @@ block content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> <b>#{lt.org_name}</b>
+            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> 
+              a.inline(href='/all/organism/'+lt.long_term.org_id)=lt.org_name
           .modal-body.my-modal-body
             h4 <b>#{lt.long_term.intitule}</b>
             p #{lt.long_term.description}

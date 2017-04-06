@@ -113,7 +113,8 @@ block content
                           img.media-object.little-img(src='/images/clouds.jpg')
                       div.media-body
                         h4.media-heading <b>#{events_past[0].intitule}</b> <small>(#{events_past[0].intitule_activity})</small>
-                        h6 <small>pour</small> #{events_past[0].org_name}
+                        h6 <small>pour</small> 
+                          a.inline(href='/all/organism/'+events_past[0].org_id)=events_past[0].org_name
                       div.media-right.media-top
                         a.btn.btn-default(href='/volunteer/event/'+events_past[0]._id) Détails
                     .panel-body
@@ -156,7 +157,8 @@ block content
                           img.media-object.little-img(src='/images/clouds.jpg')
                       div.media-body
                         h4.media-heading <b>#{events_denied[0].intitule}</b> <small>(#{events_denied[0].intitule_activity})</small>
-                        h6 <small>pour</small> #{events_denied[0].org_name}
+                        h6 <small>pour</small> 
+                          a.inline(href='/all/organism/'+events_denied[0].org_id)=events_denied[0].org_name
                       if events_denied[0].status == 'denied'
                         div.media-right.media-top
                           span.badge(style='background-color: #E33831')= 'À corriger'
@@ -193,7 +195,8 @@ block content
                           img.media-object.little-img(src='/images/clouds.jpg')
                       div.media-body
                         h4.media-heading <b>#{first_lt_denied.intitule}</b>
-                        h6 <small>pour</small> #{first_lt_denied.org_name}
+                        h6 <small>pour</small> 
+                          a.inline(href='/all/organism/'+first_lt_denied.org_id)=first_lt_denied.org_name
                       div.media-right.media-top
                         span.badge(style='background-color: #E33831')= 'À corriger'
                     .panel-body
@@ -289,7 +292,8 @@ block content
                           img.media-object.little-img(src='/images/clouds.jpg')
                       div.media-body
                         h4.media-heading <b>#{longterm_waiting.intitule}</b>
-                        h6 <small>pour</small> #{longterm_waiting.org_name}
+                        h6 <small>pour</small> 
+                          a.inline(href='/all/organism/'+longterm_waiting.org_id)=longterm_waiting.org_name
                       if longterm_waiting.status == 'corrected'
                         div.media-right.media-top
                           span.badge(style='background-color: #FF800E')= 'Corrigé'
@@ -379,7 +383,8 @@ block content
                               img.media-object.little-img(src='/images/clouds.jpg')
                           div.media-body
                             h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
-                            h6 <small>pour</small> #{event.org_name}
+                            h6 <small>pour</small> 
+                              a.inline(href='/all/organism/'+event.org_id)=event.org_name
                           div.media-right.media-top
                             a.btn.btn-default(href='/volunteer/event/'+event._id) Détails
                         .panel-body
@@ -422,7 +427,8 @@ block content
                               img.media-object.little-img(src='/images/clouds.jpg')
                           div.media-body
                             h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
-                            h6 <small>pour</small> #{event.org_name}
+                            h6 <small>pour</small> 
+                              a.inline(href='/all/organism/'+event.org_id)=event.org_name
                           if event.status == 'denied'
                             div.media-right.media-top
                               span.badge(style='background-color: #E33831')= 'À corriger'
@@ -450,7 +456,8 @@ block content
                               img.media-object.little-img(src='/images/clouds.jpg')
                           div.media-body
                             h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
-                            h6 <small>pour</small> #{event.org_name}
+                            h6 <small>pour</small> 
+                              a.inline(href='/all/organism/'+event.org_id)=event.org_name
                           if event.status == 'pending'
                             div.media-right.media-top
                               span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
@@ -484,7 +491,8 @@ block content
                               img.media-object.little-img(src='/images/clouds.jpg')
                           div.media-body
                             h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
-                            h6 <small>pour</small> #{event.org_name}
+                            h6 <small>pour</small> 
+                              a.inline(href='/all/organism/'+event.org_id)=event.org_name
                         .panel-body
                           h6
                             i.fa.fa-map-marker
@@ -522,7 +530,8 @@ block content
                                 img.media-object.little-img(src='/images/clouds.jpg')
                             div.media-body
                               h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
-                              h6 <small>pour</small> #{event.org_name}
+                              h6 <small>pour</small> 
+                                a.inline(href='/all/organism/'+event.org_id)=event.org_name
                             if event.status == 'corrected'
                               div.media-right.media-top
                                 span.badge(style='background-color: #FF800E')= 'Corrigé'
@@ -570,7 +579,8 @@ block content
                                 img.media-object.little-img(src='/images/clouds.jpg')
                             div.media-body
                               h4.media-heading <b>#{lt.intitule}</b>
-                              h6 <small>pour</small> #{lt.org_name}
+                              h6 <small>pour</small> 
+                                a.inline(href='/all/organism/'+lt.org_id)=lt.org_name
                             if lt.status == 'denied'
                               div.media-right.media-top
                                 span.badge(style='background-color: #E33831')= 'À corriger'
