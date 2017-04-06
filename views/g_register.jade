@@ -28,13 +28,11 @@ block content
               if type == 'volunteer'
                 .row
                   .form-input
-                    input#mail.form-control(type='email', placeholder='Adresse email', name='email', aria-describedby='basic-addon1', required)
-                  .form-input
                     input#firstname.form-control(type='text', placeholder='Prénom', name='firstname', aria-describedby='basic-addon1', required)
                   .form-input
                     input#lastname.form-control(type='text', placeholder='Nom', name='lastname', aria-describedby='basic-addon1', required)
                   .form-input
-                    input#phone.form-control(type='text', placeholder='Téléphone (facultatif)', name='phone', aria-describedby='basic-addon1')
+                    input#mail.form-control(type='email', placeholder='Adresse email', name='email', aria-describedby='basic-addon1', required)
                   .form-input
                     label.control-label Date de naissance *
                     i.fa.fa-question-circle(data-toggle='tooltip' data-placement='top' title='Pour proposer du bénévolat adapté à ton âge')
@@ -63,6 +61,8 @@ block content
                             option(value=i)= i
                   .form-input
                     input#password.form-control(type='password', placeholder='Définir un mot de passe', name='password', aria-describedby='basic-addon1', required)
+                  .form-input
+                    input#phone.form-control(type='text', placeholder='Téléphone (facultatif)', name='phone', aria-describedby='basic-addon1')
                 .form-input
                   input#admin_checkbox(type='checkbox' name='admin_checkbox') 
                   |   <b>Je suis actuellement inscrit dans un établissement scolaire </b>
