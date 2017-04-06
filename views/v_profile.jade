@@ -15,6 +15,11 @@ block vars
 block head
   title Profil de bénévole
   meta(name='description', content='Accède à tes informations personnelles')
+  style.
+    .rank__img {height: 70px}
+    .rank__well {padding: 6px}
+    .rank__well--not {background-color: #fff; color:#aaa}
+    .rank__subtitle {margin: 0px; margin-top: 6px;}
 block content
   #map-section.container-fluid
     .row
@@ -28,70 +33,38 @@ block content
           p <i class='fa fa-2x fa-trophy fa-pull-left fa-border'></i> <b>Évènements ponctuels</b> <br> #{addHoursIfExists([events_hours_done, extras_hours_done, manuals_hours_done])} heures confirmées
         else 
           p <i class='fa fa-2x fa-trophy fa-pull-left fa-border'></i> <b>Évènements ponctuels</b> <br> 0 heures confirmées
+        if (volunteer.admin)
+          if ((client_schools.map(c => c.name).indexOf(volunteer.admin.school_name) != -1) && (volunteer.admin.school_name != 'HEC Montréal'))
+            a.btn.btn-info(href='/volunteer/extra_simplyk_hours', role='button')
+              h4.inline Ajouter une expérience de bénévolat
+              i.fa.fa-plus
       if vol_level
         .col-md-5
           .media.tp-15(style='margin-top: 6%')
-            if (vol_level == 1)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_10.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-default Débutant
-                p.text-info <strong>Conseil : </strong> Inscris-toi à un engagement bénévole pour augmenter ton niveau d'engagement !
-            if (vol_level == 2)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_25.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-info Apprenti
-                p.text-info <strong>Conseil : </strong> Une fois ton opération bénévole terminée, fais valider ta participation via ton tableau de bord !
-            if (vol_level == 3)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_40.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-primary Gros potentiel
-                p.text-info <strong>Conseil : </strong> Il ne te manque que quelques heures supplémentaires de bénévolat pour passer au rang suivant !
-            if (vol_level == 4)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_55.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-success Force vive
-                if (events_hours_done == 0)
-                  p.text-info <strong>Conseil : </strong> Participe à ton premier évènement et fais valider tes heures par l'organisme afin de monter de niveau !
-                else
-                  p.text-info <strong>Conseil : </strong> Augmente ton nombre d'heures d'implication pour atteindre le niveau suivant !
-            if (vol_level == 5)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_70.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-warning Formidable
-                if (events_hours_done == 0)
-                  p.text-info <strong>Conseil : </strong> Pour devenir un expert du bénévolat, il faut maintenant que tu participes aussi à un évènement ponctuel !
-                else if (lt_hours_done == 0)
-                  p.text-info <strong>Conseil : </strong> Participe à ton premier engagement à long terme afin de devenir un expert du bénévolat !
-                else
-                  p.text-info <strong>Conseil : </strong> Il ne te reste plus beaucoup d'heures d'implication pour devenir un expert du bénévolat !
-            if (vol_level == 6)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_max.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-danger Expert
-                p.text-info <strong>Conseil : </strong> Maintenant que tu es un expert, continue de t'impliquer afin de relever les challenges à venir sur la plateforme !
-            if (volunteer.admin)
-              if ((client_schools.map(c => c.name).indexOf(volunteer.admin.school_name) != -1) && (volunteer.admin.school_name != 'HEC Montréal'))
-                a.btn.btn-info.pull-right(href='/volunteer/extra_simplyk_hours', role='button')
-                  h4.inline Ajouter une expérience de bénévolat
-                  i.fa.fa-plus
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well
+                img.rank__img(src='/images/dog_ballon.svg')
+                p.rank__subtitle <b>Débutant</b>
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well
+                img.rank__img(src='/images/porte_voix.svg')
+                p.rank__subtitle <b>Populaire</b>
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well.rank__well--not
+                img.rank__img(src='/images/yeezy--not.svg')
+                p.rank__subtitle <b>Marathonien</b>
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well
+                img.rank__img(src='/images/bienfaiteur.svg')
+                p.rank__subtitle <b>Gourou</b>
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well.rank__well--not
+                img.rank__img(src='/images/whale--not.svg')
+                p.rank__subtitle <b>Fan</b>
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well.rank__well--not
+                img.rank__img(src='/images/shoes_punch--not.svg')
+                p.rank__subtitle <b>Sprinter</b>
     if events_past.length || events_denied.length || first_lt_denied || first_ext_denied || longterm_waiting
       if events_past.length
         .modal.fade(tabindex='-1', role='dialog' aria-labelledby="notificationModalLabel", id='notificationModal')
