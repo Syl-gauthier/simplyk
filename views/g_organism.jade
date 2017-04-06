@@ -4,7 +4,7 @@ block vars
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
-  - function getCauseDesign(cause){if (cause=='Solidarité') {return '#00b3ff'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Nature') {return '#5BCF8F'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
+  - function getCauseDesign(cause){if (cause=='Solidarité') {return '#0099FF'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Nature') {return '#5BCF8F'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
 block head
   title Organisme membre de Simplyk
   meta(name='description', content='Organisme publiant des opportunités sur Simplyk')
@@ -24,7 +24,7 @@ block content
           .panel-heading
             .media-left.media-middle
               if organism.cause == 'Solidarité'
-                i.fa.fa-heart(style='color: #00b3ff')
+                i.fa.fa-heart(style='color: #0099FF')
               else if organism.cause == 'Nature'
                 i.fa.fa-envira(style='color: #5BCF8F')
               else if organism.cause == 'Sport et Culture'
@@ -55,6 +55,9 @@ block content
                 p.inline <b>Leurs évènements</b>
               each event in organism.events
                 .page-header.activity__unit
+                  if event.past
+                    .event_past(style='height: 18px')
+                      span.badge.inline.pull-right.past Passé
                   .event_title.text-center
                     h4= event.intitule
                     span.badge(style='background-color: '+getCauseDesign(organism.cause))= organism.cause
@@ -77,6 +80,8 @@ block content
                 .page-header.activity__unit.longterm_div(lt_id=longterm._id)
                   .event_title.text-center
                     h4= longterm.intitule
+                    if new Date(longterm.expiration_date) < Date.now()
+                      span.badge.inline.pull-right.past Expiré
                     span.badge(style='background-color: '+getCauseDesign(organism.cause))= organism.cause
                   p.text-center <b>Adresse : </b> #{longterm.address}
           else
@@ -104,6 +109,11 @@ block footscript
           $(this).css('border-color', e.type === "mouseenter"?"#ccc":"#e3e3e3").css('background-color', e.type === "mouseenter"?"#eee":"#fff");
         });
       });
+      $('.past').each(function(){
+        $(this).parents('.activity__unit').css('background-color', '#e7e7e7').hover(function(e){
+          $(this).css('background-color', e.type === "mouseenter"?"#eee":"#e7e7e7");
+        });
+      })
       if (env == 'prod') {
         amplitude.getInstance().logEvent('g_visit_organism');
         const org_name = $('#org_name').val();

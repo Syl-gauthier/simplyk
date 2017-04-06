@@ -22,6 +22,9 @@ router.get('/listorganisms', function(req, res, next) {
       err.print = 'Problème pour obtenir la liste des organismes';
       next(err);
     } else {
+      organisms.sort((a, b) => {
+        return (b.events.length + b.long_terms.length) - (a.events.length + a.long_terms.length);
+      });
       res.render('a_listorganisms.jade', {
         organisms: organisms,
         session: req.session,
@@ -155,6 +158,9 @@ router.get('/all/organism/:org_id', function(req, res, next) {
       Activity.find({
         _id: {
           $in: activity_ids
+        },
+        archived: {
+          $ne: true
         }
       }, function(err, activities) {
         if (err) {
@@ -162,15 +168,40 @@ router.get('/all/organism/:org_id', function(req, res, next) {
           err.print = 'Problème pour accéder aux informations de ce bénévolat';
           next(err);
         } else {
-          console.log(JSON.stringify(organism));
           let organism_to_send = JSON.parse(JSON.stringify(organism));
-          console.log(JSON.stringify(organism_to_send));
           organism_to_send.events.map(function(ev) {
+            let ev_past = true;
             ev.activitiesFull = activities.filter(function(act) {
               return ev.activities.indexOf(act._id.toString()) > -1;
             });
-            console.log(ev.activitiesFull);
+            ev.activitiesFull.map(function(act) {
+              act.days.map(function(day) {
+                if (day.day > Date.now()) {
+                  act['past'] = false;
+                  ev_past = false;
+                } else {
+                  act['past'] = true;
+                };
+              });
+            });
+            ev['past'] = ev_past;
           });
+          organism_to_send.events.sort((a, b) => {
+            if (a.past && !b.past) {
+              return 1;
+            } else if (!a.past && b.past) {
+              return -1;
+            } else {
+              return 0;
+            }
+          });
+          organism_to_send.long_terms = organism_to_send.long_terms.filter(lt => {
+            return lt.tags != 'archived';
+          })
+          organism_to_send.long_terms.sort((a, b) => {
+            return new Date(b.expiration_date).getTime() - new Date(a.expiration_date).getTime();
+          });
+          console.log(JSON.stringify(organism));
           res.render('g_organism.jade', {
             group: req.session.group,
             session: req.session,
