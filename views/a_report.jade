@@ -189,6 +189,21 @@ block content
                                 .modal-footer
                                   a.btn.btn-default(data-dismiss='modal') Annuler
                                   input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=event._id, type='events')
+                      else if (event.status == 'pending')
+                        div.btn.refuse__modal(vol=volunteer._id, id=event._id, type='events' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
+                          i.fa.fa-times-circle-o
+                        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+event._id)
+                          div.modal-dialog(role='document')
+                            .modal-content
+                              .modal-header
+                                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                  span(aria-hidden='true')
+                                  h4.modal-title Confirmes-tu ?
+                              .modal-body
+                                p Ce refus sera définitif. Confirmes-tu ?
+                              .modal-footer
+                                a.btn.btn-default(data-dismiss='modal') Annuler
+                                input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=event._id, type='events')
     .row
       .col-md-10.col-md-offset-1(style='border: 3px solid #359B9C; margin-bottom:10px;')
         .page-header
@@ -294,6 +309,21 @@ block content
                                 .modal-footer
                                   a.btn.btn-default(data-dismiss='modal') Annuler
                                   input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=lt._id, type='long_terms')
+                      else if (lt.status == 'pending')
+                        div.btn.refuse__modal(vol=volunteer._id, id=lt._id, type='long_terms' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
+                          i.fa.fa-times-circle-o
+                        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+lt._id)
+                          div.modal-dialog(role='document')
+                            .modal-content
+                              .modal-header
+                                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                  span(aria-hidden='true')
+                                  h4.modal-title Confirmes-tu ?
+                              .modal-body
+                                p Ce refus sera définitif. Confirmes-tu ?
+                              .modal-footer
+                                a.btn.btn-default(data-dismiss='modal') Annuler
+                                input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=lt._id, type='long_terms')
     if (volunteer.extras || volunteer.manuals)
       .row
         .col-md-10.col-md-offset-1(style='border: 3px solid #E56252; margin-bottom:10px;')
@@ -394,6 +424,21 @@ block content
                                       .modal-footer
                                         a.btn.btn-default(data-dismiss='modal') Annuler
                                         input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=ext._id, type='extras')
+                            else if (ext.status == 'pending')
+                              div.btn.refuse__modal(vol=volunteer._id, id=ext._id, type='extras' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
+                                i.fa.fa-times-circle-o
+                              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+ext._id)
+                                div.modal-dialog(role='document')
+                                  .modal-content
+                                    .modal-header
+                                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                        span(aria-hidden='true')
+                                        h4.modal-title Confirmes-tu ?
+                                    .modal-body
+                                      p Ce refus sera définitif. Confirmes-tu ?
+                                    .modal-footer
+                                      a.btn.btn-default(data-dismiss='modal') Annuler
+                                      input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=ext._id, type='extras')
           if (volunteer.manuals)
             if (volunteer.manuals.length > 0)
               .page-header
