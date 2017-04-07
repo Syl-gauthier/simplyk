@@ -17,8 +17,8 @@ block head
   meta(name='description', content='Accède à tes informations personnelles')
   style.
     .rank__img {height: 70px}
-    .rank__well {padding: 6px}
-    .rank__well--not {background-color: #fff; color:#aaa}
+    .rank__well {padding: 6px; background-color: #eee; border-color: #ccc}
+    .rank__well--not {background-color: #fff; color:#aaa; border-color: #eee}
     .rank__subtitle {margin: 0px; margin-top: 6px;}
 block content
   #map-section.container-fluid
@@ -38,32 +38,32 @@ block content
             a.btn.btn-info(href='/volunteer/extra_simplyk_hours', role='button')
               h4.inline Ajouter une expérience de bénévolat
               i.fa.fa-plus
-      if vol_level
+      if badges
         .col-md-5
           .media.tp-15(style='margin-top: 6%')
             .col-md-4.col-xs-6.text-center
-              .well.rank__well
-                img.rank__img(src='/images/dog_ballon.svg')
+              .well.rank__well(class=badges[0]>0 ? '':'rank__well--not')
+                img.rank__img(src='/images/dog_ballon'+ badges[0] +'.svg')
                 p.rank__subtitle <b>Débutant</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well
-                img.rank__img(src='/images/porte_voix.svg')
+              .well.rank__well(class=badges[1]>0 ? '':'rank__well--not')
+                img.rank__img(src='/images/porte_voix'+ badges[1] +'.svg')
                 p.rank__subtitle <b>Populaire</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well.rank__well--not
-                img.rank__img(src='/images/yeezy--not.svg')
+              .well.rank__well(class=badges[2]>0 ? '':'rank__well--not')
+                img.rank__img(src='/images/yeezy'+ badges[2] +'.svg')
                 p.rank__subtitle <b>Marathonien</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well
-                img.rank__img(src='/images/bienfaiteur.svg')
+              .well.rank__well(class=badges[3]>0 ? '':'rank__well--not')
+                img.rank__img(src='/images/bienfaiteur'+ badges[3] +'.svg')
                 p.rank__subtitle <b>Gourou</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well.rank__well--not
-                img.rank__img(src='/images/whale--not.svg')
+              .well.rank__well(class=badges[4]>0 ? '':'rank__well--not')
+                img.rank__img(src='/images/whale'+ badges[4] +'.svg')
                 p.rank__subtitle <b>Fan</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well.rank__well--not
-                img.rank__img(src='/images/shoes_punch--not.svg')
+              .well.rank__well(class=badges[5]>0 ? '':'rank__well--not')
+                img.rank__img(src='/images/shoes_punch'+ badges[5] +'.svg')
                 p.rank__subtitle <b>Sprinter</b>
     if events_past.length || events_denied.length || first_lt_denied || first_ext_denied || longterm_waiting
       if events_past.length

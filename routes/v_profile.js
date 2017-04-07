@@ -102,29 +102,13 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   }
   console.info('longterm_waiting : ' + longterm_waiting);
 
+  const badges = [1, 3, 3, 3, 3, 3];
 
-  //VOLUNTEERING_LEVEL
-  var vol_level;
-  if (volunteer.events.length == 0 && lt_nb == 0) {
-    vol_level = 1;
-  } else if ((volunteer.events.length > 0 || lt_nb > 0) && events_confirmed.length == 0 && lt_hours_done == 0) {
-    vol_level = 2;
-  } else if ((events_confirmed.length == 1 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 0 && lt_hours_done < 5)) {
-    vol_level = 3;
-  } else if ((events_confirmed.length == 1 && lt_hours_done > 0 && lt_hours_done < 5) || (events_confirmed.length < 4 && events_confirmed.length > 1 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 4 && lt_hours_done < 25)) {
-    vol_level = 4;
-  } else if ((events_confirmed.length > 0 && events_confirmed.length < 4 && lt_hours_done > 4 && lt_hours_done < 25) || (events_confirmed.length > 3 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 24) || (events_confirmed.length > 1 && events_confirmed.length < 4 && lt_hours_done < 5 && lt_hours_done > 0)) {
-    vol_level = 5;
-  } else if ((events_confirmed.length > 0 && lt_hours_done > 24) || (events_confirmed.length > 3 && lt_hours_done > 0)) {
-    vol_level = 6;
-  } else {
-    vol_level = 0;
-  };
+
   console.log('events_confirmed.length :  ' + events_confirmed.length);
   console.log('extras_hours_done :  ' + extras_hours_done);
   console.log('manuals_hours_done :  ' + manuals_hours_done);
   console.log('lt_hours_done :  ' + lt_hours_done);
-  console.log('Volunteer level is : ' + vol_level);
   //Get schools_list
   school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
     if (err) {
@@ -184,8 +168,8 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
         group: req.session.group,
         error,
         err,
+        badges,
         schools_list,
-        vol_level,
         events_subscribed,
         events_confirmed,
         events_pending,
