@@ -224,6 +224,10 @@ router.post('/register_volunteer', function(req, res, next) {
       let student = false;
       let school_name = null;
       let phone = req.body.phone;
+      console.log('birthdate_year : ' + req.body.birthdate_year);
+      console.log('birthdate_month : ' + req.body.birthdate_month);
+      console.log('birthdate_day : ' + req.body.birthdate_day);
+      
       let birthdate_date = new Date(req.body.birthdate_year, req.body.birthdate_month - 1, req.body.birthdate_day);
       
       console.log('birthdate_string : ' + birthdate_date);
