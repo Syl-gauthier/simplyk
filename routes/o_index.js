@@ -672,20 +672,7 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
             // Find status of the opp to see if it's refused and then don't change it
             let opp_status = {};
             if (typeof req.body.act_id !== 'undefined') {
-              if (type == 'hours_pending') {
-                if (opp_status = vol.events.find(ev => {
-                    return ev.activity_id == req.body.act_id;
-                  }).status != 'refused') {
-                  update['$set.events.$.status'] = 'confirmed';
-                };
-              } else if (type == 'students_hours_pending') {
-                if (opp_status = vol.extras.find(ex => {
-                    return ex.activity_id == req.body.act_id;
-                  }).status != 'refused') {
-                  update['$set.extras.$.status'] = 'confirmed';
-                };
-              };
-
+              
               if (req.body['answers[0][value]']) {
                 console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
                 //i starts from 1 to avoid to select the number answered as corrected hours
