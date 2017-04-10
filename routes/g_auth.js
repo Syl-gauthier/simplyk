@@ -34,111 +34,47 @@ router.get('/legal', function(req, res) {
 });
 
 router.post('/login', function(req, res, next) {
-  passport.authenticate(['local-volunteer', 'local-admin', 'local-organism'], function(err, user, info) {
-    console.log(info);
-    if (err) {
-      return next(err);
-    };
+  if (req.body.fb) {
+    console.log('IN fb')
+  } else {
+    passport.authenticate(['local-volunteer', 'local-admin', 'local-organism'], function(err, user, info) {
+      console.log(info);
+      if (err) {
+        return next(err);
+      };
 
-    if (!user) {
-      //If the user exists in the database but an other error happened
-      var loginError = info.filter(function(item) {
-        if (item.exists) {
-          return true;
-        }
-      });
+      if (!user) {
+        //If the user exists in the database but an other error happened
+        var loginError = info.filter(function(item) {
+          if (item.exists) {
+            return true;
+          }
+        });
 
-      console.log(loginError);
+        console.log(loginError);
 
-      //If the login Error is present we use the error code
-      if (loginError.length === 1) {
-        return res.redirect('login?login_error=' + loginError[0].code);
-      } else {
-        return res.redirect('login?login_error=1')
-      }
-    };
-    console.log(user.email + ' is connected !');
-    if (user.group == "organism") {
-      req.session.organism = user;
-      req.session.group = "organism";
-      console.log('IN LOGIN post and req.session.group = ' + req.session.group);
-      //Intercom create connexion event
-      client.events.create({
-        event_name: 'org_connexion',
-        created_at: Math.round(Date.now() / 1000),
-        user_id: user._id
-      });
-      client.users.update({
-        user_id: user._id,
-        custom_attributes: {
-          group: 'organism'
-        },
-        update_last_request_at: true,
-        new_session: true
-      });
-      req.session.save(function(err) {
-        if (err) {
-          return next(err);
-        }
-        res.redirect('/organism/dashboard');
-      });
-    } else if (user.group == "volunteer") {
-      req.session.volunteer = user;
-      req.session.group = "volunteer";
-      console.log('IN LOGIN post and req.session.group = ' + req.session.group);
-      //Intercom create connexion event
-      client.events.create({
-        event_name: 'vol_connexion',
-        created_at: Math.round(Date.now() / 1000),
-        user_id: user._id
-      });
-      client.users.update({
-        user_id: user._id,
-        custom_attributes: {
-          group: 'volunteer'
-        },
-        update_last_request_at: true,
-        new_session: true
-      });
-      req.session.save(function(err) {
-        if (err) {
-          return next(err);
-        }
-        if ((req.session.volunteer.events.find(function(ev) {
-            return (Date.parse(ev.day) < Date.now() && ev.status === 'subscribed')
-          }) != undefined) || (req.session.volunteer.extras.find(function(ext) {
-            return (ext.status == 'denied')
-          }) != undefined) || (req.session.volunteer.events.find(function(ev) {
-            return (ev.status == 'denied')
-          }) != undefined) || (req.session.volunteer.long_terms.find(function(lt) {
-            return (lt.status == 'denied')
-          }) != undefined)) {
-          res.redirect('/volunteer/profile');
+        //If the login Error is present we use the error code
+        if (loginError.length === 1) {
+          return res.redirect('login?login_error=' + loginError[0].code);
         } else {
-          res.redirect('/volunteer/map');
+          return res.redirect('login?login_error=1')
         }
-      });
-    } else if (user.group == "admin") {
-      req.session.admin = user;
-      req.session.group = "admin";
-      Organism.findOne({
-        admin_id: req.session.admin._id
-      }, function(err, org) {
-        if (err) {
-          return next(err);
-        }
-        req.session.organism = org;
+      };
+      console.log(user.email + ' is connected !');
+      if (user.group == "organism") {
+        req.session.organism = user;
+        req.session.group = "organism";
         console.log('IN LOGIN post and req.session.group = ' + req.session.group);
         //Intercom create connexion event
         client.events.create({
-          event_name: 'admin_connexion',
+          event_name: 'org_connexion',
           created_at: Math.round(Date.now() / 1000),
           user_id: user._id
         });
         client.users.update({
           user_id: user._id,
           custom_attributes: {
-            group: 'admin'
+            group: 'organism'
           },
           update_last_request_at: true,
           new_session: true
@@ -147,11 +83,79 @@ router.post('/login', function(req, res, next) {
           if (err) {
             return next(err);
           }
-          res.redirect('/admin/classes');
+          res.redirect('/organism/dashboard');
         });
-      });
-    }
-  })(req, res, next);
+      } else if (user.group == "volunteer") {
+        req.session.volunteer = user;
+        req.session.group = "volunteer";
+        console.log('IN LOGIN post and req.session.group = ' + req.session.group);
+        //Intercom create connexion event
+        client.events.create({
+          event_name: 'vol_connexion',
+          created_at: Math.round(Date.now() / 1000),
+          user_id: user._id
+        });
+        client.users.update({
+          user_id: user._id,
+          custom_attributes: {
+            group: 'volunteer'
+          },
+          update_last_request_at: true,
+          new_session: true
+        });
+        req.session.save(function(err) {
+          if (err) {
+            return next(err);
+          }
+          if ((req.session.volunteer.events.find(function(ev) {
+              return (Date.parse(ev.day) < Date.now() && ev.status === 'subscribed')
+            }) != undefined) || (req.session.volunteer.extras.find(function(ext) {
+              return (ext.status == 'denied')
+            }) != undefined) || (req.session.volunteer.events.find(function(ev) {
+              return (ev.status == 'denied')
+            }) != undefined) || (req.session.volunteer.long_terms.find(function(lt) {
+              return (lt.status == 'denied')
+            }) != undefined)) {
+            res.redirect('/volunteer/profile');
+          } else {
+            res.redirect('/volunteer/map');
+          }
+        });
+      } else if (user.group == "admin") {
+        req.session.admin = user;
+        req.session.group = "admin";
+        Organism.findOne({
+          admin_id: req.session.admin._id
+        }, function(err, org) {
+          if (err) {
+            return next(err);
+          }
+          req.session.organism = org;
+          console.log('IN LOGIN post and req.session.group = ' + req.session.group);
+          //Intercom create connexion event
+          client.events.create({
+            event_name: 'admin_connexion',
+            created_at: Math.round(Date.now() / 1000),
+            user_id: user._id
+          });
+          client.users.update({
+            user_id: user._id,
+            custom_attributes: {
+              group: 'admin'
+            },
+            update_last_request_at: true,
+            new_session: true
+          });
+          req.session.save(function(err) {
+            if (err) {
+              return next(err);
+            }
+            res.redirect('/admin/classes');
+          });
+        });
+      }
+    })(req, res, next);
+  }
 });
 
 router.post('*/logout', function(req, res, next) {

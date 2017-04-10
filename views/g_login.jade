@@ -20,6 +20,30 @@ block share
 		  js.src = "//connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v2.8&appId=1829081597379617";
 		  fjs.parentNode.insertBefore(js, fjs);
 		}(document, 'script', 'facebook-jssdk'));
+		function checkLoginState (){
+			FB.getLoginStatus(function(response){
+				console.log('FB response : ' + JSON.stringify(response));
+				if (response.status == 'connected') {
+					console.log('FB connected');
+					FB.api('/'+response.authResponse.userID+'?fields=email,id,name,birthday,first_name,last_name,age_range,verified', function(response){
+						if (response && !response.error){
+							console.log(JSON.stringify(response));
+							$.post('/login', {'fb': true, 'user': response});
+						} else {
+							//TO WRITE
+						}
+					})
+				}
+			})
+		}
+		window.fbAsyncInit = function() {
+			FB.init({
+				appId: 1829081597379617,
+				xfbml: true,
+				version: 'v2.8'
+			});
+			checkLoginState();
+		 }
 
 block content
 	#map-section.container-fluid
@@ -46,9 +70,7 @@ block content
 		.row
 			.col-md-5.col-md-offset-3
 				.text-center#social-login__div
-					.btn.btn-default#fb-button
-						.fb-login-button(data-max-rows='1' data-size='icon' data-show-faces='faces' data-auto-logout-link='false') 
-						p.inline  Via Facebook
+					.fb-login-button(data-max-rows='1' data-size='large' data-show-faces='faces' data-auto-logout-link='true' onlogin="checkLoginState();") 
 				form#loginform(action="/login", method="post", role='form')
 					.input-group.conn-input
 						span#basic-addon1.input-group-addon Adresse courriel
