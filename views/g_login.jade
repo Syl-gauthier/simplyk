@@ -5,6 +5,22 @@ block vars
 block head
 	title Se connecter
 	meta(name='description', content='Connectez-vous pour devenir bénévole ou trouver des bénévoles')
+	style.
+		#fb-button {background-color: #3B5998; border-color: #3B5998}
+		#loginform {border-top: 1px solid #ddd}
+		#social-login__div {margin-bottom: 15px}
+
+block share
+	#fb-root
+	script.
+		(function(d, s, id) {
+		  var js, fjs = d.getElementsByTagName(s)[0];
+		  if (d.getElementById(id)) return;
+		  js = d.createElement(s); js.id = id;
+		  js.src = "//connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v2.8&appId=1829081597379617";
+		  fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+
 block content
 	#map-section.container-fluid
 		.row
@@ -29,6 +45,10 @@ block content
 
 		.row
 			.col-md-5.col-md-offset-3
+				.text-center#social-login__div
+					.btn.btn-default#fb-button
+						.fb-login-button(data-max-rows='1' data-size='icon' data-show-faces='faces' data-auto-logout-link='false') 
+						p.inline  Via Facebook
 				form#loginform(action="/login", method="post", role='form')
 					.input-group.conn-input
 						span#basic-addon1.input-group-addon Adresse courriel
