@@ -142,6 +142,15 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
       err.print = 'Problème avec la recherche de l\'élève dans la base de données';
       next(err);
     } else {
+      //Remove opps with status refused
+      function removeRefused(opp) {
+        return opp.status != 'refused';
+      }
+
+      volunteer.events = volunteer.events.filter(removeRefused);
+      volunteer.long_terms = volunteer.long_terms.filter(removeRefused);
+      volunteer.extras = volunteer.extras.filter(removeRefused);
+
       //Add infos to each event from activity_id
 
       function getEventWithActivityInfos(event) {
@@ -325,7 +334,9 @@ router.post('/admin/validate', permissions.requireGroup('admin'), function(req, 
   update_query[req.body.type + '.$.status'] = 'validated';
   console.info('C\'est dans validate update_query! : ' + JSON.stringify(update_query));
   console.info('C\'est dans validate find_query! : ' + JSON.stringify(find_query));
-  Volunteer.findOneAndUpdate(find_query, update_query, function(err, response) {
+  Volunteer.findOneAndUpdate(find_query, update_query, {
+    new: true
+  }, function(err, new_vol) {
     if (err) {
       console.error('ERROR : ' + err);
       res.status(404).send({
@@ -336,6 +347,14 @@ router.post('/admin/validate', permissions.requireGroup('admin'), function(req, 
       res.status(200).send({
         message: 'VALIDÉ'
       });
+
+      const email_content = {
+        admin_name: req.session.admin.firstname + ' ' + req.session.admin.lastname,
+        recipient: new_vol.email,
+        customMessage: [req.session.admin.firstname + ' ' + req.session.admin.lastname + ' vient de valider ta participation à un bénévolat !', 'Va les voir tout de suite en cliquant sur le bouton en-dessous !', 'Et n\'oublie pas de t\'inscrire à de nouvelles opportunités pour faire évoluer ton niveau d\'engagement !']
+      };
+
+      emailer.sendAdminValidateEmail(email_content);
     }
   })
 });
@@ -350,7 +369,9 @@ router.post('/admin/deny', permissions.requireGroup('admin'), function(req, res,
   update_query[req.body.type + '.$.status'] = 'denied';
   console.info('C\'est dans deny update_query! : ' + JSON.stringify(update_query));
   console.info('C\'est dans deny find_query! : ' + JSON.stringify(find_query));
-  Volunteer.findOneAndUpdate(find_query, update_query, function(err, response) {
+  Volunteer.findOneAndUpdate(find_query, update_query, {
+    new: true
+  }, function(err, new_vol) {
     if (err) {
       console.error('ERROR : ' + err);
       res.status(404).send({
@@ -361,6 +382,49 @@ router.post('/admin/deny', permissions.requireGroup('admin'), function(req, res,
       res.status(200).send({
         message: 'À REVOIR'
       });
+
+      const email_content = {
+        admin_name: req.session.admin.firstname + ' ' + req.session.admin.lastname,
+        recipient: new_vol.email,
+        customMessage: [req.session.admin.firstname + ' ' + req.session.admin.lastname + ' attends que tu corriges ta participation à un bénévolat !', 'Va le corriger en cliquant sur le bouton en-dessous !', 'Et n\'oublie pas de t\'inscrire à de nouvelles opportunités pour faire évoluer ton niveau d\'engagement !']
+      };
+
+      emailer.sendAdminCorrectEmail(email_content);
+    }
+  })
+});
+
+router.post('/admin/refuse', permissions.requireGroup('admin'), function(req, res, next) {
+  console.info('In refuse with req.body ! : ' + JSON.stringify(req.body));
+  let find_query = {
+    '_id': req.body.vol
+  };
+  find_query[req.body.type + '._id'] = req.body.id;
+  let update_query = {};
+  update_query[req.body.type + '.$.status'] = 'refused';
+  console.info('C\'est dans refuse update_query! : ' + JSON.stringify(update_query));
+  console.info('C\'est dans refuse find_query! : ' + JSON.stringify(find_query));
+  Volunteer.findOneAndUpdate(find_query, update_query, {
+    new: true
+  }, function(err, new_vol) {
+    if (err) {
+      console.error('ERROR : ' + err);
+      res.status(404).send({
+        message: 'Erreur lors de l\'opération'
+      });
+    } else {
+      console.info('MESSAGE : ' + err);
+      res.status(200).send({
+        message: 'À REVOIR'
+      });
+
+      const email_content = {
+        admin_name: req.session.admin.firstname + ' ' + req.session.admin.lastname,
+        recipient: new_vol.email,
+        customMessage: [req.session.admin.firstname + ' ' + req.session.admin.lastname + ' vient de refuser ta participation à un bénévolat !', 'Va voir tout de suite sur la plateforme en cliquant sur le bouton en-dessous !', 'Et n\'oublie pas de t\'inscrire à de nouvelles opportunités pour faire évoluer ton niveau d\'engagement !']
+      };
+
+      emailer.sendAdminRefuseEmail(email_content);
     }
   })
 });
