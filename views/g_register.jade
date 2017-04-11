@@ -58,7 +58,7 @@ block content
                       .col-xs-4
                         select.inline#birthdate_year.form-control(type='number', placeholder='Année', name='birthdate_year', aria-describedby='basic-addon1' required)
                           each i in createYearsArray()
-                            option(value=i)= i
+                            option(value=i, id=i)= i
                   .form-input
                     input#password.form-control(type='password', placeholder='Définir un mot de passe', name='password', aria-describedby='basic-addon1', required)
                   .form-input
@@ -139,6 +139,7 @@ block footscript
         amplitude.getInstance().logEvent('g_visit_register', event_props);
       }
       var clients = !{JSON.stringify(clients)};
+      $('#1995').attr('selected', true);
       /*if ( $('#birthdate').prop('type') != 'date' ) {
         $('#birthdate').datepicker({
           changeMonth: true,
