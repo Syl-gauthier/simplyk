@@ -214,11 +214,6 @@ router.get('/all/organism/:org_id', function(req, res, next) {
   });
 });
 
-router.get('/robots.txt', function(req, res) {
-  res.type('text/plain');
-  res.send("User-agent: *\nDisallow: /");
-});
-
 router.post('/nexmo_inbound', function(req, res) {
   console.info('In nexmo_inbound : ' + JSON.stringify(req.body));
   var sms_content = {
