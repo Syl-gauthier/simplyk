@@ -58,7 +58,7 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
               if ((extra_status_array.indexOf('confirmed') == -1) && (extra_status_array.indexOf('corrected') == -1)) {
                 if ((event_status_array.indexOf('confirmed') == -1) && (event_status_array.indexOf('corrected') == -1)) {
                   if ((lt_status_array.indexOf('confirmed') == -1) && (lt_status_array.indexOf('corrected') == -1)) {
-                    if ((lt_status_array.indexOf('validated') == -1) && (event_status_array.indexOf('validated') == -1) && (extra_status_array.indexOf('validated') == -1)) {
+                    if ((lt_status_array.indexOf('validated') == -1) && (event_status_array.indexOf('validated') == -1) && (extra_status_array.indexOf('validated') == -1) && (vol.manuals && (vol.manuals.length < 1))) {
                       vol.status = ''
                       return vol;
                     } else {
