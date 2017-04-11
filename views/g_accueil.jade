@@ -9,8 +9,8 @@ block head
     }
 block vars
   - var page = 'accueil'
-  - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
-  - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+  - var days_name = [__("Sunday"), __("Monday"), __("Tuesday"), __("Wednesday"), __("Thursday"), __("Friday"), __("Saturday")]
+  - var months_name = [__("January"), __("February"), __("March"), __("April"), __("May"), __("June"), __("July"), __("August"), __("September"), __("October"), __("November"), __("December")]
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
   - function isAdult(ageMin){var result=false;if(ageMin>=16){result=true}return result;}
   - var school_name = ""; if (volunteer && volunteer.admin.school_name){school_name = volunteer.admin.school_name};
@@ -23,19 +23,19 @@ block content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
+            #myModalLabel.h4.modal-title #{act.event_intitule} <small> #{__("by")}</small> <b>#{act.org_name}</b>
           .modal-body.my-modal-body
             h4 <b>#{act.intitule}</b>
             p #{act.description}
-            p <b>Adresse : </b> #{act.address}
+            p <b>#{__("address")} : </b> #{act.address}
             table.table
               tr
-                th.text-center Places restantes
-                th.text-center Date
-                th.text-center Heure de début
-                th.text-center Heure de fin
+                th.text-center #{__("Remaining")}
+                th.text-center #{__("Date")}
+                th.text-center #{__("Start_time")}
+                th.text-center #{__("End_time")}
                 if act.min_age
-                  th.text-center Âge minimal
+                  th.text-center #{__("Min_age")}
               each day, nb in act.days
                 if day.day
                   tr
@@ -48,8 +48,8 @@ block content
                   #identifiant(style="display:none")
                     p= act._id
           .modal-footer
-            input.btn.btn-default(type='button', data-dismiss='modal', value='Fermer')
-            a#link-btn-ref.btn.btn-default(href='/all/activity/'+act._id, target='_blank') Plus d'infos
+            input.btn.btn-default(type='button', data-dismiss='modal', value=__("Close"))
+            a#link-btn-ref.btn.btn-default(href='/all/activity/'+act._id, target='_blank') #{__("more_infos")}
   each lt, index in longterms
     div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id)
       .modal-dialog(role='document')
@@ -57,16 +57,16 @@ block content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> <b>#{lt.org_name}</b>
+            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>#{__("by")}</small> <b>#{lt.org_name}</b>
           .modal-body.my-modal-body
             h4 <b>#{lt.long_term.intitule}</b>
             p #{lt.long_term.description}
-            p <b>Adresse : </b> #{lt.long_term.address}
+            p <b>#{__("address")} : </b> #{lt.long_term.address}
             if lt.long_term.min_age
-              p <b>Âge minimal : </b> #{lt.long_term.min_age} ans
+              p <b>#{__("Min_age")} : </b> #{lt.long_term.min_age} #{__("y.o")}
           .modal-footer
-            input.btn.btn-default(type='button', data-dismiss='modal' value='Fermer')
-            a#link-btn-ref.btn.btn-default(href='/all/longterm/'+lt.long_term._id, target='_blank') Plus d'infos
+            input.btn.btn-default(type='button', data-dismiss='modal' value=' #{__("Close")}')
+            a#link-btn-ref.btn.btn-default(href='/all/longterm/'+lt.long_term._id, target='_blank') #{__("more_infos")}
   .container-fluid
     #first_section.landing-section.row
       .col-sm-5.col-sm-offset-1.section-div.hidden-xs
@@ -94,46 +94,46 @@ block content
       .col-sm-5.col-sm-offset-1.section-div.hidden-xs
         .section__sentence.section__sentence--grouped
           div
-            h1 CHOISIS TON TYPE <br> D'ENGAGEMENT <br>
+            h1 #{__("g_how_much")} <br> #{__("g_do_you")} <br>
           div
             h4
       .col-sm-3.col-sm-offset-2.section-div.hidden-xs
         div.landing-buttons
           button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--ev
-              p.inline PONCTUEL
+              p.inline #{__("One_time")}
               i.inline.fa.fa-bolt(style='color: yellow;')
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--lt LONG TERME
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--all PEU IMPORTE
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--lt #{__("Longterm")}
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--all #{__("g_WHATEVER")}
       .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
         .section__sentence-xs
           div.text-center
-            h3 CHOISIS TON TYPE <br> D'ENGAGEMENT <br>
+            h3 #{__("g_how_much")} <br> #{__("g_do_you")} <br>
       .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
         div
           button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--ev
-              p.inline PONCTUEL
+              p.inline #{__("One_time")}
               i.inline.fa.fa-bolt(style='color: yellow;')
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--lt LONG TERME
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--all PEU IMPORTE
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--lt #{__("Longterm")}
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--all #{__("g_WHATEVER")}
     #age-section.landing-section.row
       .col-sm-5.col-sm-offset-1.col-xs-offset-1.col-xs-10.section-div.hidden-xs
         .section__sentence.section__sentence--grouped
           div
-            h1 FILTRE SELON <br> TON ÂGE <br>
+            h1 #{__("g_HOW_OLD")} <br> #{__("g_OLD_ARE")} <br>
           div
             h4 
       .col-sm-3.col-sm-offset-2.section-div.hidden-xs
         div.landing-buttons
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--plus J'ai 16 ans ou plus
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--less J'ai moins de 16 ans
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--plus #{__("g_MORE_SIXTEEN")}
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--less #{__("g_LESS_SIXTEEN")}
       .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
         .section__sentence-xs
           div.text-center
-            h3 FILTRE SELON <br> TON ÂGE <br>
+            h3 #{__("g_HOW_OLD")} <br> #{__("g_OLD_ARE")} <br>
       .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
         div
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--plus J'ai 16 ans ou plus
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--less J'ai moins de 16 ans
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--plus #{__("g_MORE_SIXTEEN")}
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--less #{__("g_LESS_SIXTEEN")}
   .container-fluid
     .row.fill
       .col-sm-4.col-xs-12#map-left
@@ -141,16 +141,16 @@ block content
           .col-xs-12.col-sm-12.col-md-10.col-md-offset-1#age_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-age
               i.inline.fa.fa-check-square-o#age_check
-              p.inline J'AI MOINS DE 16 ANS
+              p.inline #{__("g_LESS_SIXTEEN")}
           .col-xs-6.col-sm-12.col-md-5.col-md-offset-1#acts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-acts
               i.inline.fa.fa-check-square-o#acts_check
-              p.inline Ponctuel
+              p.inline #{__("One_time")}
               i.inline.fa.fa-bolt
           .col-xs-6.col-sm-12.col-md-5#lts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
-              p.inline Engagement
+              p.inline #{__("Longterm")}
         #search_div
           .row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').visible-xs
             .col-xs-12.text-center
@@ -191,9 +191,9 @@ block content
                       div.visible-xs
                         i.fa.fa-compass.inline
                         h6.dist.inline.strong
-                        h6.inline.dist_reference km de toi
+                        h6.inline.dist_reference #{__("kms_from")}
                     div.media-right.media-top
-                      span.badge.activity Ponctuel
+                      span.badge.activity #{__("One_time")}
                   .panel-body
                       h5 Dans le cadre de : <b>#{act.event_intitule}</b>
                       if act.days.length < 3
@@ -203,7 +203,7 @@ block content
                               h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
                               h6.inline
                                 i.fa.fa-user
-                                p.inline= ((day.vol_nb-day.applicants.length) > -1 ? (day.vol_nb-day.applicants.length) : 0)+' places restantes'
+                                p.inline= ((day.vol_nb-day.applicants.length) > -1 ? (day.vol_nb-day.applicants.length) : 0)+' ' + __("remaining")
                       else
                         if act.days[0].day && act.days[1].day
                           h5.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
@@ -229,34 +229,34 @@ block content
                         h6.media-heading <b>#{lt.long_term.intitule}</b>
                         h6
                           i.fa.fa-map-marker
-                          p.inline Adresse : #{lt.long_term.address}
+                          p.inline #{__("address")} : #{lt.long_term.address}
                         div.visible-xs
                           i.fa.fa-compass.inline
                           h6.dist.inline
-                          h6.inline.dist_reference km de toi
+                          h6.inline.dist_reference #{__("kms_from")}
                       div.media-right.media-top
-                        span.badge.longterm Engagement
+                        span.badge.longterm #{__("Longterm")}
             li.list-group-item
               .panel.panel-default
                 .panel-heading(style='min-height: 60vh;')
-                  h3.text-center(style='margin-top: 15vh') Tu veux plus d'offres ?
+                  h3.text-center(style='margin-top: 15vh') #{__("g_more_opps")}
                   p.text-center
                     i.fa.fa-refresh.fa-4x
                   p.hidden.dist 99999999999
-                  h5.text-center Modifie tes filtres de recherche
-                  h5.text-center Dézoome la carte
-                  h5.text-center Demande nous des idées de bénévolat à contact@simplyk.io
+                  h5.text-center #{__("g_change_filters")}
+                  h5.text-center #{__("g_unzoom_map")}
+                  h5.text-center #{__("g_ask_for")}
       .col-sm-8.col-xs-12.no-side-padding.hidden-xs
         #map
   .container-fluid.footer
     .row
       .col-md-6.col-md-offset-2.col-xs-5.col-xs-offset-1
         p.text-left.left-align.white(style='white-space:pre;')
-         | Contactez nous
+         | #{__("g_nav_contact")}
          | 514-570-6926
          | francois@simplyk.org
       .col-md-4.col-xs-6
-        p.white.text-center.hidden-xs Suivez-nous !
+        p.white.text-center.hidden-xs #{__("Follow_us")}
         div.text-center
           a.inline(href="https://www.facebook.com/simplykMTL/?fref=ts")
             i.fa.fa-facebook.fa-2x#social
@@ -268,10 +268,10 @@ block content
             i.fa.fa-linkedin.fa-2x#social
     .row
       .text-center
-        a.white.inline(href='/listorganisms') Liste des organismes
+        a.white.inline(href='/listorganisms') #{__("List_orga")}
         p.white.inline.hidden-xs -
         p.visible-xs
-        a.white.inline(href='/legal') Conditions d'utilisation
+        a.white.inline(href='/legal') #{__("Use_terms")}
 
 
 
