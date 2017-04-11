@@ -102,7 +102,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   }
   console.info('longterm_waiting : ' + longterm_waiting);
 
-  const badges = [1, 3, 3, 3, 3, 3];
+  const badges = [1, 1, 2, 3, 4, 5];
 
 
   console.log('events_confirmed.length :  ' + events_confirmed.length);

@@ -9,6 +9,7 @@ block vars
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(parseDate(date).getTime() + tz_offset);return corrected_datetime}
   - function addHoursIfExists(arr){return arr.reduce(function(acc, curV, curI) {if(curV > 0 ){return acc + curV;} else {return acc;}})}
   - function getNotifications(type){if(type == 'em'){if(volunteer.extras.filter(function(ext){return ext.status == 'denied'}).length < 1){return ''}else{return '#E33831'}}else if (type == 'el'){if(volunteer.events.filter(function(evt){return evt.status == 'denied'}).length < 1){if(volunteer.long_terms.filter(function(lt){return lt.status == 'denied'}).length < 1){return ''}else{return '#E33831'}}else{return '#E33831'}}}
+  - function getTooltipText(badge, level){var seuils = {};var seuils_array = [[], [2, 4, 6, 8, 15], [0, 10, 30, 75, 150], [0, 10, 30, 100, 150], [10, 20, 50, 100, 500], [0, 5, 10, 50, 100]];return (seuils_array[badge])[level];}
 
 
 
@@ -17,7 +18,7 @@ block head
   meta(name='description', content='Accède à tes informations personnelles')
   style.
     .rank__img {height: 70px}
-    .rank__well {padding: 6px; background-color: #eee; border-color: #ccc}
+    .rank__well {padding: 6px; background-color: #eee; border-color: #ccc; cursor: pointer}
     .rank__well--not {background-color: #fff; color:#aaa; border-color: #eee}
     .rank__subtitle {margin: 0px; margin-top: 6px;}
 block content
@@ -42,27 +43,27 @@ block content
         .col-md-5
           .media.tp-15(style='margin-top: 6%')
             .col-md-4.col-xs-6.text-center
-              .well.rank__well(class=badges[0]>0 ? '':'rank__well--not')
+              .well.rank__well(class=badges[0]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title='Tu as validé le niveau Débutant en finalisant ton inscription !')
                 img.rank__img(src='/images/dog_ballon'+ badges[0] +'.svg')
                 p.rank__subtitle <b>Débutant</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well(class=badges[1]>0 ? '':'rank__well--not')
+              .well.rank__well(class=badges[1]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title=badges[1]>0 ? (badges[2]<5 ? 'Pour débloquer le badge Populaire de niveau ' + (badges[1]+1) + ', il te faut inviter ' + getTooltipText(1, badges[1]) + ' amis au total sur la plateforme': 'Félicitation, tu es aussi Populaire que Gandhi !'):'Pour débloquer le badge Populaire de niveau 1, il te faut inviter 2 amis sur la plateforme')
                 img.rank__img(src='/images/porte_voix'+ badges[1] +'.svg')
                 p.rank__subtitle <b>Populaire</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well(class=badges[2]>0 ? '':'rank__well--not')
+              .well.rank__well(class=badges[2]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title=badges[2]>0 ? (badges[2]<5 ? 'Pour débloquer le badge Marathonien de niveau ' + (badges[2]+1) + ', il te faut valider ' + getTooltipText(2, badges[2]) + 'h de participation en engagement long terme' : 'Félicitation, tu es Maître Marathonien !'):'Pour débloquer le badge Marathonien de niveau 1, il te faut valider une participation dans un engagement long terme')
                 img.rank__img(src='/images/yeezy'+ badges[2] +'.svg')
                 p.rank__subtitle <b>Marathonien</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well(class=badges[3]>0 ? '':'rank__well--not')
+              .well.rank__well(class=badges[3]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[3]>0 ? (badges[3]<5 ? 'Pour débloquer le badge Gourou de niveau ' + (badges[3]+1) + ', il te faut valider au moins une participation dans un évènement ponctuel, une dans un engagement long terme et ' + getTooltipText(3, badges[3]) + 'h totales de participation': 'Félicitation, tu es Gourou Absolu !'):'Pour débloquer le badge Gourou de niveau 1, il te faut valider une participation dans un évènement ponctuel et une dans un engagement long terme')
                 img.rank__img(src='/images/bienfaiteur'+ badges[3] +'.svg')
                 p.rank__subtitle <b>Gourou</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well(class=badges[4]>0 ? '':'rank__well--not')
+              .well.rank__well(class=badges[4]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[4]>0 ? (badges[4]<5 ? 'Pour débloquer le badge Fan de niveau ' + (badges[4]+1) + ', il te faut comptabiliser au moins ' + getTooltipText(4, badges[4]) + ' connexions à la plateforme': 'Félicitation, tu es Fan Absolu !'):'Pour débloquer le badge Fan de niveau 1, il te faut comptabiliser au moins 10 connexions à la plateforme')
                 img.rank__img(src='/images/whale'+ badges[4] +'.svg')
                 p.rank__subtitle <b>Fan</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well(class=badges[5]>0 ? '':'rank__well--not')
+              .well.rank__well(class=badges[5]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[5]>0 ? (badges[5]<5 ? 'Pour débloquer le badge Sprinter de niveau ' + (badges[5]+1) + ', il te faut valider ' + getTooltipText(5, badges[5]) + 'h de participation en évènement ponctuel': 'Félicitation, tu es Maître Sprinter !') :'Pour débloquer le badge Sprinter de niveau 1, il te faut valider une participation dans un évènement ponctuel')
                 img.rank__img(src='/images/shoes_punch'+ badges[5] +'.svg')
                 p.rank__subtitle <b>Sprinter</b>
     if events_past.length || events_denied.length || first_lt_denied || first_ext_denied || longterm_waiting
