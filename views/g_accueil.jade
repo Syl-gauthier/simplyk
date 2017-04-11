@@ -317,6 +317,10 @@ block footscript
       }
       $('.list-group-item').click(function(){
         $('' + $(this).attr('data-target')).modal('show');
+        fbq('track', 'ViewContent', {'content_type': $(this).attr('opp_type'), 'content_name': $(this).attr('id')});
+      });
+      $('.modal').on('shown.bs.modal', function(){
+        fbq('track', 'ViewContent', {'content_type': 'show_modal_on_landing'});
       });
       $('#letsgo, .age-button').click(function(){
         $('html, body').animate({

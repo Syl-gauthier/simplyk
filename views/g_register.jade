@@ -198,6 +198,7 @@ block footscript
                 if (env == 'prod') {
                   amplitude.getInstance().logEvent('g_register', event_props);
                 }
+                fbq('track', 'CompleteRegistration');
             }
         }
 
