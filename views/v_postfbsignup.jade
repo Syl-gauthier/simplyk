@@ -1,0 +1,153 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'completeFB'
+block head
+  title Compléter son profil
+  meta(name='description', content='Compléter ses informations Simplyk')
+block content
+      #map-section.container-fluid
+        .row
+          .col-md-4.col-md-offset-4
+            .page-header
+              h1 Compléter son profil
+              .alert.alert-danger.hidden#email-exists
+                | The email address you entered is already in use
+              if error
+                p.alert.alert-danger #{error}
+                  .input-group.conn-input
+                label.control-label Adresse courriel
+                input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.io', name='email', aria-describedby='basic-addon1', required)
+        .row
+          .col-md-4.col-md-offset-4
+            form#registerform(action="/register_volunteer", method="post", role='form')
+              .row
+                h2= infos_missing
+                .col-md-6
+                  .form-group.conn-input(class=infos_missing.indexOf('email')>-1 ? '':'hidden')
+                    label.control-label Adresse courriel *
+                    input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.io', name='email', aria-describedby='basic-addon1', value=infos_missing.indexOf('email')>-1 ? '':infos_fb['email'], required)
+                  .form-group.conn-input(class=infos_missing.indexOf('first_name')>-1 ? '':'hidden')
+                    label.control-label Prénom *
+                    input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', value=infos_missing.indexOf('first_name')>-1 ? '':infos_fb['first_name'], required)
+                  .form-group.conn-input(class=infos_missing.indexOf('last_name')>-1 ? '':'hidden')
+                    label.control-label Nom *
+                    input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', value=infos_missing.indexOf('last_name')>-1 ? '':infos_fb['last_name'], required)
+                .col-md-6
+                  .form-group.conn-input(class=infos_missing.indexOf('birthday')>-1 ? '':'hidden')
+                    label.control-label Date de naissance *
+                    i.fa.fa-question-circle(data-toggle='tooltip' data-placement='top' title='Pour proposer du bénévolat adapté à ton âge')
+                    input#birthdate.form-control(type='date', placeholder='', name='birthdate', aria-describedby='basic-addon1', value=infos_missing.indexOf('birthday')>-1 ? '':infos_fb['birthday'] required)
+                  .form-group.conn-input(class=infos_missing.indexOf('phone')>-1 ? '':'hidden')
+                    label.control-label Numéro de téléphone
+                    input#mail.form-control(type='text', placeholder='Ex: 514 314 1592', name='phone', value=infos_missing.indexOf('phone')>-1 ? '':infos_fb['phone'], aria-describedby='basic-addon1')
+                  .form-group.conn-input
+                    label.control-label Définir un mot de passe *
+                    input#password.form-control(type='password', placeholder='', name='password', aria-describedby='basic-addon1', required)
+              .form-group.conn-input
+                input#admin_checkbox(type='checkbox' name='admin_checkbox') 
+                |   Je suis actuellement inscrit dans un établissement scolaire
+                br
+                .form-group.conn-input.hidden#admin_dropdown
+                  label.control-label Établissement scolaire
+                  select#admin.form-control(placeholder='', name='admin', aria-describedby='basic-addon1')
+                    each school, school_i in schools_list
+                      option= school
+                .form-group.conn-input.hidden#classes_dropdown
+                  label.control-label Classe
+                  each client, client_i in clients
+                    select.form-control.hidden(placeholder='', aria-describedby='basic-addon1', id=client.id, class='client_classes_item')
+                      each classe, classe_i in client.classes
+                        option= classe  
+            .form-group.conn-input
+              p.
+                En cliquant sur le bouton "Compléter", j'accepte les <a href="\legal" target="_blank">conditions générales d'utilisation </a>. Si je suis mineur je dois prévenir un responsable avant de me rendre à une activité.
+            .form-group.conn-input
+              input.btn.btn-default#submit-button(type='submit', form='registerform', value='Compléter', style='margin-bottom: 50px;')
+block footscript
+  script(src="/bower_components/jquery-ui/ui/widgets/datepicker.js")
+  script.
+    $(document).ready(function(){
+      'use strict';
+      var event_props = {};
+      if (window.location.pathname == '/register_organism'){
+        event_props.type = 'org';
+      } else if (window.location.pathname == '/register_volunteer') {
+        event_props.type = 'vol';
+      } else {
+        event_props.type = 'prob';
+      }
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('g_visit_register', event_props);
+      }
+      var clients = !{JSON.stringify(clients)};
+      if ( $('#birthdate').prop('type') != 'date' ) {
+        $('#birthdate').datepicker({
+          changeMonth: true,
+          changeYear: true,
+          yearRange: "1950:2020"
+        });
+      }
+      $('#admin_checkbox').click(function(){
+        $('#admin_dropdown').removeClass('hidden');
+        $('#admin_dropdown').toggle(this.checked);
+        $('#classes_dropdown').toggle(this.checked);
+      });
+      $('#admin').change(function(){
+        $('#classes_dropdown').addClass('hidden');
+        $('.client_classes_item').addClass('hidden');
+        $('.client_classes_item').removeAttr('name');
+        console.info('Admin changed');
+        var school = $('#admin').val();
+        var school_index = clients.map(function(c){return c.name;}).indexOf(school);
+        if (school_index != -1){
+          var classes_number = clients[school_index].classes.length;
+          if(classes_number>0){
+            var client_selected_id = clients[school_index].id;
+            $('#classes_dropdown').removeClass('hidden');
+            $('#'+client_selected_id).removeClass('hidden');
+            $('#'+client_selected_id).attr('name', 'classe');
+            console.info('Admin changed and this is a client school');
+          }
+        }
+      });
+    })
+    var password = document.getElementById('password');
+  script.
+    var event_props = {};
+    if (window.location.pathname == '/register_organism'){
+      event_props.type = 'org';
+    } else if (window.location.pathname == '/register_volunteer') {
+      event_props.type = 'vol';
+    } else {
+      event_props.type = 'prob';
+    }
+    $('form#registerform').submit(function(e) {
+        e.preventDefault(); // Prevent default post
+        var form = $(this);
+
+        function onSuccess(response) {
+            if(response.exists) {
+                console.log('Email already exists'); 
+                $('#email-exists').removeClass('hidden');
+                window.scrollTo(0,0);
+            }
+            else{
+                //Remove the current event handler and submit
+                $('form#registerform').unbind('submit'); 
+                $('form#registerform').submit();
+                if (env == 'prod') {
+                  amplitude.getInstance().logEvent('g_register', event_props);
+                }
+            }
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: 'register_check', 
+            data: form.serialize(),
+            success: onSuccess
+        });
+    });
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })

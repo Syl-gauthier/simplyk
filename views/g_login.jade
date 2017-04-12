@@ -28,7 +28,9 @@ block share
 					FB.api('/'+response.authResponse.userID+'?fields=email,id,name,birthday,first_name,last_name,age_range,verified', function(response){
 						if (response && !response.error){
 							console.log(JSON.stringify(response));
-							$.post('/login', {'fb': true, 'user': response});
+							$.post('/login', {'fb': true, 'user': response}, function(datas){
+								window.location.href = '/completeProfileFB';
+							});
 						} else {
 							//TO WRITE
 						}

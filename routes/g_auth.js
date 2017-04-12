@@ -34,9 +34,82 @@ router.get('/legal', function(req, res) {
 });
 
 router.post('/login', function(req, res, next) {
+  //FB LOGIN
   if (req.body.fb) {
-    console.log('IN fb')
+    console.log('IN fb login');
+    const possibleFbInfos = ['email', 'id', 'birthday', 'first_name', 'last_name'];
+    console.log('req.body : ' + JSON.stringify(req.body));
+    let pSendToPostFbRegister = new Promise(function(resolve, reject) {
+      if (req.body['user[id]']) {
+        Volunteer.findOne({
+          'fb_id': req.body['user[id]']
+        }, function(err, vol_found_by_id) {
+          if (err) {
+            console.error('ERROR : in FB login try to find vol with FB_user_id : ' + err);
+            reject(err);
+          } else {
+            console.log('vol_found_by_id : ' + vol_found_by_id);
+            if (vol_found_by_id) {
+              vol_connection(vol_found_by_id);
+            } else {
+              if (req.body['user[email]']) {
+                Volunteer.update({
+                  'email': req.body['user[email]']
+                }, {
+                  'fb_id': req.body['user[id]']
+                }, {
+                  new: true
+                }, function(err, vol_found_by_email) {
+                  if (err) {
+                    console.error('ERROR : in FB login try to find vol with email : ' + err);
+                    reject(err);
+                  } else {
+                    console.log('vol_found_by_email : ' + vol_found_by_email);
+                    if (vol_found_by_email) {
+                      vol_connection(vol_found_by_email);
+                    } else {
+                      //If user[email] && user[id] but not already subscribed
+                      resolve();
+                    };
+                  }
+                });
+              } else {
+                //If no user[email]
+                resolve();
+              }
+            }
+          }
+        });
+      } else {
+        //If no user[id]
+        resolve();
+      }
+    });
+    pSendToPostFbRegister.then(() => {
+      // NEW USER
+      let infos_fb = {};
+      let infos_missing = new Array();
+      //List available infos
+      possibleFbInfos.map(info => {
+        if ((req.body['user[' + info + ']'])) {
+          console.log('info : ' + info + ' req.body.user[] : ' + (req.body['user[' + info + ']']));
+          infos_fb[info] = req.body['user[' + info + ']'];
+        } else {
+          console.log('info : ' + info + ' req.body.user[] : ' + (req.body['user[' + info + ']']));
+          infos_missing.push(info);
+        }
+      });
+      console.log('infos_fb : ' + infos_fb);
+      console.log('infos_missing : ' + infos_missing);
+      req.session.infos_fb = infos_fb;
+      req.session.infos_missing = infos_missing;
+      res.status(200).end();
+    }).catch((err) => {
+      err.type = 'MINOR';
+      next(err);
+    });
   } else {
+    //DEFAULT LOGIN
     passport.authenticate(['local-volunteer', 'local-admin', 'local-organism'], function(err, user, info) {
       console.log(info);
       if (err) {
@@ -86,41 +159,7 @@ router.post('/login', function(req, res, next) {
           res.redirect('/organism/dashboard');
         });
       } else if (user.group == "volunteer") {
-        req.session.volunteer = user;
-        req.session.group = "volunteer";
-        console.log('IN LOGIN post and req.session.group = ' + req.session.group);
-        //Intercom create connexion event
-        client.events.create({
-          event_name: 'vol_connexion',
-          created_at: Math.round(Date.now() / 1000),
-          user_id: user._id
-        });
-        client.users.update({
-          user_id: user._id,
-          custom_attributes: {
-            group: 'volunteer'
-          },
-          update_last_request_at: true,
-          new_session: true
-        });
-        req.session.save(function(err) {
-          if (err) {
-            return next(err);
-          }
-          if ((req.session.volunteer.events.find(function(ev) {
-              return (Date.parse(ev.day) < Date.now() && ev.status === 'subscribed')
-            }) != undefined) || (req.session.volunteer.extras.find(function(ext) {
-              return (ext.status == 'denied')
-            }) != undefined) || (req.session.volunteer.events.find(function(ev) {
-              return (ev.status == 'denied')
-            }) != undefined) || (req.session.volunteer.long_terms.find(function(lt) {
-              return (lt.status == 'denied')
-            }) != undefined)) {
-            res.redirect('/volunteer/profile');
-          } else {
-            res.redirect('/volunteer/map');
-          }
-        });
+        vol_connection(user);
       } else if (user.group == "admin") {
         req.session.admin = user;
         req.session.group = "admin";
@@ -155,6 +194,44 @@ router.post('/login', function(req, res, next) {
         });
       }
     })(req, res, next);
+  }
+
+  function vol_connection(user) { // CONNEXION
+    req.session.volunteer = user;
+    req.session.group = "volunteer";
+    console.log('IN LOGIN post and req.session.group = ' + req.session.group);
+    //Intercom create connexion event
+    client.events.create({
+      event_name: 'vol_connexion',
+      created_at: Math.round(Date.now() / 1000),
+      user_id: user._id
+    });
+    client.users.update({
+      user_id: user._id,
+      custom_attributes: {
+        group: 'volunteer'
+      },
+      update_last_request_at: true,
+      new_session: true
+    });
+    req.session.save(function(err) {
+      if (err) {
+        return next(err);
+      }
+      if ((req.session.volunteer.events.find(function(ev) {
+          return (Date.parse(ev.day) < Date.now() && ev.status === 'subscribed')
+        }) != undefined) || (req.session.volunteer.extras.find(function(ext) {
+          return (ext.status == 'denied')
+        }) != undefined) || (req.session.volunteer.events.find(function(ev) {
+          return (ev.status == 'denied')
+        }) != undefined) || (req.session.volunteer.long_terms.find(function(lt) {
+          return (lt.status == 'denied')
+        }) != undefined)) {
+        res.redirect('/volunteer/profile');
+      } else {
+        res.redirect('/volunteer/map');
+      }
+    });
   }
 });
 
@@ -421,6 +498,27 @@ router.post('/register_admin', function(req, res) {
   newAdmin.save({});
 
   res.redirect('/');
+});
+
+router.get('/completeProfileFB', function(req, res, next) {
+  school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
+    if (err) {
+      err.type = 'MINOR';
+      next(err);
+    };
+    client_school_list.getClientSchools(function(err, clients) {
+      if (err) {
+        err.type = 'MINOR';
+        next(err);
+      };
+      res.render('v_postfbsignup.jade', {
+        infos_fb: req.session.infos_fb,
+        infos_missing: req.session.infos_missing,
+        schools_list,
+        clients
+      });
+    });
+  });
 });
 
 router.post('*/register_check', function(req, res) {

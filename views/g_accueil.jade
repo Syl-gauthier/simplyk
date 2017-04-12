@@ -36,8 +36,13 @@ block share
         console.log('FB response : ' + JSON.stringify(response));
         if (response.status == 'connected') {
           console.log('FB connected');
-          $.get('/'+response.authResponse.userID, function(response){
-            console.log(JSON.strijngify(response));
+          FB.api('/'+response.authResponse.userID+'?fields=email,id,name,birthday,first_name,last_name,age_range,verified', function(response){
+            if (response && !response.error){
+              console.log(JSON.stringify(response));
+              $.post('/login', {'fb': true, 'user': response});
+            } else {
+              //TO WRITE
+            }
           })
         }
       })
