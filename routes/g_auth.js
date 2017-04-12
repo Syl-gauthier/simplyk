@@ -99,6 +99,9 @@ router.post('/login', function(req, res, next) {
           infos_missing.push(info);
         }
       });
+      if (req.body.user['birthday']){
+
+      }
       console.log('infos_fb : ' + infos_fb);
       console.log('infos_missing : ' + infos_missing);
       req.session.infos_fb = infos_fb;
@@ -325,6 +328,7 @@ router.post('/register_volunteer', function(req, res, next) {
           firstname: req.body.firstname,
           birthdate: birthdate_date,
           password: req.body.password,
+          fb_id: req.body.fb_id,
           events: [],
           long_terms: [],
           manuals: [],
