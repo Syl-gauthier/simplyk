@@ -183,7 +183,7 @@ block content
           .col-xs-6.col-sm-12.col-md-5#lts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
-              p.inline Engagement
+              p.inline Long terme
         #search_div
           .row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').visible-xs
             .col-xs-12.text-center
@@ -268,7 +268,7 @@ block content
                           h6.dist.inline
                           h6.inline.dist_reference km de toi
                       div.media-right.media-top
-                        span.badge.longterm Engagement
+                        span.badge.longterm Long terme
             li.list-group-item
               .panel.panel-default
                 .panel-heading(style='min-height: 60vh;')
@@ -350,6 +350,10 @@ block footscript
       }
       $('.list-group-item').click(function(){
         $('' + $(this).attr('data-target')).modal('show');
+        fbq('track', 'ViewContent', {'content_type': $(this).attr('opp_type'), 'content_name': $(this).attr('id')});
+      });
+      $('.modal').on('shown.bs.modal', function(){
+        fbq('track', 'ViewContent', {'content_type': 'show_modal_on_landing'});
       });
       $('#letsgo, .age-button').click(function(){
         $('html, body').animate({

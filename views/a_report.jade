@@ -6,6 +6,8 @@ block vars
 block head
   title Rapport de l'élèves
   meta(name='description', content='Lisez le rapport de bénévolat de l\'élèves')
+  style.
+    .refuse__modal {background-color: black; color: white}
 block content
   #map-section.container-fluid
     .row
@@ -22,7 +24,7 @@ block content
             ul.list-group
               li.list-group-item Date de naissance: #{date.printDate(volunteer.birthdate)}
                 small
-              li.list-group-item Adresse mail: #{volunteer.email}
+              li.list-group-item Adresse courriel: #{volunteer.email}
                 small
         p.alert.alert-success.hidden#manual-success
         div.btn.btn-warning(data-toggle='modal' data-target='#manualHoursModal', style='margin-bottom: 20px;') Ajouter des heures manuellement
@@ -64,7 +66,7 @@ block content
           tr
             td.text-center(style="vertical-align:middle")  <strong>#{volunteer.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)}</strong>  heures confirmées
           tr
-            th(rowspan='2' style="vertical-align:middle").text-center Extras ajoutés par l'élève ou l'administrateur
+            th(rowspan='2' style="vertical-align:middle").text-center Bénévolats ajoutés par l'élève ou l'administrateur
             td(rowspan='2' style="vertical-align:middle").text-center <strong> #{volunteer.extras.length + volunteer.manuals.length} </strong>
             td.text-center <strong>#{volunteer.extras.filter(function(ev){if(ev.hours_pending){return true;}else{return false;}}).map(el => el.hours_pending).reduce(hours_count, 0)}</strong> heures à confirmer
           tr
@@ -169,10 +171,39 @@ block content
                     td(align='center')
                       if ((event.status == 'confirmed') || (event.status == 'corrected') || (event.status == 'validated') || (event.status == 'denied'))
                         .btn-group(role='group')
-                          div.btn.btn-default.validate(vol=volunteer._id, id=event._id, type='events')
+                          div.btn.btn-default.validate(vol=volunteer._id, id=event._id, type='events' data-toggle='tooltip' data-placement='top' title='Valider le bénévolat')
                             i.fa.fa-check-square-o
-                          div.btn.btn-danger.deny(vol=volunteer._id, id=event._id, type='events')
+                          div.btn.btn-danger.deny(vol=volunteer._id, id=event._id, type='events' data-toggle='tooltip' data-placement='top' title='Demander à l\'élève de corriger ses retours sur le bénévolat')
+                            i.fa.fa-pencil-square-o
+                          div.btn.refuse__modal(vol=volunteer._id, id=event._id, type='events' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
                             i.fa.fa-times-circle-o
+                          .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+event._id)
+                            div.modal-dialog(role='document')
+                              .modal-content
+                                .modal-header
+                                  button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                    span(aria-hidden='true')
+                                    h4.modal-title Confirmes-tu ?
+                                .modal-body
+                                  p Ce refus sera définitif. Confirmes-tu ?
+                                .modal-footer
+                                  a.btn.btn-default(data-dismiss='modal') Annuler
+                                  input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=event._id, type='events')
+                      else if (event.status == 'pending')
+                        div.btn.refuse__modal(vol=volunteer._id, id=event._id, type='events' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
+                          i.fa.fa-times-circle-o
+                        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+event._id)
+                          div.modal-dialog(role='document')
+                            .modal-content
+                              .modal-header
+                                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                  span(aria-hidden='true')
+                                  h4.modal-title Confirmes-tu ?
+                              .modal-body
+                                p Ce refus sera définitif. Confirmes-tu ?
+                              .modal-footer
+                                a.btn.btn-default(data-dismiss='modal') Annuler
+                                input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=event._id, type='events')
     .row
       .col-md-10.col-md-offset-1(style='border: 3px solid #359B9C; margin-bottom:10px;')
         .page-header
@@ -260,17 +291,46 @@ block content
                     td(align='center')
                       if ((lt.status == 'confirmed') || (lt.status == 'corrected') || (lt.status == 'validated') || (lt.status == 'denied'))
                         .btn-group(role='group')
-                          div.btn.btn-default.validate(vol=volunteer._id, id=lt._id, type='long_terms')
+                          div.btn.btn-default.validate(vol=volunteer._id, id=lt._id, type='long_terms' data-toggle='tooltip' data-placement='top' title='Valider le bénévolat')
                             i.fa.fa-check-square-o
-                          div.btn.btn-danger.deny(vol=volunteer._id, id=lt._id, type='long_terms')
+                          div.btn.btn-danger.deny(vol=volunteer._id, id=lt._id, type='long_terms' data-toggle='tooltip' data-placement='top' title='Demander à l\'élève de corriger ses retours sur le bénévolat')
+                            i.fa.fa-pencil-square-o
+                          div.btn.refuse__modal(vol=volunteer._id, id=lt._id, type='long_terms' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
                             i.fa.fa-times-circle-o
+                          .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+lt._id)
+                            div.modal-dialog(role='document')
+                              .modal-content
+                                .modal-header
+                                  button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                    span(aria-hidden='true')
+                                    h4.modal-title Confirmes-tu ?
+                                .modal-body
+                                  p Ce refus sera définitif. Confirmes-tu ?
+                                .modal-footer
+                                  a.btn.btn-default(data-dismiss='modal') Annuler
+                                  input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=lt._id, type='long_terms')
+                      else if (lt.status == 'pending')
+                        div.btn.refuse__modal(vol=volunteer._id, id=lt._id, type='long_terms' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
+                          i.fa.fa-times-circle-o
+                        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+lt._id)
+                          div.modal-dialog(role='document')
+                            .modal-content
+                              .modal-header
+                                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                  span(aria-hidden='true')
+                                  h4.modal-title Confirmes-tu ?
+                              .modal-body
+                                p Ce refus sera définitif. Confirmes-tu ?
+                              .modal-footer
+                                a.btn.btn-default(data-dismiss='modal') Annuler
+                                input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=lt._id, type='long_terms')
     if (volunteer.extras || volunteer.manuals)
       .row
         .col-md-10.col-md-offset-1(style='border: 3px solid #E56252; margin-bottom:10px;')
           if (volunteer.extras)
             if (volunteer.extras.length > 0)
               .page-header
-                h3 EXTRAS AJOUTÉS PAR L'ÉLÈVE
+                h3 BÉNÉVOLATS AJOUTÉS PAR L'ÉLÈVE
               .no-side-padding
                 ul.list-group.list-opportunity
                   if (volunteer.extras)
@@ -346,10 +406,39 @@ block content
                           td(align='center')
                             if ((ext.status == 'confirmed') || (ext.status == 'corrected') || (ext.status == 'validated') || (ext.status == 'denied'))
                               .btn-group(role='group')
-                                div.btn.btn-default.validate(vol=volunteer._id, id=ext._id, type='extras')
+                                div.btn.btn-default.validate(vol=volunteer._id, id=ext._id, type='extras' data-toggle='tooltip' data-placement='top' title='Valider le bénévolat')
                                   i.fa.fa-check-square-o
-                                div.btn.btn-danger.deny(vol=volunteer._id, id=ext._id, type='extras')
+                                div.btn.btn-danger.deny(vol=volunteer._id, id=ext._id, type='extras' data-toggle='tooltip' data-placement='top' title='Demander à l\'élève de corriger ses retours sur le bénévolat')
+                                  i.fa.fa-pencil-square-o
+                                div.btn.refuse__modal(vol=volunteer._id, id=ext._id, type='extras' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
                                   i.fa.fa-times-circle-o
+                                .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+ext._id)
+                                  div.modal-dialog(role='document')
+                                    .modal-content
+                                      .modal-header
+                                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                          span(aria-hidden='true')
+                                          h4.modal-title Confirmes-tu ?
+                                      .modal-body
+                                        p Ce refus sera définitif. Confirmes-tu ?
+                                      .modal-footer
+                                        a.btn.btn-default(data-dismiss='modal') Annuler
+                                        input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=ext._id, type='extras')
+                            else if (ext.status == 'pending')
+                              div.btn.refuse__modal(vol=volunteer._id, id=ext._id, type='extras' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
+                                i.fa.fa-times-circle-o
+                              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+ext._id)
+                                div.modal-dialog(role='document')
+                                  .modal-content
+                                    .modal-header
+                                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                        span(aria-hidden='true')
+                                        h4.modal-title Confirmes-tu ?
+                                    .modal-body
+                                      p Ce refus sera définitif. Confirmes-tu ?
+                                    .modal-footer
+                                      a.btn.btn-default(data-dismiss='modal') Annuler
+                                      input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=ext._id, type='extras')
           if (volunteer.manuals)
             if (volunteer.manuals.length > 0)
               .page-header
@@ -451,6 +540,24 @@ block footscript
         });
       });
 
+      //Handle validation or denying button
+      $('.refuse__modal').click(function(){
+        $('#refuseModal'+$(this).attr('id')).modal();
+      })
+
+      $('.refuse').click(function(){
+        const type = $(this).attr('type');
+        const row = $(this).closest('.status');
+        const modal = $('#refuseModal'+$(this).attr('id'));
+        $.post('/admin/refuse', {type: $(this).attr('type'), id: $(this).attr('id'), vol: $(this).attr('vol')})
+        .done(function(data){
+          console.info('data : ' + JSON.stringify(data));
+          modal.modal('hide');
+          //buttons.html('<p>'+data.message+'</p>');
+          row.addClass('hidden');
+        });
+      });
+
       const getRowClass = function(status){
         console.info('Status : ' + status);
         if((status == 'pending') || (status == 'confirmed') || (status == 'corrected')){ console.info('Return warning');return 'warning'}
@@ -467,6 +574,9 @@ block footscript
   script(type='text/javascript').
     'use strict';
     $(document).ready(function(){
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      });
       $('.edit').click(function(){
         const man_id = $(this).attr('man');
         const p = $(this).parent();
