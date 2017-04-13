@@ -15,38 +15,6 @@ block vars
   - function isAdult(ageMin){var result=false;if(ageMin>=16){result=true}return result;}
   - var school_name = ""; if (volunteer && volunteer.admin.school_name){school_name = volunteer.admin.school_name};
 
-block share
-  script.
-    (function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v2.8&appId=1829081597379617";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-    console.log('FB process begin')
-    window.fbAsyncInit = function() {
-      console.log('FB process async')
-      FB.init({
-        appId      : 1829081597379617,
-        xfbml      : true,
-        version    : 'v2.8'
-      });
-      FB.getLoginStatus(function(response){
-        console.log('FB response : ' + JSON.stringify(response));
-        if (response.status == 'connected') {
-          console.log('FB connected');
-          FB.api('/'+response.authResponse.userID+'?fields=email,id,name,birthday,first_name,last_name,age_range,verified', function(response){
-            if (response && !response.error){
-              console.log(JSON.stringify(response));
-              $.post('/login', {'fb': true, 'user': response});
-            } else {
-              //TO WRITE
-            }
-          })
-        }
-      })
-    }
 
 block content
   each act, index in activities

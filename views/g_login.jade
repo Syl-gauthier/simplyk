@@ -6,9 +6,9 @@ block head
 	title Se connecter
 	meta(name='description', content='Connectez-vous pour devenir bénévole ou trouver des bénévoles')
 	style.
-		#fb-button {background-color: #3B5998; border-color: #3B5998}
-		#loginform {border-top: 1px solid #ddd}
-		#social-login__div {margin-bottom: 15px}
+		#fb-button {background-color: #3B5998; border-color: #3B5998; color:white}
+		#loginform {border-top: 1px solid #ddd; padding-bottom: 15px; border-bottom: 1px solid #eee}
+		#social-login__div {padding-top: 15px;}
 
 block share
 	#fb-root
@@ -20,23 +20,29 @@ block share
 		  js.src = "//connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v2.8&appId=1829081597379617";
 		  fjs.parentNode.insertBefore(js, fjs);
 		}(document, 'script', 'facebook-jssdk'));
-		function checkLoginState (){
-			FB.getLoginStatus(function(response){
+		function fb_connect(){
+			console.log('#fb-button click');
+			FB.login(function(response){
 				console.log('FB response : ' + JSON.stringify(response));
 				if (response.status == 'connected') {
 					console.log('FB connected');
-					FB.api('/'+response.authResponse.userID+'?fields=email,id,name,birthday,first_name,last_name,age_range,verified', function(response){
+					FB.api('/'+response.authResponse.userID+'?fields=email,id,name,first_name,last_name,age_range,verified', function(response){
 						if (response && !response.error){
 							console.log(JSON.stringify(response));
 							$.post('/login', {'fb': true, 'user': response}, function(datas){
-								window.location.href = '/completeProfileFB';
+								console.log('datas : ' + JSON.stringify(datas));
+								if (datas.redirection) {
+									window.location.href = datas.redirection;
+								} else {
+									window.location.href = '';
+								}
 							});
 						} else {
 							//TO WRITE
 						}
-					})
+					});
 				}
-			})
+			}, {scope: 'public_profile, email'});
 		}
 		window.fbAsyncInit = function() {
 			FB.init({
@@ -44,7 +50,6 @@ block share
 				xfbml: true,
 				version: 'v2.8'
 			});
-			checkLoginState();
 		 }
 
 block content
@@ -52,7 +57,7 @@ block content
 		.row
 			.col-md-6.col-md-offset-3
 				.page-header
-					h1 Connexion
+					h1 Bienvenue
 					if error == 1
 						p.alert.alert-danger Wrong mail or password
 					if error == 2
@@ -71,17 +76,15 @@ block content
 
 		.row
 			.col-md-5.col-md-offset-3
-				.text-center#social-login__div
-					.fb-login-button(data-max-rows='1' data-size='large' data-show-faces='faces' data-auto-logout-link='true' onlogin="checkLoginState();") 
-				form#loginform(action="/login", method="post", role='form')
+				a(data-toggle='modal' data-target='#forgottenModal', style='cursor: pointer;') Mot de passe oublié ?
+				form#loginform(action="/login", method="post", role='form').text-center
 					.input-group.conn-input
 						span#basic-addon1.input-group-addon Adresse courriel
 						input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='email', aria-describedby='basic-addon1', required)
 					.input-group.conn-input
 						span#basic-addon1.input-group-addon Mot de passe
 						input#password.form-control(type='password', placeholder='', name='password', aria-describedby='basic-addon1', required)
-					input.btn.btn-default#login_button(type='submit', form='loginform', value='Se connecter')
-				a(data-toggle='modal' data-target='#forgottenModal', style='cursor: pointer;') Mot de passe oublié ?
+					input.text-center.btn.btn-default#login_button(type='submit', form='loginform', value='Connexion par email')
 				.modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='forgottenModal')
 					div.modal-dialog(role='document')
 						form(id='forgottenForm', role='form').modal-content
@@ -96,6 +99,11 @@ block content
 							div.modal-footer
 								input.btn.btn-warning(type='submit', form='forgottenForm', value='Réinitialiser le mot de passe')
 								a.btn.btn-default(data-dismiss='modal') Fermer
+				p.text-center <b>OU</b>
+				.text-center#social-login__div
+					.btn.btn-default#fb-button(onclick='return fb_connect();')
+						i.fa.fa-facebook
+						p.inline <b>Continuer avec Facebook</b>
 
 
 block footscript

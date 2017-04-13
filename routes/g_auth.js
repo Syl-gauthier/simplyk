@@ -37,7 +37,7 @@ router.post('/login', function(req, res, next) {
   //FB LOGIN
   if (req.body.fb) {
     console.log('IN fb login');
-    const possibleFbInfos = ['email', 'id', 'birthday', 'first_name', 'last_name'];
+    const possibleFbInfos = ['email', 'id', 'first_name', 'last_name'];
     console.log('req.body : ' + JSON.stringify(req.body));
     let pSendToPostFbRegister = new Promise(function(resolve, reject) {
       if (req.body['user[id]']) {
@@ -48,12 +48,18 @@ router.post('/login', function(req, res, next) {
             console.error('ERROR : in FB login try to find vol with FB_user_id : ' + err);
             reject(err);
           } else {
-            console.log('vol_found_by_id : ' + vol_found_by_id);
+            console.log('vol_found_by_id : ' + JSON.stringify(vol_found_by_id));
             if (vol_found_by_id) {
-              vol_connection(vol_found_by_id);
+              if (!vol_found_by_id.email_verified) {
+                res.send({
+                  'redirection': 'login?login_error=2'
+                });
+              } else {
+                vol_connection(vol_found_by_id);
+              }
             } else {
               if (req.body['user[email]']) {
-                Volunteer.update({
+                Volunteer.findOneAndUpdate({
                   'email': req.body['user[email]']
                 }, {
                   'fb_id': req.body['user[id]']
@@ -64,9 +70,15 @@ router.post('/login', function(req, res, next) {
                     console.error('ERROR : in FB login try to find vol with email : ' + err);
                     reject(err);
                   } else {
-                    console.log('vol_found_by_email : ' + vol_found_by_email);
+                    console.log('vol_found_by_email : ' + JSON.stringify(vol_found_by_email));
                     if (vol_found_by_email) {
-                      vol_connection(vol_found_by_email);
+                      if (!vol_found_by_email.email_verified) {
+                        res.send({
+                          'redirection': 'login?login_error=2'
+                        });
+                      } else {
+                        vol_connection(vol_found_by_email);
+                      }
                     } else {
                       //If user[email] && user[id] but not already subscribed
                       resolve();
@@ -99,14 +111,13 @@ router.post('/login', function(req, res, next) {
           infos_missing.push(info);
         }
       });
-      if (req.body.user['birthday']){
-
-      }
       console.log('infos_fb : ' + infos_fb);
       console.log('infos_missing : ' + infos_missing);
       req.session.infos_fb = infos_fb;
       req.session.infos_missing = infos_missing;
-      res.status(200).end();
+      res.send({
+        'redirection': '/completeProfileFB'
+      });
     }).catch((err) => {
       err.type = 'MINOR';
       next(err);
@@ -230,9 +241,21 @@ router.post('/login', function(req, res, next) {
         }) != undefined) || (req.session.volunteer.long_terms.find(function(lt) {
           return (lt.status == 'denied')
         }) != undefined)) {
-        res.redirect('/volunteer/profile');
+        if (req.body.fb) {
+          res.send({
+            'redirection': '/volunteer/profile'
+          });
+        } else {
+          res.redirect('/volunteer/profile');
+        }
       } else {
-        res.redirect('/volunteer/map');
+        if (req.body.fb) {
+          res.send({
+            'redirection': '/volunteer/map'
+          });
+        } else {
+          res.redirect('/volunteer/map');
+        }
       }
     });
   }
@@ -306,14 +329,18 @@ router.post('/register_volunteer', function(req, res, next) {
       //Add volunteer
       let admin = {};
       let student = false;
+      let email_verified = false;
       let school_name = null;
       let phone = req.body.phone;
       console.log('birthdate_year : ' + req.body.birthdate_year);
       console.log('birthdate_month : ' + req.body.birthdate_month);
       console.log('birthdate_day : ' + req.body.birthdate_day);
-      
+      if (req.body.email_verified == 'true') {
+        email_verified = true;
+      }
+
       let birthdate_date = new Date(req.body.birthdate_year, req.body.birthdate_month - 1, req.body.birthdate_day);
-      
+
       console.log('birthdate_string : ' + birthdate_date);
       let birthdate = birthdate_date.getTime();
       birthdate = birthdate / 1000;
@@ -322,7 +349,6 @@ router.post('/register_volunteer', function(req, res, next) {
       function createVolunteer(student, admin) {
         let newVolunteer = new Volunteer({
           email: req.body.email,
-          email_verified: false,
           email_verify_string: randomString,
           lastname: req.body.lastname,
           firstname: req.body.firstname,
@@ -333,6 +359,7 @@ router.post('/register_volunteer', function(req, res, next) {
           long_terms: [],
           manuals: [],
           extras: [],
+          email_verified,
           phone,
           admin,
           student
@@ -361,7 +388,15 @@ router.post('/register_volunteer', function(req, res, next) {
                 firstname: req.body.firstname
               });
             };
-            res.redirect('/waitforverifying?recipient=' + req.body.email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);
+            if (email_verified) {
+              req.session.volunteer = vol;
+              req.session.group = 'volunteer';
+              req.session.save(function() {
+                res.redirect('/volunteer/profile');
+              })
+            } else {
+              res.redirect('/waitforverifying?recipient=' + req.body.email + '&verify_url=' + verifyUrl + '&firstname=' + req.body.firstname);
+            }
             // Intercom creates volunteers
             client.users.create({
               email: vol.email,

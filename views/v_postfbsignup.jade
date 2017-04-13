@@ -40,13 +40,14 @@ block content
                 .form-input(class=infos_missing.indexOf('last_name')>-1 ? '':'hidden')
                   input#lastname.form-control(type='text', placeholder='Nom', name='lastname', value=infos_missing.indexOf('last_name')>-1 ? '':infos_fb['last_name'], aria-describedby='basic-addon1', required)
                 .form-input(class=infos_missing.indexOf('email')>-1 ? '':'hidden')
+                  input.hidden(name='email_verified', value=infos_missing.indexOf('email')>-1 ? 'false' : 'true')
                   input#mail.form-control(type='email', placeholder='Adresse email', name='email', aria-describedby='basic-addon1', value=infos_missing.indexOf('email')>-1 ? '':infos_fb['email'], required)
-                .form-input(class=infos_missing.indexOf('birthday')>-1 ? '':'hidden')
+                .form-input
                   label.control-label Date de naissance *
                   i.fa.fa-question-circle(data-toggle='tooltip' data-placement='top' title='Pour proposer du bénévolat adapté à ton âge')
                   .row
                     .col-xs-5
-                      select.inline#birthdate_month.form-control(type='number', placeholder='Mois', name='birthdate_month', value=infos_missing.indexOf('birthday')>-1 ? '':infos_fb['birthday_month'], aria-describedby='basic-addon1' required)
+                      select.inline#birthdate_month.form-control(type='number', placeholder='Mois', name='birthdate_month', aria-describedby='basic-addon1' required)
                         option(value='01') Janvier
                         option(value='02') Février
                         option(value='03') Mars
@@ -60,11 +61,11 @@ block content
                         option(value='11') Novembre
                         option(value='12') Décembre
                     .col-xs-3.birth_inputs
-                      select#birthdate_day.form-control(type='number', placeholder='Jour', name='birthdate_day', value=infos_missing.indexOf('birthday')>-1 ? '':infos_fb['birthday_day'], aria-describedby='basic-addon1' required)
+                      select#birthdate_day.form-control(type='number', placeholder='Jour', name='birthdate_day', aria-describedby='basic-addon1' required)
                         each i in ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']
                           option(value=i)= i
                     .col-xs-4
-                      select.inline#birthdate_year.form-control(type='number', placeholder='Année', name='birthdate_year', value=infos_missing.indexOf('birthday')>-1 ? '':infos_fb['birthday_year'], aria-describedby='basic-addon1' required)
+                      select.inline#birthdate_year.form-control(type='number', placeholder='Année', name='birthdate_year', aria-describedby='basic-addon1' required)
                         each i in createYearsArray()
                           option(value=i, id=i)= i
                 .form-input.hidden
