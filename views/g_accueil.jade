@@ -15,6 +15,7 @@ block vars
   - function isAdult(ageMin){var result=false;if(ageMin>=16){result=true}return result;}
   - var school_name = ""; if (volunteer && volunteer.admin.school_name){school_name = volunteer.admin.school_name};
 
+
 block content
   each act, index in activities
     #myModal(tabindex='-1', role='dialog', class='modal fade ' + act._id)
