@@ -3,7 +3,7 @@ var bcrypt = require('bcrypt-nodejs');
 var crypt = require('./crypt');
 
 
-describe('Array', function() {
+describe('auth/crypt.js', function() {
   var pwd = 'testpassword123ABC';
 
   describe('generateHash', function() {
