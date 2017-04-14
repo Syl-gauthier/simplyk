@@ -1,1 +1,3 @@
-test/**/*.js auth/**/*.test.js
+test/**/*.js 
+auth/**/*.test.js
+lib/**/*.test.js
