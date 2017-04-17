@@ -29,4 +29,11 @@ describe('Environnement variable', function() {
     });
   });
   
+  
+  describe('emailerEnv', function() {
+    it('should have an EMAIL_CREDENTIALS environnement variable', function() {
+      assert.notEqual(undefined, process.env.EMAIL_CREDENTIALS);
+    });
+  });
+  
 });
