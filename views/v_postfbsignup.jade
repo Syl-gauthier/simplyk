@@ -20,7 +20,7 @@ block content
               h1.text-center Complète ton profil
               h4.text-center Une dernière petite étape
               .alert.alert-danger.hidden#email-exists
-                | The email address you entered is already in use
+                | Cette adresse courriel est déjà utilisée
               if error
                 p.alert.alert-danger #{error}
                   .input-group.conn-input
@@ -108,7 +108,7 @@ block footscript
         $('#classes_dropdown').toggle(this.checked);
       });
       $('#admin').change(function(){
-        $('#classes_dropdown').addClass('hidden');
+        $('#classes_dropdown').addClass('hidden'); 
         $('.client_classes_item').addClass('hidden');
         $('.client_classes_item').removeAttr('name');
         console.info('Admin changed');
