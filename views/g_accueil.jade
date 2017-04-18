@@ -77,7 +77,6 @@ block content
           div
             h4 Sois bénévole pour enfin avoir un impact sur les problèmes qui te préoccupent <br><br>
           div.hidden-xs
-            button.landing-buttons__item.btn.btn-warning.btn-lg#letsgo JE CONNAIS
             button.landing-buttons__item.btn.btn-warning.btn-lg.more#more <b>C'EST PARTI !</b>
       .col-sm-6.col-sm-offset-0.col-xs-offset-1.col-xs-11.section-div.hidden-xs
         img#landscape(src='images/happy_city.svg', align='middle')
@@ -95,7 +94,7 @@ block content
       .col-sm-5.col-sm-offset-1.section-div.hidden-xs
         .section__sentence.section__sentence--grouped
           div
-            h1 QUELQUE SOIT TES DISPONIBILITÉS <br>
+            h1 QUELLES QUE SOIENT TES DISPONIBILITÉS <br>
           div
             h4
       .col-sm-3.col-sm-offset-2.section-div.hidden-xs
@@ -108,7 +107,7 @@ block content
       .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
         .section__sentence-xs
           div.text-center
-            h3 QUELQUE SOIT TES DISPONIBILITÉS <br>
+            h3 QUELLES QUE SOIENT TES DISPONIBILITÉS <br>
       .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
         div
           button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--ev
@@ -313,6 +312,7 @@ block footscript
     }
   script.
     $( document ).ready(function() {
+      console.log('env ' + env);
       if (env == 'prod') {
         amplitude.getInstance().logEvent('g_landing');
       }
@@ -323,7 +323,7 @@ block footscript
       $('.modal').on('shown.bs.modal', function(){
         fbq('track', 'ViewContent', {'content_type': 'show_modal_on_landing'});
       });
-      $('#letsgo, .age-button').click(function(){
+      $('.age-button').click(function(){
         $('html, body').animate({
           scrollTop: $('#map-left').offset().top - 50
         }, 500)

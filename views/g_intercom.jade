@@ -3,7 +3,7 @@ script(type='text/javascript').
     'use strict';
     console.info('window.l : ' + window.location.hostname);
     let env = 'dev';
-    if (window.location.hostname != 'localhost' && window.location.hostname != 'afternoon-garden-54835.herokuapp.com') {
+    if (window.location.hostname != 'localhost' && window.location.hostname != 'afternoon-garden-54835.herokuapp.com' && window.location.hostname != 'local.simplyk.io') {
         env = 'prod';
         (function(e,t){var n=e.amplitude||{_q:[],_iq:{}};var r=t.createElement("script");r.type="text/javascript";
         r.async=true;r.src="https://d24n15hnbwhuhn.cloudfront.net/libs/amplitude-3.0.1-min.gz.js";
