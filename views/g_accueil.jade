@@ -312,7 +312,6 @@ block footscript
     }
   script.
     $( document ).ready(function() {
-      console.log('env ' + env);
       if (env == 'prod') {
         amplitude.getInstance().logEvent('g_landing');
       }
