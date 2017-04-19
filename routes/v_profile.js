@@ -162,7 +162,6 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
         }
       });
 
-      const balance = [0.0, 0.80, 0.10, 0.10];
 
       let game_results = game.getBadges(req.session.volunteer, lt_hours_done, events_hours_done, function(err, game_results) {
         if (err) {
@@ -187,7 +186,6 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
           error,
           err,
           badges,
-          balance,
           bonus,
           scores,
           score,

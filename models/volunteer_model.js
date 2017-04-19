@@ -15,6 +15,8 @@ var VolunteerSchema = new Schema({
   birthdate: Date,
   phone: String,
   complete: Boolean,
+  shares: Number,
+  preferences: [Number],
   emergency: { // this contact is needed for underaged
     em_name: String,
     em_phone: Number,
