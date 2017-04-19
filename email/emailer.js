@@ -24,7 +24,7 @@ function callSendMail(mailOptions, callback) {
     }
 
     console.log('Message sent: ' + info.response);
-    callback(error, info);
+    if (typeof callback == 'function') callback(error, info);
   });
 }
 
