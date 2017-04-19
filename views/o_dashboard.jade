@@ -457,6 +457,7 @@ block footscript
           let todo_id = $(this).attr('todo');
           let hours = $(this).attr('hours');
           let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
+          let event_props = {};
           $.post('/organism/confirmhours', {vol_id: vol_id, type: type, lt_id: lt_id, todo: todo_id, hours: hours})
           .done(function(data, status){
             if (env == 'prod') {

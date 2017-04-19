@@ -33,25 +33,25 @@ block content
         h3.page-header <strong> #{volunteer.firstname} #{volunteer.lastname}  </strong>
         .row#balance_row
           .col-xs-5
-            .row.balance
+            .row.balance(data-toggle="tooltip" data-placement="left" title='Solidarité')
               .col-xs-2.inline.text-center
                 i.fa.fa-heart(style='color: #0099ff')
               .col-xs-8
                 .balance__chart(style='background-color: #0099ff; width: '+(100*volunteer.preferences[0])+'%')
                   p.inline <b>#{Math.round(100*volunteer.preferences[0])}%</b>
-            .row.balance
+            .row.balance(data-toggle="tooltip" data-placement="left" title='Nature')
               .col-xs-2.inline.text-center
                 i.fa.fa-envira(style='color: #5BCF8F')
               .col-xs-8
                 .balance__chart(style='background-color: #5BCF8F; width: '+(100*volunteer.preferences[1])+'%')
                   p.inline <b>#{Math.round(100*volunteer.preferences[1])}%</b>
-            .row.balance
+            .row.balance(data-toggle="tooltip" data-placement="left" title='Sport et Culture')
               .col-xs-2.inline.text-center
                 i.fa.fa-institution(style='color: #FFC858')
               .col-xs-8
                 .balance__chart(style='background-color: #FFC858; width: '+(100*volunteer.preferences[2])+'%')
                   p.inline <b>#{Math.round(100*volunteer.preferences[2])}%</b>
-            .row.balance
+            .row.balance(data-toggle="tooltip" data-placement="left" title='Enfance')
               .col-xs-2.inline.text-center
                 i.fa.fa-child(style='color: #FF4F3C')
               .col-xs-8
