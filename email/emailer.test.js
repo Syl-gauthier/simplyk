@@ -10,6 +10,7 @@ var content = {
 
 describe('email/emailer.js (only one)', function() {
   describe('sendSubscriptionOrgEmail',function() {
+      this.retries(3);
       it('should send a message with no error', function(done) {
         this.timeout(8000);
         emailer.sendSubscriptionOrgEmail(content, function(err) {
