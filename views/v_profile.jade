@@ -25,6 +25,7 @@ block head
     .balance__chart {display: inline-block;}
     .balance__description {width: 20%; margin-right: 5px}
     #balance_row {margin-bottom: 15px}
+    .tooltip-inner {white-space:pre-wrap;}
 block content
   #map-section.container-fluid
     .row
@@ -57,7 +58,7 @@ block content
                 .balance__chart(style='background-color: #FF4F3C; width: '+(100*balance[3])+'%')
                   p.inline <b>#{100*balance[3]}%</b>
           .col-xs-7
-            h1 <b>#{score}</b> pts
+            h1(data-toggle="tooltip" data-html='true' data-placement="top" title='Badges: <b>'+bonus+'</b>pts <br>Heures validées: <b>'+scores[0]+'</b>pts <br>Partages: <b>'+scores[1]+'</b>pts <br>Fidélité: <b>'+scores[2]+'</b>pts') <b>#{score}</b> pts
         .row.text-center
           .col-xs-12
             if (volunteer.admin)
@@ -85,8 +86,8 @@ block content
                 img.rank__img(src='/images/bienfaiteur'+ badges[3] +'.svg')
                 p.rank__subtitle <b>Gourou</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well(class=(badges[4]>0 && badges[4]!=404) ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[4]>0 ? (badges[4]<5 ? 'Pour débloquer le badge Fan de niveau ' + (badges[4]+1) + ', il te faut comptabiliser au moins ' + getTooltipText(4, badges[4]) + ' connexions à la plateforme': 'Félicitation, tu es Fan Absolu !'):'Pour débloquer le badge Fan de niveau 1, il te faut comptabiliser au moins 10 connexions à la plateforme')
-                img.rank__img(src='/images/whale'+ badges[4] +'.svg')
+              .well.rank__well(class=(badges[4]>0 && badges[4]!=404) ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[4]>0 ? (badges[4]<5 ? 'Pour débloquer le badge Fan de niveau ' + (badges[4]+1) + ', il te faut comptabiliser au moins ' + getTooltipText(4, badges[4]) + ' connexions à la plateforme': (badges[4]==404 ? 'Problème de badge' : 'Félicitation, tu es Fan Absolu !')):'Pour débloquer le badge Fan de niveau 1, il te faut comptabiliser au moins 10 connexions à la plateforme')
+                img.rank__img(src=(badges[4]!=404 ? '/images/whale'+ badges[4] +'.svg':''))
                 p.rank__subtitle <b>Fan</b>
             .col-md-4.col-xs-6.text-center
               .well.rank__well(class=badges[5]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[5]>0 ? (badges[5]<5 ? 'Pour débloquer le badge Sprinter de niveau ' + (badges[5]+1) + ', il te faut valider ' + getTooltipText(5, badges[5]) + 'h de participation en évènement ponctuel': 'Félicitation, tu es Maître Sprinter !') :'Pour débloquer le badge Sprinter de niveau 1, il te faut valider une participation dans un évènement ponctuel')

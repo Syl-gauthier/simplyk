@@ -19,6 +19,7 @@ var Activity = require('../models/activity_model.js');
 var OrgTodo = require('../models/o_todo_model.js');
 const schools_res = require('../res/schools_res.js');
 var agenda = require('../lib/agenda.js');
+var game = require('../lib/badges.js');
 const getClientSchools = require('../lib/ressources/client_school_list.js').getClientSchools;
 
 
@@ -102,10 +103,6 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   }
   console.info('longterm_waiting : ' + longterm_waiting);
 
-  const badges = [1, 1, 2, 3, 4, 5];
-  const score = 154;
-  const balance = [0.0, 0.80, 0.10, 0.10];
-
 
   console.log('events_confirmed.length :  ' + events_confirmed.length);
   console.log('extras_hours_done :  ' + extras_hours_done);
@@ -164,28 +161,51 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
           }
         }
       });
-      res.render('v_profile.jade', {
-        session: req.session,
-        volunteer: req.session.volunteer,
-        group: req.session.group,
-        error,
-        err,
-        badges,
-        balance,
-        score,
-        schools_list,
-        events_subscribed,
-        events_confirmed,
-        events_pending,
-        events_past,
-        events_hours_done,
-        lt_hours_done,
-        manuals_hours_done,
-        extras_hours_done,
-        hash,
-        client_schools,
-        events_denied,
-        longterm_waiting
+
+      const balance = [0.0, 0.80, 0.10, 0.10];
+
+      let game_results = game.getBadges(req.session.volunteer, lt_hours_done, events_hours_done, function(err, game_results) {
+        if (err) {
+          let error = {};
+          error.print = 'Problème d\'obtention des badges du profil';
+          error.type = 'MINOR';
+          next(err);
+        }
+        const badges = game_results.badges;
+        const scores = game_results.scores;
+
+        function getSum(total, num) {
+          return total + num;
+        }
+        const bonus = game_results.bonus.reduce(getSum);
+        const score = bonus + scores.reduce(getSum);
+
+        res.render('v_profile.jade', {
+          session: req.session,
+          volunteer: req.session.volunteer,
+          group: req.session.group,
+          error,
+          err,
+          badges,
+          balance,
+          bonus,
+          scores,
+          score,
+          schools_list,
+          events_subscribed,
+          events_confirmed,
+          events_pending,
+          events_past,
+          events_hours_done,
+          lt_hours_done,
+          manuals_hours_done,
+          extras_hours_done,
+          hash,
+          client_schools,
+          events_denied,
+          longterm_waiting
+        });
+
       });
     });
   });
