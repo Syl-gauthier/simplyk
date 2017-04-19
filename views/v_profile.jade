@@ -58,7 +58,7 @@ block content
                 .balance__chart(style='background-color: #FF4F3C; width: '+(100*volunteer.preferences[3])+'%')
                   p.inline <b>#{Math.round(100*volunteer.preferences[3])}%</b>
           .col-xs-7
-            h1(data-toggle="tooltip" data-html='true' data-placement="top" title='Badges: <b>'+bonus+'</b>pts <br>Heures validées: <b>'+scores[0]+'</b>pts <br>Partages: <b>'+scores[1]+'</b>pts <br>Fidélité: <b>'+scores[2]+'</b>pts') <b>#{score}</b> pts
+            h1(data-toggle="tooltip" data-html='true' data-placement="left" title='Badges: <b>'+bonus+'</b>pts <br>Heures validées: <b>'+scores[0]+'</b>pts <br>Partages: <b>'+scores[1]+'</b>pts <br>Fidélité: <b>'+scores[2]+'</b>pts') <b>#{score}</b> pts
         .row.text-center
           .col-xs-12
             if (volunteer.admin)
