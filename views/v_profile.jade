@@ -18,7 +18,7 @@ block head
   meta(name='description', content='Accède à tes informations personnelles')
   style.
     .rank__img {height: 70px}
-    .rank__well {padding: 6px; background-color: #eee; border-color: #ccc; cursor: pointer}
+    .rank__well {padding: 6px; background-color: #eee; border-color: #ccc;}
     .rank__well--not {background-color: #fff; color:#aaa; border-color: #eee}
     .rank__subtitle {margin: 0px; margin-top: 6px;}
     .balance {margin-bottom: 5px;}
@@ -73,7 +73,7 @@ block content
               .well.rank__well(class=badges[0]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title='Tu as validé le niveau Débutant en finalisant ton inscription !')
                 img.rank__img(src='/images/dog_ballon'+ badges[0] +'.svg')
                 p.rank__subtitle <b>Débutant</b>
-            .col-md-4.col-xs-6.text-center(data-toggle='modal' data-target='#share_modal')
+            .col-md-4.col-xs-6.text-center(data-toggle='modal' data-target='#share_modal' style='cursor: pointer')
               .well.rank__well(class=badges[1]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title=badges[1]>0 ? (badges[2]<5 ? 'Pour débloquer le badge Populaire de niveau ' + (badges[1]+1) + ', il te faut inviter ' + getTooltipText(1, badges[1]) + ' amis au total sur la plateforme': 'Félicitation, tu es aussi Populaire que Gandhi !'):'Pour débloquer le badge Populaire de niveau 1, il te faut inviter 2 amis sur la plateforme')
                 img.rank__img(src='/images/porte_voix'+ badges[1] +'.svg')
                 p.rank__subtitle <b>Populaire</b>
@@ -382,8 +382,8 @@ block content
               h2 Évènements ponctuels
             #offers-list.no-side-padding
                 ul.list-group.list-opportunity
-                  unless (events_past || events_confirmed || events_pending || events_subscribed)
-                    p Pas d'inscriptions
+                  unless (events_past || events_confirmed || events_pending || events_subscribed || events_denied || events_refused)
+                    p.text-center <b>Pas d'inscriptions</b>
 
                   //IF EVENT_PAST
                   if events_past.length
@@ -575,6 +575,41 @@ block content
                                   span.badge(style='background-color: #113A20')= event.hours_done + ' heures réalisées'
                         #identifiant(style='display:none')
                           p= event._id
+
+                  // IF EVENT_REFUSED
+                  if events_refused.length
+                    h4 ÉVÈNEMENTS REFUSÉS PAR TON RESPONSABLE
+                  each event, index in events_refused
+                    li.list-group-item
+                      .panel.panel-default
+                        .panel-heading
+                          .media
+                            div.media-left.media-middle
+                              a(href='profile')
+                                img.media-object.little-img(src='/images/clouds.jpg')
+                            div.media-body
+                              h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
+                              h6 <small>pour</small> 
+                                a.inline(href='/all/organism/'+event.org_id)=event.org_name
+                            div.media-right.media-top
+                              span.badge(style='background-color: #000')= 'Refusé par ton responsable'
+                        .panel-body
+                          h6
+                            i.fa.fa-map-marker
+                            p.inline Adresse : #{event.address}
+                          h6.inline
+                            i.fa.fa-calendar-o
+                            p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
+                        .panel-footer
+                          ul.list-inline
+                            li
+                              a.btn.btn-default(id= event._id, href='/volunteer/event/'+event._id) Détails
+                            li
+                              h4.text-right
+                                if event.hours_done
+                                  span.badge(style='background-color: #113A20')= event.hours_done + ' heures réalisées'
+                        #identifiant(style='display:none')
+                          p= event._id
           .col-md-4.col-md-offset-2
             .page-header
               h2 Engagements long terme
@@ -604,6 +639,9 @@ block content
                             else if lt.status == 'validated'
                               div.media-right.media-top
                                 span.badge(style='background-color: #113A20')= 'Validé'
+                            else if lt.status == 'refused'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #000')= 'Refusé par ton responsable'
                           .panel-body
                             h6
                               i.fa.fa-map-marker
@@ -815,6 +853,9 @@ block content
                             else if ext.status == 'pending'
                               div.media-right.media-top
                                 span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
+                            else if ext.status == 'refused'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #000')= 'Refusé par ton responsable'
                           .panel-body
                             h6.inline
                               i.fa.fa-info
@@ -856,6 +897,9 @@ block content
                                         i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=ext._id)
                                       else if ext.status == 'pending'
                                         span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
+                                        i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=ext._id)
+                                      else if ext.status == 'refused'
+                                        span.badge(style='background-color: #000')= 'Refusé par ton responsable'
                                         i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=ext._id)
                                     div.panel-body
                                       each question, q_I in ext.student_questions
@@ -974,6 +1018,9 @@ block footscript
         input.attr('value', window.location.host+'/share/001'+input.attr('volunteer')); 
         input.focus();
         input.select();
+        if (env == 'prod') {
+          amplitude.getInstance().logEvent('v_popular_modal_open');
+        }
       });
       $('#school_name').change(function(){
         $('#classes_dropdown').addClass('hidden');

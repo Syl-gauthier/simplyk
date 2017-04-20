@@ -146,7 +146,7 @@ router.post('/edit-event', permissions.requireGroup('organism', 'admin'), functi
           });
 
           const activities_volunteers_to_update = event_in_organism.activities;
-          if (req.body.description || req.body.intitule) {
+          if (req.body.description || req.body.intitule || req.body.min_age) {
             if (req.body.description) {
               volunteer_update = {
                 'events.$.description': req.body.description
@@ -156,9 +156,13 @@ router.post('/edit-event', permissions.requireGroup('organism', 'admin'), functi
                 'events.$.intitule': req.body.intitule
               };
               activity_update = {
-                  'event_intitule': req.body.intitule
-                }
-                //A PROBLEM IS LEFT FOR NOW, BUT NOT URGENT (PEOPLE WHO ARE ALREADY SUBSCRIBED TO MULTIPLE ACTIVTY OF THE EVENT HAVE ONLY ONE ACIVITY UPDATED WITH THE NEW EVENT_INTITULE)
+                'event_intitule': req.body.intitule
+              };
+              //A PROBLEM IS LEFT FOR NOW, BUT NOT URGENT (PEOPLE WHO ARE ALREADY SUBSCRIBED TO MULTIPLE ACTIVTY OF THE EVENT HAVE ONLY ONE ACIVITY UPDATED WITH THE NEW EVENT_INTITULE)
+            } else if (req.body.min_age) {
+              activity_update = {
+                'min_age': req.body.min_age
+              };
             }
 
             Volunteer.update({
@@ -241,6 +245,11 @@ router.post('/edit-event', permissions.requireGroup('organism', 'admin'), functi
   } else if (req.body.intitule) {
     update = {
       'events.$.intitule': req.body.intitule
+    };
+    mongoOrganismUpdate(update);
+  } else if (req.body.min_age) {
+    update = {
+      'events.$.min_age': req.body.min_age
     };
     mongoOrganismUpdate(update);
   } else {

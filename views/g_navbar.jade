@@ -28,7 +28,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
       ul.nav.navbar-nav.navbar-right
         if group == 'volunteer'
           li(role='presentation')
-            form.navbar-form
+            form.navbar-form(method='post', action='./logout', id='logoutForm')
               li.dropdown
                 a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
                   span.caret
@@ -39,15 +39,14 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                     a.toggle-but(href='/contact') Contactez-nous
                   li
                     a.toggle-but(href='/us') À propos
+                  li
+                    a.toggle-but#logout_btn(onclick="console.log('OLOLO click');$(this).closest('form').submit();" href='#') Déconnexion
           unless page=='profile'
             li.navbar-link(role='presentation')
               a(href='/volunteer/profile') Mon tableau de bord
           unless page=='map'
             li.navbar-link(role='presentation')
               a(href='/volunteer/map') Carte
-          li(role='presentation')
-            form.navbar-form( method='post', action='./logout')
-              button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
         else if group == 'organism'
           li(role='presentation')
             form.navbar-form

@@ -9,6 +9,50 @@ block head
     .form-input {padding: 3px;}
     .law {font-size: 12px;}
     .birth_inputs {padding: 0px;}
+    #fb-button {background-color: #3B5998; border-color: #3B5998; color:white}
+
+block share
+  #fb-root
+  script.
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v2.8&appId=1829081597379617";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+    function fb_connect(){
+      console.log('#fb-button click');
+      FB.login(function(response){
+        console.log('FB response : ' + JSON.stringify(response));
+        if (response.status == 'connected') {
+          console.log('FB connected');
+          FB.api('/'+response.authResponse.userID+'?fields=email,id,name,first_name,last_name,age_range,verified', function(response){
+            if (response && !response.error){
+              console.log(JSON.stringify(response));
+              $.post('/login', {'fb': true, 'user': response}, function(datas){
+                console.log('datas : ' + JSON.stringify(datas));
+                if (datas.redirection) {
+                  window.location.href = datas.redirection;
+                } else {
+                  window.location.href = '';
+                }
+              });
+            } else {
+              //TO WRITE
+            }
+          });
+        }
+      }, {scope: 'public_profile, email'});
+    }
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId: 1829081597379617,
+        xfbml: true,
+        version: 'v2.8'
+      });
+     }
+
 block content
       #map-section.container-fluid
         .row
@@ -26,6 +70,11 @@ block content
           .col-md-4.col-md-offset-4.col-xs-10.col-xs-offset-1
             form#registerform(action="/register_#{type}", method="post", role='form')
               if type == 'volunteer'
+                .text-center#social-login__div
+                  .btn.btn-default#fb-button(onclick='return fb_connect();')
+                    i.fa.fa-facebook
+                    p.inline <b>Continuer avec Facebook</b>
+                p.text-center <b>OU</b>
                 .row
                   .form-input
                     input#firstname.form-control(type='text', placeholder='Prénom', name='firstname', aria-describedby='basic-addon1', required)
@@ -58,7 +107,7 @@ block content
                       .col-xs-4
                         select.inline#birthdate_year.form-control(type='number', placeholder='Année', name='birthdate_year', aria-describedby='basic-addon1' required)
                           each i in createYearsArray()
-                            option(value=i)= i
+                            option(value=i, id=i)= i
                   .form-input
                     input#password.form-control(type='password', placeholder='Définir un mot de passe', name='password', aria-describedby='basic-addon1', required)
                   .form-input
@@ -116,7 +165,7 @@ block content
                 p.law(align='justify').
                   En cliquant sur le bouton "s'inscrire", j'accepte les <a href="\legal" target="_blank">conditions générales d'utilisation </a>. Si je suis mineur je dois prévenir un responsable avant de me rendre à une activité.
               .form-input.text-center
-                input.btn.btn-default#submit-button(type='submit', form='registerform', value='S\'inscrire', style='margin-bottom: 50px;')
+                input.btn.btn-default#submit-button(type='submit', form='registerform', value='S\'inscrire')
         .row
           .col-md-2.col-md-offset-9.col-xs-10.col-xs-offset-1
             .page-header.well
@@ -139,6 +188,7 @@ block footscript
         amplitude.getInstance().logEvent('g_visit_register', event_props);
       }
       var clients = !{JSON.stringify(clients)};
+      $('#1995').attr('selected', true);
       /*if ( $('#birthdate').prop('type') != 'date' ) {
         $('#birthdate').datepicker({
           changeMonth: true,
@@ -197,6 +247,7 @@ block footscript
                 if (env == 'prod') {
                   amplitude.getInstance().logEvent('g_register', event_props);
                 }
+                fbq('track', 'CompleteRegistration');
             }
         }
 

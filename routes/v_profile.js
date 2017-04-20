@@ -31,6 +31,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   var events_subscribed = [];
   var events_denied = [];
   var events_confirmed = [];
+  var events_refused = [];
   var error;
   const volunteer = req.session.volunteer;
   for (var eventI = req.session.volunteer.events.length - 1; eventI >= 0; eventI--) {
@@ -45,6 +46,8 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       events_confirmed.push(volunteer.events[eventI]);
     } else if (volunteer.events[eventI].status == 'denied') {
       events_denied.push(volunteer.events[eventI]);
+    } else if (volunteer.events[eventI].status == 'refused') {
+      events_refused.push(volunteer.events[eventI]);
     } else {
       error = 'Une erreur avec vos inscriptions';
       console.log(error);
@@ -61,10 +64,10 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   }, lt_hours_done);
 
 
-  const events_hours_done = events_confirmed.reduce(function(pre, cur, ind, arr) {
-    if (arr[ind].hours_done) {
-      console.log('pre + arr[ind].hours_done : ' + (pre + arr[ind].hours_done));
-      return pre + arr[ind].hours_done;
+  const events_hours_done = volunteer.events.reduce(function(pre, cur, ind, arr) {
+    if ((['absent', 'subscribed', 'past'].indexOf(cur.status) == -1) && cur.hours_done) {
+      console.log('pre + arr[ind].hours_done : ' + (pre + cur.hours_done));
+      return pre + cur.hours_done;
     } else {
       return pre;
     }
@@ -154,14 +157,19 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
                 } else if ((a.status != 'confirmed') && (b.status == 'confirmed')) {
                   return 1;
                 } else {
-                  return 0;
+                  if ((a.status == 'refused') && (b.status != 'refused')) {
+                    return -1;
+                  } else if ((a.status != 'refused') && (b.status == 'refused')) {
+                    return 1;
+                  } else {
+                    return 0;
+                  }
                 }
               }
             }
           }
         }
       });
-
 
       let game_results = game.getBadges(req.session.volunteer, lt_hours_done, events_hours_done, function(err, game_results) {
         if (err) {
@@ -191,6 +199,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
           score,
           schools_list,
           events_subscribed,
+          events_refused,
           events_confirmed,
           events_pending,
           events_past,
@@ -203,7 +212,6 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
           events_denied,
           longterm_waiting
         });
-
       });
     });
   });

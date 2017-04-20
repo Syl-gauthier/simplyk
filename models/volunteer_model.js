@@ -17,6 +17,7 @@ var VolunteerSchema = new Schema({
   complete: Boolean,
   shares: Number,
   preferences: [Number],
+  fb_id: String, //user_id from FB
   emergency: { // this contact is needed for underaged
     em_name: String,
     em_phone: Number,

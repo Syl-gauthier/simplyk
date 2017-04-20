@@ -219,7 +219,7 @@ router.get('/share/001:vol', function(req, res, next) {
   console.log('req.params.vol ' + req.params.vol);
   if (req.session.volunteer) {
     if (req.session.volunteer._id && (req.params.vol == req.session.volunteer._id)) {
-      const cheat = encodeURIComponent('Tu ne peux pas te partager à toi même ! :)')
+      const cheat = encodeURIComponent('Tu ne peux pas partager Simplyk à toi même ! :)')
       res.redirect('/volunteer/map?error=' + cheat);
     } else {
       console.log('Second if');
