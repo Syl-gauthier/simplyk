@@ -4,6 +4,7 @@ const router = express.Router();
 
 const Organism = require('../models/organism_model.js');
 var Activity = require('../models/activity_model.js');
+var Volunteer = require('../models/volunteer_model.js');
 var emailer = require('../email/emailer.js');
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
 
@@ -213,6 +214,39 @@ router.get('/all/organism/:org_id', function(req, res, next) {
     }
   });
 });
+
+router.get('/share/001:vol', function(req, res, next) {
+  console.log('req.params.vol ' + req.params.vol);
+  if (req.session.volunteer) {
+    if (req.session.volunteer._id && (req.params.vol == req.session.volunteer._id)) {
+      const cheat = encodeURIComponent('Tu ne peux pas te partager à toi même ! :)')
+      res.redirect('/volunteer/map?error=' + cheat);
+    } else {
+      console.log('Second if');
+      successShare();
+    }
+  } else {
+    console.log('First if');
+    successShare();
+  }
+
+  function successShare() {
+    Volunteer.update({
+      '_id': req.params.vol
+    }, {
+      $inc: {
+        'shares': 1
+      }
+    }, function(err) {
+      if (err) {
+        err.type = 'MINOR';
+        err.print = 'Problème pour accéder aux informations de ce bénévolat';
+        next(err);
+      }
+      res.redirect('/');
+    });
+  }
+})
 
 router.get('/robots.txt', function(req, res) {
   res.type('text/plain');
