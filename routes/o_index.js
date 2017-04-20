@@ -16,6 +16,7 @@ var ObjectId = Schema.ObjectId;
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
 var date = require('../lib/dates/date_browser.js');
+var game = require('../lib/badges.js');
 
 var permissions = require('../middlewares/permissions.js');
 var Volunteer = require('../models/volunteer_model.js');
@@ -672,7 +673,7 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
             // Find status of the opp to see if it's refused and then don't change it
             let opp_status = {};
             if (typeof req.body.act_id !== 'undefined') {
-              
+
               if (req.body['answers[0][value]']) {
                 console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
                 //i starts from 1 to avoid to select the number answered as corrected hours
@@ -831,7 +832,9 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
 
             console.log('update : ' + update);
 
-            Volunteer.findOneAndUpdate(query, update, function(err) {
+            Volunteer.findOneAndUpdate(query, update, {
+              new: true
+            }, function(err, volunteer_updated) {
               if (err) {
                 err.type = 'MINOR';
                 next(err);
@@ -869,6 +872,13 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
                 });
                 console.info('Hours_pending goes to hours_done with corrected_hours : ' + req.body.correct_hours);
                 res.sendStatus(200);
+                game.refreshPreferences(volunteer_updated, function(err, volunteer_refreshed) {
+                  if (err) {
+                    err.type = 'MINOR';
+                    err.print = 'Problème de mise à jour des préférences du bénévole dans la base de données';
+                    next(err);
+                  }
+                });
               }
             });
           }
@@ -1151,7 +1161,9 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
             };
           };
 
-          Volunteer.findOneAndUpdate(query, update, function(err) {
+          Volunteer.findOneAndUpdate(query, update, {
+            new: true
+          }, function(err, volunteer_updated) {
             if (err) {
               err.type = 'MINOR';
               next(err);
@@ -1169,6 +1181,13 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
                 }
               });
               res.sendStatus(200);
+              game.refreshPreferences(volunteer_updated, function(err, volunteer_refreshed) {
+                if (err) {
+                  err.type = 'MINOR';
+                  err.print = 'Problème de mise à jour des préférences du bénévole dans la base de données';
+                  next(err);
+                }
+              });
             }
           });
         }

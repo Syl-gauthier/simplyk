@@ -9,89 +9,103 @@ block vars
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(parseDate(date).getTime() + tz_offset);return corrected_datetime}
   - function addHoursIfExists(arr){return arr.reduce(function(acc, curV, curI) {if(curV > 0 ){return acc + curV;} else {return acc;}})}
   - function getNotifications(type){if(type == 'em'){if(volunteer.extras.filter(function(ext){return ext.status == 'denied'}).length < 1){return ''}else{return '#E33831'}}else if (type == 'el'){if(volunteer.events.filter(function(evt){return evt.status == 'denied'}).length < 1){if(volunteer.long_terms.filter(function(lt){return lt.status == 'denied'}).length < 1){return ''}else{return '#E33831'}}else{return '#E33831'}}}
+  - function getTooltipText(badge, level){var seuils = {};var seuils_array = [[], [2, 4, 6, 8, 15], [0, 10, 30, 75, 150], [0, 10, 30, 100, 150], [10, 20, 50, 100, 500], [0, 5, 10, 50, 100]];return (seuils_array[badge])[level];}
 
 
 
 block head
   title Profil de bénévole
   meta(name='description', content='Accède à tes informations personnelles')
+  style.
+    .rank__img {height: 70px}
+    .rank__well {padding: 6px; background-color: #eee; border-color: #ccc;}
+    .rank__well--not {background-color: #fff; color:#aaa; border-color: #eee}
+    .rank__subtitle {margin: 0px; margin-top: 6px;}
+    .balance {margin-bottom: 5px;}
+    .balance__chart {display: inline-block;}
+    .balance__description {width: 20%; margin-right: 5px}
+    #balance_row {margin-bottom: 15px}
+    .tooltip-inner {white-space:pre-wrap;}
 block content
   #map-section.container-fluid
     .row
       .col-md-5.col-md-offset-1
         h3.page-header <strong> #{volunteer.firstname} #{volunteer.lastname}  </strong>
-        if lt_hours_done
-          p <i class='fa fa-2x fa-link fa-pull-left fa-border'></i> <b>Engagements long terme</b> <br> #{lt_hours_done} heures confirmées
-        else 
-          p <i class='fa fa-2x fa-link fa-pull-left fa-border'></i> <b>Engagements long terme</b> <br> 0 heures confirmées
-        if events_hours_done || extras_hours_done || manuals_hours_done
-          p <i class='fa fa-2x fa-trophy fa-pull-left fa-border'></i> <b>Évènements ponctuels</b> <br> #{addHoursIfExists([events_hours_done, extras_hours_done, manuals_hours_done])} heures confirmées
-        else 
-          p <i class='fa fa-2x fa-trophy fa-pull-left fa-border'></i> <b>Évènements ponctuels</b> <br> 0 heures confirmées
-      if vol_level
-        .col-md-5
-          .media.tp-15(style='margin-top: 6%')
-            if (vol_level == 1)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_10.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-default Débutant
-                p.text-info <strong>Conseil : </strong> Inscris-toi à un engagement bénévole pour augmenter ton niveau d'engagement !
-            if (vol_level == 2)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_25.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-info Apprenti
-                p.text-info <strong>Conseil : </strong> Une fois ton opération bénévole terminée, fais valider ta participation via ton tableau de bord !
-            if (vol_level == 3)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_40.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-primary Gros potentiel
-                p.text-info <strong>Conseil : </strong> Il ne te manque que quelques heures supplémentaires de bénévolat pour passer au rang suivant !
-            if (vol_level == 4)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_55.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-success Force vive
-                if (events_hours_done == 0)
-                  p.text-info <strong>Conseil : </strong> Participe à ton premier évènement et fais valider tes heures par l'organisme afin de monter de niveau !
-                else
-                  p.text-info <strong>Conseil : </strong> Augmente ton nombre d'heures d'implication pour atteindre le niveau suivant !
-            if (vol_level == 5)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_70.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-warning Formidable
-                if (events_hours_done == 0)
-                  p.text-info <strong>Conseil : </strong> Pour devenir un expert du bénévolat, il faut maintenant que tu participes aussi à un évènement ponctuel !
-                else if (lt_hours_done == 0)
-                  p.text-info <strong>Conseil : </strong> Participe à ton premier engagement à long terme afin de devenir un expert du bénévolat !
-                else
-                  p.text-info <strong>Conseil : </strong> Il ne te reste plus beaucoup d'heures d'implication pour devenir un expert du bénévolat !
-            if (vol_level == 6)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_max.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-danger Expert
-                p.text-info <strong>Conseil : </strong> Maintenant que tu es un expert, continue de t'impliquer afin de relever les challenges à venir sur la plateforme !
+        .row#balance_row
+          .col-xs-5
+            .row.balance(data-toggle="tooltip" data-placement="left" title='Solidarité')
+              .col-xs-2.inline.text-center
+                i.fa.fa-heart(style='color: #0099ff')
+              .col-xs-8
+                .balance__chart(style='background-color: #0099ff; width: '+(100*volunteer.preferences[0])+'%')
+                  p.inline <b>#{Math.round(100*volunteer.preferences[0])}%</b>
+            .row.balance(data-toggle="tooltip" data-placement="left" title='Nature')
+              .col-xs-2.inline.text-center
+                i.fa.fa-envira(style='color: #5BCF8F')
+              .col-xs-8
+                .balance__chart(style='background-color: #5BCF8F; width: '+(100*volunteer.preferences[1])+'%')
+                  p.inline <b>#{Math.round(100*volunteer.preferences[1])}%</b>
+            .row.balance(data-toggle="tooltip" data-placement="left" title='Sport et Culture')
+              .col-xs-2.inline.text-center
+                i.fa.fa-institution(style='color: #FFC858')
+              .col-xs-8
+                .balance__chart(style='background-color: #FFC858; width: '+(100*volunteer.preferences[2])+'%')
+                  p.inline <b>#{Math.round(100*volunteer.preferences[2])}%</b>
+            .row.balance(data-toggle="tooltip" data-placement="left" title='Enfance')
+              .col-xs-2.inline.text-center
+                i.fa.fa-child(style='color: #FF4F3C')
+              .col-xs-8
+                .balance__chart(style='background-color: #FF4F3C; width: '+(100*volunteer.preferences[3])+'%')
+                  p.inline <b>#{Math.round(100*volunteer.preferences[3])}%</b>
+          .col-xs-7
+            h1(data-toggle="tooltip" data-html='true' data-placement="left" title='Badges: <b>'+bonus+'</b>pts <br>Heures validées: <b>'+scores[0]+'</b>pts <br>Partages: <b>'+scores[1]+'</b>pts <br>Fidélité: <b>'+scores[2]+'</b>pts') <b>#{score}</b> pts
+        .row.text-center
+          .col-xs-12
             if (volunteer.admin)
               if ((client_schools.map(c => c.name).indexOf(volunteer.admin.school_name) != -1) && (volunteer.admin.school_name != 'HEC Montréal'))
-                a.btn.btn-info.pull-right(href='/volunteer/extra_simplyk_hours', role='button')
+                a.btn.btn-info(href='/volunteer/extra_simplyk_hours', role='button')
                   h4.inline Ajouter une expérience de bénévolat
                   i.fa.fa-plus
+      if badges
+        .col-md-5
+          .media.tp-15(style='margin-top: 6%')
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well(class=badges[0]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title='Tu as validé le niveau Débutant en finalisant ton inscription !')
+                img.rank__img(src='/images/dog_ballon'+ badges[0] +'.svg')
+                p.rank__subtitle <b>Débutant</b>
+            .col-md-4.col-xs-6.text-center(data-toggle='modal' data-target='#share_modal' style='cursor: pointer')
+              .well.rank__well(class=badges[1]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title=badges[1]>0 ? (badges[2]<5 ? 'Pour débloquer le badge Populaire de niveau ' + (badges[1]+1) + ', il te faut inviter ' + getTooltipText(1, badges[1]) + ' amis au total sur la plateforme': 'Félicitation, tu es aussi Populaire que Gandhi !'):'Pour débloquer le badge Populaire de niveau 1, il te faut inviter 2 amis sur la plateforme')
+                img.rank__img(src='/images/porte_voix'+ badges[1] +'.svg')
+                p.rank__subtitle <b>Populaire</b>
+            #share_modal.modal.fade(role='dialog' aria-labelledby='modalShareLabel')
+              .modal-dialog(role='document')
+                .modal-content
+                  .modal-header
+                    button.close(data-dismiss='modal' aria-label='Close')<span aria-hidden="true">&times;</span>
+                    h4.modal-title#modalShareLabel Partage à des amis
+                  .modal-body
+                    h3.text-center Annonce la bonne nouvelle
+                    img(align='center', src='/images/porte_voix_solo.svg', style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
+                    h5.text-center(style='font-weight: bold') Partage la plateforme à tes proches en partageant ce lien. <br> Cela te permet d'amplifier l'impact que tu as sur la société autour de toi et de faire ainsi évoluer ton profil Simplyk !
+                    input#share_link.form-control.text-center(type='text' volunteer=volunteer._id)
+                  .modal-footer
+                    a.btn.btn-default(data-dismiss='modal') Fermer
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well(class=badges[2]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title=badges[2]>0 ? (badges[2]<5 ? 'Pour débloquer le badge Marathonien de niveau ' + (badges[2]+1) + ', il te faut valider ' + getTooltipText(2, badges[2]) + 'h de participation en engagement long terme' : 'Félicitation, tu es Maître Marathonien !'):'Pour débloquer le badge Marathonien de niveau 1, il te faut valider une participation dans un engagement long terme')
+                img.rank__img(src='/images/yeezy'+ badges[2] +'.svg')
+                p.rank__subtitle <b>Marathonien</b>
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well(class=badges[3]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[3]>0 ? (badges[3]<5 ? 'Pour débloquer le badge Gourou de niveau ' + (badges[3]+1) + ', il te faut valider au moins une participation dans un évènement ponctuel, une dans un engagement long terme et ' + getTooltipText(3, badges[3]) + 'h totales de participation': 'Félicitation, tu es Gourou Absolu !'):'Pour débloquer le badge Gourou de niveau 1, il te faut valider une participation dans un évènement ponctuel et une dans un engagement long terme')
+                img.rank__img(src='/images/bienfaiteur'+ badges[3] +'.svg')
+                p.rank__subtitle <b>Gourou</b>
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well(class=(badges[4]>0 && badges[4]!=404) ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[4]>0 ? (badges[4]<5 ? 'Pour débloquer le badge Fan de niveau ' + (badges[4]+1) + ', il te faut comptabiliser au moins ' + getTooltipText(4, badges[4]) + ' connexions à la plateforme': (badges[4]==404 ? 'Problème de badge' : 'Félicitation, tu es Fan Absolu !')):'Pour débloquer le badge Fan de niveau 1, il te faut comptabiliser au moins 10 connexions à la plateforme')
+                img.rank__img(src=(badges[4]!=404 ? '/images/whale'+ badges[4] +'.svg':''))
+                p.rank__subtitle <b>Fan</b>
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well(class=badges[5]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[5]>0 ? (badges[5]<5 ? 'Pour débloquer le badge Sprinter de niveau ' + (badges[5]+1) + ', il te faut valider ' + getTooltipText(5, badges[5]) + 'h de participation en évènement ponctuel': 'Félicitation, tu es Maître Sprinter !') :'Pour débloquer le badge Sprinter de niveau 1, il te faut valider une participation dans un évènement ponctuel')
+                img.rank__img(src='/images/shoes_punch'+ badges[5] +'.svg')
+                p.rank__subtitle <b>Sprinter</b>
     if events_past.length || events_denied.length || first_lt_denied || first_ext_denied || longterm_waiting
       if events_past.length
         .modal.fade(tabindex='-1', role='dialog' aria-labelledby="notificationModalLabel", id='notificationModal')
@@ -999,6 +1013,15 @@ block footscript
           })
         }
       })
+      $('#share_modal').on('shown.bs.modal', function () {
+        var input = $('#share_link');
+        input.attr('value', window.location.host+'/share/001'+input.attr('volunteer')); 
+        input.focus();
+        input.select();
+        if (env == 'prod') {
+          amplitude.getInstance().logEvent('v_popular_modal_open');
+        }
+      });
       $('#school_name').change(function(){
         $('#classes_dropdown').addClass('hidden');
         $('.client_classes_item').addClass('hidden');
