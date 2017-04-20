@@ -835,8 +835,7 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
     org_name: activity.org_name,
     address: activity.address,
     start_date: start_date_to_send,
-    email: volunteer.email,
-    phone: volunteer.phone
+    email: volunteer.email
   });
 
   agenda.schedule(moment(fiveDaysBefore).toDate(), 'sendOneWeekBeforeEmail', {
