@@ -326,6 +326,10 @@ class BasicInfos extends React.Component {
 					<span className="input-group-addon">Description de l'évènement</span>
 					<textarea className="form-control" id="description" name="event_description" rows="6" required/>
 				</div>
+				<div className="input-group conn-input">
+					<span className="input-group-addon">Impact de l'évènement</span>
+					<input className="form-control" type='text' maxLength='140' id="event_impact" name="event_impact" placeholder="Aider les enfants en difficulté avec leur réussite scolaire !" required/>
+				</div>
 			</div>
 		)
 	}

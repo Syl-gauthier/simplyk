@@ -65,10 +65,11 @@ block content
 					h1.inline.intitule= event.intitule
 					i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='intitule')
 				p <b>Adresse :</b> #{event.address}
-				p
-					p.inline <b>Âge minimal :</b> 
-					p.inline.min_age #{event.min_age} ans
-					i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='min_age')
+				if event.min_age
+					p
+						p.inline <b>Âge minimal :</b> 
+						p.inline.min_age #{event.min_age} ans
+						i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='min_age')
 				p
 					p.inline.description= event.description
 					i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='description')

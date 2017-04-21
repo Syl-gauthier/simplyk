@@ -558,6 +558,16 @@ var BasicInfos = function (_React$Component7) {
 						'Description de l\'\xE9v\xE8nement'
 					),
 					_react2.default.createElement('textarea', { className: 'form-control', id: 'description', name: 'event_description', rows: '6', required: true })
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'input-group conn-input' },
+					_react2.default.createElement(
+						'span',
+						{ className: 'input-group-addon' },
+						'Impact de l\'\xE9v\xE8nement'
+					),
+					_react2.default.createElement('input', { className: 'form-control', type: 'text', maxLength: '140', id: 'event_impact', name: 'event_impact', placeholder: 'Aider les enfants en difficult\xE9 avec leur r\xE9ussite scolaire !', required: true })
 				)
 			);
 		}

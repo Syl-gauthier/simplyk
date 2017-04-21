@@ -39,6 +39,7 @@ var OrganismSchema = new Schema({
 		lon: Number,
 		min_age: Number,
 		description: String,
+		impact: String,
 		status: String,
 		activities: [{
 			type: Schema.Types.ObjectId,
