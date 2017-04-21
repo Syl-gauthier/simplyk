@@ -785,6 +785,7 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
 
   //Transform date
   console.log('event_date at the beginnning' + event_date);
+  console.log('event_date at the beginnning with new Date()' + new Date(event_date));
   let start_date = (new Date(event_date)).getTime();
   let s_time = {};
   let e_time = {};
@@ -828,6 +829,8 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
   }
 
   agenda.schedule(moment(dayBefore).toDate(), 'sendDayBeforeEmail', {
+    event_date,
+    activity_id: (activity._id).toString(),
     firstname: volunteer.firstname,
     lastname: volunteer.lastname,
     org_name: activity.org_name,
@@ -837,6 +840,8 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
   });
 
   agenda.schedule(moment(fiveDaysBefore).toDate(), 'sendOneWeekBeforeEmail', {
+    event_date,
+    activity_id: (activity._id).toString(),
     firstname: volunteer.firstname,
     lastname: volunteer.lastname,
     org_name: activity.org_name,
@@ -848,6 +853,8 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
   });
 
   agenda.schedule(moment(dayAfter).toDate(), 'sendDayAfterEmail', {
+    event_date,
+    activity_id: (activity._id).toString(),
     firstname: volunteer.firstname,
     lastname: volunteer.lastname,
     org_name: activity.org_name,
