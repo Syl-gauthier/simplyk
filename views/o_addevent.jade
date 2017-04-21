@@ -26,6 +26,7 @@ block content
 
 block footscript
 	script.
+		'use strict';
 		var input;
 		//- var defaultbounds = new google.maps.LatLngBounds(
 		//- new google.maps.LatLng(45.69,-73.26),
@@ -86,6 +87,11 @@ block footscript
 						}
 					})
 			};
+			let event_props = {};
+			event_props.type = 'event';
+			if (env == 'prod') {
+				amplitude.getInstance().logEvent('o_visit_addopp', event_props);
+			}
 
 			$('#address').on('focusout', function(){
 				console.log('GET OUT !')
@@ -115,6 +121,11 @@ block footscript
 						console.info('days_total : ' + days_total);
 					}
 				});
+				if (env == 'prod') {
+					amplitude.getInstance().logEvent('o_add_opp', event_props);
+					amplitude.getInstance().logEvent('g_revenue');
+				}
+				
 				if(days_defined != days_total) {
 					$('html,body').animate({
 						scrollTop: 0

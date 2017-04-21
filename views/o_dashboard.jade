@@ -5,6 +5,7 @@ block vars
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
   - function isOk(event){if (event.dates.indexOf(null) != -1){console.log(event.dates + ' false');return false;} else {console.log(event.dates + ' true');return true}}
+  - function activeTabs(todo){console.info(todo);if(todo > 0){console.info('todo == 0');return ['', 'active', '', 'active in']}else{console.info('todo else');return ['active', '', 'active in', '']}};
 
 block head
   title Tableau de bord
@@ -43,16 +44,16 @@ block content
         .row
           .col-md-10.col-md-offset-1
             ul.nav.nav-tabs(role='tablist')
-              li.active(role='presentation')
+              li(role='presentation' class=activeTabs(todos.length)[0])
                 a(href='#needs' aria-controls='needs' role='tab' data-toggle='tab') 
                   h4 Mes besoins
-              li(role='presentation')
+              li(role='presentation' class=activeTabs(todos.length)[1])
                 a(href='#todo' aria-controls='todo' role='tab' data-toggle='tab') 
                   h4 À faire 
                     span.badge(style='background-color: #C11')= todos.length
         .row
           .tab-content
-            #needs.tab-pane.fade.active.in(role='tabpanel')
+            #needs.tab-pane.fade(role='tabpanel' class=activeTabs(todos.length)[2])
               .col-md-4.col-md-offset-1
                 h2.page-header Mes bénévoles ponctuels
                 if error
@@ -117,7 +118,7 @@ block content
               .col-md-4.col-md-offset-2.no-side-padding
                 h2.page-header Mes bénévoles long terme
                 h4 Besoin de bénévoles sur du long terme ?
-                a.btn.longterm(href='/organism/addlongterm') Ajouter un engagement !
+                a.btn.longterm(href='/organism/addlongterm') Ajouter un long terme !
                 h3
                 ul.list-group
                   if organism.long_terms.length
@@ -134,13 +135,16 @@ block content
                             h6
                               i.fa.fa-map-marker
                               p.inline Adresse : #{lt.address}
+                          if lt.tags == 'archived'
+                            div.media-right.media-top
+                              span.badge(style='background-color: #E33831')= 'Archivé'
                         .panel-body
                           h6.inline
                             i.fa.fa-user
                             p.inline= lt.applicants.length+' bénévoles se sont inscrits'
                         .panel-footer
                           a.btn.infos-button-longterm.longterm(id= lt._id, href='/organism/longterm/'+lt._id) Informations
-            #todo.tab-pane.fade(role='tabpanel')
+            #todo.tab-pane.fade(role='tabpanel' class=activeTabs(todos.length)[3])
               .col-md-10.col-md-offset-1
                 if todos.length
                   each todo, todo_i in todos
@@ -361,6 +365,20 @@ block footscript
   script.
     $(document).ready(function(){
       'use strict';
+      let group = !{JSON.stringify(group)};
+      if (env == 'prod') {
+        if (group == 'organism') {
+          let user_id = !{JSON.stringify(organism._id)};
+          let email = !{JSON.stringify(organism.email)};
+          let org_name = !{JSON.stringify(organism.org_name)};
+          amplitude.getInstance().setUserId(user_id);
+          let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', org_name).setOnce('group', group);
+          amplitude.getInstance().identify(identify);
+          amplitude.getInstance().logEvent('o_visit_dashboard');
+        } else {
+          amplitude.getInstance().logEvent('a_visit_dashboard');
+        };
+      };
       $('.correctHoursForm').submit(function(){
         let vol_id = $(this).attr('vol');
         let todo_id = $(this).attr('todo');
@@ -369,12 +387,17 @@ block footscript
         let hours_before = $(this).attr('hours');
         let correct_hours = $(this).find('.correction_input').val();
         let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
+        let event_props = {};
 
         if ($(this).attr('act')){
           let act_id = $(this).attr('act');
           let day = $(this).attr('day');
           $.post('/organism/correcthours', {vol_id: vol_id, type: type, act_id: act_id, day: day, todo: todo_id, correct_hours: correct_hours, hours_before: hours_before})
           .done(function(data, status){
+            if (env == 'prod') {
+              event_props.type = type;
+              amplitude.getInstance().logEvent('o_correcthours', event_props);
+            }
             console.log("Remarque: " + status);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
@@ -386,6 +409,10 @@ block footscript
           let lt_id = $(this).attr('lt');
           $.post('/organism/correcthours', {vol_id: vol_id, type: type, lt_id: lt_id, todo: todo_id, correct_hours: correct_hours, hours_before: hours_before})
           .done(function(data, status){
+            if (env == 'prod') {
+              event_props.type = type;
+              amplitude.getInstance().logEvent('o_correcthours', event_props);
+            }
             console.log("Remarque: " + status);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
@@ -409,8 +436,13 @@ block footscript
           let todo_id = $(this).attr('todo');
           let hours = $(this).attr('hours');
           let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
+          let event_props = {};
           $.post('/organism/confirmhours', {vol_id: vol_id, type: type, act_id: act_id, day: day, todo: todo_id, hours: hours})
           .done(function(data, status){
+            if (env == 'prod') {
+              event_props.type = type;
+              amplitude.getInstance().logEvent('o_confirmhours', event_props);
+            }
             console.log("Remarque: " + status);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
@@ -425,8 +457,13 @@ block footscript
           let todo_id = $(this).attr('todo');
           let hours = $(this).attr('hours');
           let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
+          let event_props = {};
           $.post('/organism/confirmhours', {vol_id: vol_id, type: type, lt_id: lt_id, todo: todo_id, hours: hours})
           .done(function(data, status){
+            if (env == 'prod') {
+              event_props.type = type;
+              amplitude.getInstance().logEvent('o_confirmhours', event_props);
+            }
             console.log("Remarque: " + status);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
@@ -450,6 +487,7 @@ block footscript
         let answers_input = $(this).find('.confirmation_text');
         let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
         let answers_json = $(this).serializeArray();
+        let event_props = {};
         console.log('answers_json : ' + JSON.stringify(answers_json));
         console.log('$(this).attr("act") : ' + $(this).attr("act"));
         console.log('$(this).attr("lt") : ' + $(this).attr("lt"));
@@ -461,6 +499,10 @@ block footscript
           let day = $(this).attr('day');
           $.post('/organism/confirmhours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, answers: answers_json, hours: hours, type: type})
           .done(function(data, status){
+            if (env == 'prod') {
+              event_props.type = type;
+              amplitude.getInstance().logEvent('o_confirmhours', event_props);
+            }
             console.log("Remarque: " + status);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
@@ -473,6 +515,10 @@ block footscript
           let lt_id = $(this).attr('lt');
           $.post('/organism/confirmhours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, answers: answers_json, hours: hours, type: type})
           .done(function(data, status){
+            if (env == 'prod') {
+              event_props.type = type;
+              amplitude.getInstance().logEvent('o_confirmhours', event_props);
+            }
             console.log("Remarque: " + status);
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
@@ -493,6 +539,7 @@ block footscript
         let answers_input = $(this).find('.correction_text');
         let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
         let answers_json = $(this).serializeArray();
+        let event_props = {};
         console.log('answers_json : ' + JSON.stringify(answers_json));
         let correct_hours = ($(this).find('.correctionStudentHoursInput')).val();
         if($(this).attr('act')){
@@ -501,6 +548,10 @@ block footscript
           $.post('/organism/correcthours', {vol_id: vol_id, act_id: act_id, day: day, todo: todo_id, answers: answers_json, correct_hours: correct_hours, hours_before: hours_before, type: type})
           .done(function(data, status){
             console.log("Remarque: " + status);
+            if (env == 'prod') {
+              event_props.type = type;
+              amplitude.getInstance().logEvent('o_correcthours', event_props);
+            }
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
           .fail(function(data, status){
@@ -512,6 +563,10 @@ block footscript
           $.post('/organism/correcthours', {vol_id: vol_id, lt_id: lt_id, todo: todo_id, answers: answers_json, correct_hours: correct_hours, hours_before: hours_before, type: type})
           .done(function(data, status){
             console.log("Remarque: " + status);
+            if (env == 'prod') {
+              event_props.type = type;
+              amplitude.getInstance().logEvent('o_correcthours', event_props);
+            }
             input_group.replaceWith('<p><b>Heures confirmées</b></p>');
           })
           .fail(function(data, status){

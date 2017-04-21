@@ -4,10 +4,14 @@ block vars
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
-  - function getCauseDesign(cause){if (cause=='Solidarité') {return '#00b3ff'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
+  - function getCauseDesign(cause){if (cause=='Solidarité') {return '#00b3ff'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Nature') {return '#5BCF8F'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
 block head
   title Activité de bénévolat
   meta(name='description', content='Informations sur les activités de bénévolat ')
+  style.
+    .org_name {color:#5BCF8F}
+    .org_name:hover {text-decoration: none; color: #FFC518}
+
 block share
   script.
     var bitly_token = '074139d6c2b2511f886ae9e554856c4ecf3ca141';
@@ -68,14 +72,15 @@ block share
 block content
   .container-fluid
     .row.activity__header
-      .col-md-5.col-md-offset-1
-        img(src='/images/happy_city_white.svg', align='middle', style='max-height:30vh; padding-top:3vh')
-      .col-md-5.col-md-offset-1
+      .col-md-5.col-md-offset-1.col-xs-12
+        img.center-block(src='/images/happy_city_white.svg', align='middle', style='max-height:30vh; padding-top:3vh')
+      .col-md-5.col-md-offset-1.col-xs-12
         .page-header
-          h2(style='margin-top: 10%')= organism.org_name
+          a.org_name(href='/all/organism/'+organism._id)
+            h2(style='margin-top: 10%')= organism.org_name
           p(style = 'white-space: pre-wrap') <b>Mission:</b> #{organism.description}
           p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
-          if volunteer
+          if group
             p <b>Courriel:</b> #{organism.email}
             if organism.phone
               p <b>Téléphone:</b> #{organism.phone}
@@ -96,7 +101,8 @@ block content
           p= event[0].description
           p <b>Adresse : </b> #{event[0].address} 
           h3= activity.intitule
-          p <b>Description de l'activité :</b> #{activity.description}
+          if activity.description
+            p <b>Description de l'activité :</b> #{activity.description}
           each day, index in activity.days
             if day.day
               li.list-group-item
@@ -120,27 +126,34 @@ block content
                         .modal.fade(id='activity-modal'+index, tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
                           .modal-dialog(role='document')
                             .modal-content
-                              form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone('+day.day.getTime()+')')
+                              form#activity_subscribe_form.inline(action='/volunteer/event/subscribe/'+activity._id+'-'+day.day, method='post', onsubmit='return validatePhone('+index+')')
                                 .modal-header
                                   button.close(type='button' data-dismiss="modal" aria-label="Close")
                                     span(aria-hidden='true')&times;
                                   h4.modal-title(id='myModalLabel') Es-tu sûr de vouloir t'inscrire à cette activité ?
-                                  if !volunteer.phone
-                                    .modal-body
-                                      h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
-                                      p.alert.alert-danger.hidden(class='phone_alert'+day.day.getTime()) Entrer un numéro de téléphone
-                                      .form-group.conn-input
-                                        label.control-label Téléphone
-                                        input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone'+day.day.getTime())
+                                    if !volunteer.phone
+                                      .modal-body
+                                        h6 Afin que l'organisme puisse t'appeller s'il y a un changement de dernière minute, il est souvent préférable qu'il soit informé de ton numéro de téléphone
+                                        p.alert.alert-danger.hidden(class='phone_alert'+index) Entrer un numéro de téléphone
+                                        .form-group.conn-input
+                                          label.control-label Téléphone
+                                          input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phonea'+index)
+                                    else if (!volunteer.parents_email && (volunteer.admin && volunteer.admin.school_id))
+                                      .modal-body
+                                        h6 Afin que tes parents soient aussi au courant des endroits où tu vas faire du bénévolat, tu peux rajouter leur adresse courriel
+                                        .form-group.conn-input
+                                          label.control-label Courriel des parents (optionnel)
+                                          input.form-control(type='email', placeholder='', name='parents_email', aria-describedby='basic-addon1', id='parents_email'+index)
                                 .modal-footer
                                   a.btn.btn-warning(data-dismiss='modal') Annuler
-                                  input.btn.btn-default(type='submit' value='Oui' role='button')
+                                  input.btn.btn-default#activity_subscribe(type='submit' value='Oui' role='button')
                     else
                       h4 Passé
                   else
 
 block footscript
   script(type="text/javascript").
+    'use strict';
     function validatePhone(day){
       const phone_number = $('#phone'+day).val();
       console.log('phone_number.length : ' + phone_number.length);
@@ -150,4 +163,13 @@ block footscript
       };
     };
     $(document).ready(function(){
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('v_visit_event');
+        let event_props = {};
+        event_props.type = 'event';
+        $('#activity_subscribe_form').submit(function(){
+          amplitude.getInstance().logEvent('v_subscribe_opp', event_props);
+          amplitude.getInstance().logEvent('g_revenue');
+        })
+      }
     });

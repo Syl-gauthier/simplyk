@@ -2,13 +2,19 @@ extends ./g_layout.jade
 block head
   title Simplyk : bénévolat à portée de main
   meta(name='description', content='La plateforme de mise en relation de jeunes bénévoles et d\'organismes à Montréal')
+  script.
+    if ((/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
+      console.log('On mobile');
+      document.write('<link href="/stylesheets/style-simplyk-xs.css", type="text/css", rel="stylesheet"><\/link>');
+    }
 block vars
   - var page = 'accueil'
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
-  - var the_favo = {}; if (typeof the_favorite !== 'undefined') {the_favo = the_favorite} else {the_favo = {}};
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
   - function isAdult(ageMin){var result=false;if(ageMin>=16){result=true}return result;}
+  - var school_name = ""; if (volunteer && volunteer.admin.school_name){school_name = volunteer.admin.school_name};
+
 
 block content
   each act, index in activities
@@ -21,6 +27,7 @@ block content
             #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
           .modal-body.my-modal-body
             h4 <b>#{act.intitule}</b>
+            p #{act.description}
             p <b>Adresse : </b> #{act.address}
             table.table
               tr
@@ -33,7 +40,7 @@ block content
               each day, nb in act.days
                 if day.day
                   tr
-                    td.text-center= day.vol_nb-day.applicants.length
+                    td.text-center= (day.vol_nb-day.applicants.length > -1 ? day.vol_nb-day.applicants.length : 0)
                     td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
                     td.text-center= day.start_time
                     td.text-center= day.end_time
@@ -42,10 +49,10 @@ block content
                   #identifiant(style="display:none")
                     p= act._id
           .modal-footer
-            button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-            a#link-btn-ref.btn.btn-default(href='/all/activity/'+act._id) Plus d'infos
+            input.btn.btn-default(type='button', data-dismiss='modal', value='Fermer')
+            a#link-btn-ref.btn.btn-default(href='/all/activity/'+act._id, target='_blank') Plus d'infos
   each lt, index in longterms
-    div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id, id=lt.long_term._id)
+    div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id)
       .modal-dialog(role='document')
         .modal-content
           .modal-header
@@ -59,143 +66,152 @@ block content
             if lt.long_term.min_age
               p <b>Âge minimal : </b> #{lt.long_term.min_age} ans
           .modal-footer
-            button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-            a#link-btn-ref.btn.btn-default(href='/all/longterm/'+lt.long_term._id) Plus d'infos
+            input.btn.btn-default(type='button', data-dismiss='modal' value='Fermer')
+            a#link-btn-ref.btn.btn-default(href='/all/longterm/'+lt.long_term._id, target='_blank') Plus d'infos
   .container-fluid
     #first_section.landing-section.row
-      .col-sm-5.col-xs-offset-1.col-xs-11.section-div
+      .col-sm-5.col-sm-offset-1.section-div.hidden-xs
         .logo.section__sentence
           div
-            h1 TROUVE TON <br> BÉNÉVOLAT <br>
+            h1 VIENS CHANGER <br> LE MONDE <br>
           div
-            h4 Simplyk te connecte avec l'organisme qui te correspond <br><br>
+            h4 Sois bénévole pour enfin avoir un impact sur les problèmes qui te préoccupent <br><br>
           div.hidden-xs
-            button.landing-buttons__item.btn.btn-warning.btn-lg#letsgo JE CONNAIS
-            button.landing-buttons__item.btn.btn-warning.btn-lg#more <b>C'EST PARTI !</b>
+            button.landing-buttons__item.btn.btn-warning.btn-lg.more#more <b>C'EST PARTI !</b>
       .col-sm-6.col-sm-offset-0.col-xs-offset-1.col-xs-11.section-div.hidden-xs
         img#landscape(src='images/happy_city.svg', align='middle')
-    #type-section.row.landing-section.hidden-xs
-      .col-sm-5.col-sm-offset-1.col-xs-offset-1.col-xs-10.section-div
+      .col-xs-offset-1.col-xs-10.visible-xs#title-xs
+        .section__sentence-xs
+          div.text-center
+            h2 VIENS CHANGER LE MONDE
+          div.text-center
+            h5 Sois bénévole pour enfin avoir un impact sur les problèmes qui te préoccupent <br><br>
+      .col-xs-12.text-center.visible-xs#landscape_div--xs
+        img#landscape-xs(src='images/happy_city.svg', align='middle')
+      .col-xs-12.text-center.visible-xs#button__title--xs
+        button.landing-buttons__item.btn.btn-warning.btn-lg.more#more-xs <b>C'EST PARTI !</b>
+    #type-section.row.landing-section
+      .col-sm-5.col-sm-offset-1.section-div.hidden-xs
         .section__sentence.section__sentence--grouped
           div
-            h1 CHOISIS TON TYPE <br> D'ENGAGEMENT <br>
+            h1 QUELLES QUE SOIENT TES DISPONIBILITÉS <br>
           div
             h4
-      .col-sm-3.col-sm-offset-2.col-xs-offset-1.col-xs-10.section-div
+      .col-sm-3.col-sm-offset-2.section-div.hidden-xs
         div.landing-buttons
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button#type-button--ev
-              p.inline PONCTUEL
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--ev
+              p.inline Quelques heures
               i.inline.fa.fa-bolt(style='color: yellow;')
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button#type-button--lt LONG TERME
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button#type-button--all PEU IMPORTE
-    #age-section.landing-section.row.hidden-xs
-      .col-sm-5.col-sm-offset-1.col-xs-offset-1.col-xs-10.section-div
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--lt Long terme
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--all Peu importe
+      .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
+        .section__sentence-xs
+          div.text-center
+            h3 QUELLES QUE SOIENT TES DISPONIBILITÉS <br>
+      .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
+        div
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--ev
+              p.inline Quelques heures
+              i.inline.fa.fa-bolt(style='color: yellow;')
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--lt Long terme
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.type-button.type-button--all Peu importe
+    #age-section.landing-section.row
+      .col-sm-5.col-sm-offset-1.col-xs-offset-1.col-xs-10.section-div.hidden-xs
         .section__sentence.section__sentence--grouped
           div
-            h1 FILTRE SELON <br> TON ÂGE <br>
+            h1 QUI QUE <br> TU SOIS <br>
           div
             h4 
-      .col-sm-3.col-sm-offset-2.col-xs-offset-1.col-xs-10.section-div
+      .col-sm-3.col-sm-offset-2.section-div.hidden-xs
         div.landing-buttons
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button#age-button--plus J'ai 16 ans ou plus
-          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button#age-button--less J'ai moins de 16 ans
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--plus J'ai 16 ans ou plus
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--less J'ai moins de 16 ans
+      .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
+        .section__sentence-xs
+          div.text-center
+            h3 QUI QUE <br> TU SOIS <br>
+      .col-xs-offset-1.col-xs-10.section-div-xs.visible-xs
+        div
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--plus J'ai 16 ans ou plus
+          button.landing-buttons__item.btn.btn-lg.btn-block.landing-buttons__item--grouped.age-button.age-button--less J'ai moins de 16 ans
   .container-fluid
     .row.fill
-      .col-sm-4.col-xs-12#map-left.hidden-xs
+      .col-sm-4.col-xs-12#map-left
         #filter_div.row
-          .col-md-5.col-md-offset-1.col-sm-6.col-sm-offset-0.col-xs-10.col-xs-offset-1#acts_filter(style='cursor: pointer;')
+          .col-xs-12.col-sm-12.col-md-10.col-md-offset-1#age_filter(style='cursor: pointer;')
+            h5.text-center.btn-filter.btn-filter-age
+              i.inline.fa.fa-check-square-o#age_check
+              p.inline J'ai moins de 16 ans
+          .col-xs-6.col-sm-12.col-md-5.col-md-offset-1#acts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-acts
               i.inline.fa.fa-check-square-o#acts_check
-              p.inline PONCTUEL
+              p.inline Ponctuel
               i.inline.fa.fa-bolt
-          .col-md-5.col-sm-6.col-sm-offset-0.col-xs-10.col-xs-offset-1#lts_filter(style='cursor: pointer;')
+          .col-xs-6.col-sm-12.col-md-5#lts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
-              p.inline LONG TERME
-          .col-md-10.col-md-offset-1.col-sm-12.col-sm-offset-0.col-xs-10.col-xs-offset-1#age_filter(style='cursor: pointer;')
-            h5.text-center.btn-filter.btn-filter-age
-              i.inline.fa.fa-square-o#age_check
-              p.inline J'AI MOINS DE 16 ANS
+              p.inline Long terme
+        #search_div
+          .row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').visible-xs
+            .col-xs-12.text-center
+              form.form-inline
+                .input-group
+                  input.form-control(id="address_field-xs" placeholder="Changer d'adresse")
+                  span.input-group-addon.btn.btn-default#loc_submit
+                    i.fa.fa-search
+          .row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').hidden-xs
+            .col-sm-12.col-md-10.col-md-offset-1
+              .input-group
+                input.form-control(type="search" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
+                span.input-group-addon.btn.btn-default
+                  i.fa.fa-search
         #offers-list.no-side-padding.scrollable.row
-          ul.list-group.list-opportunity
+          ul.list-group.list-opportunity(id="jetsContent")
             if error
               p.alert.alert-danger #{error}
             if success
               p.alert.alert-success #{success}
-            if (typeof the_favo !== 'undefined') && the_favo.days
-              li.list-group-item(id='the_favo', opp_type='activity', min_age=the_favo.min_age, adult='')
-                  .panel.panel-default
-                    .panel-heading
-                      div.media-left.media-middle
-                        a(href='#')
-                          if the_favo.cause == 'Solidarité'
-                            i.fa.fa-heart
-                          else if the_favo.cause == 'Nature'
-                            i.fa.fa-envira(style='color: #5BCF8F')
-                          else if the_favo.cause == 'Sport et Culture'
-                            i.fa.fa-institution(style='color: #FFC858')
-                          else if the_favo.cause == 'Enfance'
-                            i.fa.fa-child(style='color: #FF4F3C')
-                      div.media-body
-                        h5.media-heading <b>#{the_favo.org_name}</b>
-                        h6.media-heading <b>#{the_favo.intitule}</b>
-                        //h6
-                          i.fa.fa-map-marker
-                          p.inline Adresse : #{the_favo.address}
-                      div.media-right.media-middle
-                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favo._id) Plus d'infos
-                    .panel-body
-                        h5 Dans le cadre de : <b>#{the_favo.event_intitule}</b>
-                        if the_favo.days.length < 3
-                          each day, day_i in the_favo.days
-                            if day.day
-                              h4
-                                h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                                h6.inline
-                                  i.fa.fa-user
-                                  p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-                        else
-                          if the_favo.days[0].day && the_favo.days[1].day
-                            h6.inline <b>#{days_name[correctDate(the_favo.days[0].day).getDay()]  + ' ' + (correctDate(the_favo.days[0].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[0].day).getMonth()]  + ' ' + correctDate(the_favo.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(the_favo.days[1].day).getDay()]  + ' ' + (correctDate(the_favo.days[1].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[1].day).getMonth()]  + ' ' + correctDate(the_favo.days[1].day).getFullYear()}</b>, ...
             each act, index in activities
-              if act._id != the_favo._id
-                li.list-group-item(id= act._id, opp_type='activity', min_age= act.min_age, adult='')
-                  .panel.panel-default
-                    .panel-heading
-                      div.media-left.media-middle
-                        a(href='#')
-                          if act.cause == 'Solidarité'
-                            i.fa.fa-heart
-                          else if act.cause == 'Nature'
-                            i.fa.fa-envira(style='color: #5BCF8F')
-                          else if act.cause == 'Sport et Culture'
-                            i.fa.fa-institution(style='color: #FFC858')
-                          else if act.cause == 'Enfance'
-                            i.fa.fa-child(style='color: #FF4F3C')
-                      div.media-body
-                        h5.media-heading <b>#{act.org_name}</b>
-                        h6.media-heading <b>#{act.intitule}</b>
-                        //h6
-                          i.fa.fa-map-marker
-                          p.inline Adresse : #{act.address}
-                      div.media-right.media-middle
-                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
-                    .panel-body
-                        h5 Dans le cadre de : <b>#{act.event_intitule}</b>
-                        if act.days.length < 3
+              li.list-group-item(id= act._id, opp_type='activity', lat=act.lat, lon=act.lon, data-target= "."+act._id, style='cursor: pointer;', age_filtered=act.min_age<16 ? 'false' : 'true', type_filtered='false', category_filtered='false')
+                .panel.panel-default
+                  .panel-heading
+                    div.media-left.media-middle
+                      a(href='#')
+                        if act.cause == 'Solidarité'
+                          i.fa.fa-heart
+                        else if act.cause == 'Nature'
+                          i.fa.fa-envira(style='color: #5BCF8F')
+                        else if act.cause == 'Sport et Culture'
+                          i.fa.fa-institution(style='color: #FFC858')
+                        else if act.cause == 'Enfance'
+                          i.fa.fa-child(style='color: #FF4F3C')
+                    div.media-body
+                      h5.media-heading <b>#{act.org_name}</b>
+                      h6.media-heading <b>#{act.intitule}</b>
+                      div.visible-xs
+                        i.fa.fa-compass.inline
+                        h6.dist.inline.strong
+                        h6.inline.dist_reference km de toi
+                    div.media-right.media-top
+                      span.badge.activity Ponctuel
+                  .panel-body
+                      h5 Dans le cadre de : <b>#{act.event_intitule}</b>
+                      if act.days.length < 3
+                        each day, day_i in act.days
+                          if day.day
+                            h4
+                              h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                              h6.inline
+                                i.fa.fa-user
+                                p.inline= ((day.vol_nb-day.applicants.length) > -1 ? (day.vol_nb-day.applicants.length) : 0)+' places restantes'
+                      else
+                        if act.days[0].day && act.days[1].day
+                          h5.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
                           each day, day_i in act.days
-                            if day.day
-                              h4
-                                h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                                h6.inline
-                                  i.fa.fa-user
-                                  p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-                        else
-                          if act.days[0].day && act.days[1].day
-                            h5.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
+                            p.hidden <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
 
             each lt, index in longterms
-                li.list-group-item(id= lt.long_term._id, opp_type='longterm', min_age=lt.long_term.min_age, adult='')
+                li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon, data-target= "."+lt.long_term._id, style='cursor: pointer;', category_filtered='false', type_filtered='false', age_filtered=lt.long_term.min_age ? (lt.long_term.min_age<16 ? 'false' : 'true') : 'false')
                   .panel.panel-default
                     .panel-heading
                       div.media-left.media-middle
@@ -214,9 +230,23 @@ block content
                         h6
                           i.fa.fa-map-marker
                           p.inline Adresse : #{lt.long_term.address}
-                      div.media-right.media-middle
-                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+lt.long_term._id) Plus d'infos
-      .col-sm-8.col-xs-12.no-side-padding
+                        div.visible-xs
+                          i.fa.fa-compass.inline
+                          h6.dist.inline
+                          h6.inline.dist_reference km de toi
+                      div.media-right.media-top
+                        span.badge.longterm Long terme
+            li.list-group-item
+              .panel.panel-default
+                .panel-heading(style='min-height: 60vh;')
+                  h3.text-center(style='margin-top: 15vh') Tu veux plus d'offres ?
+                  p.text-center
+                    i.fa.fa-refresh.fa-4x
+                  p.hidden.dist 99999999999
+                  h5.text-center Modifie tes filtres de recherche
+                  h5.text-center Dézoome la carte
+                  h5.text-center Demande nous des idées de bénévolat à contact@simplyk.io
+      .col-sm-8.col-xs-12.no-side-padding.hidden-xs
         #map
   .container-fluid.footer
     .row
@@ -226,29 +256,80 @@ block content
          | 514-570-6926
          | contact@simplyk.io
       .col-md-4.col-xs-6
-        p.white Suivez-nous !
-        a(href="https://www.facebook.com/simplykMTL/?fref=ts")
-          i.fa.fa-facebook.fa-2x#social
-        a(href="https://twitter.com/simplykMTL")
-          i.fa.fa-twitter.fa-2x#social
-        a(href="https://angel.co/simplyk")
-          i.fa.fa-angellist.fa-2x#social
-        a(href="https://www.linkedin.com/company/simplyk")
-          i.fa.fa-linkedin.fa-2x#social
+        p.white.text-center.hidden-xs Suivez-nous !
+        div.text-center
+          a.inline(href="https://www.facebook.com/simplykMTL/?fref=ts")
+            i.fa.fa-facebook.fa-2x#social
+          a.inline(href="https://twitter.com/simplykMTL")
+            i.fa.fa-twitter.fa-2x#social
+          a.inline(href="https://angel.co/simplyk")
+            i.fa.fa-angellist.fa-2x#social
+          a.inline(href="https://www.linkedin.com/company/simplyk")
+            i.fa.fa-linkedin.fa-2x#social
     .row
       .text-center
         a.white.inline(href='/listorganisms') Liste des organismes
-        p.white.inline -
+        p.white.inline.hidden-xs -
+        p.visible-xs
         a.white.inline(href='/legal') Conditions d'utilisation
 
 
 
 block footscript
   script.
+    var page = 'landing';
+    var acts = !{JSON.stringify(activities)};
+    var lts = !{JSON.stringify(longterms)};
+    var first_age_filtered = !{JSON.stringify(first_age_filtered)};
+    var school_name = null;
+    var nature_indexes = !{JSON.stringify(nature_indexes)};
+    var sol_indexes = !{JSON.stringify(sol_indexes)};
+    var culture_indexes = !{JSON.stringify(culture_indexes)};
+    var child_indexes = !{JSON.stringify(child_indexes)};
+    var adult_indexes = !{JSON.stringify(adult_indexes)};
+  //clusterer api
+  //script(src="/javascripts/marker-clusterer.js", type="text/javascript")
+  script(src="/bower_components/jets/jets.min.js")
+  script.
+    var on_mobile = false;
+    if ((/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
+      on_mobile = true;
+      console.log('On mobile');
+      document.write('<script src="/javascripts/initmap_mobile.js"><\/script>');
+      document.write('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&signed_in=true&libraries=places,geometry&callback=initAutocomplete" async defer><\/script>');
+    } else {
+      console.log('On desktop or tablet');
+      document.write('<script src="/javascripts/initmap2.js"><\/script>');
+      document.write('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap" async defer><\/script>');
+      let jets = new Jets({
+        searchTag: '#jetsSearch',
+        contentTag: '#jetsContent',
+        searchSelector: '*'
+      });
+      window.intercomSettings = {
+        app_id: "oora32p1"
+      };
+    }
+  script.
     $( document ).ready(function() {
-      $('#letsgo, .age-button').click(function(){
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('g_landing');
+      }
+      $('.list-group-item').click(function(){
+        $('' + $(this).attr('data-target')).modal('show');
+        fbq('track', 'ViewContent', {'content_type': $(this).attr('opp_type'), 'content_name': $(this).attr('id')});
+      });
+      $('.modal').on('shown.bs.modal', function(){
+        fbq('track', 'ViewContent', {'content_type': 'show_modal_on_landing'});
+      });
+      $('.age-button').click(function(){
         $('html, body').animate({
-          scrollTop: $('#map').offset().top - 50
+          scrollTop: $('#map-left').offset().top - 50
+        }, 500)
+      });
+      $('.more').click(function(){
+        $('html, body').animate({
+          scrollTop: $('#type-section').offset().top - 50
         }, 500)
       });
       $('.type-button').click(function(){
@@ -256,18 +337,18 @@ block footscript
           scrollTop: $('#age-section').offset().top - 50
         }, 500)
       });
-      $('#age-button--plus').click(function(){
+      $('.age-button--plus').click(function(){
         $('.btn-filter-age').trigger("click");
       });
-      $('#type-button--lt').click(function(){
+      $('.type-button--lt').click(function(){
         $('.btn-filter-acts').trigger("click");
       });
-      $('#type-button--ev').click(function(){
+      $('.type-button--ev').click(function(){
         $('.btn-filter-lts').trigger("click");
       });
-      $('#more').click(function(){
+      $('body').on('submit_an_address', function(){
         $('html, body').animate({
-          scrollTop: $('#type-section').offset().top - 50
+          scrollTop: $('#map-left').offset().top - 50
         }, 500)
       });
       $('.list-group-item').attr('adult', function(i, val){
@@ -279,38 +360,20 @@ block footscript
         console.log('isAdult : ' + isAdult);
         return isAdult;
       });
+      /* To close keyboard on mobile
+      $('#jetsSearch').on('keyup', function(e){
+        if(e.keyCode==13) {
+          $(this).blur();
+          $('.navbar-toggle').click();
+        }
+      });*/
+      $('#offers-list').outerHeight(($('#map-left').outerHeight(true) - $('#filter_div').outerHeight(true)) - $('#search_div').outerHeight(true));
     });
-  script.
-    var acts = !{JSON.stringify(activities)};
-    var lts = !{JSON.stringify(longterms)};
-    var the_fav = !{JSON.stringify(the_favorite)};
-    var page = 'landing';
-  //clusterer api
-  script(src="/javascripts/marker-clusterer.js", type="text/javascript")
-  script(src='/javascripts/initmap.js')
-  script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap"
-         async defer)
   //Modal bootstrap
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
       $('#myInput').focus();
     });
-  script(type='text/javascript').
-    $('#myModal').on('shown.bs.modal', function () {
-    $('#myInput').focus();
-    });
-  script.
-    window.intercomSettings = {
-      app_id: "oora32p1"
-    };
     
-  script.
+  script(type='text/javascript' async).
     (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/oora32p1';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()
-
-  script.
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-    ga('create', 'UA-82053185-2', 'auto');
-    ga('send', 'pageview');

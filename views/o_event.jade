@@ -64,8 +64,14 @@ block content
 				p
 					h1.inline.intitule= event.intitule
 					i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='intitule')
-				p Adresse: #{event.address}
-				p #{event.description}
+				p <b>Adresse :</b> #{event.address}
+				p
+					p.inline <b>Âge minimal :</b> 
+					p.inline.min_age #{event.min_age} ans
+					i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='min_age')
+				p
+					p.inline.description= event.description
+					i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='description')
 				if (error && (error.length > 0))
 					p.alert.alert-danger= error
 				each act, act_i in event.acts
@@ -80,10 +86,17 @@ block content
 									h6
 										i.fa.fa-map-marker
 										p.inline Adresse : #{event.address}
-								div.media-top.media-right
-									a.inline.btn.btn-warning.propose(act_id=act._id) Inviter à être bénévole
+								div.media-top.media-right.text-center
+									if act.archived
+										h4
+										span.inline.badge(style='background-color: #E33831') Archivé
+										i.fa.fa-refresh.recover(type='recover' style="cursor: pointer" data-toggle="tooltip" data-placement="top" title='Republier l\'engagement' act_id=act._id)
+									else 
+										a.inline.btn.btn-warning.propose(act_id=act._id) Inviter à être bénévole
+										div(style='padding-top: 7px;')
+											a.btn.btn-danger.archive(act_id=act._id) Archiver l'opportunité
 									if isPast(act.days)
-									else
+									//else
 										i.fa.fa-times.fa-xs.fa-2x.edit.inline(style="cursor: pointer; color: red; margin-left:20px;" act_id=act._id, data-toggle='modal' data-target='#erase-modal'+act_i )
 										.modal.fade(id='erase-modal'+act_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+act_i)
 											.modal-dialog(role='document')
@@ -100,6 +113,11 @@ block content
 																a.btn.btn-warning(data-dismiss='modal') Annuler
 																input.btn.btn-default(type='submit' value='Oui' role='button')
 							.panel-body
+								if act.description
+									h6
+										i.fa.fa-info
+										p.inline #{act.description}
+										p <br>
 								each day, day_i in act.days
 									h4
 										h4.inline <b>#{date.printDate(day.day)} : </b>
@@ -160,13 +178,16 @@ block content
 																						p Participation <b>non-confirmée</b>
 																		else
 																			div.text-center
-																				button.btn.btn-default(type='button')
+																				div.btn.btn-default(type='button')
 																					a(href='mailto:'+vol.email+'?subject=Participation%20à%20:%20'+event.intitule, target='_blank') Contactez
 
 block footscript
 	script('type'='text/javascript').
 		'use strict';
 		$(document).ready(function(){
+			if (env == 'prod') {
+				amplitude.getInstance().logEvent('o_visit_event');
+			}
 			$('.edit').click(function(){
 				const type = $(this).attr('type');
 				if(type == 'vol_nb'){
@@ -176,9 +197,36 @@ block footscript
 					let div = $('h1.intitule');
 					console.info(div.text());
 					div.html("<form name='edit-form' method='post' action='/edit-event'><input type='text' value='"+div.text()+"' name='intitule'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+				} else if (type == 'description'){
+					let div = $('p.description');
+					const text_textarea = div.text();
+					div.html("<form name='edit-form' method='post' action='/edit-event'><textarea name='description' id='des'></textarea><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+					$('#des').val(text_textarea);
+				} else if (type == 'min_age'){
+					let div = $('p.min_age');
+					const age_init = parseInt(div.text());
+					console.log('age_init : ' + age_init);
+					div.html("<form name='edit-form' method='post' action='/edit-event'><input type='number' name='min_age' id='mina'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+					$('#mina').val(age_init);
 				}
 			});
 			$(function () {
 				$('[data-toggle="tooltip"]').tooltip()
 			})
+			$('.archive').click(function(){
+				let div = $(this).parent();
+				let act_id = $(this).attr('act_id');
+				div.html("<form name='edit-form' method='post' action='/edit-activity'><p>Êtes-vous de vouloir archiver cet engagement ? Il ne sera alors plus visible des bénévoles </p><input class='hidden' name='archive' value='a'></input><input class='hidden' name='act_id' value='" + act_id + "'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input style='width: 50%' class='btn btn-danger' type='submit' value='Oui'></input><input style='width: 50%' class='btn btn-info no-archive' value='Non'></input></form>");
+				$('.no-archive').click(function(){
+					div.html("<a class='inline btn btn-danger archive'> Archiver l'opportunité </a>");
+				})
+			});
+			$('.recover').click(function(){
+				let div = $(this).parent();
+				let act_id = $(this).attr('act_id');
+				div.html("<form name='edit-form' method='post' action='/edit-activity'><p>Êtes-vous de vouloir republier cet engagement ? Il sera alors visible des bénévoles </p><input class='hidden' name='recover' value='a'></input><input class='hidden' name='act_id' value='" + act_id + "'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input style='width: 50%' class='btn btn-info' type='submit' value='Oui'></input><input style='width: 50%' class='btn btn-danger no-recover' value='Non'></input></form>");
+				$('.no-recover').click(function(){
+					div.html('<h4><span style="background-color: #E33831" class="badge">Archivé</span><i type="recover" style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="Republier l\'engagement" class="fa fa-refresh recover"></i></h4>');
+				})
+			});
 		})

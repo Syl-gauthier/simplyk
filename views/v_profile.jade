@@ -3,93 +3,352 @@ block vars
   - var page = 'profile'
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+  - var first_lt_denied = (volunteer.long_terms.filter(function(lt){return lt.status == 'denied';}))[0];
+  - var first_ext_denied = (volunteer.extras.filter(function(ext){return ext.status == 'denied';}))[0];
   - /* parse a date in yyyy-mm-dd format*/ function parseDate(input) {var parts = input.match(/(\d+)/g);/* new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])*/return new Date(parts[0], parts[1]-1, parts[2]); /* months are 0-based*/}
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(parseDate(date).getTime() + tz_offset);return corrected_datetime}
   - function addHoursIfExists(arr){return arr.reduce(function(acc, curV, curI) {if(curV > 0 ){return acc + curV;} else {return acc;}})}
+  - function getNotifications(type){if(type == 'em'){if(volunteer.extras.filter(function(ext){return ext.status == 'denied'}).length < 1){return ''}else{return '#E33831'}}else if (type == 'el'){if(volunteer.events.filter(function(evt){return evt.status == 'denied'}).length < 1){if(volunteer.long_terms.filter(function(lt){return lt.status == 'denied'}).length < 1){return ''}else{return '#E33831'}}else{return '#E33831'}}}
+  - function getTooltipText(badge, level){var seuils = {};var seuils_array = [[], [2, 4, 6, 8, 15], [0, 10, 30, 75, 150], [0, 10, 30, 100, 150], [10, 20, 50, 100, 500], [0, 5, 10, 50, 100]];return (seuils_array[badge])[level];}
 
 
 
 block head
   title Profil de bénévole
   meta(name='description', content='Accède à tes informations personnelles')
+  style.
+    .rank__img {height: 70px}
+    .rank__well {padding: 6px; background-color: #eee; border-color: #ccc;}
+    .rank__well--not {background-color: #fff; color:#aaa; border-color: #eee}
+    .rank__subtitle {margin: 0px; margin-top: 6px;}
+    .balance {margin-bottom: 5px;}
+    .balance__chart {display: inline-block;}
+    .balance__description {width: 20%; margin-right: 5px}
+    #balance_row {margin-bottom: 15px}
+    .tooltip-inner {white-space:pre-wrap;}
 block content
   #map-section.container-fluid
     .row
       .col-md-5.col-md-offset-1
         h3.page-header <strong> #{volunteer.firstname} #{volunteer.lastname}  </strong>
-        if lt_hours_done
-          p <i class='fa fa-2x fa-link fa-pull-left fa-border'></i> <b>Engagements long terme</b> <br> #{lt_hours_done} heures confirmées
-        else 
-          p <i class='fa fa-2x fa-link fa-pull-left fa-border'></i> <b>Engagements long terme</b> <br> 0 heures confirmées
-        if events_hours_done || extras_hours_done || manuals_hours_done
-          p <i class='fa fa-2x fa-trophy fa-pull-left fa-border'></i> <b>Évènements ponctuels</b> <br> #{addHoursIfExists([events_hours_done, extras_hours_done, manuals_hours_done])} heures confirmées
-        else 
-          p <i class='fa fa-2x fa-trophy fa-pull-left fa-border'></i> <b>Évènements ponctuels</b> <br> 0 heures confirmées
-      if vol_level
-        .col-md-5
-          .media.tp-15(style='margin-top: 6%')
-            if (vol_level == 1)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_10.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-default Débutant
-                p.text-info <strong>Conseil : </strong> Inscris-toi à un engagement bénévole pour augmenter ton niveau d'engagement !
-            if (vol_level == 2)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_25.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-info Apprenti
-                p.text-info <strong>Conseil : </strong> Une fois ton opération bénévole terminée, fais valider ta participation via ton tableau de bord !
-            if (vol_level == 3)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_40.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-primary Gros potentiel
-                p.text-info <strong>Conseil : </strong> Il ne te manque que quelques heures supplémentaires de bénévolat pour passer au rang suivant !
-            if (vol_level == 4)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_55.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-success Force vive
-                if (events_hours_done == 0)
-                  p.text-info <strong>Conseil : </strong> Participe à ton premier évènement et fais valider tes heures par l'organisme afin de monter de niveau !
-                else
-                  p.text-info <strong>Conseil : </strong> Augmente ton nombre d'heures d'implication pour atteindre le niveau suivant !
-            if (vol_level == 5)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_70.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-warning Formidable
-                if (events_hours_done == 0)
-                  p.text-info <strong>Conseil : </strong> Pour devenir un expert du bénévolat, il faut maintenant que tu participes aussi à un évènement ponctuel !
-                else if (lt_hours_done == 0)
-                  p.text-info <strong>Conseil : </strong> Participe à ton premier engagement à long terme afin de devenir un expert du bénévolat !
-                else
-                  p.text-info <strong>Conseil : </strong> Il ne te reste plus beaucoup d'heures d'implication pour devenir un expert du bénévolat !
-            if (vol_level == 6)
-              .media-left.media-middle(style='width: 40vw')
-                img.media-object(src='/images/grade_max.png' width='100')
-              .media-body
-                h3.media-heading <strong>Mon niveau d'engagement</strong>
-                h3
-                  span.label.label-danger Expert
-                p.text-info <strong>Conseil : </strong> Maintenant que tu es un expert, continue de t'impliquer afin de relever les challenges à venir sur la plateforme !
+        .row#balance_row
+          .col-xs-5
+            .row.balance(data-toggle="tooltip" data-placement="left" title='Solidarité')
+              .col-xs-2.inline.text-center
+                i.fa.fa-heart(style='color: #0099ff')
+              .col-xs-8
+                .balance__chart(style='background-color: #0099ff; width: '+(100*volunteer.preferences[0])+'%')
+                  p.inline <b>#{Math.round(100*volunteer.preferences[0])}%</b>
+            .row.balance(data-toggle="tooltip" data-placement="left" title='Nature')
+              .col-xs-2.inline.text-center
+                i.fa.fa-envira(style='color: #5BCF8F')
+              .col-xs-8
+                .balance__chart(style='background-color: #5BCF8F; width: '+(100*volunteer.preferences[1])+'%')
+                  p.inline <b>#{Math.round(100*volunteer.preferences[1])}%</b>
+            .row.balance(data-toggle="tooltip" data-placement="left" title='Sport et Culture')
+              .col-xs-2.inline.text-center
+                i.fa.fa-institution(style='color: #FFC858')
+              .col-xs-8
+                .balance__chart(style='background-color: #FFC858; width: '+(100*volunteer.preferences[2])+'%')
+                  p.inline <b>#{Math.round(100*volunteer.preferences[2])}%</b>
+            .row.balance(data-toggle="tooltip" data-placement="left" title='Enfance')
+              .col-xs-2.inline.text-center
+                i.fa.fa-child(style='color: #FF4F3C')
+              .col-xs-8
+                .balance__chart(style='background-color: #FF4F3C; width: '+(100*volunteer.preferences[3])+'%')
+                  p.inline <b>#{Math.round(100*volunteer.preferences[3])}%</b>
+          .col-xs-7
+            h1(data-toggle="tooltip" data-html='true' data-placement="left" title='Badges: <b>'+bonus+'</b>pts <br>Heures validées: <b>'+scores[0]+'</b>pts <br>Partages: <b>'+scores[1]+'</b>pts <br>Fidélité: <b>'+scores[2]+'</b>pts') <b>#{score}</b> pts
+        .row.text-center
+          .col-xs-12
             if (volunteer.admin)
               if ((client_schools.map(c => c.name).indexOf(volunteer.admin.school_name) != -1) && (volunteer.admin.school_name != 'HEC Montréal'))
-                a.btn.btn-info.pull-right(href='/volunteer/extra_simplyk_hours', role='button')
+                a.btn.btn-info(href='/volunteer/extra_simplyk_hours', role='button')
                   h4.inline Ajouter une expérience de bénévolat
                   i.fa.fa-plus
-
+      if badges
+        .col-md-5
+          .media.tp-15(style='margin-top: 6%')
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well(class=badges[0]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title='Tu as validé le niveau Intentionné en finalisant ton inscription !')
+                img.rank__img(src='/images/dog_ballon'+ badges[0] +'.svg')
+                p.rank__subtitle <b>Intentionné</b>
+            .col-md-4.col-xs-6.text-center(data-toggle='modal' data-target='#share_modal' style='cursor: pointer')
+              .well.rank__well(class=badges[1]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title=badges[1]>0 ? (badges[2]<5 ? 'Pour devenir Ambassadeur de niveau ' + (badges[1]+1) + ', invite ' + getTooltipText(1, badges[1]) + ' amis au total sur la plateforme': 'Félicitation, tu es Maître Ambassadeur, point de départ d\'une tonne de bonnes actions !'):'Pour devenir Ambassadeur de niveau 1, invite 2 amis sur la plateforme')
+                img.rank__img(src='/images/porte_voix'+ badges[1] +'.svg')
+                p.rank__subtitle <b>Ambassadeur</b>
+            #share_modal.modal.fade(role='dialog' aria-labelledby='modalShareLabel')
+              .modal-dialog(role='document')
+                .modal-content
+                  .modal-header
+                    button.close(data-dismiss='modal' aria-label='Close')<span aria-hidden="true">&times;</span>
+                    h4.modal-title#modalShareLabel Partage à des amis
+                  .modal-body
+                    h3.text-center Annonce la bonne nouvelle
+                    img(align='center', src='/images/porte_voix_solo.svg', style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
+                    h5.text-center(style='font-weight: bold') Partage la plateforme à tes proches en partageant ce lien. <br> Cela te permet d'amplifier l'impact que tu as sur la société autour de toi et de faire ainsi évoluer ton profil Simplyk !
+                    input#share_link.form-control.text-center(type='text' volunteer=volunteer._id)
+                  .modal-footer
+                    a.btn.btn-default(data-dismiss='modal') Fermer
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well(class=badges[2]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title=badges[2]>0 ? (badges[2]<5 ? 'Pour devenir Marathonien de niveau ' + (badges[2]+1) + ', valide ' + getTooltipText(2, badges[2]) + 'h de participation en engagement long terme' : 'Félicitation, tu es Maître Marathonien !'):'Pour devenir Marathonien de niveau 1, valide une participation dans un engagement long terme')
+                img.rank__img(src='/images/yeezy'+ badges[2] +'.svg')
+                p.rank__subtitle <b>Marathonien</b>
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well(class=badges[3]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[3]>0 ? (badges[3]<5 ? 'Pour suivre les pas de Gandhi au niveau ' + (badges[3]+1) + ', valide au moins une participation dans un évènement ponctuel, une dans un engagement long terme et ' + getTooltipText(3, badges[3]) + 'h totales de participation': 'Félicitation, Gandhi est fier de toi !'):'Pour suivre les pas de Gandhi au niveau 1, valide une participation dans un évènement ponctuel et une dans un engagement long terme')
+                img.rank__img(src='/images/bienfaiteur'+ badges[3] +'.svg')
+                p.rank__subtitle <b>Gandhi</b>
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well(class=(badges[4]>0 && badges[4]!=404) ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[4]>0 ? (badges[4]<5 ? 'Pour devenir Motivé de niveau ' + (badges[4]+1) + ', il te faut comptabiliser au moins ' + getTooltipText(4, badges[4]) + ' connexions à la plateforme': (badges[4]==404 ? 'Problème de badge' : 'Félicitation, ta motivation est sans borne et ta bienfaisance se ressent autour de toi !')):'Pour devenir Motivé de niveau 1, il te faut comptabiliser au moins 10 connexions à la plateforme')
+                img.rank__img(src=(badges[4]!=404 ? '/images/whale'+ badges[4] +'.svg':''))
+                p.rank__subtitle <b>Motivé</b>
+            .col-md-4.col-xs-6.text-center
+              .well.rank__well(class=badges[5]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[5]>0 ? (badges[5]<5 ? 'Pour devenir Sprinter de niveau ' + (badges[5]+1) + ', valide ' + getTooltipText(5, badges[5]) + 'h de participation en évènement ponctuel': 'Félicitation, tu es le Usain Bolt du bénévolat !') :'Pour devenir Sprinter de niveau 1, valide une participation dans un évènement ponctuel')
+                img.rank__img(src='/images/shoes_punch'+ badges[5] +'.svg')
+                p.rank__subtitle <b>Sprinter</b>
+    if events_past.length || events_denied.length || first_lt_denied || first_ext_denied || longterm_waiting
+      if events_past.length
+        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="notificationModalLabel", id='notificationModal')
+          div.modal-dialog(role='document')
+            .modal-content(id='notificationModalForm')
+              .modal-header
+                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden='true')
+                  h4.modal-title Valide ta participation
+              .modal-body
+                h3.text-center Valide ta participation !
+                img(align='center', src='http://i.giphy.com/H16k14aEA6Vva.gif', style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
+                p.text-center Un évènement auquel tu étais inscrit est terminé. <br> Tu peux maintenant valider ta participation pour faire évoluer ton profil d'engagement, ainsi que le bilan d'impact de l'organisme !
+                li.list-group-item
+                  .panel.panel-default(style='border: 1px solid green')
+                    .panel-heading
+                      div.media-left.media-middle
+                        a(href='profile')
+                          img.media-object.little-img(src='/images/clouds.jpg')
+                      div.media-body
+                        h4.media-heading <b>#{events_past[0].intitule}</b> <small>(#{events_past[0].intitule_activity})</small>
+                        h6 <small>pour</small> 
+                          a.inline(href='/all/organism/'+events_past[0].org_id)=events_past[0].org_name
+                      div.media-right.media-top
+                        a.btn.btn-default(href='/volunteer/event/'+events_past[0]._id) Détails
+                    .panel-body
+                      h6
+                        i.fa.fa-map-marker
+                        p.inline Adresse : #{events_past[0].address}
+                      h6.inline
+                        i.fa.fa-calendar-o
+                        p.inline #{days_name[correctDate(events_past[0].day).getDay()]  + ' ' + (correctDate(events_past[0].day).getDate()) + ' ' + months_name[correctDate(events_past[0].day).getMonth()]  + ' ' + correctDate(events_past[0].day).getFullYear()}
+                    .panel-footer
+                      div.input-group
+                        form.event_hours_pending_modal_form(method='post' action='/volunteer/hours_pending/'+events_past[0].activity_id+'-'+events_past[0].day, id='hoursPendingNotificationForm'+events_past[0].activity_id)
+                          .input-group-btn
+                            input.form-control(id='input'+events_past[0]._id, type='number', min='0.5', max='50', step='0.5' placeholder='Heures réalisées' name='hours_pending', required)
+                            input.btn.btn-default.hours_pending_btn(type='submit', value='Confirmer' form='hoursPendingNotificationForm'+events_past[0].activity_id)
+                            input.btn.btn-warning.absenceNotificationButton(type='button' value='Absence' id='absenceNotificationDiv'+events_past[0]._id)
+                      div.hidden(class='absenceNotificationDiv'+events_past[0]._id)
+                        form.event_absence_modal_form(id='absenceNotificationModalForm'+events_past[0]._id, method='post', action='/volunteer/hours_pending/'+events_past[0].activity_id+'-'+events_past[0].day)
+                          h4.modal-title(style='margin-top: 20px') Confirmes-tu ton absence ?
+                          input.hidden(value='a', name='absent')
+                          div.modal-footer
+                            input.btn.btn-warning.absence_btn(type='submit' form='absenceNotificationModalForm'+events_past[0]._id, value='Confirmer mon absence')
+      else if events_denied.length
+        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="notificationModalLabel", id='notificationModal')
+          div.modal-dialog(role='document')
+            form.modal-content.notificationModalForm(id='notificationModalForm')
+              .modal-header
+                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden='true')
+                  h4.modal-title Corrige ton dossier
+              .modal-body
+                h3.text-center Corrige ton dossier !
+                img(align='center', src='/images/repair.svg', style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
+                p.text-center La personne responsable du bénévolat dans ton établissement attends une correction sur le retour d'expérience d'un de tes bénévolats.
+                li.list-group-item
+                  .panel.panel-default(style='border: 1px solid red')
+                    .panel-heading
+                      div.media-left.media-middle
+                        a(href='profile')
+                          img.media-object.little-img(src='/images/clouds.jpg')
+                      div.media-body
+                        h4.media-heading <b>#{events_denied[0].intitule}</b> <small>(#{events_denied[0].intitule_activity})</small>
+                        h6 <small>pour</small> 
+                          a.inline(href='/all/organism/'+events_denied[0].org_id)=events_denied[0].org_name
+                      if events_denied[0].status == 'denied'
+                        div.media-right.media-top
+                          span.badge(style='background-color: #E33831')= 'À corriger'
+                    .panel-body
+                      h6
+                        i.fa.fa-map-marker
+                        p.inline Adresse : #{events_denied[0].address}
+                      h6.inline
+                        i.fa.fa-calendar-o
+                        p.inline #{days_name[correctDate(events_denied[0].day).getDay()]  + ' ' + (correctDate(events_denied[0].day).getDate()) + ' ' + months_name[correctDate(events_denied[0].day).getMonth()]  + ' ' + correctDate(events_denied[0].day).getFullYear()}
+                    .panel-footer
+                      a.btn.btn-danger(href='/volunteer/event/'+events_denied[0]._id) Corriger
+                    #identifiant(style='display:none')
+                      p= events_denied[0]._id
+              div.modal-footer
+                a.btn.btn-default(data-dismiss='modal') Fermer
+      else if first_lt_denied
+        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="notificationModalLabel", id='notificationModal')
+          div.modal-dialog(role='document')
+            form.modal-content.notificationModalForm(id='notificationModalForm')
+              .modal-header
+                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden='true')
+                  h4.modal-title Corrige ton dossier
+              .modal-body
+                h3.text-center Corrige ton dossier !
+                img(align='center', src='/images/repair.svg', style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
+                p.text-center La personne responsable du bénévolat dans ton établissement attends une correction sur le retour d'expérience d'un de tes bénévolats.
+                li.list-group-item
+                  .panel.panel-default(style='border: 1px solid red')
+                    .panel-heading
+                      div.media-left.media-middle
+                        a(href='profile')
+                          img.media-object.little-img(src='/images/clouds.jpg')
+                      div.media-body
+                        h4.media-heading <b>#{first_lt_denied.intitule}</b>
+                        h6 <small>pour</small> 
+                          a.inline(href='/all/organism/'+first_lt_denied.org_id)=first_lt_denied.org_name
+                      div.media-right.media-top
+                        span.badge(style='background-color: #E33831')= 'À corriger'
+                    .panel-body
+                      h6
+                        i.fa.fa-map-marker
+                        p.inline Adresse : #{first_lt_denied.address}
+                    .panel-footer
+                      a.btn.btn-danger(href='/longterm/'+first_lt_denied._id) Corriger
+                    #identifiant(style='display:none')
+                      p= first_lt_denied._id
+              div.modal-footer
+                a.btn.btn-default(data-dismiss='modal') Fermer
+      else if first_ext_denied
+        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="notificationModalLabel", id='notificationModal')
+          div.modal-dialog(role='document')
+            .modal-content(id='notificationModalForm')
+              .modal-header
+                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden='true')
+                  h4.modal-title Corrige ton dossier
+              .modal-body
+                h3.text-center Corrige ton dossier !
+                img(align='center', src='/images/repair.svg', style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
+                p.text-center La personne responsable du bénévolat dans ton établissement attends une correction sur le retour d'expérience d'un de tes bénévolats.
+                li.list-group-item
+                  .panel.panel-default(style='border: 1px solid red')
+                    .panel-heading
+                      div.media-left.media-middle
+                        a(href='profile')
+                          img.media-object.little-img(src='/images/clouds.jpg')
+                      div.media-body
+                        h4.media-heading <b>#{first_ext_denied.intitule}</b>
+                        h6 <small>pour</small> #{first_ext_denied.org_name}
+                      div.media-right.media-top
+                        span.badge(style='background-color: #E33831')= 'À corriger'
+                    .panel-body
+                      h6
+                        i.fa.fa-info-circle
+                        p.inline #{first_ext_denied.description}
+                      h6
+                        i.fa.fa-calendar
+                        p.inline #{moment(first_ext_denied.days.day).format("DD/MM/YYYY")}
+                    .panel-footer
+                      a.btn.btn-danger.notificationCorrection Corriger
+                    #identifiant(style='display:none')
+                      p= first_ext_denied._id
+                div.hidden#notificationCorrection
+                  h4 Retours d'expériences
+                  if (first_ext_denied.student_questions.length > 0 && first_ext_denied.student_answers.length > 0)
+                    div.panel.panel-default
+                      form.edit_extra_student_notification_form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
+                        div.panel-heading
+                          h4 Ton retour d'expérience
+                          span.badge(style='background-color: #E33831')= 'À corriger'
+                          i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=first_ext_denied._id)
+                        div.panel-body
+                          each question, q_I in first_ext_denied.student_questions
+                            div.panel.panel-warning
+                              div.panel-heading
+                                h6= question 
+                              div.panel-body
+                                h6.answer_to_edit #{first_ext_denied.student_answers[q_I]}
+                          div.submit-button
+                  if first_ext_denied.organism_questions.length && first_ext_denied.organism_answers.length
+                    h4 <b>Les retours de l'organisme</b>
+                    each question, question_i in first_ext_denied.organism_questions
+                      div.panel.panel-warning
+                        div.panel-heading
+                          h6= question
+                        div.panel-body
+                          h6= first_ext_denied.organism_answers[question_i]
+                  else
+                    h4 <b>En attente des retours de l'organisme...</b>
+              div.modal-footer
+                a.btn.btn-default(data-dismiss='modal') Fermer
+      else if longterm_waiting
+        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="notificationModalLabel", id='notificationModal')
+          div.modal-dialog(role='document')
+            .modal-content(id='notificationModalForm')
+              .modal-header
+                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden='true')
+                  h4.modal-title As-tu fais des heures ?
+              .modal-body
+                h3.text-center As-tu fais des heures avec eux récemment ?
+                img(align='center', src='/images/air_balloon.svg', style='max-width: 50%; display:block; margin-left: auto; margin-right: auto; margin-bottom: 20px')
+                p.text-center Tu es inscrit à cet engagement. <br>  Met-le à jour !
+                li.list-group-item
+                  .panel.panel-default(style='border: 1px solid green')
+                    .panel-heading
+                      div.media-left.media-top
+                        a(href='profile')
+                          img.media-object.little-img(src='/images/clouds.jpg')
+                      div.media-body
+                        h4.media-heading <b>#{longterm_waiting.intitule}</b>
+                        h6 <small>pour</small> 
+                          a.inline(href='/all/organism/'+longterm_waiting.org_id)=longterm_waiting.org_name
+                      if longterm_waiting.status == 'corrected'
+                        div.media-right.media-top
+                          span.badge(style='background-color: #FF800E')= 'Corrigé'
+                      else if longterm_waiting.status == 'validated'
+                        div.media-right.media-top
+                          span.badge(style='background-color: #113A20')= 'Validé'
+                    .panel-body
+                      h6
+                        i.fa.fa-map-marker
+                        p.inline Adresse : #{longterm_waiting.address}
+                      h6.inline
+                        i.fa.fa-info
+                        p.inline= longterm_waiting.description
+                      if longterm_waiting.hours_done || longterm_waiting.hours_pending
+                        h4
+                          if longterm_waiting.hours_done
+                            span.badge(style='background-color: #113A20')= longterm_waiting.hours_done + ' heures réalisées '
+                          if longterm_waiting.hours_pending
+                            span.badge(style='background-color: #FF800E')= longterm_waiting.hours_pending + ' heures à confirmer '
+                    .panel-footer
+                      form.event_hours_pending_modal_form(method='post' action='/volunteer/LThours_pending/'+longterm_waiting._id, id='hoursPendingNotificationForm'+longterm_waiting._id)
+                        div.input-group
+                          input.form-control(id='input'+longterm_waiting._id, type='number', min='0.5', max='50', step='0.5' placeholder='Heures réalisées' name='hours_pending', required)
+                          .input-group-btn
+                            input.btn.btn-default.hours_pending_btn(type='submit', value='Confirmer' form='hoursPendingNotificationForm'+longterm_waiting._id)
+                            input.btn.btn-info.notYetNotificationButton(type='button' value='Aucune' lt_id=longterm_waiting._id, data-toggle="tooltip" data-placement="top" title='Je n\'ai aucune heure à ajouter à cet engagement')
+                            if (!longterm_waiting.hours_done && !longterm_waiting.hours_pending)
+                              input.btn.btn-warning.absenceNotificationButton(type='button' value='Se désinscrire' data-toggle="tooltip" data-placement="top" title='Je veux me désinscrire définitivement de cet engagement'  id='absenceNotificationDiv'+longterm_waiting._id)
+                            else
+                              input.btn.btn-warning.notYetNotificationButton(type='button' finished='yes' value='Je n\'irai plus' data-toggle="tooltip" data-placement="top" title='Je ne vais plus aller à cet engagement' lt_id=longterm_waiting._id)
+                      if (!longterm_waiting.hours_done && !longterm_waiting.hours_pending)
+                        div.hidden(class='absenceNotificationDiv'+longterm_waiting._id)
+                          form.inline.longterm_unsubscribe_form(action='/volunteer/unsubscribe/longterm/'+longterm_waiting._id, method='post')
+                            .panel.panel-default
+                              .panel-body
+                                h4.text-center Es-tu sûr de vouloir te désinscrire de cet engagement ?
+                              .panel-footer
+                                .btn-group.text-center
+                                  a.btn.btn-warning(data-dismiss='modal') Annuler
+                                  input.btn.btn-default(type='submit' value='Oui' role='button')
+                         
 
 
     .row
@@ -98,7 +357,7 @@ block content
           li.active(role='navigation')
             a(href='#participations' aria-controls='participations' role='tab' data-toggle='tab') 
               h4 Mes participations 
-                span.badge= volunteer.events.length + volunteer.long_terms.length
+                span.badge(style='background-color: ' + getNotifications('el'))= volunteer.events.length + volunteer.long_terms.length
           li(role='navigation')
             a(href='#profile' aria-controls='profile' role='tab' data-toggle='tab') 
               h4 Mes informations
@@ -109,11 +368,11 @@ block content
                   if (client_schools.map(c => c.name).indexOf(volunteer.admin.school_name) != -1)
                     h4.school_name #{volunteer.admin.school_name} 
                       if volunteer.extras && volunteer.manuals
-                        span.badge= volunteer.extras.length + volunteer.manuals.length
+                        span.badge(style='background-color: ' + getNotifications('em'))= volunteer.extras.length + volunteer.manuals.length
                   else 
                     h4 Mon école 
                       if volunteer.extras && volunteer.manuals
-                        span.badge= volunteer.extras.length + volunteer.manuals.length
+                        span.badge(style='background-color: ' + getNotifications('em'))= volunteer.extras.length + volunteer.manuals.length
 
     .row
       .tab-content
@@ -123,22 +382,23 @@ block content
               h2 Évènements ponctuels
             #offers-list.no-side-padding
                 ul.list-group.list-opportunity
-                  unless (events_past || events_confirmed || events_pending || events_subscribed)
-                    p Pas d'inscriptions
+                  unless (events_past || events_confirmed || events_pending || events_subscribed || events_denied || events_refused)
+                    p.text-center <b>Pas d'inscriptions</b>
 
                   //IF EVENT_PAST
                   if events_past.length
                     h4 CONFIRMER TA VENUE
                   each event, index in events_past
                     li.list-group-item
-                      .panel.panel-default
+                      .panel.panel-default(style='border: 1px solid green')
                         .panel-heading
                           div.media-left.media-middle
                             a(href='profile')
                               img.media-object.little-img(src='/images/clouds.jpg')
                           div.media-body
                             h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
-                            h6 <small>pour</small> #{event.org_name}
+                            h6 <small>pour</small> 
+                              a.inline(href='/all/organism/'+event.org_id)=event.org_name
                           div.media-right.media-top
                             a.btn.btn-default(href='/volunteer/event/'+event._id) Détails
                         .panel-body
@@ -149,15 +409,15 @@ block content
                             i.fa.fa-calendar-o
                             p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
                         .panel-footer
-                          form(method='post' action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day, id='hoursPendingForm'+event.activity_id+event.day)
+                          form.event_hours_pending_modal_form(method='post' action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day, id='hoursPendingForm'+event.activity_id+event.day)
                             div.input-group
                               input.form-control(id='input'+event._id, type='number', min='0.5', max='50', step='0.5' placeholder='Heures réalisées' name='hours_pending', required)
                               .input-group-btn
-                                input.btn.btn-default(type='submit', value='Confirmer' form='hoursPendingForm'+event.activity_id+event.day)
+                                input.btn.btn-default.hours_pending_btn(type='submit', value='Confirmer' form='hoursPendingForm'+event.activity_id+event.day)
                                 input.btn.btn-warning(type='button' value='Absence' data-toggle='modal' data-target='#absenceModal'+event._id)
                         .modal.fade(tabindex='-1', role='dialog' aria-labelledby="absenceModalLabel", id='absenceModal'+event._id)
                           div.modal-dialog(role='document')
-                            form.modal-content.absenceModalForm(id='absenceModalForm'+event._id, method='post', action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day)
+                            form.modal-content.event_absence_modal_form(id='event_absence_modal_form'+event._id, method='post', action='/volunteer/hours_pending/'+event.activity_id+'-'+event.day)
                               .modal-header
                                 button(type='button' class="close" data-dismiss="modal" aria-label="Close")
                                   span(aria-hidden='true')
@@ -165,7 +425,7 @@ block content
                                   input.hidden(value='a', name='absent')
                               div.modal-footer
                                 a.btn.btn-default(data-dismiss='modal') Annuler
-                                input.btn.btn-warning(type='submit' form='absenceModalForm'+event._id, value='Confirmer mon absence')
+                                input.btn.btn-warning(type='submit' form='event_absence_modal_form'+event._id, value='Confirmer mon absence')
                         #identifiant(style='display:none')
                           p= event._id
 
@@ -174,14 +434,15 @@ block content
                     h4 CORRIGER TON RETOUR
                   each event, index in events_denied
                     li.list-group-item
-                      .panel.panel-default
+                      .panel.panel-default(style='border: 1px solid red')
                         .panel-heading
                           div.media-left.media-middle
                             a(href='profile')
                               img.media-object.little-img(src='/images/clouds.jpg')
                           div.media-body
                             h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
-                            h6 <small>pour</small> #{event.org_name}
+                            h6 <small>pour</small> 
+                              a.inline(href='/all/organism/'+event.org_id)=event.org_name
                           if event.status == 'denied'
                             div.media-right.media-top
                               span.badge(style='background-color: #E33831')= 'À corriger'
@@ -209,7 +470,8 @@ block content
                               img.media-object.little-img(src='/images/clouds.jpg')
                           div.media-body
                             h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
-                            h6 <small>pour</small> #{event.org_name}
+                            h6 <small>pour</small> 
+                              a.inline(href='/all/organism/'+event.org_id)=event.org_name
                           if event.status == 'pending'
                             div.media-right.media-top
                               span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
@@ -243,7 +505,8 @@ block content
                               img.media-object.little-img(src='/images/clouds.jpg')
                           div.media-body
                             h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
-                            h6 <small>pour</small> #{event.org_name}
+                            h6 <small>pour</small> 
+                              a.inline(href='/all/organism/'+event.org_id)=event.org_name
                         .panel-body
                           h6
                             i.fa.fa-map-marker
@@ -263,7 +526,7 @@ block content
                                     span(aria-hidden='true') &times;
                                   h4.modal-title(id='myModalLabel'+index) Es-tu sûr de vouloir te désinscrire de cette activité ?
                                 .modal-footer
-                                  form.inline(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post')
+                                  form.inline.activity_unsubscribe_form(action='/volunteer/unsubscribe/'+event.activity_id+'-'+event.day, method='post')
                                     .btn-group
                                       a.btn.btn-warning(data-dismiss='modal') Annuler
                                       input.btn.btn-default(type='submit' value='Oui' role='button')
@@ -281,7 +544,8 @@ block content
                                 img.media-object.little-img(src='/images/clouds.jpg')
                             div.media-body
                               h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
-                              h6 <small>pour</small> #{event.org_name}
+                              h6 <small>pour</small> 
+                                a.inline(href='/all/organism/'+event.org_id)=event.org_name
                             if event.status == 'corrected'
                               div.media-right.media-top
                                 span.badge(style='background-color: #FF800E')= 'Corrigé'
@@ -294,6 +558,41 @@ block content
                             else if event.status == 'absent'
                               div.media-right.media-top
                                 span.badge(style='background-color: #E33831')= 'Absent'
+                        .panel-body
+                          h6
+                            i.fa.fa-map-marker
+                            p.inline Adresse : #{event.address}
+                          h6.inline
+                            i.fa.fa-calendar-o
+                            p.inline #{days_name[correctDate(event.day).getDay()]  + ' ' + (correctDate(event.day).getDate()) + ' ' + months_name[correctDate(event.day).getMonth()]  + ' ' + correctDate(event.day).getFullYear()}
+                        .panel-footer
+                          ul.list-inline
+                            li
+                              a.btn.btn-default(id= event._id, href='/volunteer/event/'+event._id) Détails
+                            li
+                              h4.text-right
+                                if event.hours_done
+                                  span.badge(style='background-color: #113A20')= event.hours_done + ' heures réalisées'
+                        #identifiant(style='display:none')
+                          p= event._id
+
+                  // IF EVENT_REFUSED
+                  if events_refused.length
+                    h4 ÉVÈNEMENTS REFUSÉS PAR TON RESPONSABLE
+                  each event, index in events_refused
+                    li.list-group-item
+                      .panel.panel-default
+                        .panel-heading
+                          .media
+                            div.media-left.media-middle
+                              a(href='profile')
+                                img.media-object.little-img(src='/images/clouds.jpg')
+                            div.media-body
+                              h4.media-heading <b>#{event.intitule}</b> <small>(#{event.intitule_activity})</small>
+                              h6 <small>pour</small> 
+                                a.inline(href='/all/organism/'+event.org_id)=event.org_name
+                            div.media-right.media-top
+                              span.badge(style='background-color: #000')= 'Refusé par ton responsable'
                         .panel-body
                           h6
                             i.fa.fa-map-marker
@@ -329,7 +628,8 @@ block content
                                 img.media-object.little-img(src='/images/clouds.jpg')
                             div.media-body
                               h4.media-heading <b>#{lt.intitule}</b>
-                              h6 <small>pour</small> #{lt.org_name}
+                              h6 <small>pour</small> 
+                                a.inline(href='/all/organism/'+lt.org_id)=lt.org_name
                             if lt.status == 'denied'
                               div.media-right.media-top
                                 span.badge(style='background-color: #E33831')= 'À corriger'
@@ -339,6 +639,9 @@ block content
                             else if lt.status == 'validated'
                               div.media-right.media-top
                                 span.badge(style='background-color: #113A20')= 'Validé'
+                            else if lt.status == 'refused'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #000')= 'Refusé par ton responsable'
                           .panel-body
                             h6
                               i.fa.fa-map-marker
@@ -358,20 +661,21 @@ block content
                                 a.btn.btn-danger(id= lt._id, href='/longterm/'+lt._id) Corriger
                               else 
                                 a.btn.infos-button-longterm.longterm(id= lt._id, href='/longterm/'+lt._id) Détails
-                              button.btn.btn-danger(data-toggle='modal' data-target='#addLTHoursModal'+lt_i) Ajouter des heures
-                              input.btn.btn-warning(type='button' value='Se désinscrire' data-toggle='modal' data-target='#unsubscribe-lt-modal'+lt_i)
-                              .modal.fade(id='unsubscribe-lt-modal'+lt_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+lt_i)
-                                .modal-dialog(role='document')
-                                  .modal-content
-                                    .modal-header
-                                      button.close(type='button' data-dismiss="modal" aria-label="Close")
-                                        span(aria-hidden='true') &times;
-                                      h4.modal-title(id='myModalLabel'+lt_i) Es-tu sûr de vouloir te désinscrire de cet engagement ? <br> Si tu as des heures enregistrées, elles seront définitivement perdues !
-                                    .modal-footer
-                                      form.inline(action='/volunteer/unsubscribe/longterm/'+lt._id, method='post')
-                                        .btn-group
-                                          a.btn.btn-warning(data-dismiss='modal') Annuler
-                                          input.btn.btn-default(type='submit' value='Oui' role='button')
+                              input.btn.btn-danger(data-toggle='modal' data-target='#addLTHoursModal'+lt_i, type='button', value='Ajouter des heures')
+                              if (!lt.hours_done && !lt.hours_pending)
+                                input.btn.btn-warning(type='button' value='Se désinscrire' data-toggle='modal' data-target='#unsubscribe-lt-modal'+lt_i)
+                                .modal.fade(id='unsubscribe-lt-modal'+lt_i, tab-index='-1' role='dialog' aria-labelledby='myModalLabel'+lt_i)
+                                  .modal-dialog(role='document')
+                                    .modal-content
+                                      .modal-header
+                                        button.close(type='button' data-dismiss="modal" aria-label="Close")
+                                          span(aria-hidden='true') &times;
+                                        h4.modal-title(id='myModalLabel'+lt_i) Es-tu sûr de vouloir te désinscrire de cet engagement ? <br> Si tu as des heures enregistrées, elles seront définitivement perdues !
+                                      .modal-footer
+                                        form.inline.longterm_unsubscribe_form(action='/volunteer/unsubscribe/longterm/'+lt._id, method='post')
+                                          .btn-group
+                                            a.btn.btn-warning(data-dismiss='modal') Annuler
+                                            input.btn.btn-default(type='submit' value='Oui' role='button')
                       .modal.fade(tabindex='-1', role='dialog' aria-labelledby="addLTHoursModalLabel", id='addLTHoursModal'+lt_i)
                         div.modal-dialog(role='document')
                           form.modal-content.addLTHoursForm(id='addLTHoursForm'+lt_i, method='post', action='/volunteer/LThours_pending/'+lt._id)
@@ -508,8 +812,8 @@ block content
                       .input-group.conn-input
                         input.form-control(name="confirm-password", type="password", placeholder="Confirmer mot de passe")
                   div.btn-toolbar
-                      button.btn.btn-default#cancel-password-button.editing.hidden Annuler
-                      button.btn.btn-default#save-password-button.editing.hidden Enregistrer
+                      div.btn.btn-default#cancel-password-button.editing.hidden Annuler
+                      div.btn.btn-default#save-password-button.editing.hidden Enregistrer
         #extras.tab-pane.fade(role='tabpanel')
           .col-md-4.col-md-offset-1
             .page-header
@@ -549,6 +853,9 @@ block content
                             else if ext.status == 'pending'
                               div.media-right.media-top
                                 span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
+                            else if ext.status == 'refused'
+                              div.media-right.media-top
+                                span.badge(style='background-color: #000')= 'Refusé par ton responsable'
                           .panel-body
                             h6.inline
                               i.fa.fa-info
@@ -562,9 +869,9 @@ block content
                           .panel-footer
                             .btn-group
                               if ext.status == 'denied'
-                                button.btn.btn-danger(id= ext._id, data-toggle='modal' data-target='#extraModal'+ext_i) Corriger
+                                input.btn.btn-danger(id= ext._id, data-toggle='modal' data-target='#extraModal'+ext_i, value='Corriger' type='button')
                               else
-                                button.btn.btn-default(id= ext._id, data-toggle='modal' data-target='#extraModal'+ext_i) Détails
+                                input.btn.btn-default(id= ext._id, data-toggle='modal' data-target='#extraModal'+ext_i, value='Détails' type='button')
                       .modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='extraModal'+ext_i)
                         div.modal-dialog(role='document')
                           .modal-content
@@ -575,7 +882,8 @@ block content
                             div.modal-body
                               if (ext.student_questions.length > 0 && ext.student_answers.length > 0)
                                 div.panel.panel-default
-                                  form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
+                                  form.edit_extra_student_notification_form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
+                                    input.hidden(name='status' value=ext.status)
                                     div.panel-heading
                                       h4 Ton retour d'expérience
                                       if ext.status == 'denied'
@@ -584,13 +892,22 @@ block content
                                       else if ext.status == 'corrected'
                                         span.badge(style='background-color: #FF800E')= 'Corrigé'
                                         i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=ext._id)
+                                      else if ext.status == 'confirmed'
+                                        span.badge(style='background-color: #113A20')= 'Confirmé par l\'organisme'
+                                        i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=ext._id)
+                                      else if ext.status == 'pending'
+                                        span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
+                                        i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=ext._id)
+                                      else if ext.status == 'refused'
+                                        span.badge(style='background-color: #000')= 'Refusé par ton responsable'
+                                        i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer", ext_id=ext._id)
                                     div.panel-body
                                       each question, q_I in ext.student_questions
                                         div.panel.panel-warning
                                           div.panel-heading
                                             h6= question 
                                           div.panel-body
-                                            if ((ext.status == 'denied') || (ext.status == 'corrected'))
+                                            if ((ext.status == 'denied') || (ext.status == 'corrected') || (ext.status == 'pending') || (ext.status == 'confirmed'))
                                               h6.answer_to_edit #{ext.student_answers[q_I]}
                                             else
                                               h6 #{ext.student_answers[q_I]}
@@ -646,8 +963,10 @@ block footscript
       $('#myInput').focus();
     });
   script(type='text/javascript').
+    'use strict';
     $(document).ready(function(){
       var clients = !{JSON.stringify(client_schools)};
+      $('#notificationModal').modal('show');
       $('.edit-form').submit(function(event){
         console.log('Submit an edit-form');
         console.log('$(this).attr("id) : ' + $(this).attr('id'))
@@ -694,6 +1013,15 @@ block footscript
           })
         }
       })
+      $('#share_modal').on('shown.bs.modal', function () {
+        var input = $('#share_link');
+        input.attr('value', window.location.host+'/share/001'+input.attr('volunteer')); 
+        input.focus();
+        input.select();
+        if (env == 'prod') {
+          amplitude.getInstance().logEvent('v_popular_modal_open');
+        }
+      });
       $('#school_name').change(function(){
         $('#classes_dropdown').addClass('hidden');
         $('.client_classes_item').addClass('hidden');
@@ -713,6 +1041,60 @@ block footscript
         }
       });
 
+      $('.absenceNotificationButton').click(function(){
+        const div_id = $(this).attr('id');
+        $('.'+div_id).removeClass('hidden');
+      });
+
+      $('.notYetNotificationButton').click(function(){
+        let datas = {};
+        if ($(this).attr('finished') == 'yes') {
+          datas.finished = 'yes'
+        }
+        const modal = $(this).closest('.modal');
+        modal.modal('toggle');
+        $.post('/volunteer/notyet/'+$(this).attr('lt_id'), datas)
+        .done(function(data){
+          console.info('Not Yet POST success');
+        })
+      });
+
+      $('.notificationCorrection').click(function(){
+        $('#notificationCorrection').removeClass('hidden');
+      });
+
+      if (env == 'prod') {
+        console.info('IN AMPLITUDE');
+        var event_props = {};
+        amplitude.getInstance().logEvent('v_visit_dashboard');
+        $('.edit_extra_student_notification_form').submit(function(){
+          event_props.type = 'extra';
+          amplitude.getInstance().logEvent('v_correct_opp', event_props);
+        });
+        $('.event_absence_modal_form').submit(function(){
+          amplitude.getInstance().logEvent('v_absence_event');
+        });
+        $('.activity_unsubscribe_form').submit(function(){
+          event_props.type = 'event';
+          amplitude.getInstance().logEvent('v_unsubscribe_opp', event_props);
+        });
+        $('.longterm_unsubscribe_form').submit(function(){
+          event_props.type = 'longterm';
+          amplitude.getInstance().logEvent('v_unsubscribe_opp', event_props);
+        });
+        $('.event_hours_pending_modal_form').submit(function(){
+          event_props.type = 'event';
+          amplitude.getInstance().logEvent('v_hourspending_opp', event_props);
+        });
+        $('.addLTHoursForm').submit(function(){
+          event_props.type = 'longterm';
+          amplitude.getInstance().logEvent('v_hourspending_opp', event_props);
+        });
+      }
+
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip({container: 'body'})
+      })
 
       $('.edit').click(function(){
         const ext_id = $(this).attr('ext_id');

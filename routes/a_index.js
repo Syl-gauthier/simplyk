@@ -12,6 +12,7 @@ var Organism = require('../models/organism_model.js');
 var Volunteer = require('../models/volunteer_model.js');
 var Admin = require('../models/admin_model.js');
 var Activity = require('../models/activity_model.js');
+var OrgTodo = require('../models/o_todo_model.js');
 
 
 router.get('/admin/classes', permissions.requireGroup('admin'), function(req, res, next) {
@@ -29,13 +30,9 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
   console.info(JSON.stringify(find_query));
   Volunteer.find(find_query, function(err, volunteers) {
     if (err) {
-      console.error('There is an error to access /listorganisms and get all the volunteers, the error is : ' + err);
-      res.render('a_classes.jade', {
-        error: err,
-        session: req.session,
-        admin: req.session.admin,
-        group: req.session.group
-      });
+      err.type = 'CRASH';
+      err.print = 'Problème avec la recherche des élèves';
+      next(err);
     } else {
       let classes_array = [];
       classes_array = JSON.parse(JSON.stringify(req.session.admin.classes));
@@ -61,7 +58,7 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
               if ((extra_status_array.indexOf('confirmed') == -1) && (extra_status_array.indexOf('corrected') == -1)) {
                 if ((event_status_array.indexOf('confirmed') == -1) && (event_status_array.indexOf('corrected') == -1)) {
                   if ((lt_status_array.indexOf('confirmed') == -1) && (lt_status_array.indexOf('corrected') == -1)) {
-                    if ((lt_status_array.indexOf('validated') == -1) && (event_status_array.indexOf('validated') == -1) && (extra_status_array.indexOf('validated') == -1)) {
+                    if ((lt_status_array.indexOf('validated') == -1) && (event_status_array.indexOf('validated') == -1) && (extra_status_array.indexOf('validated') == -1) && (vol.manuals && (vol.manuals.length < 1))) {
                       vol.status = ''
                       return vol;
                     } else {
@@ -115,13 +112,22 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
         identifier: req.session.admin._id
       });
 
-      res.status(200).render('a_classes.jade', {
-        session: req.session,
-        admin: req.session.admin,
-        group: req.session.group,
-        volunteers,
-        classes_array,
-        hash
+      OrgTodo.find({
+        'org_id': req.session.organism._id
+      }, function(err, todos) {
+        if (err) {
+          err.type = 'MINOR';
+          next(err);
+        }
+        res.status(200).render('a_classes.jade', {
+          session: req.session,
+          admin: req.session.admin,
+          group: req.session.group,
+          volunteers,
+          classes_array,
+          todos,
+          hash
+        });
       });
     }
   });
@@ -132,14 +138,19 @@ router.get('/admin/classes', permissions.requireGroup('admin'), function(req, re
 router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(req, res, next) {
   Volunteer.findById(req.params.vol_id, function(err, volunteer) {
     if (err) {
-      console.error('There is an error to access report, the error is : ' + err);
-      res.render('a_classes.jade', {
-        error: err,
-        session: req.session,
-        admin: req.session.admin,
-        group: req.session.group
-      });
+      err.type = 'CRASH';
+      err.print = 'Problème avec la recherche de l\'élève dans la base de données';
+      next(err);
     } else {
+      //Remove opps with status refused
+      function removeRefused(opp) {
+        return opp.status != 'refused';
+      }
+
+      volunteer.events = volunteer.events.filter(removeRefused);
+      volunteer.long_terms = volunteer.long_terms.filter(removeRefused);
+      volunteer.extras = volunteer.extras.filter(removeRefused);
+
       //Add infos to each event from activity_id
 
       function getEventWithActivityInfos(event) {
@@ -164,10 +175,32 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
                   new_event['activity_intitule'] = matching_activity.intitule;
                   new_event['org_phone'] = matching_organism.phone;
                   new_event['contact'] = matching_organism.firstname + ' ' + matching_organism.lastname;
+                  if ((new_event.status == 'subscribed') && (new Date(new_event.day) < new Date())) {
+                    new_event['status'] = 'past';
+                  }
                   console.log('new_event in resolve : ' + JSON.stringify(new_event));
                   resolve(new_event);
                 }
               })
+            }
+          })
+        });
+      };
+      //Add infos to each event from activity_id
+
+      function getLongtermWithOrgInfos(lt) {
+        return new Promise((resolve, reject) => {
+          Organism.findOne({
+            '_id': lt.org_id
+          }, 'email phone firstname lastname', function(err, matching_organism) {
+            if (err) {
+              reject(err);
+            } else {
+              let new_lt = JSON.parse(JSON.stringify(lt));
+              new_lt['org_email'] = matching_organism.email;
+              new_lt['org_phone'] = matching_organism.phone;
+              new_lt['contact'] = matching_organism.firstname + ' ' + matching_organism.lastname;
+              resolve(new_lt);
             }
           })
         });
@@ -181,24 +214,38 @@ router.get('/admin/report:vol_id', permissions.requireGroup('admin'), function(r
           secretKey: process.env.INTERCOM_SECRET_KEY,
           identifier: req.session.admin._id
         });
-        res.render('a_report.jade', {
-          volunteer: volunteer,
-          session: req.session,
-          admin: req.session.admin,
-          group: req.session.group,
-          events,
-          date,
-          hash
+        OrgTodo.find({
+          'org_id': req.session.organism._id
+        }, function(err, todos) {
+          if (err) {
+            err.type = 'MINOR';
+            err.print = 'Problème avec la recherche de l\'élève dans la base de données';
+            next(err);
+          }
+          Promise.all(volunteer.long_terms.map(lt => {
+            return getLongtermWithOrgInfos(lt);
+          })).then(complete_long_terms => {
+            res.render('a_report.jade', {
+              volunteer: volunteer,
+              session: req.session,
+              admin: req.session.admin,
+              group: req.session.group,
+              long_terms: complete_long_terms,
+              events,
+              todos,
+              date,
+              hash
+            });
+          }).catch(err => {
+            err.type = 'CRASH';
+            err.print = 'Problème avec la recherche de l\'élève dans la base de données';
+            next(err);
+          });
         });
       }).catch(err => {
-        console.error('ERROR : ' + err);
-        res.render('a_classes.jade', {
-          error: err,
-          session: req.session,
-          admin: req.session.admin,
-          group: req.session.group,
-          date
-        });
+        err.type = 'CRASH';
+        err.print = 'Problème avec la recherche de l\'élève dans la base de données';
+        next(err);
       });
 
     }
@@ -228,7 +275,8 @@ router.post('/addmanualhours', permissions.requireGroup('admin'), function(req, 
     },
     function(err, new_vol) {
       if (err) {
-        console.error(err);
+        err.type = 'MINOR';
+        next(err);
         res.status(404).send({
           error: err
         });
@@ -257,55 +305,13 @@ router.post('/changeclass', permissions.requireGroup('admin'), function(req, res
     }
   }, function(err) {
     if (err) {
+      err.type = 'MINOR';
+      next(err);
       console.error(err);
       res.status(404).send(err);
     } else {
       console.info('SUCCESS : Change class to ' + req.body.new_class + ' for the volunteer ' + req.body.volunteer);
-      Admin.update({
-        'name': req.session.admin,
-        'type': 'school-teacher',
-        'classes': {
-          $ne: req.body.new_class
-        }
-      }, {
-        $pull: {
-          'students': {
-            '_id': req.body.volunteer
-          }
-        }
-      }, {
-        multi: true
-      }, function(err, report0) {
-        if (err) {
-          console.error(err);
-          res.status(404).send(err);
-        } else {
-          console.info('SUCCESS : Remove the student volunteer to ancient admins. Report :' + report0);
-          const student_to_add = {
-            '_id': req.body.volunteer,
-            'status': 'automatic_subscription'
-          };
-          Admin.update({
-            'name': req.session.admin,
-            'type': 'school-teacher',
-            'classes': req.body.new_class
-          }, {
-            $push: {
-              'students': student_to_add
-            }
-          }, {
-            multi: true
-          }, function(err, report1) {
-            if (err) {
-              console.error(err);
-              res.status(404).send(err);
-            } else {
-              console.info('SUCCESS : Add the student volunteer to new admins. Report :' + report1);
-              res.status(200).end();
-            }
-          });
-        }
-      });
+      res.status(200).end();
     }
   });
 });
@@ -328,7 +334,9 @@ router.post('/admin/validate', permissions.requireGroup('admin'), function(req, 
   update_query[req.body.type + '.$.status'] = 'validated';
   console.info('C\'est dans validate update_query! : ' + JSON.stringify(update_query));
   console.info('C\'est dans validate find_query! : ' + JSON.stringify(find_query));
-  Volunteer.findOneAndUpdate(find_query, update_query, function(err, response) {
+  Volunteer.findOneAndUpdate(find_query, update_query, {
+    new: true
+  }, function(err, new_vol) {
     if (err) {
       console.error('ERROR : ' + err);
       res.status(404).send({
@@ -339,6 +347,14 @@ router.post('/admin/validate', permissions.requireGroup('admin'), function(req, 
       res.status(200).send({
         message: 'VALIDÉ'
       });
+
+      const email_content = {
+        admin_name: req.session.admin.firstname + ' ' + req.session.admin.lastname,
+        recipient: new_vol.email,
+        customMessage: [req.session.admin.firstname + ' ' + req.session.admin.lastname + ' vient de valider ta participation à un bénévolat !', 'Va les voir tout de suite en cliquant sur le bouton en-dessous !', 'Et n\'oublie pas de t\'inscrire à de nouvelles opportunités pour faire évoluer ton niveau d\'engagement !']
+      };
+
+      emailer.sendAdminValidateEmail(email_content);
     }
   })
 });
@@ -353,7 +369,9 @@ router.post('/admin/deny', permissions.requireGroup('admin'), function(req, res,
   update_query[req.body.type + '.$.status'] = 'denied';
   console.info('C\'est dans deny update_query! : ' + JSON.stringify(update_query));
   console.info('C\'est dans deny find_query! : ' + JSON.stringify(find_query));
-  Volunteer.findOneAndUpdate(find_query, update_query, function(err, response) {
+  Volunteer.findOneAndUpdate(find_query, update_query, {
+    new: true
+  }, function(err, new_vol) {
     if (err) {
       console.error('ERROR : ' + err);
       res.status(404).send({
@@ -364,6 +382,49 @@ router.post('/admin/deny', permissions.requireGroup('admin'), function(req, res,
       res.status(200).send({
         message: 'À REVOIR'
       });
+
+      const email_content = {
+        admin_name: req.session.admin.firstname + ' ' + req.session.admin.lastname,
+        recipient: new_vol.email,
+        customMessage: [req.session.admin.firstname + ' ' + req.session.admin.lastname + ' attends que tu corriges ta participation à un bénévolat !', 'Va le corriger en cliquant sur le bouton en-dessous !', 'Et n\'oublie pas de t\'inscrire à de nouvelles opportunités pour faire évoluer ton niveau d\'engagement !']
+      };
+
+      emailer.sendAdminCorrectEmail(email_content);
+    }
+  })
+});
+
+router.post('/admin/refuse', permissions.requireGroup('admin'), function(req, res, next) {
+  console.info('In refuse with req.body ! : ' + JSON.stringify(req.body));
+  let find_query = {
+    '_id': req.body.vol
+  };
+  find_query[req.body.type + '._id'] = req.body.id;
+  let update_query = {};
+  update_query[req.body.type + '.$.status'] = 'refused';
+  console.info('C\'est dans refuse update_query! : ' + JSON.stringify(update_query));
+  console.info('C\'est dans refuse find_query! : ' + JSON.stringify(find_query));
+  Volunteer.findOneAndUpdate(find_query, update_query, {
+    new: true
+  }, function(err, new_vol) {
+    if (err) {
+      console.error('ERROR : ' + err);
+      res.status(404).send({
+        message: 'Erreur lors de l\'opération'
+      });
+    } else {
+      console.info('MESSAGE : ' + err);
+      res.status(200).send({
+        message: 'À REVOIR'
+      });
+
+      const email_content = {
+        admin_name: req.session.admin.firstname + ' ' + req.session.admin.lastname,
+        recipient: new_vol.email,
+        customMessage: [req.session.admin.firstname + ' ' + req.session.admin.lastname + ' vient de refuser ta participation à un bénévolat !', 'Va voir tout de suite sur la plateforme en cliquant sur le bouton en-dessous !', 'Et n\'oublie pas de t\'inscrire à de nouvelles opportunités pour faire évoluer ton niveau d\'engagement !']
+      };
+
+      emailer.sendAdminRefuseEmail(email_content);
     }
   })
 });

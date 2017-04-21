@@ -15,3 +15,18 @@ block content
           h2.text-center Ton adresse courriel a été vérifié !
           p.text-center= email
           a.btn.btn-default.icon-center(href='/login') C'est parti !
+
+block footscript
+  script(type='text/javascript').
+    'use strict';
+    let event_props = {};
+    if (window.location.pathname.substring(0,8) == '/verifyO'){
+      event_props.type = 'org';
+    } else if (window.location.pathname.substring(0,8) == '/verifyV') {
+      event_props.type = 'vol';
+    } else {
+      event_props.type = 'prob';
+    }
+    if (env == 'prod') {
+      amplitude.getInstance().logEvent('g_visit_verify', event_props);
+    }

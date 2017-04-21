@@ -163,6 +163,56 @@ function sendUnsubscriptionEmail(content) {
   });
 };
 
+function sendTransAddEvent(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'transaddevent';
+  content.title = 'Création d\'évènement';
+  content.button = {
+    text: 'Voir mon évènement',
+    link: 'www.simplyk.io/organism/dashboard'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: content.event_name + ': évènement créé avec succès ', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
+function sendTransAddLongTerm(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'transaddlongterm';
+  content.title = 'Création d\'engagement';
+  content.button = {
+    text: 'Voir mon engagement',
+    link: 'www.simplyk.io/organism/dashboard'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: content.longterm_name + ': engagement créé avec succès ', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
 function sendHoursPendingOrgEmail(content) {
   content.subtitle = content.customMessage;
   content.type = 'hourspendingorg';
@@ -188,6 +238,56 @@ function sendHoursPendingOrgEmail(content) {
   });
 };
 
+function sendHoursPendingVolEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'hourspendingvol';
+  content.title = 'Heures enregistrées';
+  content.button = {
+    text: 'Voir ma participation',
+    link: 'www.simplyk.io/volunteer/profile'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: content.name + ': ' + content.hours + ' heures en attente de confirmation', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
+function sendStudentQuestionsEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'studentquestions';
+  content.title = 'Retours enregistrés';
+  content.button = {
+    text: 'Voir mes retours',
+    link: 'www.simplyk.io/volunteer/profile'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: 'Les retours sur ton bénévolat sont éditables', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
 function sendHoursPendingReminderOrgEmail(content) {
   content.subtitle = content.customMessage;
   content.type = 'hourspendingorg';
@@ -205,6 +305,31 @@ function sendHoursPendingReminderOrgEmail(content) {
       from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
       to: content.recipient,
       subject: content.name + ': ' + content.event_intitule, // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
+function sendExtraHoursPendingReminderOrgEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'extrahourspendingorg';
+  content.title = 'En attente';
+  content.button = {
+    text: 'Valider la participation',
+    link: 'www.simplyk.io/organism/dashboard'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <francois@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: 'Valider la participation de ' + content.name, // Subject line
       text: '', // plaintext body
       html: results.html
     };
@@ -279,6 +404,81 @@ function sendManualHoursEmail(content) {
       from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
       to: content.recipient,
       subject: content.admin_name + ' t\'a ajouté des heures', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
+function sendAdminValidateEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'validateHours';
+  content.title = 'Heures validées';
+  content.button = {
+    text: 'Voir mes heures',
+    link: 'www.simplyk.io/volunteer/profile'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: content.admin_name + ' a validé ton bénévolat', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
+function sendAdminCorrectEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'correctHours';
+  content.title = 'À corriger';
+  content.button = {
+    text: 'Voir mes heures',
+    link: 'www.simplyk.io/volunteer/profile'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: content.admin_name + ' attends que tu corriges un bénévolat', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+};
+
+function sendAdminRefuseEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'refuseHours';
+  content.title = 'Refusé';
+  content.button = {
+    text: 'Voir mes heures',
+    link: 'www.simplyk.io/volunteer/profile'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <francois@simplyk.org>', // sender address
+      to: content.recipient,
+      subject: content.admin_name + ' a refusé un de tes bénévolats', // Subject line
       text: '', // plaintext body
       html: results.html
     };
@@ -365,19 +565,105 @@ function sendOneWeekReminderEmail(content) {
   });
 }
 
+function sendFiveDaysLongTermExpirationEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'fivedayslongtermexpiration';
+  content.title = 'Bientôt expiré';
+  content.button = {
+    text: 'Voir mon engagement',
+    link: 'www.simplyk.io/organism/dashboard'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: content.lt_name + ': 5 jours avant la fermeture de l\'engagement !', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+}
+
+function sendLongTermExpirationEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'longtermexpiration';
+  content.title = 'Expiré';
+  content.button = {
+    text: 'Voir mon engagement',
+    link: 'www.simplyk.io/organism/dashboard'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: content.recipient,
+      subject: content.lt_name + ': fermeture des inscriptions !', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+}
+
+function sendInboundSMSEmail(content) {
+  content.subtitle = content.customMessage;
+  content.type = 'inboundsms';
+  content.title = 'Inbound';
+  content.button = {
+    text: 'Ne rien voir',
+    link: 'www.rien.com'
+  };
+  verify_template.render(content, function(err, results) {
+    if (err) {
+      return console.error(err);
+    };
+
+    var mailOptions = {
+      from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
+      to: 'contact@simplyk.io',
+      subject: 'SMS reçu ', // Subject line
+      text: '', // plaintext body
+      html: results.html
+    };
+
+    callSendMail(mailOptions);
+  });
+}
+
 
 module.exports = {
-  sendSubscriptionOrgEmail: sendSubscriptionOrgEmail,
-  sendSubscriptionVolEmail: sendSubscriptionVolEmail,
-  sendUnsubscriptionEmail: sendUnsubscriptionEmail,
-  sendVerifyEmail: sendVerifyEmail,
-  sendHoursPendingOrgEmail: sendHoursPendingOrgEmail,
-  sendHoursConfirmedVolEmail: sendHoursConfirmedVolEmail,
+  sendSubscriptionOrgEmail,
+  sendSubscriptionVolEmail,
+  sendUnsubscriptionEmail,
+  sendVerifyEmail,
+  sendHoursPendingVolEmail,
+  sendHoursPendingOrgEmail,
+  sendHoursConfirmedVolEmail,
   sendAutomaticSubscriptionOrgEmail,
+  sendTransAddEvent,
+  sendTransAddLongTerm,
   sendForgottenPasswordEmail,
   sendManualHoursEmail,
   sendOneDayReminderEmail,
   sendOneWeekReminderEmail,
   sendTomorrowReminderEmail,
-  sendHoursPendingReminderOrgEmail
+  sendHoursPendingReminderOrgEmail,
+  sendExtraHoursPendingReminderOrgEmail,
+  sendFiveDaysLongTermExpirationEmail,
+  sendLongTermExpirationEmail,
+  sendInboundSMSEmail,
+  sendStudentQuestionsEmail,
+  sendAdminValidateEmail,
+  sendAdminCorrectEmail,
+  sendAdminRefuseEmail
 };

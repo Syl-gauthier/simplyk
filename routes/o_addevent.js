@@ -1,6 +1,7 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
+var emailer = require('../email/emailer.js');
 var mongoose = require('mongoose');
 var gmaps = require('../middlewares/gmaps.js');
 var Intercom = require('intercom-client');
@@ -26,9 +27,10 @@ router.get('/organism/addevent', permissions.requireGroup('organism', 'admin'), 
 });
 
 
-router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   //Transform address into lon/lat
   console.log('address sent to gmaps: ' + req.body.address);
+  console.log('DATAS : event in addevent: ' + JSON.stringify(req.body));
 
   gmaps.codeAddress(req.body.address, function(lat, lon) {
     if ('ZERO_RESULTS' == lat) {
@@ -41,13 +43,22 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
       });
     } else {
       Organism.findById(req.session.organism._id, function(err, organism) {
-        console.log('****************************');
-        console.log('Organism : ' + organism);
+        //Verify min_age is a number
+        let min_age = req.body.min_age;
+        if (min_age && (typeof min_age !== 'number') && min_age != '') {
+          min_age = parseInt(min_age.toString());
+          console.info('min_age is not a number : ' + req.body.min_age + ' and now with parseInt : ' + min_age);
+          if (isNaN(min_age)) {
+            min_age = 26;
+            console.info('parseInt didnt work so we put min_age : ' + min_age);
+          }
+          console.info('min_age == NaN : ' + min_age == NaN);
+        }
         var keysList = Object.keys(req.body);
         var event = {
           intitule: req.body.intitule_event,
           dates: [],
-          min_age: req.body.min_age,
+          min_age,
           address: req.body.address,
           language: req.body.language,
           description: req.body.event_description,
@@ -59,15 +70,12 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
         //Days number calculated
         var nb_days = 0;
         var days_iterator = -1;
-        console.log('Keylist.length : ' + keysList.length + ' and keylist = ' + keysList);
         do {
           nb_days++;
           var days_exists = false;
           for (var d = keysList.length - 1; d >= 0; d--) {
-            console.log('Keylist.searchday : ' + keysList[d].search('day' + (nb_days + 1)));
             if (keysList[d].search('day' + (nb_days + 1)) === 0) {
               days_exists = true;
-              console.log('On est dans le if days');
             }
           };
         }
@@ -82,7 +90,6 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
           for (var d = keysList.length - 1; d >= 0; d--) {
             if (keysList[d].search('activity' + (nb_activities + 1) + '_intitule_activity') === 0) {
               activities_exists = true;
-              console.log('On est dans le if activities');
             }
           };
         }
@@ -112,7 +119,6 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
           update_last_request_at: true
         });
         for (var i = 1; i < nb_activities + 1; i++) {
-          console.log('Activivity number ' + i)
           var activity = {
             lat: lat,
             lon: lon,
@@ -120,7 +126,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
             org_name: req.session.organism.org_name,
             event_intitule: req.body.intitule_event,
             address: req.body.address,
-            min_age: req.body.min_age,
+            min_age: min_age,
             language: req.body.language,
             cause: req.session.organism.cause,
             email: req.session.organism.email,
@@ -142,38 +148,41 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
               };
               event.dates.push(day.day);
               activity.days.push(day);
-              console.log('3 ++++++++++ activity : ' + i + JSON.stringify(activity));
-              console.log('3 +++++++  day : ' + j + JSON.stringify(day));
             };
           };
           //Create activity in Mongo
           const newActivity = new Activity(activity);
           newActivity.save(function(err, act) {
             if (err) {
-              console.log(err);
+              err.type = 'CRASH';
+              err.print = 'Problème lors de la création du bénévolat : nous avons néanmoins récupérer les informations nécessaires. Vous pouvez soit nous envoyer un courriel, soit recommencer l\'opération';
+              next(err);
             } else {
               console.log('++++++++++++++++++++++++++++++');
               console.log('ACT._ID' + act._id);
               event.activities.push(act._id);
-              console.log('EVENT.ACTIVITIES : ' + event.activities);
               console.log('++++++++++++++++++++++++++++++');
               console.log('2 ++++++++++ activity : ' + i + JSON.stringify(activity));
               console.log('1 ++++++++ event : ' + JSON.stringify(event));
+              const content = {
+                recipient: req.session.organism.email,
+                event_name: req.body.intitule_event,
+                customMessage: ['L\'évènement ' + req.body.intitule_event + ' a été ajouté avec succès sur la plateforme Simplyk.', 'Comme vous pouvez le voir sur la carte, il est visible à l\'adresse : ' + req.body.address, 'Un courriel vous sera envoyé lorsqu\'un bénévole s\'inscrira, et vous serez alors invité à rentrer en contact avec lui !']
+              };
+              emailer.sendTransAddEvent(content);
               if (event.activities.length == nb_activities) {
                 organism.events.push(event);
                 organism.save(function(err, org) {
                   if (err) {
-                    var error = 'Something bad happened! Try again!';
-                    res.render('o_addevent.jade', {
-                      session: req.session,
-                      error: err,
-                      organism: req.session.organism,
-                      group: req.session.group
-                    });
+                    err.type = 'CRASH';
+                    err.print = 'Problème lors de la création du bénévolat : nous avons néanmoins récupérer les informations nécessaires. Vous pouvez soit nous envoyer un courriel, soit recommencer l\'opération';
+                    next(err);
                   } else {
                     req.session.organism = org;
-                    req.session.organism.save(function(err, orga) {
+                    req.session.save(function(err) {
                       if (err) {
+                        err.type = 'MINOR';
+                        next(err);
                         res.render('o_addevent.jade', {
                           session: req.session,
                           error: err,
@@ -195,7 +204,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
   });
 });
 
-router.post('/test_address', function(req, res){
+router.post('/test_address', function(req, res) {
   //Transform address into lon/lat
   console.log('address sent to gmaps: ' + req.body.address);
   const error = 'La position de l\'adresse que vous avez mentionné n\'a pas été trouvé par Google Maps';

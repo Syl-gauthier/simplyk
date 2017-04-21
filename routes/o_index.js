@@ -16,6 +16,7 @@ var ObjectId = Schema.ObjectId;
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
 var date = require('../lib/dates/date_browser.js');
+var game = require('../lib/badges.js');
 
 var permissions = require('../middlewares/permissions.js');
 var Volunteer = require('../models/volunteer_model.js');
@@ -32,8 +33,20 @@ var opp_management = require('../middlewares/opp_management.js');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   console.log('Organism index');
-  Activity.find({}, function(err, activities) {
+  Activity.find({
+    'archived': {
+      $ne: true
+    },
+    'validation': true,
+    'school_id': {
+      $not: {
+        $type: 7
+      }
+    }
+  }, function(err, activities) {
     if (err) {
+      err.type = 'MINOR';
+      next(err);
       console.error(err);
       res.render('g_accueil.jade', {
         session: req.session,
@@ -62,33 +75,23 @@ router.get('/', function(req, res, next) {
             });
             return days_length.length > 0;
           };
-          var isNotASchool = function(activity) {
-            return !(activity.school_id);
+          let remainingPlaces = function(activity) {
+            let remain = (activity.days.filter(function(day) {
+              return day.vol_nb > day.applicants.length;
+            })).length;
+            return remain > 0;
           };
-          const isVerified = function(activity) {
-            return activity.validation;
-          }
-          const acts = activities.filter(isNotPassed).filter(isNotASchool).filter(isVerified);
-          const favorites = acts.reduce(function(pre, cur, ind, arr) {
-            console.info('cur.intitule ' + cur.intitule + ' & cur.favorite : ' + cur.favorite);
-            if (cur.favorite) {
-              pre.push(cur);
-              return pre;
-            } else {
-              return pre;
-            }
-          }, []);
-          const fav_index = Math.floor(Math.random() * (favorites.length));
-          console.info('favorites.length : ' + favorites.length);
-          console.info('fav_index : ' + fav_index);
-          let the_favorite = {};
-          if (favorites.length != 0) {
-            the_favorite = favorites[fav_index];
-          }
-          console.log('The favorite is :' + the_favorite.intitule);
+          console.log('activities.length : ' + activities.length);
+          const acts = activities.filter(isNotPassed).filter(remainingPlaces);
+          console.log('acts.length : ' + acts.length);
           //Select organisms who have longterms and are not admin ones
           Organism.find({
             'validation': true,
+            'school_id': {
+              $not: {
+                $type: 7
+              }
+            },
             'long_terms': {
               '$not': {
                 '$size': 0
@@ -103,7 +106,8 @@ router.get('/', function(req, res, next) {
             'admin_id': true
           }, function(err, organisms) {
             if (err) {
-              console.error(err);
+              err.type = 'MINOR';
+              next(err);
               res.render('g_accueil.jade', {
                 session: req.session,
                 error: err,
@@ -119,13 +123,52 @@ router.get('/', function(req, res, next) {
                   return true;
                 }
               }), null);
+              let nature_indexes = new Array();
+              let sol_indexes = new Array();
+              let culture_indexes = new Array();
+              let child_indexes = new Array();
+              let adult_indexes = new Array();
+              longterms.map(function(lt) {
+                if (lt.cause == 'Nature') {
+                  nature_indexes.push(lt.long_term._id);
+                } else if (lt.cause == 'Solidarité') {
+                  sol_indexes.push(lt.long_term._id);
+                } else if (lt.cause == 'Sport et Culture') {
+                  culture_indexes.push(lt.long_term._id);
+                } else if (lt.cause == 'Enfance') {
+                  child_indexes.push(lt.long_term._id);
+                }
+                if (lt.long_term.min_age >= 16) {
+                  adult_indexes.push(lt.long_term._id);
+                }
+              });
+              acts.map(function(act) {
+                if (act.cause == 'Nature') {
+                  nature_indexes.push(act._id);
+                } else if (act.cause == 'Solidarité') {
+                  sol_indexes.push(act._id);
+                } else if (act.cause == 'Sport et Culture') {
+                  culture_indexes.push(act._id);
+                } else if (act.cause == 'Enfance') {
+                  child_indexes.push(act._id);
+                }
+                if (act.min_age >= 16) {
+                  adult_indexes.push(act._id);
+                }
+              })
+              const first_age_filtered = true;
               res.render('g_accueil.jade', {
                 activities: acts,
-                the_favorite: the_favorite,
                 session: req.session,
                 longterms: longterms,
                 error: req.query.error,
-                group: req.session.group
+                group: req.session.group,
+                first_age_filtered,
+                nature_indexes,
+                sol_indexes,
+                culture_indexes,
+                child_indexes,
+                adult_indexes
               });
             }
           });
@@ -149,7 +192,7 @@ router.get('/', function(req, res, next) {
   });
 });
 
-router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   console.info('req.body : ' + req.body);
   if (req.body.org) {
     req.session.organism = req.body.org;
@@ -159,13 +202,9 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
     'org_id': req.session.organism._id
   }, function(err, activities) {
     if (err) {
-      console.error(err);
-      res.render('g_accueil.jade', {
-        session: req.session,
-        error: err,
-        organism: req.isAuthenticated(),
-        group: req.session.group
-      });
+      err.type = 'CRASH';
+      err.print = 'Problème lors de la lecture de vos bénévolats';
+      next(err);
     } else {
       var events = req.session.organism.events;
       var ev_past = [];
@@ -192,13 +231,13 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
           ev_past.push(events[eventI]);
         }
       }
-      console.info('ev_past : ' + ev_past + ' ev_to_come :' + JSON.stringify(ev_to_come));
       //Find TODO
       OrgTodo.find({
         org_id: req.session.organism._id
       }, function(err, todos) {
         if (err) {
-          console.error(err);
+          err.type = 'MINOR';
+          next(err);
           res.render('g_accueil.jade', {
             session: req.session,
             error: err,
@@ -233,6 +272,20 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
             identifier: req.session.organism._id
           });
 
+          req.session.organism.long_terms.sort((a, b) => {
+            console.log(a.tags + ' vs ' + b.tags);
+            if (a.tags == 'archived' && b.tags != 'archived') {
+              console.log('-1');
+              return 1;
+            } else if (a.tags != 'archived' && b.tags == 'archived') {
+              console.log('1');
+              return -1;
+            } else {
+              console.log('0');
+              return 0;
+            }
+          });
+
           var todo_to_send = todos.map(addEventName);
           res.render('o_dashboard.jade', {
             ev_past: ev_past,
@@ -251,7 +304,7 @@ router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'),
   });
 });
 
-router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   function isEvent(event) {
     console.info('Test : ' + event._id + ' = ' + req.params.event_id + ' ?');
     return event._id.toString() === req.params.event_id;
@@ -265,8 +318,9 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
       }
     }, function(err, activities) {
       if (err) {
-        console.error(err);
-        res.redirect('/organism/dashboard?error=' + err);
+        err.type = 'CRASH';
+        err.print = 'Problème pour récupérer les informations du bénévolat';
+        next(err);
       } else {
         Volunteer.find({
           'events': {
@@ -278,14 +332,11 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
           }
         }, function(err, volunteers) {
           if (err) {
-            console.error(err);
-            res.redirect('/organism/dashboard?error=' + err);
+            err.type = 'CRASH';
+            err.print = 'Problème pour récupérer la liste des inscrits au bénévolat';
+            next(err);
           } else {
             var activities_list = activities;
-            console.info('ALL ACTIVITIES : ' + activities_list);
-            console.info('****************************');
-            console.info('ALL VOLUNTEERS : ' + volunteers);
-            console.info('****************************');
             event.acts = [];
             for (var actI = activities_list.length - 1; actI >= 0; actI--) {
               for (var daysI = activities_list[actI].days.length - 1; daysI >= 0; daysI--) {
@@ -328,22 +379,26 @@ router.get('/organism/event/:event_id', permissions.requireGroup('organism', 'ad
       }
     });
   } else {
-    const err = 'Évènement non trouvé';
+    const err = {};
+    err.print = 'Évènement non trouvé';
+    err.type = 'MINOR';
+    next(err);
     res.redirect('/organism/dashboard?error=' + err);
   }
 });
 
 /*GET map page*/
-router.get('/organism/map', permissions.requireGroup('organism', 'admin'), function(req, res) {
-  Activity.find({}, function(err, activities) {
+router.get('/organism/map', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
+  Activity.find({
+    'archived': {
+      $ne: true
+    },
+    'validation': true
+  }, function(err, activities) {
     if (err) {
-      console.log(err);
-      res.render('v_map.jade', {
-        session: req.session,
-        error: err,
-        organism: req.session.organism,
-        group: req.session.group
-      });
+      err.type = 'CRASH';
+      err.print = 'Problème pour récupérer la liste des bénévolats';
+      next(err);
     } else {
       //Create opps list
       let my_school = null;
@@ -355,18 +410,6 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
           return day.day > Date.now();
         });
         return days_length.length > 0;
-      };
-
-      var isUnverified = function(activity) {
-        return activity.validation;
-      };
-
-      const isNotTheFav = function(activity) {
-        if (the_favorite) {
-          return activity._id != the_favorite._id;
-        } else {
-          return true;
-        }
       };
 
       const isNotAnExtra = function(activity) {
@@ -389,7 +432,7 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
       //If user is under 16, he can't see the activities of unverified organisms
       let acts = {};
       let lt_filter = {};
-      acts = activities.filter(isNotPassed).filter(isNotAnExtra).filter(isUnverified).filter(justMySchool);
+      acts = activities.filter(isNotPassed).filter(isNotAnExtra).filter(justMySchool);
       lt_filter = {
         'long_terms': {
           '$not': {
@@ -397,95 +440,112 @@ router.get('/organism/map', permissions.requireGroup('organism', 'admin'), funct
           }
         }
       };
-      const favorites = acts.reduce(function(pre, cur, ind, arr) {
-        console.log('cur.intitule ' + cur.intitule + ' & cur.favorite : ' + cur.favorite);
-        if (cur.favorite) {
-          pre.push(cur);
-          return pre;
-        } else {
-          return pre;
-        };
-      }, []);
-      const fav_index = Math.floor(Math.random() * (favorites.length));
-      console.log('favorites.length : ' + favorites.length);
-      console.log('fav_index : ' + fav_index);
-      let the_favorite = {};
-      if (favorites.length != 0) {
-        the_favorite = favorites[fav_index];
-      };
-      //acts = acts.filter(isNotTheFav);
       Organism.find(lt_filter, {
-          'org_name': true,
-          '_id': true,
-          'cause': true,
-          'long_terms': true,
-          'school_id': true,
-          'admin_id': true
-        },
-        function(err, organisms) {
-          if (err) {
-            console.log(err);
-            res.render('v_map.jade', {
-              session: req.session,
-              error: err,
-              organism: req.session.organism,
-              group: req.session.group
-            });
-          } else {
-            //Filter organisms authorized to be seen by the volunteer
-            const lt_organisms = organisms.filter(function(orga) {
-              if (orga.school_id || orga.admin_id) {
-                if (orga.school_id) {
-                  var the_school = orga.school_id;
-                } else {
-                  var the_school = orga.admin_id;
-                };
-                if (my_school) {
-                  return the_school.toString() == my_school.toString();
-                } else {
-                  return false;
-                }
+        'org_name': true,
+        '_id': true,
+        'cause': true,
+        'long_terms': true,
+        'school_id': true,
+        'admin_id': true
+      }, function(err, organisms) {
+        if (err) {
+          err.type = 'CRASH';
+          err.print = 'Problème pour récupérer la liste des organisms et de leurs activités';
+          next(err);
+        } else {
+          //Filter organisms authorized to be seen by the volunteer
+          const lt_organisms = organisms.filter(function(orga) {
+            if (orga.school_id || orga.admin_id) {
+              if (orga.school_id) {
+                var the_school = orga.school_id;
               } else {
-                return true;
+                var the_school = orga.admin_id;
+              };
+              if (my_school) {
+                return the_school.toString() == my_school.toString();
+              } else {
+                return false;
               }
-            });
-            var longterms = longtermsList(lt_organisms, 80);
-            const hash = require('intercom-client').SecureMode.userHash({
-              secretKey: process.env.INTERCOM_SECRET_KEY,
-              identifier: req.session.organism._id
-            });
-            console.info('hash : ' + hash);
-            console.info('typeof hash : ' + typeof hash);
-            res.render('v_map.jade', {
-              session: req.session,
-              activities: acts,
-              organism: req.session.organism,
-              error: req.query.error,
-              success: req.query.success,
-              group: req.session.group,
-              the_favorite,
-              longterms,
-              hash
-            });
-          }
-        });
+            } else {
+              return true;
+            }
+          });
+          var longterms = longtermsList(lt_organisms, 80);
+          const hash = require('intercom-client').SecureMode.userHash({
+            secretKey: process.env.INTERCOM_SECRET_KEY,
+            identifier: req.session.organism._id
+          });
+          console.info('hash : ' + hash);
+          console.info('typeof hash : ' + typeof hash);
+          let school_name = null;
+          if (my_school) {
+            console.info((/\(([^)]+)\)/).exec(req.session.organism.org_name)[1]);
+            school_name = (/\(([^)]+)\)/).exec(req.session.organism.org_name)[1];
+          };
+          const first_age_filtered = false;
+          let nature_indexes = new Array();
+          let sol_indexes = new Array();
+          let culture_indexes = new Array();
+          let child_indexes = new Array();
+          let adult_indexes = new Array();
+          longterms.map(function(lt) {
+            if (lt.cause == 'Nature') {
+              nature_indexes.push(lt.long_term._id);
+            } else if (lt.cause == 'Solidarité') {
+              sol_indexes.push(lt.long_term._id);
+            } else if (lt.cause == 'Sport et Culture') {
+              culture_indexes.push(lt.long_term._id);
+            } else if (lt.cause == 'Enfance') {
+              child_indexes.push(lt.long_term._id);
+            }
+          });
+          acts.map(function(act) {
+            if (act.cause == 'Nature') {
+              nature_indexes.push(act._id);
+            } else if (act.cause == 'Solidarité') {
+              sol_indexes.push(act._id);
+            } else if (act.cause == 'Sport et Culture') {
+              culture_indexes.push(act._id);
+            } else if (act.cause == 'Enfance') {
+              child_indexes.push(act._id);
+            }
+          });
+          res.render('v_map.jade', {
+            session: req.session,
+            activities: acts,
+            volunteer: {},
+            organism: req.session.organism,
+            error: req.query.error,
+            success: req.query.success,
+            group: req.session.group,
+            school_name,
+            longterms,
+            hash,
+            first_age_filtered,
+            nature_indexes,
+            sol_indexes,
+            culture_indexes,
+            child_indexes,
+            adult_indexes
+          });
+        }
+      });
     }
   });
 });
 
-router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   console.info('In GET to a longterm page with lt_id:' + req.params.lt_id);
   let error = null;
   if (req.query.error) {
     error = req.query.error;
   };
-  var organism = req.session.organism;
 
   function isRightLongterm(long) {
     console.info('long._id == req.params.lt_id : ' + (long._id.toString() == req.params.lt_id) + long._id + '  ' + req.params.lt_id);
     return long._id.toString() == req.params.lt_id;
   }
-  var longterm = organism.long_terms.find(isRightLongterm);
+  var longterm = req.session.organism.long_terms.find(isRightLongterm);
   console.info('+++++++++++++++++++++');
   console.info('Longterm corresponding to lt_id : ' + longterm);
   console.info('+++++++++++++++++++++');
@@ -507,14 +567,15 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
       'phone': 1
     }, function(err, volunteers) {
       if (err) {
-        console.error(err);
-        res.redirect('/organism/dashboard?error=' + err);
+        err.type = 'CRASH';
+        err.print = 'Problème pour récupérer la liste des inscrits au bénévolat';
+        next(err);
       } else {
         var slotJSON = rewindSlotString(longterm.slot);
         res.render('o_longterm.jade', {
           session: req.session,
           lt_id: req.params.lt_id,
-          organism: organism,
+          organism: req.session.organism,
           longterm: longterm,
           slotJSON: slotJSON,
           volunteers: volunteers,
@@ -525,21 +586,26 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
       }
     });
   } else {
-    const err = 'Engagement non disponible';
+    const err = {};
+    err.print = 'Engagement non disponible';
+    err.type = 'MINOR';
+    next(err);
     res.redirect('/organism/dashboard?error=' + err);
   }
 });
 
 
-router.post('/organism/correcthours', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.post('/organism/correcthours', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   console.info('Correct Hours starts');
   const correct_hours = req.body.correct_hours;
+  console.info('DATAS : req.body : ' + JSON.stringify(req.body));
   console.info('Correct_hours: ' + correct_hours);
   Volunteer.findOne({
     _id: req.body.vol_id
   }, function(err, myVolunteer) {
     if (err) {
-      console.error(err);
+      err.type = 'MINOR';
+      next(err);
       res.sendStatus(404);
     } else if (myVolunteer) {
       var type = req.body.type;
@@ -575,56 +641,6 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
             }
           };
         }
-        if (req.body['answers[0][value]']) {
-          console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
-          //i starts from 1 to avoid to select the number answered as corrected hours
-          var i = 1;
-          var answers = [];
-          while (req.body['answers[' + i + '][value]']) {
-            console.info('Add to answers : ' + req.body['answers[' + i + '][value]']);
-            answers.push(req.body['answers[' + i + '][value]']);
-            i++;
-          }
-          console.info('Answers : ' + JSON.stringify(answers));
-          if (type == 'hours_pending') {
-            var update = {
-              '$set': {
-                'events.$.hours_done': correct_hours,
-                'events.$.hours_pending': 0,
-                'events.$.status': 'confirmed',
-                'events.$.organism_answers': answers
-              }
-            };
-          } else if (type == 'students_hours_pending') {
-            var update = {
-              '$set': {
-                'extras.$.hours_done': correct_hours,
-                'extras.$.hours_pending': 0,
-                'extras.$.status': 'confirmed',
-                'extras.$.organism_answers': answers
-              }
-            };
-          }
-        } else {
-          if (type == 'hours_pending') {
-            var update = {
-              '$set': {
-                'events.$.hours_done': correct_hours,
-                'events.$.hours_pending': 0,
-                'events.$.status': 'confirmed'
-              }
-            };
-          } else if (type == 'students_hours_pending') {
-            var update = {
-              '$set': {
-                'extras.$.hours_done': correct_hours,
-                'extras.$.hours_pending': 0,
-                'extras.$.status': 'confirmed'
-              }
-            };
-          }
-
-        }
       } else if (typeof req.body.lt_id !== 'undefined') {
         console.info('Correct hours for a longterm !');
         var query = {
@@ -645,100 +661,256 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
         } else {
           var already_done = true;
         }
-        if (req.body['answers[0][value]']) {
-          console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
-          //i starts from 1 to avoid to select the number answered as corrected hours
-          var i = 1;
-          var answers = [];
-          while (req.body['answers[' + i + '][value]']) {
-            console.info('Add to answers : ' + req.body['answers[' + i + '][value]']);
-            answers.push(req.body['answers[' + i + '][value]']);
-            i++;
-          }
-          console.info('Answers : ' + JSON.stringify(answers));
-          var update = {
-            '$inc': {
-              'long_terms.$.hours_done': correct_hours,
-              'long_terms.$.hours_pending': -req.body.hours_before
-            },
-            '$set': {
-              'long_terms.$.status': 'confirmed',
-              'long_terms.$.organism_answers': answers
-            }
-          };
-        } else {
-          var update = {
-            '$inc': {
-              'long_terms.$.hours_done': correct_hours,
-              'long_terms.$.hours_pending': -req.body.hours_before
-            },
-            '$set': {
-              'long_terms.$.status': 'confirmed'
-            }
-          };
-        }
       }
       console.info('query : ' + JSON.stringify(query));
-      console.info('update : ' + JSON.stringify(update));
       if (!already_done) {
-        Volunteer.findOneAndUpdate(query, update, function(err) {
+        Volunteer.findOne(query, function(err, vol) {
           if (err) {
-            console.error(err);
+            err.type = 'MINOR';
+            next(err);
             res.sendStatus(404);
           } else {
-            //Intercom create addlongterm event
-            client.events.create({
-              event_name: 'org_correcthours',
-              created_at: Math.round(Date.now() / 1000),
-              user_id: req.session.organism._id,
-              metadata: {
-                act_id: req.body.act_id,
-                lt_id: req.body.lt_id
-              }
-            });
-            client.users.update({
-              user_id: req.session.organism._id,
-              update_last_request_at: true
-            });
-            //Send email to felicitate the volunteer
-            emailer.sendHoursConfirmedVolEmail({
-              firstname: myVolunteer.firstname,
-              recipient: myVolunteer.email,
-              activity_name: activity_name,
-              customMessage: req.session.organism.org_name + ' vient de valider ta participation de ' + correct_hours + ' h (nombre d\'heures corrigés par l\'organisme) à ' + activity_name + ' !'
-            });
-            OrgTodo.findOneAndRemove({
-              _id: req.body.todo
-            }, function(err, todoremoved) {
-              if (err) {
-                console.error(err);
+            // Find status of the opp to see if it's refused and then don't change it
+            let opp_status = {};
+            if (typeof req.body.act_id !== 'undefined') {
+
+              if (req.body['answers[0][value]']) {
+                console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
+                //i starts from 1 to avoid to select the number answered as corrected hours
+                var i = 1;
+                var answers = [];
+                while (req.body['answers[' + i + '][value]']) {
+                  console.info('Add to answers : ' + req.body['answers[' + i + '][value]']);
+                  answers.push(req.body['answers[' + i + '][value]']);
+                  i++;
+                }
+                console.info('Answers : ' + JSON.stringify(answers));
+                if (type == 'hours_pending') {
+                  if (opp_status = vol.events.find(ev => {
+                      return ev.activity_id == req.body.act_id;
+                    }).status != 'refused') {
+                    var update = {
+                      '$set': {
+                        'events.$.hours_done': correct_hours,
+                        'events.$.hours_pending': 0,
+                        'events.$.status': 'confirmed',
+                        'events.$.organism_answers': answers
+                      }
+                    };
+                  } else {
+                    var update = {
+                      '$set': {
+                        'events.$.hours_done': correct_hours,
+                        'events.$.hours_pending': 0,
+                        'events.$.organism_answers': answers
+                      }
+                    };
+                  };
+                } else if (type == 'students_hours_pending') {
+                  if (opp_status = vol.extras.find(ex => {
+                      return ex.activity_id == req.body.act_id;
+                    }).status != 'refused') {
+                    var update = {
+                      '$set': {
+                        'extras.$.hours_done': correct_hours,
+                        'extras.$.hours_pending': 0,
+                        'extras.$.status': 'confirmed',
+                        'extras.$.organism_answers': answers
+                      }
+                    };
+                  } else {
+                    var update = {
+                      '$set': {
+                        'extras.$.hours_done': correct_hours,
+                        'extras.$.hours_pending': 0,
+                        'extras.$.organism_answers': answers
+                      }
+                    };
+                  };
+                }
               } else {
-                console.info('todoremoved : ' + todoremoved);
+                if (type == 'hours_pending') {
+                  if (opp_status = vol.events.find(ev => {
+                      return ev.activity_id == req.body.act_id;
+                    }).status != 'refused') {
+                    var update = {
+                      '$set': {
+                        'events.$.hours_done': correct_hours,
+                        'events.$.hours_pending': 0,
+                        'events.$.status': 'confirmed'
+                      }
+                    };
+                  } else {
+                    var update = {
+                      '$set': {
+                        'events.$.hours_done': correct_hours,
+                        'events.$.hours_pending': 0
+                      }
+                    };
+                  };
+                } else if (type == 'students_hours_pending') {
+                  if (opp_status = vol.extras.find(ex => {
+                      return ex.activity_id == req.body.act_id;
+                    }).status != 'refused') {
+                    var update = {
+                      '$set': {
+                        'extras.$.hours_done': correct_hours,
+                        'extras.$.hours_pending': 0,
+                        'extras.$.status': 'confirmed'
+                      }
+                    };
+                  } else {
+                    var update = {
+                      '$set': {
+                        'extras.$.hours_done': correct_hours,
+                        'extras.$.hours_pending': 0
+                      }
+                    };
+                  };
+                }
+              }
+            } else if (typeof req.body.lt_id !== 'undefined') {
+
+              if (req.body['answers[0][value]']) {
+                console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
+                //i starts from 1 to avoid to select the number answered as corrected hours
+                var i = 1;
+                var answers = [];
+                while (req.body['answers[' + i + '][value]']) {
+                  console.info('Add to answers : ' + req.body['answers[' + i + '][value]']);
+                  answers.push(req.body['answers[' + i + '][value]']);
+                  i++;
+                }
+                console.info('Answers : ' + JSON.stringify(answers));
+                if (opp_status = vol.long_terms.find(lt => {
+                    return lt._id == req.body.lt_id;
+                  }).status != 'refused') {
+                  var update = {
+                    '$inc': {
+                      'long_terms.$.hours_done': correct_hours,
+                      'long_terms.$.hours_pending': -req.body.hours_before
+                    },
+                    '$set': {
+                      'long_terms.$.organism_answers': answers,
+                      'long_terms.$.status': 'confirmed'
+                    }
+                  };
+                } else {
+                  var update = {
+                    '$inc': {
+                      'long_terms.$.hours_done': correct_hours,
+                      'long_terms.$.hours_pending': -req.body.hours_before
+                    },
+                    '$set': {
+                      'long_terms.$.organism_answers': answers
+                    }
+                  };
+                };
+              } else {
+                if (opp_status = vol.long_terms.find(lt => {
+                    return lt._id == req.body.lt_id;
+                  }).status != 'refused') {
+                  var update = {
+                    '$inc': {
+                      'long_terms.$.hours_done': correct_hours,
+                      'long_terms.$.hours_pending': -req.body.hours_before
+                    },
+                    '$set': {
+                      'long_terms.$.status': 'confirmed'
+                    }
+                  };
+                } else {
+                  var update = {
+                    '$inc': {
+                      'long_terms.$.hours_done': correct_hours,
+                      'long_terms.$.hours_pending': -req.body.hours_before
+                    }
+                  };
+                };
+              }
+            };
+
+            console.log('update : ' + update);
+
+            Volunteer.findOneAndUpdate(query, update, {
+              new: true
+            }, function(err, volunteer_updated) {
+              if (err) {
+                err.type = 'MINOR';
+                next(err);
+                res.sendStatus(404);
+              } else {
+                //Intercom create addlongterm event
+                client.events.create({
+                  event_name: 'org_correcthours',
+                  created_at: Math.round(Date.now() / 1000),
+                  user_id: req.session.organism._id,
+                  metadata: {
+                    act_id: req.body.act_id,
+                    lt_id: req.body.lt_id
+                  }
+                });
+                client.users.update({
+                  user_id: req.session.organism._id,
+                  update_last_request_at: true
+                });
+                //Send email to felicitate the volunteer
+                emailer.sendHoursConfirmedVolEmail({
+                  firstname: myVolunteer.firstname,
+                  recipient: myVolunteer.email,
+                  activity_name: activity_name,
+                  customMessage: req.session.organism.org_name + ' vient de valider ta participation de ' + correct_hours + ' h (nombre d\'heures corrigés par l\'organisme) à ' + activity_name + ' !'
+                });
+                OrgTodo.findOneAndRemove({
+                  _id: req.body.todo
+                }, function(err, todoremoved) {
+                  if (err) {
+                    console.error(err);
+                  } else {
+                    console.info('todoremoved : ' + todoremoved);
+                  }
+                });
+                console.info('Hours_pending goes to hours_done with corrected_hours : ' + req.body.correct_hours);
+                res.sendStatus(200);
+                game.refreshPreferences(volunteer_updated, function(err, volunteer_refreshed) {
+                  if (err) {
+                    err.type = 'MINOR';
+                    err.print = 'Problème de mise à jour des préférences du bénévole dans la base de données';
+                    next(err);
+                  }
+                });
               }
             });
-            console.info('Hours_pending goes to hours_done with corrected_hours : ' + req.body.correct_hours);
-            res.sendStatus(200);
           }
         });
       } else {
+        err = {};
+        err.stack = 'It seems that the todo has already been done since the hours_pending in volunteer is less than the hours in the TODO';
+        err.type = 'MINOR';
+        next(err);
         console.error('ERR : It seems that the todo has already been done since the hours_pending in volunteer is less than the hours in the TODO');
         res.sendStatus(404);
       }
     } else {
+      err = {};
+      err.stack = 'Volunteer doesnt exist';
+      err.type = 'MINOR';
+      next(err);
       console.warn('MyVolunteer doesnt exist');
       res.sendStatus(404);
     }
   });
 });
 
-router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admin'), function(req, res) {
+router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
   console.info('Confirm Hours starts');
   Volunteer.findOne({
     _id: req.body.vol_id
   }, function(err, myVolunteer) {
     if (err) {
-      console.error(err);
-      res.redirect('/organism/dashboard?error=' + err);
+      err.type = 'CRASH';
+      err.print = 'Problème pour mettre à jour les informations du bénévole';
+      next(err);
     } else if (myVolunteer) {
       console.info('myvolunteer exists');
       console.info('MyVolunteer : ' + JSON.stringify(myVolunteer.email));
@@ -789,57 +961,6 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
             }
           };
         }
-        //If we deal with a student
-        if (req.body['answers[0][value]']) {
-          console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
-          var i = 0;
-          var answers = [];
-          while (req.body['answers[' + i + '][value]']) {
-            console.info('Add to answers : ' + req.body['answers[' + i + '][value]']);
-            answers.push(req.body['answers[' + i + '][value]']);
-            i++;
-          }
-          console.info('Answers : ' + JSON.stringify(answers));
-          if (type == 'hours_pending') {
-            var update = {
-              '$set': {
-                'events.$.hours_done': hours_pending,
-                'events.$.hours_pending': 0,
-                'events.$.status': 'confirmed',
-                'events.$.organism_answers': answers
-              }
-            };
-          } else if (type == 'students_hours_pending') {
-            var update = {
-              '$set': {
-                'extras.$.hours_done': hours_pending,
-                'extras.$.hours_pending': 0,
-                'extras.$.status': 'confirmed',
-                'extras.$.organism_answers': answers
-              }
-            };
-          }
-        } else {
-          if (type == 'hours_pending') {
-            var update = {
-              '$set': {
-                'events.$.hours_done': hours_pending,
-                'events.$.hours_pending': 0,
-                'events.$.status': 'confirmed'
-              }
-            };
-          } else if (type == 'students_hours_pending') {
-            var update = {
-              '$set': {
-                'extras.$.hours_done': hours_pending,
-                'extras.$.hours_pending': 0,
-                'extras.$.status': 'confirmed'
-              }
-            };
-          }
-          console.info('NO answers');
-
-        }
         //If we deal with a longterm
       } else if (req.body.lt_id) {
         var activity_name = (myVolunteer.long_terms.find(function(lt) {
@@ -853,39 +974,6 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
             }
           }
         };
-        //If we deal with a student
-        if (req.body['answers[0][value]']) {
-          console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
-          var i = 0;
-          var answers = [];
-          while (req.body['answers[' + i + '][value]']) {
-            console.info('Add to answers : ' + req.body['answers[' + i + '][value]']);
-            answers.push(req.body['answers[' + i + '][value]']);
-            i++;
-          }
-          console.info('Answers : ' + JSON.stringify(answers));
-          var update = {
-            '$inc': {
-              'long_terms.$.hours_done': hours_pending,
-              'long_terms.$.hours_pending': -hours_pending
-            },
-            '$set': {
-              'long_terms.$.status': 'confirmed',
-              'long_terms.$.organism_answers': answers
-            }
-          };
-        } else {
-          console.info('NO answers');
-          var update = {
-            '$inc': {
-              'long_terms.$.hours_done': hours_pending,
-              'long_terms.$.hours_pending': -hours_pending
-            },
-            '$set': {
-              'long_terms.$.status': 'confirmed'
-            }
-          };
-        }
       }
 
       //Send email to felicitate the volunteer
@@ -895,27 +983,220 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
         activity_name: activity_name,
         customMessage: req.session.organism.org_name + ' vient de valider ta participation de ' + hours_pending + ' h à ' + activity_name + ' !'
       });
-      Volunteer.findOneAndUpdate(query, update, function(err) {
+      Volunteer.findOne(query, function(err, vol) {
         if (err) {
-          console.error(err);
+          err.type = 'MINOR';
+          next(err);
           res.sendStatus(404);
         } else {
-          console.info('Hours_pending goes to hours_done : ' + hours_pending);
-          console.info(req.body);
-          OrgTodo.findOneAndRemove({
-            _id: req.body.todo
-          }, function(err, todoremoved) {
-            if (err) {
-              console.error(err);
+          // Find status of the opp to see if it's refused and then don't change it
+          let opp_status = {};
+          if (typeof req.body.act_id !== 'undefined') {
+
+            //If we deal with a student
+            if (req.body['answers[0][value]']) {
+              console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
+              var i = 0;
+              var answers = [];
+              while (req.body['answers[' + i + '][value]']) {
+                console.info('Add to answers : ' + req.body['answers[' + i + '][value]']);
+                answers.push(req.body['answers[' + i + '][value]']);
+                i++;
+              }
+              console.info('Answers : ' + JSON.stringify(answers));
+              if (type == 'hours_pending') {
+                // IF status != refused
+                if (opp_status = vol.events.find(ev => {
+                    return ev.activity_id == req.body.act_id;
+                  }).status != 'refused') {
+                  var update = {
+                    '$set': {
+                      'events.$.hours_done': hours_pending,
+                      'events.$.hours_pending': 0,
+                      'events.$.status': 'confirmed',
+                      'events.$.organism_answers': answers
+                    }
+                  };
+                } else {
+                  var update = {
+                    '$set': {
+                      'events.$.hours_done': hours_pending,
+                      'events.$.hours_pending': 0,
+                      'events.$.organism_answers': answers
+                    }
+                  };
+                };
+              } else if (type == 'students_hours_pending') {
+                if (opp_status = vol.extras.find(ex => {
+                    return ex.activity_id == req.body.act_id;
+                  }).status != 'refused') {
+                  var update = {
+                    '$set': {
+                      'extras.$.hours_done': hours_pending,
+                      'extras.$.hours_pending': 0,
+                      'extras.$.status': 'confirmed',
+                      'extras.$.organism_answers': answers
+                    }
+                  };
+                } else {
+                  var update = {
+                    '$set': {
+                      'extras.$.hours_done': hours_pending,
+                      'extras.$.hours_pending': 0,
+                      'extras.$.organism_answers': answers
+                    }
+                  };
+                };
+              }
             } else {
-              console.info('todoremoved : ' + todoremoved);
+              if (type == 'hours_pending') {
+                // IF status != refused
+                if (opp_status = vol.events.find(ev => {
+                    return ev.activity_id == req.body.act_id;
+                  }).status != 'refused') {
+                  var update = {
+                    '$set': {
+                      'events.$.hours_done': hours_pending,
+                      'events.$.hours_pending': 0,
+                      'events.$.status': 'confirmed'
+                    }
+                  };
+                } else {
+                  var update = {
+                    '$set': {
+                      'events.$.hours_done': hours_pending,
+                      'events.$.hours_pending': 0
+                    }
+                  };
+                };
+              } else if (type == 'students_hours_pending') {
+                if (opp_status = vol.extras.find(ex => {
+                    return ex.activity_id == req.body.act_id;
+                  }).status != 'refused') {
+                  var update = {
+                    '$set': {
+                      'extras.$.hours_done': hours_pending,
+                      'extras.$.hours_pending': 0,
+                      'extras.$.status': 'confirmed'
+                    }
+                  };
+                } else {
+                  var update = {
+                    '$set': {
+                      'extras.$.hours_done': hours_pending,
+                      'extras.$.hours_pending': 0
+                    }
+                  };
+                };
+              }
+              console.info('NO answers');
+            }
+          } else if (typeof req.body.lt_id !== 'undefined') {
+            if (opp_status = vol.long_terms.find(lt => {
+                return lt._id == req.body.lt_id;
+              }).status != 'refused') {
+              //If we deal with a student
+              if (req.body['answers[0][value]']) {
+                console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
+                var i = 0;
+                var answers = [];
+                while (req.body['answers[' + i + '][value]']) {
+                  console.info('Add to answers : ' + req.body['answers[' + i + '][value]']);
+                  answers.push(req.body['answers[' + i + '][value]']);
+                  i++;
+                }
+                console.info('Answers : ' + JSON.stringify(answers));
+                var update = {
+                  '$inc': {
+                    'long_terms.$.hours_done': hours_pending,
+                    'long_terms.$.hours_pending': -hours_pending
+                  },
+                  '$set': {
+                    'long_terms.$.organism_answers': answers,
+                    'long_terms.$.status': 'confirmed'
+                  }
+                };
+              } else {
+                console.info('NO answers');
+                var update = {
+                  '$inc': {
+                    'long_terms.$.hours_done': hours_pending,
+                    'long_terms.$.hours_pending': -hours_pending
+                  },
+                  '$set': {
+                    'long_terms.$.status': 'confirmed'
+                  }
+                };
+              };
+            } else {
+              //If we deal with a student
+              if (req.body['answers[0][value]']) {
+                console.info('req.body.answers[0][value] : ' + req.body['answers[0][value]']);
+                var i = 0;
+                var answers = [];
+                while (req.body['answers[' + i + '][value]']) {
+                  console.info('Add to answers : ' + req.body['answers[' + i + '][value]']);
+                  answers.push(req.body['answers[' + i + '][value]']);
+                  i++;
+                }
+                console.info('Answers : ' + JSON.stringify(answers));
+                var update = {
+                  '$inc': {
+                    'long_terms.$.hours_done': hours_pending,
+                    'long_terms.$.hours_pending': -hours_pending
+                  },
+                  '$set': {
+                    'long_terms.$.organism_answers': answers
+                  }
+                };
+              } else {
+                console.info('NO answers');
+                var update = {
+                  '$inc': {
+                    'long_terms.$.hours_done': hours_pending,
+                    'long_terms.$.hours_pending': -hours_pending
+                  }
+                };
+              };
+            };
+          };
+
+          Volunteer.findOneAndUpdate(query, update, {
+            new: true
+          }, function(err, volunteer_updated) {
+            if (err) {
+              err.type = 'MINOR';
+              next(err);
+              res.sendStatus(404);
+            } else {
+              console.info('Hours_pending goes to hours_done : ' + hours_pending);
+              console.info(req.body);
+              OrgTodo.findOneAndRemove({
+                _id: req.body.todo
+              }, function(err, todoremoved) {
+                if (err) {
+                  console.error(err);
+                } else {
+                  console.info('todoremoved : ' + todoremoved);
+                }
+              });
+              res.sendStatus(200);
+              game.refreshPreferences(volunteer_updated, function(err, volunteer_refreshed) {
+                if (err) {
+                  err.type = 'MINOR';
+                  err.print = 'Problème de mise à jour des préférences du bénévole dans la base de données';
+                  next(err);
+                }
+              });
             }
           });
-          res.sendStatus(200);
         }
       });
     } else {
-      console.warn('MyVolunteer doesnt exist');
+      err = {};
+      err.stack = 'Volunteer doesnt exist';
+      err.type = 'MINOR';
+      next(err);
       res.sendStatus(404);
     }
   });

@@ -21,22 +21,27 @@ var permissions = require('../middlewares/permissions.js');
 var longtermsList = require('../lib/longterms.js').listFromOrganisms;
 var rewindSlotString = require('../lib/slot.js').rewindSlotString;
 var date = require('../lib/dates/date_browser.js');
+var game = require('../lib/badges.js');
 var update_intercom = require('../lib/intercom/update_intercom.js');
 var ltSubs = require('../lib/subscribe/longterm_subs.js');
 const schools_res = require('../res/schools_res.js');
 var app = express();
 
 /*GET map page*/
-router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req, res) {
-  Activity.find({}, function(err, activities) {
+router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req, res, next) {
+  Activity.find({
+    'archived': {
+      $ne: true
+    },
+    'extra': {
+      $ne: true
+    },
+    'validation': true
+  }, function(err, activities) {
     if (err) {
-      console.log(err);
-      res.render('v_map.jade', {
-        session: req.session,
-        error: err,
-        volunteer: req.session.volunteer,
-        group: req.session.group
-      });
+      err.type = 'CRASH';
+      err.print = 'Problème avec la recherche des bénévolats';
+      next(err);
     } else { //Create opps list
       const age = getAge(req.session.volunteer.birthdate);
       let my_school = null;
@@ -60,26 +65,9 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         return days_length.length > 0;
       };
 
-      var isUnverified = function(activity) {
-        return activity.validation;
-      };
-
-      const isNotTheFav = function(activity) {
-        if (the_favorite) {
-          return activity._id != the_favorite._id;
-        } else {
-          return true;
-        }
-      };
-
-      const isNotAnExtra = function(activity) {
-        return !activity.extra;
-      };
-
       var justMySchool = function(activity) {
         if (activity.school_id) {
           if (my_school) {
-            console.log('activity.school_id :' + activity.school_id + ' my_school : ' + my_school + 'activity.school_id == my_school' + (activity.school_id == my_school));
             return activity.school_id.toString() == my_school.toString();
           } else {
             return false;
@@ -89,11 +77,18 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
         }
       };
 
+      let remainingPlaces = function(activity) {
+        let remain = (activity.days.filter(function(day) {
+          return day.vol_nb > day.applicants.length;
+        })).length;
+        return remain > 0;
+      };
+
       //If user is under 16, he can't see the activities of unverified organisms
       let acts = {};
       let lt_filter = {};
       if (age < 16) {
-        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isUnverified).filter(justMySchool).filter(isNotAnExtra);
+        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool).filter(remainingPlaces);
         lt_filter = {
           'validation': true,
           'long_terms': {
@@ -103,8 +98,9 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           }
         };
       } else {
-        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(isNotAnExtra).filter(justMySchool);
+        acts = activities.filter(isNotPassed).filter(isTooYoung).filter(justMySchool).filter(remainingPlaces);
         lt_filter = {
+          'validation': true,
           'long_terms': {
             '$not': {
               '$size': 0
@@ -112,84 +108,102 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           }
         };
       };
-      const favorites = acts.reduce(function(pre, cur, ind, arr) {
-        console.log('cur.intitule ' + cur.intitule + ' & cur.favorite : ' + cur.favorite);
-        if (cur.favorite) {
-          pre.push(cur);
-          return pre;
-        } else {
-          return pre;
-        };
-      }, []);
-      const fav_index = Math.floor(Math.random() * (favorites.length));
-      console.log('favorites.length : ' + favorites.length);
-      console.log('fav_index : ' + fav_index);
-      let the_favorite = {};
-      if (favorites.length != 0) {
-        the_favorite = favorites[fav_index];
-      };
-      //acts = acts.filter(isNotTheFav);
+
       Organism.find(lt_filter, {
-          'org_name': true,
-          '_id': true,
-          'cause': true,
-          'long_terms': true,
-          'school_id': true,
-          'admin_id': true
-        },
-        function(err, organisms) {
-          if (err) {
-            console.log(err);
-            res.render('v_map.jade', {
-              session: req.session,
-              error: err,
-              volunteer: req.session.volunteer,
-              group: req.session.group
-            });
-          } else {
-            //Filter organisms authorized to be seen by the volunteer
-            const lt_organisms = organisms.filter(function(orga) {
-              if (orga.school_id || orga.admin_id) {
-                if (orga.school_id) {
-                  var the_school = orga.school_id;
-                } else {
-                  var the_school = orga.admin_id;
-                };
-                if (my_school) {
-                  return the_school.toString() == my_school.toString();
-                } else {
-                  return false;
-                }
+        'org_name': true,
+        '_id': true,
+        'cause': true,
+        'long_terms': true,
+        'school_id': true,
+        'admin_id': true
+      }, function(err, organisms) {
+        if (err) {
+          err.type = 'CRASH';
+          err.print = 'Problème avec la recherche des bénévolats';
+          next(err);
+        } else {
+          //Filter organisms authorized to be seen by the volunteer
+          const lt_organisms = organisms.filter(function(orga) {
+            if (orga.school_id || orga.admin_id) {
+              if (orga.school_id) {
+                var the_school = orga.school_id;
               } else {
-                return true;
+                var the_school = orga.admin_id;
+              };
+              if (my_school) {
+                return the_school.toString() == my_school.toString();
+              } else {
+                return false;
               }
-            });
-            var longterms = longtermsList(lt_organisms, age);
-            const hash = require('intercom-client').SecureMode.userHash({
-              secretKey: process.env.INTERCOM_SECRET_KEY,
-              identifier: req.session.volunteer.email
-            });
-            console.info('hash : ' + hash);
-            console.info('typeof hash : ' + typeof hash);
-            res.render('v_map.jade', {
-              session: req.session,
-              activities: acts,
-              volunteer: req.session.volunteer,
-              error: req.query.error,
-              success: req.query.success,
-              group: req.session.group,
-              the_favorite,
-              longterms,
-              hash
-            });
-          }
-        });
+            } else {
+              return true;
+            }
+          });
+          var longterms = longtermsList(lt_organisms, age);
+          const hash = require('intercom-client').SecureMode.userHash({
+            secretKey: process.env.INTERCOM_SECRET_KEY,
+            identifier: req.session.volunteer.email
+          });
+          console.info('hash : ' + hash);
+          console.info('typeof hash : ' + typeof hash);
+          let school_name = null;
+          if (req.session.volunteer.admin && req.session.volunteer.admin.school_name && req.session.volunteer.admin.school_id) {
+            school_name = req.session.volunteer.admin.school_name;
+          };
+          const first_age_filtered = false;
+          let nature_indexes = new Array();
+          let sol_indexes = new Array();
+          let culture_indexes = new Array();
+          let child_indexes = new Array();
+          let adult_indexes = new Array();
+          longterms.map(function(lt) {
+            if (lt.cause == 'Nature') {
+              nature_indexes.push(lt.long_term._id);
+            } else if (lt.cause == 'Solidarité') {
+              sol_indexes.push(lt.long_term._id);
+            } else if (lt.cause == 'Sport et Culture') {
+              culture_indexes.push(lt.long_term._id);
+            } else if (lt.cause == 'Enfance') {
+              child_indexes.push(lt.long_term._id);
+            }
+          });
+          acts.map(function(act) {
+            if (act.cause == 'Nature') {
+              nature_indexes.push(act._id);
+            } else if (act.cause == 'Solidarité') {
+              sol_indexes.push(act._id);
+            } else if (act.cause == 'Sport et Culture') {
+              culture_indexes.push(act._id);
+            } else if (act.cause == 'Enfance') {
+              child_indexes.push(act._id);
+            }
+          });
+          res.render('v_map.jade', {
+            session: req.session,
+            activities: acts,
+            volunteer: req.session.volunteer,
+            error: req.query.error,
+            success: req.query.success,
+            group: req.session.group,
+            longterms,
+            school_name,
+            hash,
+            age,
+            first_age_filtered,
+            nature_indexes,
+            sol_indexes,
+            culture_indexes,
+            child_indexes,
+            adult_indexes
+          });
+        }
+      });
     }
   });
 });
 
 
-router.get('/activity/:act_id', function(req, res) {
+router.get('/activity/:act_id', function(req, res, next) {
   console.log('In GET to an activity page with act_id:' + req.params.act_id);
   if (req.session.volunteer) {
     //Find organism corresponding to the activity
@@ -198,8 +212,9 @@ router.get('/activity/:act_id', function(req, res) {
         "events.activities": req.params.act_id
       }, function(err, organism) {
         if (err) {
-          console.log(err);
-          res.redirect('/volunteer/map?error=' + err);
+          err.type = 'CRASH'
+          err.print = 'Activité non trouvée dans la base de données'
+          next(err);
         } else {
           function isRightEvent(event) {
             return event.activities.indexOf(req.params.act_id) >= 0;
@@ -228,7 +243,7 @@ router.get('/activity/:act_id', function(req, res) {
 });
 
 
-router.get('/longterm/:lt_id', function(req, res) {
+router.get('/longterm/:lt_id', function(req, res, next) {
   console.log('In GET to a longterm page with lt_id:' + req.params.lt_id);
   if (req.session.volunteer) {
 
@@ -245,8 +260,9 @@ router.get('/longterm/:lt_id', function(req, res) {
       }
     }, function(err, organism) {
       if (err) {
-        console.log(err);
-        res.redirect('/volunteer/map?error=' + err);
+        err.type = 'CRASH'
+        err.print = 'Engagement non trouvé dans la base de données'
+        next(err);
       } else {
         console.log('Organism from longterm : ' + organism);
 
@@ -255,9 +271,6 @@ router.get('/longterm/:lt_id', function(req, res) {
           return long._id.toString() == req.params.lt_id.toString();
         };
         var longterm = organism.long_terms.find(isRightLongterm);
-        console.log('+++++++++++++++++++++');
-        console.log('Longterm found in organism corresponding to lt_id : ' + longterm)
-        console.log('+++++++++++++++++++++');
         var slotJSON = rewindSlotString(longterm.slot);
         const alreadySubscribed = longterm.applicants.find(function(app) {
           return app.toString() == req.session.volunteer._id.toString();
@@ -316,7 +329,7 @@ router.get('/longterm/:lt_id', function(req, res) {
 });
 
 
-router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requireGroup('volunteer'), function(req, res, next) {
   //Verify the volunteer is not already susbscribed to the activity
   function subscribeToActivity(student_q, organism_q) {
     function isActivity(activity) {
@@ -343,19 +356,29 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
 
       }, function(err, newActivity) {
         if (err) {
-          console.log(err);
+          err.type = 'CRASH'
+          err.print = 'Inscription annulée : problème dans la base de donnée';
+          next(err);
         } else {
           function isGoodDay(day) {
             return (Date.parse(day.day) === Date.parse(req.params.activity_day));
           };
           console.log('Isgood day result : ' + newActivity.days.find(isGoodDay));
           let phone = {};
+          let parents_email = {};
           if (req.session.volunteer.phone) {
             phone = req.session.volunteer.phone;
           } else if (req.body.phone) {
             phone = req.body.phone;
           } else {
             phone = null;
+          };
+          if (req.session.volunteer.parents_email) {
+            parents_email = req.session.volunteer.parents_email;
+          } else if (req.body.parents_email) {
+            parents_email = req.body.parents_email;
+          } else {
+            parents_email = null;
           };
           const start_time = newActivity.days.find(isGoodDay).start_time;
           const end_time = newActivity.days.find(isGoodDay).end_time;
@@ -388,14 +411,17 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               }
             },
             "$set": {
-              "phone": phone
+              "phone": phone,
+              "parents_email": parents_email
             }
           }, {
             returnNewDocument: true,
             new: true
           }, function(err, newVolunteer) {
             if (err) {
-              console.log(err);
+              err.type = 'CRASH'
+              err.print = 'Inscription annulée : problème dans la base de donnée';
+              next(err);
             } else {
               console.log('**********************************');
               console.log('New Volunteer modified : ' + JSON.stringify(newVolunteer));
@@ -407,64 +433,77 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               console.log('req.params.activity_day ' + req.params.activity_day);
               console.log('**********************************');
               //UPDATING REQ.SESSION.VOLUNTEER
-              req.session.volunteer = newVolunteer;
               //SEND REMINDER EMAIL
               sendEmailOneDayBeforeEvent(req.params.activity_day, req.session.volunteer, newActivity, start_time, end_time);
               var success = encodeURIComponent('Vous avez été inscrit à l\'activité avec succès !');
-              Organism.findById(newActivity.org_id, function(err, organism) {
-                //Find the event in organism
-                const theEvent = organism.events.find(function(event) {
-                  const goodEvent = event.activities.find(function(acti) {
-                    console.log('acti and req.params.act_id : ' + acti + '   ' + req.params.act_id);
-                    return acti.toString() == req.params.act_id.toString();
+              game.refreshPreferences(newVolunteer, function(err, volunteer_refreshed) {
+                if (err) {
+                  err.type = 'MINOR';
+                  err.print = 'Problème de mise à jour des préférences du bénévole dans la base de données';
+                  next(err);
+                } else {
+                  req.session.volunteer = volunteer_refreshed;
+                  req.session.save(function() {
+                    Organism.findById(newActivity.org_id, function(err, organism) {
+                      //Find the event in organism
+                      const theEvent = organism.events.find(function(event) {
+                        const goodEvent = event.activities.find(function(acti) {
+                          console.log('acti and req.params.act_id : ' + acti + '   ' + req.params.act_id);
+                          return acti.toString() == req.params.act_id.toString();
+                        });
+                        return goodEvent;
+                      });
+                      res.render('v_postsubscription.jade', {
+                        session: req.session,
+                        org_phone: organism.phone,
+                        org_name: newActivity.org_name,
+                        day: dayString,
+                        link_to_share: '/activity/' + req.params.act_id,
+                        start_time: newActivity.days.find(isGoodDay).start_time,
+                        end_time: newActivity.days.find(isGoodDay).end_time,
+                        address: newActivity.address,
+                        volunteer: volunteer_refreshed,
+                        group: req.session.group
+                      });
+                      var org_content = {
+                        event: newActivity.event_intitule,
+                        recipient: organism.email,
+                        name: organism.firstname + ' ' + organism.lastname,
+                        link: 'http://' + req.headers.host + '/organism/event/' + theEvent._id,
+                        customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !', 'Contactez le au plus vite au ' + volunteer_refreshed.phone + ' ou par courriel à ' + volunteer_refreshed.email, 'Attention, sans nouvelles rapidement de votre part, ' + volunteer_refreshed.firstname + ' risque de se décourager et de ne pas venir !']
+                      };
+                      if (req.session.volunteer.admin.school_id && req.session.volunteer.admin.school_name) {
+                        org_content.customMessage = [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ', élève à ' + req.session.volunteer.admin.school_name + ', s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !', 'Ceci est dans le cadre du programme de bénévolat de son l\'école', 'Contactez le au plus vite au ' + volunteer_refreshed.phone + ' ou par courriel à ' + volunteer_refreshed.email, 'Attention, sans nouvelles rapidement de votre part, ' + volunteer_refreshed.firstname + ' risque de se décourager et de ne pas venir !']
+                        console.log('Alert organism that the volunteer who just subscribed is a student ! ' + JSON.stringify(org_content.customMessage));
+                      };
+                      emailer.sendSubscriptionOrgEmail(org_content);
+                      var vol_content = {
+                        recipient: volunteer_refreshed.email,
+                        firstname: volunteer_refreshed.firstname,
+                        customMessage: ['Tu es inscrit le ' + dayString + ' à : ' + newActivity.address, 'L\'organisme ' + organism.org_name + ' va être au mis au courant de ton inscription. Entre en contact avec ' + organism.firstname + ' ' + organism.lastname + ' au ' + organism.phone + ' pour parler des détails de l\'activité !', 'Après l\'évènement, tu pourras ajouter des heures d\'engagement à ton profil pour faire progresser ton profil de citoyen engagé :)'],
+                      };
+                      emailer.sendSubscriptionVolEmail(vol_content);
+                      //Intercom create addlongterm event
+                      client.events.create({
+                        event_name: 'vol_event_subscribe',
+                        created_at: Math.round(Date.now() / 1000),
+                        user_id: req.session.volunteer._id,
+                        metadata: {
+                          act_id: req.params.act_id
+                        }
+                      });
+                      update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.events, 'EV', function(err) {
+                        if (err) {
+                          err.type = 'MINOR';
+                          err.print = 'Mise à jour des inscriptions Intercom : problème ';
+                          next(err);
+                        } else {
+                          console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
+                        };
+                      });
+                    });
                   });
-                  return goodEvent;
-                });
-                res.render('v_postsubscription.jade', {
-                  session: req.session,
-                  org_phone: organism.phone,
-                  org_name: newActivity.org_name,
-                  day: dayString,
-                  start_time: newActivity.days.find(isGoodDay).start_time,
-                  end_time: newActivity.days.find(isGoodDay).end_time,
-                  address: newActivity.address,
-                  volunteer: req.session.volunteer,
-                  group: req.session.group
-                });
-                var org_content = {
-                  event: newActivity.event_intitule,
-                  recipient: organism.email,
-                  name: organism.firstname + ' ' + organism.lastname,
-                  link: 'http://' + req.headers.host + '/organism/event/' + theEvent._id,
-                  customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !', 'Contactez le au plus vite au ' + newVolunteer.phone + ' ou par courriel à ' + newVolunteer.email, 'Attention, sans nouvelles rapidement de votre part, ' + newVolunteer.firstname + ' risque de se décourager et de ne pas venir !']
-                };
-                if (req.session.volunteer.admin.school_id && req.session.volunteer.admin.school_name) {
-                  org_content.customMessage = [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ', élève à ' + req.session.volunteer.admin.school_name + ', s\'est inscrit à votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !', 'Ceci est dans le cadre du programme de bénévolat de son l\'école', 'Contactez le au plus vite au ' + newVolunteer.phone + ' ou par courriel à ' + newVolunteer.email, 'Attention, sans nouvelles rapidement de votre part, ' + newVolunteer.firstname + ' risque de se décourager et de ne pas venir !']
-                  console.log('Alert organism that the volunteer who just subscribed is a student ! ' + JSON.stringify(org_content.customMessage));
-                };
-                emailer.sendSubscriptionOrgEmail(org_content);
-                var vol_content = {
-                  recipient: newVolunteer.email,
-                  firstname: newVolunteer.firstname,
-                  customMessage: ['Tu es inscrit le ' + dayString + ' à : ' + newActivity.address, 'L\'organisme ' + organism.org_name + ' va être au mis au courant de ton inscription. Entre en contact avec ' + organism.firstname + ' ' + organism.lastname + ' au ' + organism.phone + ' pour parler des détails de l\'activité !', 'Après l\'évènement, tu pourras ajouter des heures d\'engagement à ton profil pour faire progresser ton profil de citoyen engagé :)'],
-                };
-                emailer.sendSubscriptionVolEmail(vol_content);
-                //Intercom create addlongterm event
-                client.events.create({
-                  event_name: 'vol_event_subscribe',
-                  created_at: Math.round(Date.now() / 1000),
-                  user_id: req.session.volunteer._id,
-                  metadata: {
-                    act_id: req.params.act_id
-                  }
-                });
-                update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.events, 'EV', function(err) {
-                  if (err) {
-                    console.log(err);
-                  } else {
-                    console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
-                  };
-                });
+                }
               });
             }
           })
@@ -486,8 +525,10 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
   }
 });
 
-router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
   console.log('lt_id : ' + req.params.lt_id + typeof req.params.lt_id);
+  req.session.longterm_interaction = true;
+
 
   function isLongterm(lt) {
     return (lt._id.toString() === req.params.lt_id.toString());
@@ -507,44 +548,55 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
 
     ltSubs.subscribe(req.session.volunteer, req.params.lt_id, req.headers.host, phone, function(err, results) {
       if (err) {
-        console.log(err);
-        res.redirect('/volunteer/map?error=' + err);
+        err.type = 'CRASH';
+        err.print = 'Inscription annulée : problème dans la base de donnée';
+        next(err);
       } else {
-        req.session.volunteer = results.newVolunteer;
-        req.session.save(function() {
-          console.log('newltreq.session.volunteer.long_terms : ' + req.session.volunteer.long_terms);
-          var newlt = req.session.volunteer.long_terms.find(function(lt) {
-            console.log('lt._id: ' + lt._id + 'req.params.lt_id :' + req.params.lt_id);
-            console.log((lt._id.toString() === req.params.lt_id.toString()));
-            return ((lt._id).toString() === (req.params.lt_id).toString());
-          });
-          console.log('newlt : ' + newlt);
-          //Intercom create subscribe to longterm event
-          client.events.create({
-            event_name: 'vol_longterm_subscribe',
-            created_at: Math.round(Date.now() / 1000),
-            user_id: req.session.volunteer._id,
-            metadata: {
-              lt_id: req.params.lt_id,
-              lt_intitule: newlt.intitule
-            }
-          });
-          update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, 'LT', function(err) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
-            };
-          });
-          res.render('v_postsubscription.jade', {
-            org_phone: results.newOrganism.phone,
-            session: req.session,
-            org_name: results.newOrganism.org_name,
-            email: results.newOrganism.email,
-            volunteer: req.session.volunteer,
-            group: req.session.group
-          });
-        });
+        game.refreshPreferences(results.newVolunteer, function(err, volunteer_refreshed) {
+          if (err) {
+            err.type = 'MINOR';
+            err.print = 'Problème de mise à jour des préférences du bénévole dans la base de données';
+            next(err);
+          } else {
+            req.session.volunteer = volunteer_refreshed;
+            req.session.save(function() {
+              console.log('newltreq.session.volunteer.long_terms : ' + req.session.volunteer.long_terms);
+              var newlt = req.session.volunteer.long_terms.find(function(lt) {
+                console.log('lt._id: ' + lt._id + 'req.params.lt_id :' + req.params.lt_id);
+                console.log((lt._id.toString() === req.params.lt_id.toString()));
+                return ((lt._id).toString() === (req.params.lt_id).toString());
+              });
+              console.log('newlt : ' + newlt);
+              //Intercom create subscribe to longterm event
+              client.events.create({
+                event_name: 'vol_longterm_subscribe',
+                created_at: Math.round(Date.now() / 1000),
+                user_id: req.session.volunteer._id,
+                metadata: {
+                  lt_id: req.params.lt_id,
+                  lt_intitule: newlt.intitule
+                }
+              });
+              update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, 'LT', function(err) {
+                if (err) {
+                  err.type = 'MINOR';
+                  next(err);
+                } else {
+                  console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
+                };
+              });
+              res.render('v_postsubscription.jade', {
+                link_to_share: '/longterm/' + req.params.lt_id,
+                org_phone: results.newOrganism.phone,
+                session: req.session,
+                org_name: results.newOrganism.org_name,
+                email: results.newOrganism.email,
+                volunteer: req.session.volunteer,
+                group: req.session.group
+              });
+            });
+          }
+        })
       }
     });
   } else {
@@ -580,7 +632,7 @@ router.get('/volunteer/student_questions/:act_id-:act_day', permissions.requireG
   console.log('event_answered.length = ' + event_answered.length);
   var event = req.session.volunteer.events.find(goodEvent);
   if (event_answered.length > 0 || (event.student_questions.length < 1)) {
-    res.redirect('/volunteer/map');
+    res.redirect('/volunteer/profile');
   } else {
     Activity.findById(req.params.act_id, function(err, activity) {
       res.render('v_questions.jade', {
@@ -620,7 +672,7 @@ router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volu
   console.log('lt_answered = ' + JSON.stringify(lt_answered));
   console.log('lt_answered.length = ' + lt_answered.length);
   if (lt_answered.length > 0 || (longterm.student_questions.length < 1)) {
-    res.redirect('/volunteer/map');
+    res.redirect('/volunteer/profile');
   } else {
     res.render('v_questions.jade', {
       session: req.session,
@@ -633,7 +685,20 @@ router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volu
   };
 });
 
-router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'), function(req, res) {
+router.get('/volunteer/sharewithfriends', permissions.requireGroup('volunteer'), function(req, res) {
+  if (req.query.link) {
+    res.render('v_sharewithfriends.jade', {
+      volunteer: req.session.volunteer,
+      session: req.session,
+      link: req.query.link,
+      group: req.session.group
+    });
+  } else {
+    res.redirect('/volunteer/profile');
+  }
+});
+
+router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'), function(req, res, next) {
   function isAKeyAnswer(key) {
     return key.search('answer') != -1;
   };
@@ -683,14 +748,22 @@ router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'
     new: true
   }, function(err, newVolunteer) {
     if (err) {
-      console.log(err);
-      res.redirect('/volunteer/map?error=' + err);
+      err.type = 'CRASH';
+      err.print = 'Problème lors de l\'enregistrement des réponses aux questions';
+      next(err);
     } else {
       req.session.volunteer = newVolunteer;
-      console.log('newVolunteer : ' + newVolunteer);
-      console.log('newVolunteer === req.session.volunteer : ' + (req.session.volunteer === newVolunteer));
-      const message = encodeURIComponent('Tes réponses ont bien été prises en compte');
-      res.redirect('/volunteer/map?success=' + message);
+      req.session.save(function() {
+        console.log('newVolunteer : ' + newVolunteer);
+        console.log('newVolunteer === req.session.volunteer : ' + (req.session.volunteer === newVolunteer));
+        const message = encodeURIComponent('Tes réponses ont bien été prises en compte');
+        res.redirect('/volunteer/profile?success=' + message);
+        let email_content = {
+          recipient: newVolunteer.email,
+          customMessage: [newVolunteer.firstname + ', tes retours sur ton bénévolat ont bien été pris en compte et sont désormais visible par la personne responsable du bénévolat dans ton école.', 'Néanmoins, en revenant sur la plateforme, tu peux quand même les modifier s\'ils ne te satisfont pas ! :)'],
+        };
+        emailer.sendStudentQuestionsEmail(email_content);
+      })
     }
   });
 });
@@ -712,6 +785,7 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
 
   //Transform date
   console.log('event_date at the beginnning' + event_date);
+  console.log('event_date at the beginnning with new Date()' + new Date(event_date));
   let start_date = (new Date(event_date)).getTime();
   let s_time = {};
   let e_time = {};
@@ -755,6 +829,8 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
   }
 
   agenda.schedule(moment(dayBefore).toDate(), 'sendDayBeforeEmail', {
+    event_date,
+    activity_id: (activity._id).toString(),
     firstname: volunteer.firstname,
     lastname: volunteer.lastname,
     org_name: activity.org_name,
@@ -764,16 +840,21 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
   });
 
   agenda.schedule(moment(fiveDaysBefore).toDate(), 'sendOneWeekBeforeEmail', {
+    event_date,
+    activity_id: (activity._id).toString(),
     firstname: volunteer.firstname,
     lastname: volunteer.lastname,
     org_name: activity.org_name,
     address: activity.address,
     start_date: start_date_to_send,
     event_intitule: activity.event_intitule,
-    email: volunteer.email
+    email: volunteer.email,
+    phone: volunteer.phone
   });
 
   agenda.schedule(moment(dayAfter).toDate(), 'sendDayAfterEmail', {
+    event_date,
+    activity_id: (activity._id).toString(),
     firstname: volunteer.firstname,
     lastname: volunteer.lastname,
     org_name: activity.org_name,

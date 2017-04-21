@@ -5,6 +5,13 @@ block vars
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
 block head
+  script(src='/bower_components/pickadate/lib/picker.js', type='text/javascript')
+  script(src='/bower_components/pickadate/lib/picker.date.js', type='text/javascript')
+  script(src='/bower_components/pickadate/lib/picker.time.js', type='text/javascript')
+  script(src='/bower_components/pickadate/lib/legacy.js', type='text/javascript')
+  link(href='/bower_components/pickadate/lib/themes/classic.css', rel='stylesheet')
+  link(href='/bower_components/pickadate/lib/themes/classic.date.css', rel='stylesheet')
+  link(href='/bower_components/pickadate/lib/themes/classic.time.css', rel='stylesheet')
   title Bénévoles à long terme
   meta(name='description', content='Gère tes bénévoles inscrits à long terme')
 block share
@@ -60,7 +67,7 @@ block share
 block content
   .container-fluid
     .row
-      .col-md-6.col-md-offset-3
+      .col-md-6.col-md-offset-3.col-xs-10
         .page-header
           h1.inline.intitule #{longterm.intitule}
           i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='intitule')
@@ -68,10 +75,9 @@ block content
             p.alert.alert-danger= error
           p #{longterm.description} <i class="fa fa-pencil edit" type='description' style="cursor: pointer"></i>
           p <b>#{longterm.vol_nb}</b> bénévoles recherchés <i class="fa fa-pencil edit" type='vol_nb' vol_nb=#{longterm.vol_nb} applicants=#{longterm.applicants.length} style="cursor: pointer"></i>
-          p <b>Places restantes : </b> #{longterm.vol_nb - longterm.applicants.length}
-          p <b>Expiration de l'offre : </b> #{date.printDate(longterm.expiration_date)}
+          p <b>Expiration de l'offre : </b> #{date.printDate(longterm.expiration_date)} <i class="fa fa-pencil edit" type='expiration_date' exp=#{longterm.expiration_date} style="cursor: pointer"></i>
           if longterm.min_age
-            p <b>Âge minimal : </b> #{longterm.min_age}
+            p <b>Âge minimal : </b> #{longterm.min_age} <i class="fa fa-pencil edit" type='min_age' age=#{longterm.min_age} style="cursor: pointer"></i>
           p <b>Adresse : </b> #{longterm.address}
             li.list-group-item
               div.media-left.media-middle
@@ -201,8 +207,17 @@ block content
                           i.fa.fa-check
                         else
                           p
-      .col-md-3.text-center.page-header
-        a.inline.btn.btn-warning.propose(lt_id=longterm._id) Inviter à être bénévole
+      .col-md-3.text-center.page-header.col-xs-2
+        if longterm.tags == 'archived'
+          h4
+            span.badge(style='background-color: #E33831') Archivé
+            i.fa.fa-refresh.recover(type='recover' style="cursor: pointer" data-toggle="tooltip" data-placement="top" title='Republier l\'engagement')
+        else 
+          div
+            a.btn.btn-warning.propose(lt_id=longterm._id) Inviter à être bénévole
+          div(style='padding-top: 7px;')
+            a.btn.btn-danger.archive(lt_id=longterm._id) Archiver l'opportunité
+
     .row
       .col-md-10.col-md-offset-1
         .panel.panel-default(style='margin-bottom: 60px;')
@@ -252,6 +267,12 @@ block footscript
   script(type='text/javascript').
     'use strict';
     $(document).ready(function(){
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('o_visit_longterm');
+      };
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip({container: 'body'})
+      });
       $('.edit').click(function(){
         const type = $(this).attr('type');
         if(type == 'vol_nb'){
@@ -264,7 +285,34 @@ block footscript
           div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Nouvelle description</p><textarea rows='6' name='description'>"+div.text()+"</textarea><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
         } else if (type == 'intitule'){
           let div = $('h1.intitule');
-          div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Nouveau titre</p><input type='text' name='intitule' value='"+div.text()+"'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+          div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Nouveau titre</p><input type='text' name='intitule' value='"+div.text()+"'></input><input class='hidden' name='url' value="+window.location.pathname+" required></input><input type='submit' value='Modifier'></input></form>");
+        } else if (type == 'expiration_date'){
+          let div = $(this).parent();
+          const ancient_date = $(this).attr('exp');
+          div.html("<form name='edit-form' method='post' action='/edit-longterm'><p><b>Nouvelle date d'expiration</b></p><input class='datepicker' type='text' name='expiration_date' value='Choisir une date' required></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+          $('.datepicker').pickadate({
+            firstDay: 1,
+            formatSubmit: 'yyyy-mm-dd',
+            min: new Date()
+          });
+        } else if (type == 'min_age'){
+          let div = $(this).parent();
+          const ancient_age = $(this).attr('age');
+          div.html("<form name='edit-form' method='post' action='/edit-longterm'><p><b>Nouvel âge minimal</b></p><input type='number' name='min_age' value='" + ancient_age + "' required></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
         }
       })
+      $('.archive').click(function(){
+        let div = $(this).parent();
+        div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Êtes-vous de vouloir archiver cet engagement ? Il ne sera alors plus visible des bénévoles </p><input class='hidden' name='archive' value='a'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input style='width: 50%' class='btn btn-danger' type='submit' value='Oui'></input><input style='width: 50%' class='btn btn-info no-archive' value='Non'></input></form>");
+        $('.no-archive').click(function(){
+          div.html("<a class='inline btn btn-danger archive'> Archiver l'opportunité </a>");
+        })
+      });
+      $('.recover').click(function(){
+        let div = $(this).parent();
+        div.html("<form name='edit-form' method='post' action='/edit-longterm'><p>Êtes-vous de vouloir republier cet engagement ? Il sera alors visible des bénévoles </p><input class='hidden' name='recover' value='a'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input style='width: 50%' class='btn btn-info' type='submit' value='Oui'></input><input style='width: 50%' class='btn btn-danger no-recover' value='Non'></input></form>");
+        $('.no-recover').click(function(){
+          div.html('<h4><span style="background-color: #E33831" class="badge">Archivé</span><i type="recover" style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="Republier l\'engagement" class="fa fa-refresh recover"></i></h4>');
+        })
+      });
     });

@@ -3,7 +3,7 @@ var router = express.Router();
 var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
 var Admin = require('../models/admin_model.js');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt-nodejs');
 
 router.post('/editPassword', function(req, res) {
   console.log('Dans editpassword');

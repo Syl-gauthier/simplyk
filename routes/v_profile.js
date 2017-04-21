@@ -19,18 +19,19 @@ var Activity = require('../models/activity_model.js');
 var OrgTodo = require('../models/o_todo_model.js');
 const schools_res = require('../res/schools_res.js');
 var agenda = require('../lib/agenda.js');
+var game = require('../lib/badges.js');
 const getClientSchools = require('../lib/ressources/client_school_list.js').getClientSchools;
 
 
 
-router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function(req, res) {
+router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function(req, res, next) {
   console.log('Begin get /profile')
-  console.log(req.session.volunteer);
   var events_past = [];
   var events_pending = [];
   var events_subscribed = [];
   var events_denied = [];
   var events_confirmed = [];
+  var events_refused = [];
   var error;
   const volunteer = req.session.volunteer;
   for (var eventI = req.session.volunteer.events.length - 1; eventI >= 0; eventI--) {
@@ -45,6 +46,8 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       events_confirmed.push(volunteer.events[eventI]);
     } else if (volunteer.events[eventI].status == 'denied') {
       events_denied.push(volunteer.events[eventI]);
+    } else if (volunteer.events[eventI].status == 'refused') {
+      events_refused.push(volunteer.events[eventI]);
     } else {
       error = 'Une erreur avec vos inscriptions';
       console.log(error);
@@ -61,10 +64,10 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   }, lt_hours_done);
 
 
-  const events_hours_done = events_confirmed.reduce(function(pre, cur, ind, arr) {
-    if (arr[ind].hours_done) {
-      console.log('pre + arr[ind].hours_done : ' + (pre + arr[ind].hours_done));
-      return pre + arr[ind].hours_done;
+  const events_hours_done = volunteer.events.reduce(function(pre, cur, ind, arr) {
+    if ((['absent', 'subscribed', 'past'].indexOf(cur.status) == -1) && cur.hours_done) {
+      console.log('pre + arr[ind].hours_done : ' + (pre + cur.hours_done));
+      return pre + cur.hours_done;
     } else {
       return pre;
     }
@@ -89,32 +92,32 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   }, 0);
 
 
-  //VOLUNTEERING_LEVEL
-  var vol_level;
-  if (volunteer.events.length == 0 && lt_nb == 0) {
-    vol_level = 1;
-  } else if ((volunteer.events.length > 0 || lt_nb > 0) && events_confirmed.length == 0 && lt_hours_done == 0) {
-    vol_level = 2;
-  } else if ((events_confirmed.length == 1 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 0 && lt_hours_done < 5)) {
-    vol_level = 3;
-  } else if ((events_confirmed.length == 1 && lt_hours_done > 0 && lt_hours_done < 5) || (events_confirmed.length < 4 && events_confirmed.length > 1 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 4 && lt_hours_done < 25)) {
-    vol_level = 4;
-  } else if ((events_confirmed.length > 0 && events_confirmed.length < 4 && lt_hours_done > 4 && lt_hours_done < 25) || (events_confirmed.length > 3 && lt_hours_done == 0) || (events_confirmed.length == 0 && lt_hours_done > 24) || (events_confirmed.length > 1 && events_confirmed.length < 4 && lt_hours_done < 5 && lt_hours_done > 0)) {
-    vol_level = 5;
-  } else if ((events_confirmed.length > 0 && lt_hours_done > 24) || (events_confirmed.length > 3 && lt_hours_done > 0)) {
-    vol_level = 6;
+  //FIND A LONGTERM WHICH NEED ACTION
+  let longterm_waiting = null;
+  if (req.session.longterm_interaction) {
+    console.info('INFO : req.session.longterm_interaction is already TRUE');
   } else {
-    vol_level = 0;
-  };
+    longterm_waiting = volunteer.long_terms.find(function(lt) {
+      console.info('moment(lt.last_interaction).add(1, onths) : ' + moment(lt.last_interaction).add(1, 'months'));
+      console.info('moment() : ' + moment());
+      console.info('(moment(lt.last_interaction).add(1, "months")) < moment() : ' + ((moment(lt.last_interaction).add(1, 'months')) < moment()));
+      return (lt.status != 'pending' && (!(lt.last_interaction) || ((moment(lt.last_interaction).add(1, 'months')) < moment())));
+    })
+  }
+  console.info('longterm_waiting : ' + longterm_waiting);
+
+
   console.log('events_confirmed.length :  ' + events_confirmed.length);
   console.log('extras_hours_done :  ' + extras_hours_done);
   console.log('manuals_hours_done :  ' + manuals_hours_done);
   console.log('lt_hours_done :  ' + lt_hours_done);
-  console.log('Volunteer level is : ' + vol_level);
   //Get schools_list
   school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
     if (err) {
-      console.error('ERR : ' + err);
+      let error = {};
+      error.print = err;
+      error.type = 'MINOR';
+      next(err);
     };
     const hash = require('intercom-client').SecureMode.userHash({
       secretKey: process.env.INTERCOM_SECRET_KEY,
@@ -122,7 +125,10 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
     });
     getClientSchools(function(err, client_schools) {
       if (err) {
-        console.error(err);
+        let error = {};
+        error.print = err;
+        error.type = 'MINOR';
+        next(err);
       }
       //Sort extras by status
       req.session.volunteer.extras.sort((a, b) => {
@@ -151,40 +157,68 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
                 } else if ((a.status != 'confirmed') && (b.status == 'confirmed')) {
                   return 1;
                 } else {
-                  return 0;
+                  if ((a.status == 'refused') && (b.status != 'refused')) {
+                    return -1;
+                  } else if ((a.status != 'refused') && (b.status == 'refused')) {
+                    return 1;
+                  } else {
+                    return 0;
+                  }
                 }
               }
             }
           }
         }
       });
-      console.log('extras sorted : ' + JSON.stringify(req.session.volunteer.extras));
-      res.render('v_profile.jade', {
-        session: req.session,
-        volunteer: req.session.volunteer,
-        group: req.session.group,
-        error,
-        err,
-        schools_list,
-        vol_level,
-        events_subscribed,
-        events_confirmed,
-        events_pending,
-        events_past,
-        events_hours_done,
-        lt_hours_done,
-        manuals_hours_done,
-        extras_hours_done,
-        hash,
-        client_schools,
-        events_denied
+
+      let game_results = game.getBadges(req.session.volunteer, lt_hours_done, events_hours_done, function(err, game_results) {
+        if (err) {
+          let error = {};
+          error.print = 'Problème d\'obtention des badges du profil';
+          error.type = 'MINOR';
+          next(err);
+        }
+        const badges = game_results.badges;
+        const scores = game_results.scores;
+
+        function getSum(total, num) {
+          return total + num;
+        }
+        const bonus = game_results.bonus.reduce(getSum);
+        const score = bonus + scores.reduce(getSum);
+
+        res.render('v_profile.jade', {
+          session: req.session,
+          volunteer: req.session.volunteer,
+          group: req.session.group,
+          error,
+          err,
+          badges,
+          bonus,
+          scores,
+          score,
+          schools_list,
+          events_subscribed,
+          events_refused,
+          events_confirmed,
+          events_pending,
+          events_past,
+          events_hours_done,
+          lt_hours_done,
+          manuals_hours_done,
+          extras_hours_done,
+          hash,
+          client_schools,
+          events_denied,
+          longterm_waiting
+        });
       });
     });
   });
 });
 
 //Unsubscribe from an event
-router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res, next) {
   const activity_id = req.params.act_id,
     day = req.params.day;
   console.log('Unsubscribe process starts');
@@ -206,7 +240,9 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
     returnNewDocument: true
   }, function(err, newActivity) {
     if (err) {
-      console.log('Error in unsubscription process : ' + err);
+      err.type = 'CRASH';
+      err.print = 'Problème de recherche du bénévolat dans la base de données';
+      next(err);
     } else {
       console.log('newActivity after unsubscription process : ' + newActivity);
       Volunteer.findOneAndUpdate({
@@ -224,45 +260,64 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
         new: true
       }, function(err, newVolunteer) {
         if (err) {
-          console.log('Error in unsubscription process : ' + err);
+          err.type = 'CRASH';
+          err.print = 'Problème de mise à jour du bénévolat dans la base de données';
+          next(err);
         } else {
           function isNotActivity(activity) {
             return activity.activity_id != req.params.activity_id;
           };
-          console.log(JSON.stringify(req.session.volunteer));
-          req.session.volunteer = newVolunteer;
-          //req.session.volunteer.events = req.session.volunter.events.filter(isNotActivity);
-          //req.session.save();
-          var content = {
-            recipient: newActivity.email,
-            activity_name: newActivity.intitule,
-            name: newActivity.org_name,
-            customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est désinscrit de votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !'
-          };
-          emailer.sendUnsubscriptionEmail(content);
-          //Intercom create unsubscribe to longterm event
-          client.events.create({
-            event_name: 'vol_activity_unsubscribe',
-            created_at: Math.round(Date.now() / 1000),
-            user_id: req.session.volunteer._id,
-            metadata: {
-              act_id: req.params.act_id,
-              org_name: newActivity.org_name
+          game.refreshPreferences(newVolunteer, function(err, volunteer_refreshed) {
+            if (err) {
+              err.type = 'MINOR';
+              err.print = 'Problème de mise à jour des préférences du bénévole dans la base de données';
+              next(err);
+            } else {
+              req.session.volunteer = volunteer_refreshed;
+              req.session.save(function() {
+                var content = {
+                  recipient: newActivity.email,
+                  activity_name: newActivity.intitule,
+                  name: newActivity.org_name,
+                  customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est désinscrit de votre activité ' + newActivity.intitule + ' de l\'évènement ' + newActivity.event_intitule + ' !'
+                };
+                emailer.sendUnsubscriptionEmail(content);
+                //Intercom create unsubscribe to longterm event
+                client.events.create({
+                  event_name: 'vol_activity_unsubscribe',
+                  created_at: Math.round(Date.now() / 1000),
+                  user_id: req.session.volunteer._id,
+                  metadata: {
+                    act_id: req.params.act_id,
+                    org_name: newActivity.org_name
+                  }
+                });
+                client.users.update({
+                  user_id: req.session.volunteer._id,
+                  update_last_request_at: true
+                });
+                const dayString = new Date(req.params.day).toLocaleDateString();
+                console.log('after event unsubscription process');
+                res.render('v_postunsubscription.jade', {
+                  session: req.session,
+                  org_name: newActivity.org_name,
+                  org_phone: newActivity.org_phone,
+                  day: dayString,
+                  volunteer: req.session.volunteer,
+                  group: req.session.group
+                });
+                agenda.cancel({
+                  'data.event_date': (new Date(req.params.day)).toString(),
+                  'data.activity_id': (req.params.act_id).toString()
+                }, function(err, numRemoved){
+                  if (err) {
+                    console.error('ERROR : in unsubscribe and err ' + err);
+                  } else {
+                    console.info('INFO : in unsubscribe and number agenda canceled ' + numRemoved);
+                  }
+                });
+              });
             }
-          });
-          client.users.update({
-            user_id: req.session.volunteer._id,
-            update_last_request_at: true
-          });
-          const dayString = new Date(req.params.day).toLocaleDateString();
-          console.log('after event unsubscription process');
-          res.render('v_postunsubscription.jade', {
-            session: req.session,
-            org_name: newActivity.org_name,
-            org_phone: newActivity.org_phone,
-            day: dayString,
-            volunteer: req.session.volunteer,
-            group: req.session.group
           });
         }
       })
@@ -271,9 +326,10 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
 });
 
 //Unsubscribe from an event
-router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
   const lt_id = req.params.lt_id;
   console.log('Unsubscribe process starts');
+  req.session.longterm_interaction = true;
   const lt_name = (req.session.volunteer.long_terms.find(lt => {
     return lt._id == lt_id;
   })).intitule;
@@ -289,53 +345,67 @@ router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('
     new: true
   }, function(err, new_volunteer) {
     if (err) {
-      console.error('ERR : ' + err);
-      res.redirect('/volunteer/map?error=' + 'Un problème est survenu lors de la désinscription. Si le problème persite, n\'hésite pas à nous contacter ! :)');
+      err.type = 'CRASH';
+      err.print = 'Problème de mise à jour du bénévole dans la base de données';
+      next(err);
     } else {
-      req.session.volunteer = new_volunteer;
-      req.session.save(function(err) {
+      game.refreshPreferences(new_volunteer, function(err, volunteer_refreshed) {
         if (err) {
-          console.error('ERR : ' + err);
-          res.redirect('/volunteer/map?error=' + 'Un problème est survenu lors de la désinscription. Si le problème persite, n\'hésite pas à nous contacter ! :)');
+          err.type = 'MINOR';
+          err.print = 'Problème de mise à jour des préférences du bénévole dans la base de données';
+          next(err);
         } else {
-          Organism.findOneAndUpdate({
-            'long_terms': {
-              '$elemMatch': {
-                '_id': lt_id
-              }
-            }
-          }, {
-            '$pull': {
-              'long_terms.$.applicants': new_volunteer._id
-            }
-          }, {
-            new: true
-          }, function(err, new_organism) {
+          req.session.volunteer = volunteer_refreshed;
+          req.session.save(function(err) {
             if (err) {
-              console.error('ERR : ' + err);
-              res.redirect('/volunteer/map?error=' + 'Un problème est survenu lors de la désinscription. Si le problème persite, n\'hésite pas à nous contacter ! :)');
+              err.type = 'CRASH';
+              err.print = 'Problème de mise à jour du bénévole dans la base de données';
+              next(err);
             } else {
-              console.log('after longterm unsubscription process');
-              res.render('v_postunsubscription.jade', {
-                session: req.session,
-                org_name: new_organism.org_name,
-                volunteer: req.session.volunteer,
-                group: req.session.group
-              });
-              update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, 'LT', function(err) {
+              Organism.findOneAndUpdate({
+                'long_terms': {
+                  '$elemMatch': {
+                    '_id': lt_id
+                  }
+                }
+              }, {
+                '$pull': {
+                  'long_terms.$.applicants': volunteer_refreshed._id
+                }
+              }, {
+                new: true
+              }, function(err, new_organism) {
                 if (err) {
-                  console.log(err);
+                  err.type = 'CRASH';
+                  err.print = 'Problème de mise à jour du bénévolat dans la base de données';
+                  next(err);
                 } else {
-                  console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
-                };
-              });
-              const content = {
-                recipient: new_organism.email,
-                activity_name: lt_name,
-                name: new_organism.org_name,
-                customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est désinscrit de votre engagement ' + lt_name + ' !'
-              };
-              emailer.sendUnsubscriptionEmail(content);
+                  console.log('after longterm unsubscription process');
+                  res.render('v_postunsubscription.jade', {
+                    session: req.session,
+                    org_name: new_organism.org_name,
+                    volunteer: req.session.volunteer,
+                    group: req.session.group
+                  });
+                  update_intercom.update_subscriptions(req.session.volunteer, req.session.volunteer.long_terms, 'LT', function(err) {
+                    if (err) {
+                      let error = {};
+                      error.print = err;
+                      error.type = 'MINOR';
+                      next(err);
+                    } else {
+                      console.log('Intercom subscriptions updated for volunteer : ' + req.session.volunteer.email);
+                    };
+                  });
+                  const content = {
+                    recipient: new_organism.email,
+                    activity_name: lt_name,
+                    name: new_organism.org_name,
+                    customMessage: req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' s\'est désinscrit de votre engagement ' + lt_name + ' !'
+                  };
+                  emailer.sendUnsubscriptionEmail(content);
+                }
+              })
             }
           })
         }
@@ -345,7 +415,9 @@ router.post('/volunteer/unsubscribe/longterm/:lt_id', permissions.requireGroup('
 });
 
 //Add hours_pending to an activity
-router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('volunteer'), function(req, res, next) {
+  console.info('DATAS : req.body : ' + JSON.stringify(req.body));
+  console.info('DATAS : req.params : ' + JSON.stringify(req.params));
   if (req.body.hours_pending) {
     Volunteer.findOneAndUpdate({
       "$and": [{
@@ -368,96 +440,110 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
       new: true
     }, function(err, newVolunteer) {
       if (err) {
-        console.log(err);
-        res.redirect('/volunteer/map?error=' + err);
+        err.type = 'CRASH';
+        err.print = 'Problème de mise à jour du bénévole dans la base de données';
+        next(err);
       } else {
-        req.session.volunteer = newVolunteer;
-        req.session.save(function() {
-          console.log('newVolunteer ' + newVolunteer);
-
-          function isActivity(event) {
-            console.log('isActivity : ' + (event.activity_id.toString() == req.params.act_id.toString()));
-            return event.activity_id.toString() == req.params.act_id.toString();
-          };
-
-          function isDay(event) {
-            console.log('isDay ' + (event.day == req.params.day));
-            console.log('Date.parse(event.day) ' + Date.parse(event.day));
-            console.log('Date.parse(req.params.day) ' + Date.parse(req.params.day));
-            return Date.parse(event.day) == Date.parse(req.params.day);
-          };
-          const event = newVolunteer.events.filter(isActivity).find(isDay);
-          if (event.organism_questions) {
-            var newTodo = new OrgTodo({
-              type: 'hours_pending',
-              org_id: event.org_id,
-              lastname: newVolunteer.lastname,
-              firstname: newVolunteer.firstname,
-              vol_id: newVolunteer._id,
-              activity_id: req.params.act_id,
-              day: Date.parse(req.params.day),
-              activity_intitule: event.intitule_activity,
-              hours: req.body.hours_pending,
-              student: true,
-              organism_questions: event.organism_questions
-            });
+        game.refreshPreferences(newVolunteer, function(err, volunteer_refreshed) {
+          if (err) {
+            err.type = 'MINOR';
+            err.print = 'Problème de mise à jour des préférences du bénévole dans la base de données';
+            next(err);
           } else {
-            var newTodo = new OrgTodo({
-              type: 'hours_pending',
-              org_id: event.org_id,
-              lastname: newVolunteer.lastname,
-              firstname: newVolunteer.firstname,
-              vol_id: newVolunteer._id,
-              activity_id: req.params.act_id,
-              day: Date.parse(req.params.day),
-              activity_intitule: event.intitule_activity,
-              hours: req.body.hours_pending
-            });
-          };
-          //Intercom create unsubscribe to longterm event
-          client.events.create({
-            event_name: 'vol_activity_hourspending',
-            created_at: Math.round(Date.now() / 1000),
-            user_id: req.session.volunteer._id,
-            metadata: {
-              act_id: req.params.act_id,
-              intitule_activity: event.intitule_activity
-            }
-          });
-          client.users.update({
-            user_id: req.session.volunteer._id,
-            update_last_request_at: true
-          });
-          Organism.findById(event.org_id, {
-            email: true
-          }, function(err, orga) {
-            if (err) {
-              console.log('ERR: hourspendingOrg has not been sent !');
-              console.log(err);
-            } else {
-              emailer.sendHoursPendingOrgEmail({
-                firstname: req.session.volunteer.firstname,
-                lastname: req.session.volunteer.lastname,
-                recipient: orga.email,
-                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
-              });
-            };
-          });
-          //TODO creation
-          newTodo.save(function(err, todo) {
-            if (err) {
-              console.log(err);
-              res.redirect('/volunteer/map?error=' + err);
-            } else {
-              sendEmailIfHoursNotValidated(req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname, todo._id);
-              if (event.student_questions) {
-                res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
+            req.session.volunteer = volunteer_refreshed;
+            req.session.save(function() {
+              console.log('volunteer_refreshed ' + volunteer_refreshed);
+
+              function isActivity(event) {
+                console.log('isActivity : ' + (event.activity_id.toString() == req.params.act_id.toString()));
+                return event.activity_id.toString() == req.params.act_id.toString();
+              };
+
+              function isDay(event) {
+                return Date.parse(event.day) == Date.parse(req.params.day);
+              };
+              const event = volunteer_refreshed.events.filter(isActivity).find(isDay);
+              if (event.organism_questions) {
+                var newTodo = new OrgTodo({
+                  type: 'hours_pending',
+                  org_id: event.org_id,
+                  lastname: volunteer_refreshed.lastname,
+                  firstname: volunteer_refreshed.firstname,
+                  vol_id: volunteer_refreshed._id,
+                  activity_id: req.params.act_id,
+                  day: Date.parse(req.params.day),
+                  activity_intitule: event.intitule_activity,
+                  hours: req.body.hours_pending,
+                  student: true,
+                  organism_questions: event.organism_questions
+                });
               } else {
-                res.redirect('/volunteer/map');
-              }
-            }
-          })
-        })
+                var newTodo = new OrgTodo({
+                  type: 'hours_pending',
+                  org_id: event.org_id,
+                  lastname: volunteer_refreshed.lastname,
+                  firstname: volunteer_refreshed.firstname,
+                  vol_id: volunteer_refreshed._id,
+                  activity_id: req.params.act_id,
+                  day: Date.parse(req.params.day),
+                  activity_intitule: event.intitule_activity,
+                  hours: req.body.hours_pending
+                });
+              };
+              //Intercom create unsubscribe to longterm event
+              client.events.create({
+                event_name: 'vol_activity_hourspending',
+                created_at: Math.round(Date.now() / 1000),
+                user_id: req.session.volunteer._id,
+                metadata: {
+                  act_id: req.params.act_id,
+                  intitule_activity: event.intitule_activity
+                }
+              });
+              client.users.update({
+                user_id: req.session.volunteer._id,
+                update_last_request_at: true
+              });
+              Organism.findById(event.org_id, {
+                email: true,
+                org_name: true
+              }, function(err, orga) {
+                if (err) {
+                  err.type = 'MINOR';
+                  next(err);
+                } else {
+                  emailer.sendHoursPendingOrgEmail({
+                    firstname: req.session.volunteer.firstname,
+                    lastname: req.session.volunteer.lastname,
+                    recipient: orga.email,
+                    customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+                  });
+                  emailer.sendHoursPendingVolEmail({
+                    name: orga.org_name,
+                    hours: req.body.hours_pending,
+                    recipient: req.session.volunteer.email,
+                    customMessage: ['Tes ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + ' ont bien été enregistrées.', orga.org_name + ' peut maintenant valider cette participation !']
+                  });
+                };
+              });
+              //TODO creation
+              newTodo.save(function(err, todo) {
+                if (err) {
+                  err.type = 'CRASH';
+                  err.print = 'Problème de création de la notification de l\'organisme dans la base de données';
+                  next(err);
+                } else {
+                  sendEmailIfHoursNotValidated(req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname, todo._id);
+                  if (event.student_questions) {
+                    res.redirect('/volunteer/student_questions/' + req.params.act_id + '-' + req.params.day);
+                  } else {
+                    res.redirect('/volunteer/profile');
+                  }
+                }
+              })
+            })
+          }
+        });
       }
     });
   } else if (req.body.absent) {
@@ -483,28 +569,37 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
       new: true
     }, function(err, newVolunteer) {
       if (err) {
-        console.log(err);
-        res.redirect('/volunteer/map?error=' + err);
+        err.type = 'CRASH';
+        err.print = 'Problème de mise à jour du bénévole dans la base de données';
+        next(err);
       } else {
-        req.session.volunteer = newVolunteer;
-        req.session.save(function() {
-          console.log('newVolunteer ' + newVolunteer);
-          const message = encodeURIComponent('Ton absence à l\'évènement a bien été prise en compte');
-          res.redirect('/volunteer/map?success=' + message);
-          //Intercom create unsubscribe to longterm event
-          client.events.create({
-            event_name: 'vol_activity_absence',
-            created_at: Math.round(Date.now() / 1000),
-            user_id: req.session.volunteer._id,
-            metadata: {
-              act_id: req.params.act_id
-            }
-          });
-          client.users.update({
-            user_id: req.session.volunteer._id,
-            update_last_request_at: true
-          });
-        });
+        game.refreshPreferences(newVolunteer, function(err, volunteer_refreshed) {
+          if (err) {
+            err.type = 'MINOR';
+            err.print = 'Problème de mise à jour des préférences du bénévole dans la base de données';
+            next(err);
+          } else {
+            req.session.volunteer = volunteer_refreshed;
+            req.session.save(function() {
+              console.log('volunteer_refreshed ' + volunteer_refreshed);
+              const message = encodeURIComponent('Ton absence à l\'évènement a bien été prise en compte');
+              res.redirect('/volunteer/map?success=' + message);
+              //Intercom create unsubscribe to longterm event
+              client.events.create({
+                event_name: 'vol_activity_absence',
+                created_at: Math.round(Date.now() / 1000),
+                user_id: req.session.volunteer._id,
+                metadata: {
+                  act_id: req.params.act_id
+                }
+              });
+              client.users.update({
+                user_id: req.session.volunteer._id,
+                update_last_request_at: true
+              });
+            });
+          };
+        })
       }
     });
   } else {
@@ -517,9 +612,10 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
 
 
 //Add hours_pending to an activity
-router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
   console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
   console.log('JSON.stringify(req.params) : ' + JSON.stringify(req.params));
+  req.session.longterm_interaction = true;
   if (req.body.hours_pending) {
 
     function isLongTerm(longterm) {
@@ -550,87 +646,100 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
     }, {
       "$set": {
         "long_terms.$.hours_pending": new_hours_pending,
-        "long_terms.$.status": 'pending'
+        "long_terms.$.status": 'pending',
+        "long_terms.$.last_interaction": new Date()
       }
     }, {
       returnNewDocument: true,
       new: true
     }, function(err, newVolunteer) {
       if (err) {
-        console.log(err);
-        res.redirect('/volunteer/map?error=' + err);
+        err.type = 'CRASH';
+        err.print = 'Problème de mise à jour du bénévole dans la base de données';
+        next(err);
       } else {
-        req.session.volunteer = newVolunteer;
-        req.session.save(function() {
-          const new_lt = newVolunteer.long_terms.find(isLongTerm);
-          console.log('(typeof new_lt.hours_done == undefined) ' + (typeof new_lt.hours_done == 'undefined'));
-          console.log('(new_lt.organism_answers.length<1) ' + (new_lt.organism_answers.length < 1));
-          console.log('(newVolunteer.student) ' + (newVolunteer.student));
-          console.log('!(lt.hours_pending>0) ' + !(lt.hours_pending > 0));
-          console.log(new_lt);
-          if ((new_lt.organism_questions.length > 0) && (typeof new_lt.hours_done == 'undefined') && (new_lt.organism_answers.length < 1) && !(lt.hours_pending > 0)) {
-            var newTodo = new OrgTodo({
-              type: 'LThours_pending',
-              org_id: new_lt.org_id,
-              lastname: newVolunteer.lastname,
-              firstname: newVolunteer.firstname,
-              vol_id: newVolunteer._id,
-              lt_id: req.params.lt_id,
-              lt_intitule: new_lt.intitule,
-              hours: req.body.hours_pending,
-              student: true,
-              organism_questions: new_lt.organism_questions
-            });
+        game.refreshPreferences(newVolunteer, function(err, volunteer_refreshed) {
+          if (err) {
+            err.type = 'MINOR';
+            err.print = 'Problème de mise à jour des préférences du bénévole dans la base de données';
+            next(err);
           } else {
-            var newTodo = new OrgTodo({
-              type: 'LThours_pending',
-              org_id: new_lt.org_id,
-              lastname: newVolunteer.lastname,
-              firstname: newVolunteer.firstname,
-              vol_id: newVolunteer._id,
-              lt_id: req.params.lt_id,
-              lt_intitule: new_lt.intitule,
-              hours: req.body.hours_pending
-            });
-          };
-
-          //Intercom create unsubscribe to longterm event
-          client.events.create({
-            event_name: 'vol_longterm_hourspending',
-            created_at: Math.round(Date.now() / 1000),
-            user_id: req.session.volunteer._id,
-            metadata: {
-              lt_id: req.params.lt_id,
-              intitule_longterm: new_lt.intitule
-            }
-          });
-          Organism.findById(new_lt.org_id, {
-            email: true
-          }, function(err, orga) {
-            if (err) {
-              console.log('ERR: hourspendingOrg has not been sent !');
-              console.log(err);
-            } else {
-              emailer.sendHoursPendingOrgEmail({
-                firstname: req.session.volunteer.firstname,
-                lastname: req.session.volunteer.lastname,
-                recipient: orga.email,
-                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'engagement ' + new_lt.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
-              });
-            }
-          });
-          newTodo.save(function(err, todo) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log('INFO : Todo created : ' + todo);
-              if (todo.organism_questions) {
-                res.redirect('/volunteer/student_questions/' + req.params.lt_id);
+            req.session.volunteer = volunteer_refreshed;
+            req.session.save(function() {
+              const new_lt = volunteer_refreshed.long_terms.find(isLongTerm);
+              console.log('(typeof new_lt.hours_done == undefined) ' + (typeof new_lt.hours_done == 'undefined'));
+              console.log('(new_lt.organism_answers.length<1) ' + (new_lt.organism_answers.length < 1));
+              console.log('(volunteer_refreshed.student) ' + (volunteer_refreshed.student));
+              console.log('!(lt.hours_pending>0) ' + !(lt.hours_pending > 0));
+              console.log(new_lt);
+              if ((new_lt.organism_questions.length > 0) && (typeof new_lt.hours_done == 'undefined') && (new_lt.organism_answers.length < 1) && !(lt.hours_pending > 0)) {
+                var newTodo = new OrgTodo({
+                  type: 'LThours_pending',
+                  org_id: new_lt.org_id,
+                  lastname: volunteer_refreshed.lastname,
+                  firstname: volunteer_refreshed.firstname,
+                  vol_id: volunteer_refreshed._id,
+                  lt_id: req.params.lt_id,
+                  lt_intitule: new_lt.intitule,
+                  hours: req.body.hours_pending,
+                  student: true,
+                  organism_questions: new_lt.organism_questions
+                });
               } else {
-                res.redirect('/volunteer/map');
-              }
-            }
-          })
+                var newTodo = new OrgTodo({
+                  type: 'LThours_pending',
+                  org_id: new_lt.org_id,
+                  lastname: volunteer_refreshed.lastname,
+                  firstname: volunteer_refreshed.firstname,
+                  vol_id: volunteer_refreshed._id,
+                  lt_id: req.params.lt_id,
+                  lt_intitule: new_lt.intitule,
+                  hours: req.body.hours_pending
+                });
+              };
+
+              //Intercom create unsubscribe to longterm event
+              client.events.create({
+                event_name: 'vol_longterm_hourspending',
+                created_at: Math.round(Date.now() / 1000),
+                user_id: req.session.volunteer._id,
+                metadata: {
+                  lt_id: req.params.lt_id,
+                  intitule_longterm: new_lt.intitule
+                }
+              });
+              Organism.findById(new_lt.org_id, {
+                email: true
+              }, function(err, orga) {
+                if (err) {
+                  err.type = 'MINOR';
+                  err.print = 'Problème de mise à jour du bénévole dans la base de données';
+                  next(err);
+                } else {
+                  emailer.sendHoursPendingOrgEmail({
+                    firstname: req.session.volunteer.firstname,
+                    lastname: req.session.volunteer.lastname,
+                    recipient: orga.email,
+                    customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'engagement ' + new_lt.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+                  });
+                }
+              });
+              newTodo.save(function(err, todo) {
+                if (err) {
+                  err.type = 'CRASH';
+                  err.print = 'Problème de création de la notification de l\'organisme dans la base de données';
+                  next(err);
+                } else {
+                  console.log('INFO : Todo created : ' + todo);
+                  if (todo.organism_questions) {
+                    res.redirect('/volunteer/student_questions/' + req.params.lt_id);
+                  } else {
+                    res.redirect('/volunteer/profile');
+                  }
+                }
+              })
+            })
+          }
         })
       }
     });
@@ -642,7 +751,48 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
 });
 
 
-router.get('/volunteer/event/:event_id', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/notyet/:lt_id', permissions.requireGroup('volunteer'), function(req, res, next) {
+  console.log('JSON.stringify(req.body) : ' + JSON.stringify(req.body));
+  console.log('JSON.stringify(req.params) : ' + JSON.stringify(req.params));
+  let date_to_report_as_last_interaction = new Date();
+  if (req.body.finished) {
+    date_to_report_as_last_interaction = moment(date_to_report_as_last_interaction).add(100, 'y');
+  }
+  console.log('Date reported as last_interaction : ' + moment(date_to_report_as_last_interaction).format());
+  req.session.longterm_interaction = true;
+  Volunteer.findOneAndUpdate({
+    "$and": [{
+      "_id": req.session.volunteer._id
+    }, {
+      "long_terms": {
+        '$elemMatch': {
+          '_id': req.params.lt_id
+        }
+      }
+    }]
+  }, {
+    "$set": {
+      "long_terms.$.last_interaction": date_to_report_as_last_interaction
+    }
+  }, {
+    returnNewDocument: true,
+    new: true
+  }, function(err, newVolunteer) {
+    if (err) {
+      err.type = 'CRASH';
+      err.print = 'Problème de mise à jour du bénévole dans la base de données';
+      next(err);
+    } else {
+      req.session.volunteer = newVolunteer;
+      req.session.save(function() {
+        res.sendStatus(200).end();
+      })
+    }
+  });
+});
+
+
+router.get('/volunteer/event/:event_id', permissions.requireGroup('volunteer'), function(req, res, next) {
 
   //Pour trouver l'event dasn le volunteer
   function isEvent(event) {
@@ -655,8 +805,9 @@ router.get('/volunteer/event/:event_id', permissions.requireGroup('volunteer'), 
     'events.activities': activity_id
   }, function(err, organism) {
     if (err) {
-      console.log(err);
-      res.redirect('/volunteer/map?error=' + err);
+      err.type = 'CRASH';
+      err.print = 'Problème de récupération des informations nécessaires';
+      next(err);
     } else {
       const org = organism;
       const event_organism = organism.events.find(ev => {
@@ -669,8 +820,9 @@ router.get('/volunteer/event/:event_id', permissions.requireGroup('volunteer'), 
         }
       }, function(err, activities) {
         if (err) {
-          console.log(err);
-          res.redirect('/volunteer/map?error=' + err);
+          err.type = 'CRASH';
+          err.print = 'Problème de récupération des informations nécessaires';
+          next(err);
         } else {
           var isActivity = function(activity) {
             return activity._id.toString() == activity_id.toString();
@@ -743,7 +895,8 @@ router.get('/volunteer/extra_simplyk_hours', permissions.requireGroup('volunteer
   }
 });
 
-router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), function(req, res) {
+router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), function(req, res, next) {
+  console.info('DATAS : req.body : ' + JSON.stringify(req.body));
   if (req.session.volunteer.student) {
 
     function isAKeyAnswer(key) {
@@ -762,18 +915,12 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
     function addOrganismIfDoesntExist(questions) {
       //Ajouter organism s'il n'existe pas
       Organism.findOne({
-        '$or': [{
-          'email': req.body.org_email.toLowerCase()
-        }, {
-          'org_name': req.body.org_name
-        }, {
-          'phone': req.body.org_phone
-        }]
+        'email': req.body.org_email.toLowerCase()
       }, function(err, theOrg) {
         if (err) {
-          const err = 'Une erreur est survenu lors de la recherche de l\'organisme mentionné dans le formulaire';
-          console.error(err);
-          res.redirect('/volunteer/map?error=' + err);
+          err.type = 'CRASH';
+          err.print = 'Problème lors de la recherche de l\'organisme rensigné';
+          next(err);
         } else {
           //If the organism already has an account, add it a orgTodo and send it an email
 
@@ -814,6 +961,13 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 lastname: req.session.volunteer.lastname,
                 recipient: req.body.org_email.toLowerCase(),
                 customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'En tant qu\'élève de ' + req.session.volunteer.admin.school_name + ', il a besoin que vous lui validiez ces heures s\'il les a réellement faites. Sinon, il est utile aussi que vous signaliez qu\'il y a une erreur ! :)', 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone, 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+              });
+
+              emailer.sendHoursPendingVolEmail({
+                name: theOrg.org_name,
+                hours: req.body.hours_pending,
+                recipient: req.session.volunteer.email,
+                customMessage: ['Tes ' + req.body.hours_pending + ' h  de participation à ' + req.body.intitule + ' ont bien été prises en compte.', theOrg.org_name + ' peut maintenant valider cette participation !', 'Si tes heures ne sont pas validées bientôt par l\'organisme, n\'hésite pas à le relancer sinon ce bénévolat ne sera jamais pris en compte :)']
               });
 
               console.info('INFO: student add extra hours to an organism which ALREADY exists : ' + req.body.org_name);
@@ -866,6 +1020,13 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                     firstname: req.session.volunteer.firstname,
                     lastname: req.session.volunteer.lastname
                   });
+
+                  emailer.sendHoursPendingVolEmail({
+                    name: org_saved.org_name,
+                    hours: req.body.hours_pending,
+                    recipient: req.session.volunteer.email,
+                    customMessage: ['Tes ' + req.body.hours_pending + ' h  de participation à ' + req.body.intitule + ' ont bien été prises en compte.', 'Il semblerait, avec les informations que tu as fournis, que ' + org_saved.org_name + ' n\'était pas encore inscrit sur Simplyk. On lui a tout de même envoyé un courriel pour qu\'il puisse valider tes heures.', 'Si tes heures ne sont pas validées bientôt par l\'organisme, n\'hésite pas à le relancer pour que ton bénévolat soit pris en compte sur ton profil :)']
+                  });
                   console.info('INFO: student add extra hours to an organism which has NOT subscribed to the platform : ' + org_saved.org_name);
                   resolve();
                 }
@@ -879,12 +1040,14 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
 
               newTodo.save(function(err, newTodo_saved) {
                 if (err) {
-                  console.error(err);
+                  err.type = 'MINOR';
+                  next(err);
                 };
               });
               newActivity.save(function(err, activity_saved) {
                 if (err) {
-                  console.error(err);
+                  err.type = 'MINOR';
+                  next(err);
                 };
                 let extra_to_add = {
                   activity_id: activity_saved._id,
@@ -913,9 +1076,12 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                   new: true
                 }, function(err, newVolunteer) {
                   if (err) {
-                    console.error(err);
+                    err.type = 'CRASH';
+                    err.print = 'Problème lors de la mise à jour des informations du bénévole';
+                    next(err);
                   } else {
                     req.session.volunteer = newVolunteer;
+                    sendEmailIfHoursNotValidated(req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname, newTodo._id);
                     req.session.save(function() {
                       res.render('v_postsubscription.jade', {
                         session: req.session,
@@ -943,9 +1109,9 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
 
             })
             .catch(err => {
-              const error = 'Une erreur est survenu lors de la recherche de l\'organisme mentionné dans le formulaire';
-              console.error(err);
-              res.redirect('/volunteer/map?error=' + error);
+              err.type = 'CRASH';
+              err.print = 'Problème lors de la mise à jour des informations dans la base de données';
+              next(err);
             });
         }
       });
@@ -977,6 +1143,8 @@ function sendEmailIfHoursNotValidated(vol_name, todo_id) {
   console.info('start_date : ' + moment(start_date).toISOString());
   console.info('fourDaysAfter : ' + moment(fourDaysAfter).toString());
   console.info('fourDaysAfter : ' + moment(fourDaysAfter).toISOString());
+
+
 
   agenda.schedule(moment(fourDaysAfter).toDate(), 'sendHoursPendingOrgReminderEmail', {
     vol_name,

@@ -5,42 +5,67 @@ block vars
 block head
   title Bottin des organismes
   meta(name='description', content='Liste des organismes en recherche de bénévoles')
+  style.
+    .description{white-space: pre-wrap;}
+    .row{margin-top: 25px;}
 block content
       .container-fluid
         .row.fill
           .col-md-10.col-md-offset-1.no-side-padding
             h1.text-center(style='margin-top: 3%') Liste des organismes
             h4.text-center(style='margin-bottom: 3%') Tous les organismes inscrit et postant des opportunités sur Simplyk
+        .row.fill
+          .col-md-4.col-md-offset-4.col-xs-8.col-xs-offset-2.no-side-padding
+            .input-group
+                input.form-control(type="search" id="jetsSearch", placeholder="Ex: Culture, Équiterre, ...")
+                span.input-group-addon.btn.btn-default
+                  i.fa.fa-search
+        .row.fill
+          .col-md-10.col-md-offset-1.no-side-padding
             ul.list-group.margintop
               if error
                 p.alert.alert-danger #{error}
-              if organisms
-                each val, index in organisms
-                  if ((index == 0) || (index %3==0))
-                    .row
-                      each org, org_i in organisms
-                        if ((org_i==index)||(org_i==index+1)||(org_i==index+2))
-                          .col-md-4
-                            .panel.panel-default.panel-organism
-                              .panel-heading
-                                h3.text-center= org.org_name
-                              .panel-body.text-center
-                                if (org.cause==='Sport et Culture')
-                                  i.fa.fa-institution.fa-lg.fa-fw.cult(style= "color:#{org.color}") 
-                                else if (org.cause === 'Nature')
-                                  i.fa.fa-envira.fa-lg.fa-fw.leaf(style= "color:#{org.color}") 
-                                else if (org.cause === 'Solidarité')
-                                  i.fa.fa-heart.fa-lg.fa-fw.soli(style= "color:#{org.color}") 
-                                else if (org.cause === 'Enfance')
-                                  i.fa.fa-child.fa-lg.fa-fw.child(style= "color:#{org.color}") 
-                                else
-                                  i.icon.icon-puzzle-piece(style= "color:#{org.color}") 
-                                .caption
-                                  h4= org.cause
-                                  p(style = 'white-space: pre-wrap')= org.description
+              .row(id='jetsContent')
+                if organisms
+                  each org, org_i in organisms
+                    .col-md-4.col-xs-10.col-xs-offset-1.col-md-offset-0
+                      .panel.panel-default.panel-organism(org_id=org._id)
+                        .panel-heading
+                          h3.text-center= org.org_name
+                        .panel-body.text-center
+                          .caption
+                            if (org.cause==='Sport et Culture')
+                              i.fa.fa-institution.fa-lg.fa-fw.cult(style= "color:#{org.color}") 
+                            else if (org.cause === 'Nature')
+                              i.fa.fa-envira.fa-lg.fa-fw.leaf(style= "color:#{org.color}") 
+                            else if (org.cause === 'Solidarité')
+                              i.fa.fa-heart.fa-lg.fa-fw.soli(style= "color:#{org.color}") 
+                            else if (org.cause === 'Enfance')
+                              i.fa.fa-child.fa-lg.fa-fw.child(style= "color:#{org.color}") 
+                            else
+                              i.icon.icon-puzzle-piece(style= "color:#{org.color}") 
+                            h4= org.cause
+                          p.description= org.description
 
 block footscript
+  script(src="/bower_components/jets/jets.min.js")
   script.
     jQuery( document ).ready(function( $ ) {
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('g_visit_listorganisms');
+      }
       $('[data-toggle="tooltip"]').tooltip();
+      let jets = new Jets({
+        searchTag: '#jetsSearch',
+        contentTag: '#jetsContent',
+        searchSelector: '*'
+      });
+      $('.panel-organism').each(function(){
+        $(this).outerHeight(300).css('cursor', 'pointer').click(function(){
+          window.location.href = '/all/organism/'+$(this).attr('org_id');
+        }).hover(function(e){
+          $(this).css('border-color', e.type === "mouseenter"?"#aaa":"#ddd");
+        });
+        $(this).find('.description').css('overflow-y', 'auto').css('overflow-x', 'hidden').outerHeight(300 - $(this).find('.panel-heading').outerHeight() - 80);
+      })
     });

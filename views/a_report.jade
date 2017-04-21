@@ -6,6 +6,8 @@ block vars
 block head
   title Rapport de l'élèves
   meta(name='description', content='Lisez le rapport de bénévolat de l\'élèves')
+  style.
+    .refuse__modal {background-color: black; color: white}
 block content
   #map-section.container-fluid
     .row
@@ -22,7 +24,7 @@ block content
             ul.list-group
               li.list-group-item Date de naissance: #{date.printDate(volunteer.birthdate)}
                 small
-              li.list-group-item Adresse mail: #{volunteer.email}
+              li.list-group-item Adresse courriel: #{volunteer.email}
                 small
         p.alert.alert-success.hidden#manual-success
         div.btn.btn-warning(data-toggle='modal' data-target='#manualHoursModal', style='margin-bottom: 20px;') Ajouter des heures manuellement
@@ -64,7 +66,7 @@ block content
           tr
             td.text-center(style="vertical-align:middle")  <strong>#{volunteer.events.filter(function(ev){if(ev.hours_done){return true;}else{return false;}}).map(el => el.hours_done).reduce(hours_count, 0)}</strong>  heures confirmées
           tr
-            th(rowspan='2' style="vertical-align:middle").text-center Extras ajoutés par l'élève ou l'administrateur
+            th(rowspan='2' style="vertical-align:middle").text-center Bénévolats ajoutés par l'élève ou l'administrateur
             td(rowspan='2' style="vertical-align:middle").text-center <strong> #{volunteer.extras.length + volunteer.manuals.length} </strong>
             td.text-center <strong>#{volunteer.extras.filter(function(ev){if(ev.hours_pending){return true;}else{return false;}}).map(el => el.hours_pending).reduce(hours_count, 0)}</strong> heures à confirmer
           tr
@@ -102,10 +104,10 @@ block content
                             span.badge(style='background-color: #113A20')= 'Validé'
                           else if (event.status == 'pending')
                             span.badge(style='background-color: #FF800E')= 'Attente de confirmation par l\'organisme'
-                          else if event.status == 'subscribed'
+                          else if (event.status == 'subscribed')
                             span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
                           else if event.status == 'past'
-                            span.badge(style='background-color: #FF800E')= 'Passé, à confirmé par l\'élève'
+                            span.badge(style='background-color: #FF800E')= 'Passé, à confirmer par l\'élève'
                           else if event.status == 'corrected'
                             span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
                           else if event.status == 'denied'
@@ -138,7 +140,7 @@ block content
                             p= event._id
                           h6= event.description
                     td
-                      if event.student_answers.length > 0
+                      if event.student_questions && event.student_questions.length > 0 && (event.status != 'past' && event.status != 'subscribed' && event.status != 'absent')
                         div.panel.panel-default
                           div.panel-heading
                             h4 Retour de l’élève sur lui-même 
@@ -148,8 +150,11 @@ block content
                                   div.panel-heading
                                     h6= question
                                   div.panel-body
-                                    h6= event.student_answers[q_I]
-                      if event.organism_answers.length > 0
+                                    if event.student_answers[q_I]
+                                      h6= event.student_answers[q_I]
+                                    else
+                                      h6.text-center Non répondu
+                      if event.organism_questions && event.organism_questions.length > 0 && (event.status != 'past' && event.status != 'subscribed' && event.status != 'absent' && event.status != 'pending')
                         div.panel.panel-default
                           div.panel-heading
                             h4 Retour de l'organisme sur l'élève
@@ -159,63 +164,103 @@ block content
                                   div.panel-heading
                                     h6= question
                                   div.panel-body
-                                    h6= event.organism_answers[q_I]
+                                    if event.organism_answers[q_I]
+                                      h6= event.organism_answers[q_I]
+                                    else
+                                      h6 Non répondu
                     td(align='center')
                       if ((event.status == 'confirmed') || (event.status == 'corrected') || (event.status == 'validated') || (event.status == 'denied'))
                         .btn-group(role='group')
-                          div.btn.btn-default.validate(vol=volunteer._id, id=event._id, type='events')
+                          div.btn.btn-default.validate(vol=volunteer._id, id=event._id, type='events' data-toggle='tooltip' data-placement='top' title='Valider le bénévolat')
                             i.fa.fa-check-square-o
-                          div.btn.btn-danger.deny(vol=volunteer._id, id=event._id, type='events')
+                          div.btn.btn-danger.deny(vol=volunteer._id, id=event._id, type='events' data-toggle='tooltip' data-placement='top' title='Demander à l\'élève de corriger ses retours sur le bénévolat')
+                            i.fa.fa-pencil-square-o
+                          div.btn.refuse__modal(vol=volunteer._id, id=event._id, type='events' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
                             i.fa.fa-times-circle-o
+                          .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+event._id)
+                            div.modal-dialog(role='document')
+                              .modal-content
+                                .modal-header
+                                  button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                    span(aria-hidden='true')
+                                    h4.modal-title Confirmes-tu ?
+                                .modal-body
+                                  p Ce refus sera définitif. Confirmes-tu ?
+                                .modal-footer
+                                  a.btn.btn-default(data-dismiss='modal') Annuler
+                                  input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=event._id, type='events')
+                      else if (event.status == 'pending')
+                        div.btn.refuse__modal(vol=volunteer._id, id=event._id, type='events' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
+                          i.fa.fa-times-circle-o
+                        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+event._id)
+                          div.modal-dialog(role='document')
+                            .modal-content
+                              .modal-header
+                                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                  span(aria-hidden='true')
+                                  h4.modal-title Confirmes-tu ?
+                              .modal-body
+                                p Ce refus sera définitif. Confirmes-tu ?
+                              .modal-footer
+                                a.btn.btn-default(data-dismiss='modal') Annuler
+                                input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=event._id, type='events')
     .row
       .col-md-10.col-md-offset-1(style='border: 3px solid #359B9C; margin-bottom:10px;')
         .page-header
           h3 ENGAGEMENTS LONG TERME
         .no-side-padding
           ul.list-group.list-opportunity
-            unless (volunteer.long_terms)
+            unless (long_terms)
               p.alert.alert-danger Aucun engagement
-            if (volunteer.long_terms)
+            if (long_terms)
               table.table.table-striped
                 tr
                   th(style="width:30%").text-center Informations
                   th(style="width:50%").text-center Retours
                   th(style="width:20%").text-center Actions
-                each lt, lt_i in volunteer.long_terms
+                each lt, lt_i in long_terms
                   tr.status(status=lt.status)
                     td
-                      p
-                      if lt.status == 'confirmed'
-                        span.badge(style='background-color: #113A20')= 'Confirmé'
-                      else if (lt.status == 'validated')
-                        span.badge(style='background-color: #113A20')= 'Validé'
-                      else if (lt.status == 'pending')
-                        span.badge(style='background-color: #FF800E')= 'Attente de confirmation par l\'organisme'
-                      else if lt.status == 'subscribed'
-                        span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
-                      else if lt.status == 'past'
-                        span.badge(style='background-color: #FF800E')= 'Passé, à confirmé par l\'élève'
-                      else if lt.status == 'corrected'
-                        span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
-                      else if lt.status == 'denied'
-                        span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
-                      else
-                        span.badge(style='background-color: #E33831')= 'Indéfini'
-                      if (lt.hours_pending > 0 || lt.hours_done > 0)
-                        if (lt.hours_pending > 0)
-                          span.badge(style='background-color: #FF800E')= lt.hours_pending + ' heures à confirmer'
-                        if (lt.hours_done > 0)
-                          span.badge(style='background-color: #113A20')= lt.hours_done + ' heures réalisées'
-                      else 
-                        span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
-                      h4= lt.intitule
-                      h6 pour <strong> #{lt.org_name} </strong>
-                      if (lt.hours_pending > 0 || lt.hours_done > 0)
-                        h6= lt.description
+                      .panel.panel-default
+                        .panel-heading
+                          p
+                          if lt.status == 'confirmed'
+                            span.badge(style='background-color: #113A20')= 'Confirmé par l\'organisme'
+                          else if (lt.status == 'validated')
+                            span.badge(style='background-color: #113A20')= 'Validé'
+                          else if (lt.status == 'pending')
+                            span.badge(style='background-color: #FF800E')= 'Attente de confirmation par l\'organisme'
+                          else if lt.status == 'subscribed'
+                            span.badge(style='background-color: #86C1CF')= 'Inscrit'
+                          else if lt.status == 'corrected'
+                            span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
+                          else if lt.status == 'denied'
+                            span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
+                          if (lt.hours_pending > 0 || lt.hours_done > 0)
+                            if (lt.hours_pending > 0)
+                              span.badge(style='background-color: #FF800E')= lt.hours_pending + ' heures à confirmer'
+                            if (lt.hours_done > 0)
+                              span.badge(style='background-color: #113A20')= lt.hours_done + ' heures réalisées'
+                          else 
+                            span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
+                          h4= lt.intitule
+                          h6 pour <strong> #{lt.org_name} </strong>
+                        .panel-body
+                          h6= lt.description
+                          div
+                            i.fa.fa-map
+                            h6.inline= lt.address
+                          div
+                            i.fa.fa-at
+                            h6.inline= lt.org_email
+                          div
+                            i.fa.fa-phone
+                            h6.inline= lt.org_phone
+                          div
+                            i.fa.fa-user
+                            h6.inline= lt.contact
                     td
-                      unless (lt.hours_pending > 0 || lt.hours_done > 0)
-                        h6= lt.description
-                      if lt.student_answers.length > 0
+                      if lt.student_questions && lt.student_questions.length > 0 && (lt.hours_pending > 0 || lt.hours_done > 0)
                         div.panel.panel-default
                           div.panel-heading
                             h4 Retour de l’élève sur lui-même 
@@ -225,8 +270,11 @@ block content
                                   div.panel-heading
                                     h6= question
                                   div.panel-body
-                                    h6= lt.student_answers[q_I]
-                      if lt.organism_answers.length > 0
+                                    if lt.student_answers[q_I]
+                                      h6= lt.student_answers[q_I]
+                                    else
+                                      h6.text-center Non répondu
+                      if lt.organism_questions && lt.organism_questions.length > 0 && (lt.hours_done > 0)
                         div.panel.panel-default
                           div.panel-heading
                             h4 Retour de l'organisme sur l'élève
@@ -236,21 +284,53 @@ block content
                                   div.panel-heading
                                     h6= question
                                   div.panel-body
-                                    h6= lt.organism_answers[q_I]
+                                    if lt.organism_answers[q_I]
+                                      h6= lt.organism_answers[q_I]
+                                    else
+                                      h6.text-center Non répondu
                     td(align='center')
                       if ((lt.status == 'confirmed') || (lt.status == 'corrected') || (lt.status == 'validated') || (lt.status == 'denied'))
                         .btn-group(role='group')
-                          div.btn.btn-default.validate(vol=volunteer._id, id=lt._id, type='long_terms')
+                          div.btn.btn-default.validate(vol=volunteer._id, id=lt._id, type='long_terms' data-toggle='tooltip' data-placement='top' title='Valider le bénévolat')
                             i.fa.fa-check-square-o
-                          div.btn.btn-danger.deny(vol=volunteer._id, id=lt._id, type='long_terms')
+                          div.btn.btn-danger.deny(vol=volunteer._id, id=lt._id, type='long_terms' data-toggle='tooltip' data-placement='top' title='Demander à l\'élève de corriger ses retours sur le bénévolat')
+                            i.fa.fa-pencil-square-o
+                          div.btn.refuse__modal(vol=volunteer._id, id=lt._id, type='long_terms' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
                             i.fa.fa-times-circle-o
+                          .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+lt._id)
+                            div.modal-dialog(role='document')
+                              .modal-content
+                                .modal-header
+                                  button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                    span(aria-hidden='true')
+                                    h4.modal-title Confirmes-tu ?
+                                .modal-body
+                                  p Ce refus sera définitif. Confirmes-tu ?
+                                .modal-footer
+                                  a.btn.btn-default(data-dismiss='modal') Annuler
+                                  input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=lt._id, type='long_terms')
+                      else if (lt.status == 'pending')
+                        div.btn.refuse__modal(vol=volunteer._id, id=lt._id, type='long_terms' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
+                          i.fa.fa-times-circle-o
+                        .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+lt._id)
+                          div.modal-dialog(role='document')
+                            .modal-content
+                              .modal-header
+                                button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                  span(aria-hidden='true')
+                                  h4.modal-title Confirmes-tu ?
+                              .modal-body
+                                p Ce refus sera définitif. Confirmes-tu ?
+                              .modal-footer
+                                a.btn.btn-default(data-dismiss='modal') Annuler
+                                input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=lt._id, type='long_terms')
     if (volunteer.extras || volunteer.manuals)
       .row
         .col-md-10.col-md-offset-1(style='border: 3px solid #E56252; margin-bottom:10px;')
           if (volunteer.extras)
             if (volunteer.extras.length > 0)
               .page-header
-                h3 EXTRAS AJOUTÉS PAR L'ÉLÈVE
+                h3 BÉNÉVOLATS AJOUTÉS PAR L'ÉLÈVE
               .no-side-padding
                 ul.list-group.list-opportunity
                   if (volunteer.extras)
@@ -262,34 +342,42 @@ block content
                       each ext, ext_i in volunteer.extras
                         tr.status(status=ext.status)
                           td
-                            p
-                            if ext.status == 'confirmed'
-                              span.badge(style='background-color: #113A20')= 'Confirmé'
-                            else if (ext.status == 'validated')
-                              span.badge(style='background-color: #113A20')= 'Validé'
-                            else if (ext.status == 'pending')
-                              span.badge(style='background-color: #FF800E')= 'Attente de confirmation par l\'organisme'
-                            else if ext.status == 'subscribed'
-                              span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
-                            else if ext.status == 'past'
-                              span.badge(style='background-color: #FF800E')= 'Passé, à confirmé par l\'élève'
-                            else if ext.status == 'corrected'
-                              span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
-                            else if ext.status == 'denied'
-                              span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
-                            else
-                              span.badge(style='background-color: #E33831')= 'Indéfini'
-                            if (ext.hours_pending > 0 || ext.hours_done > 0)
-                              if (ext.hours_pending > 0)
-                                span.badge(style='background-color: #FF800E')= ext.hours_pending + ' heures à confirmer'
-                              if (ext.hours_done > 0)
-                                span.badge(style='background-color: #113A20')= ext.hours_done + ' heures réalisées'
-                            else 
-                              span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
-                            h4= ext.intitule
-                            h6 pour <strong> #{ext.org_name} </strong>
-                            if (ext.hours_pending > 0 || ext.hours_done > 0)
-                              h6= ext.description
+                            .panel.panel-default
+                              .panel-heading
+                                p
+                                if ext.status == 'confirmed'
+                                  span.badge(style='background-color: #113A20')= 'Confirmé'
+                                else if (ext.status == 'validated')
+                                  span.badge(style='background-color: #113A20')= 'Validé'
+                                else if (ext.status == 'pending')
+                                  span.badge(style='background-color: #FF800E')= 'Attente de confirmation par l\'organisme'
+                                else if ext.status == 'subscribed'
+                                  span.badge(style='background-color: #86C1CF')= 'Inscrit, à venir'
+                                else if ext.status == 'past'
+                                  span.badge(style='background-color: #FF800E')= 'Passé, à confirmé par l\'élève'
+                                else if ext.status == 'corrected'
+                                  span.badge(style='background-color: #FF800E')= 'Corrigé par l\'élève'
+                                else if ext.status == 'denied'
+                                  span.badge(style='background-color: #E33831')= 'À corriger par l\'élève'
+                                else
+                                  span.badge(style='background-color: #E33831')= 'Indéfini'
+                                if (ext.hours_pending > 0 || ext.hours_done > 0)
+                                  if (ext.hours_pending > 0)
+                                    span.badge(style='background-color: #FF800E')= ext.hours_pending + ' heures à confirmer'
+                                  if (ext.hours_done > 0)
+                                    span.badge(style='background-color: #113A20')= ext.hours_done + ' heures réalisées'
+                                else 
+                                  span.badge(style='background-color: #86C1CF')= 'Aucune heure enregistrée'
+                                h4= ext.intitule
+                                h6 pour <strong> #{ext.org_name} </strong>
+                              .panel-body
+                                h6= ext.description
+                                div
+                                  i.fa.fa-at
+                                  h6.inline= ext.email
+                                div
+                                  i.fa.fa-phone
+                                  h6.inline= ext.org_phone
                           td
                             unless (ext.hours_pending > 0 || ext.hours_done > 0)
                               h6= ext.description
@@ -318,10 +406,39 @@ block content
                           td(align='center')
                             if ((ext.status == 'confirmed') || (ext.status == 'corrected') || (ext.status == 'validated') || (ext.status == 'denied'))
                               .btn-group(role='group')
-                                div.btn.btn-default.validate(vol=volunteer._id, id=ext._id, type='extras')
+                                div.btn.btn-default.validate(vol=volunteer._id, id=ext._id, type='extras' data-toggle='tooltip' data-placement='top' title='Valider le bénévolat')
                                   i.fa.fa-check-square-o
-                                div.btn.btn-danger.deny(vol=volunteer._id, id=ext._id, type='extras')
+                                div.btn.btn-danger.deny(vol=volunteer._id, id=ext._id, type='extras' data-toggle='tooltip' data-placement='top' title='Demander à l\'élève de corriger ses retours sur le bénévolat')
+                                  i.fa.fa-pencil-square-o
+                                div.btn.refuse__modal(vol=volunteer._id, id=ext._id, type='extras' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
                                   i.fa.fa-times-circle-o
+                                .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+ext._id)
+                                  div.modal-dialog(role='document')
+                                    .modal-content
+                                      .modal-header
+                                        button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                          span(aria-hidden='true')
+                                          h4.modal-title Confirmes-tu ?
+                                      .modal-body
+                                        p Ce refus sera définitif. Confirmes-tu ?
+                                      .modal-footer
+                                        a.btn.btn-default(data-dismiss='modal') Annuler
+                                        input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=ext._id, type='extras')
+                            else if (ext.status == 'pending')
+                              div.btn.refuse__modal(vol=volunteer._id, id=ext._id, type='extras' data-toggle='tooltip' data-placement='top' title='Refuser définitivement le bénévolat de l\'élève')
+                                i.fa.fa-times-circle-o
+                              .modal.fade(tabindex='-1', role='dialog' aria-labelledby="refuseModalLabel", id='refuseModal'+ext._id)
+                                div.modal-dialog(role='document')
+                                  .modal-content
+                                    .modal-header
+                                      button(type='button' class="close" data-dismiss="modal" aria-label="Close")
+                                        span(aria-hidden='true')
+                                        h4.modal-title Confirmes-tu ?
+                                    .modal-body
+                                      p Ce refus sera définitif. Confirmes-tu ?
+                                    .modal-footer
+                                      a.btn.btn-default(data-dismiss='modal') Annuler
+                                      input.btn.btn-warning.refuse(value='Refuser le bénévolat' vol=volunteer._id, id=ext._id, type='extras')
           if (volunteer.manuals)
             if (volunteer.manuals.length > 0)
               .page-header
@@ -423,6 +540,24 @@ block footscript
         });
       });
 
+      //Handle validation or denying button
+      $('.refuse__modal').click(function(){
+        $('#refuseModal'+$(this).attr('id')).modal();
+      })
+
+      $('.refuse').click(function(){
+        const type = $(this).attr('type');
+        const row = $(this).closest('.status');
+        const modal = $('#refuseModal'+$(this).attr('id'));
+        $.post('/admin/refuse', {type: $(this).attr('type'), id: $(this).attr('id'), vol: $(this).attr('vol')})
+        .done(function(data){
+          console.info('data : ' + JSON.stringify(data));
+          modal.modal('hide');
+          //buttons.html('<p>'+data.message+'</p>');
+          row.addClass('hidden');
+        });
+      });
+
       const getRowClass = function(status){
         console.info('Status : ' + status);
         if((status == 'pending') || (status == 'confirmed') || (status == 'corrected')){ console.info('Return warning');return 'warning'}
@@ -439,6 +574,9 @@ block footscript
   script(type='text/javascript').
     'use strict';
     $(document).ready(function(){
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      });
       $('.edit').click(function(){
         const man_id = $(this).attr('man');
         const p = $(this).parent();

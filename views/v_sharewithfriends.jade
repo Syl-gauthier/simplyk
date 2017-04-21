@@ -1,0 +1,82 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'sharewithfriends'
+block head
+  title Partage à tes amis
+  meta(name='description', content='Partage avec tes amis')
+block share
+  script.
+    var bitly_token = '074139d6c2b2511f886ae9e554856c4ecf3ca141';
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : 1829081597379617,
+        xfbml      : true,
+        version    : 'v2.8'
+      });
+      FB.AppEvents.logPageView();
+      var url = 'https://' + window.location.hostname + !{JSON.stringify(link)};
+      console.log('url : ' + url);
+      var bitly_address = 'https://api-ssl.bitly.com/v3/shorten?access_token='+bitly_token+'&longURL='+url;
+      console.log('bitly_address : ' + bitly_address);
+      $.get(bitly_address, function(datas){
+        console.info('bitly : ' + JSON.stringify(datas));
+        if(datas.status_code < 400){
+          $('#share_div').html("<div class='alert alert-info text-center'><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> Par Messenger</a><p> Ou partage ce lien : </p><input type='text' style='margin-top: 10px' id='link_to_share'></input></div>");
+          console.info('We are in the status_code OK !');
+          $('#link_to_share').val(datas.data.url);
+          $('#messenger').click(function(){
+            FB.ui({
+              method: 'send',
+              link: datas.data.url
+            }, function(response){
+              // Debug response (optional)
+              console.log(response);
+            });
+          });
+        } else {
+          console.info('We are in the status_code not OK !');
+          $('#share_div').html("<div class='alert alert-info'><p>Problème avec réseaux sociaux, néanmoins possibilité de partager directement ce lien <br> <b>Voici le lien</b> : </p><input type='text' id='link_to_share'></input></div>");
+          $('#link_to_share').val(url);
+          $('body').trigger('addListeners');
+        }
+      });
+    };
+    
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "//connect.facebook.net/fr_FR/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
+
+block content
+  .container-fluid
+    .row
+      .col-md-8.col-md-offset-2
+        .page-header.jumbotron
+          h1.text-center Vas-y avec des amis !
+          div.icon-center
+            img(src='/images/friends.svg')
+          h2.text-center C'est toujours mieux à plusieurs !
+          h4.text-center#share_div(style='margin-top: 25px;')
+          a.btn.btn-default.icon-center(href='/volunteer/profile') Suivant
+
+block footscript
+  script(type='text/javascript').
+    'use strict';
+    $(document).ready(function(){
+      //--------AMPLITUDE
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('v_visit_sharewithfriends');
+        $('body').on('addListeners', function(){
+          $('#link_to_share').focus(function(){
+            console.log('In link to share');
+            amplitude.getInstance().logEvent('v_share_link_postsub');
+          });
+          $('#messenger').click(function(){
+            amplitude.getInstance().logEvent('v_share_messenger_postsub');
+          });
+        })
+      };
+    });

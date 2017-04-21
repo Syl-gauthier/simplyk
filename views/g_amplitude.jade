@@ -1,0 +1,8 @@
+script(type='text/javascript').
+    $( document ).ready(function() {
+    	if (env == 'prod') {
+      		$('.logout_nav_btn').click(function(){
+        		amplitude.getInstance().logEvent('logout');
+      		});
+      	};
+    })

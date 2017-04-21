@@ -4,10 +4,13 @@ block vars
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
-  - function getCauseDesign(cause){if (cause=='Solidarité') {return '#00b3ff'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
+  - function getCauseDesign(cause){if (cause=='Solidarité') {return '#00b3ff'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Nature') {return '#5BCF8F'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
 block head
   title Bénévolat long terme
   meta(name='description', content='Information sur l\'opportunité de bénévolat long terme')
+  style.
+    .org_name {color:#5BCF8F}
+    .org_name:hover {text-decoration: none; color: #FFC518}
 block share
   script.
     var bitly_token = '074139d6c2b2511f886ae9e554856c4ecf3ca141';
@@ -71,11 +74,11 @@ block content
   .container-fluid
     .row.activity__header
       .col-md-5.col-md-offset-1
-        img(src='/images/happy_city_white.svg', align='middle', style='max-height:30vh; padding-top:3vh')
+        img.center-block#city(src='/images/happy_city_white.svg', align='middle', style='max-height:30vh; padding-top:3vh')
       .col-md-5.col-md-offset-1
         .page-header
-          h4 L'organisme :
-          h2= organism.org_name
+          a.org_name(href='/all/organism/'+organism._id)
+            h2(style='margin-top: 10%')= organism.org_name
           p(style = 'white-space: pre-wrap') <b>Mission:</b> #{organism.description}
           p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
           if volunteer
@@ -92,7 +95,7 @@ block content
             div(style='margin-top: 10px;')
               a.btn.btn-warning#propose Proposer à des amis
     .row.activity__background
-      .col-md-6.col-md-offset-1
+      .col-lg-6.col-lg-offset-1.col-md-8.col-md-offset-1
         .page-header.activity__unit
           span.badge(style='background-color: '+getCauseDesign(organism.cause))= organism.cause
           if (alreadySubscribed)
@@ -100,155 +103,155 @@ block content
               if status == 'denied'
                 span.badge(style='background-color: #E33831')= 'À corriger'
               else if status == 'corrected'
-                span.badge(style='background-color: #113A20')= 'Corrigé'
+                span.badge(style='background-color: #FF800E')= 'Corrigé'
+              else if status == 'validated'
+                span.badge(style='background-color: #113A20')= 'Validé'
+              else if status == 'confirmed'
+                span.badge(style='background-color: #113A20')= 'Confirmé par l\'organisme'
+              else if status == 'pending'
+                span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
               else
                 span.badge Inscrit
           else
             h1= longterm.intitule
           p= longterm.description
           p <b>Nombre de places : </b> #{longterm.vol_nb}
-          if (longterm.vol_nb - longterm.applicants.length) >= 0
-            <b>Places restantes : </b> #{longterm.vol_nb - longterm.applicants.length}
-          else
-            p <b>Places restantes : </b> 0
           p <b>Adresse : </b> #{longterm.address}
           if error
             p.alert.alert-danger= error
-          li.list-group-item
-            div.media-left.media-middle
-              i.fa.fa-calendar
-            div.media-body
-              h4 Horaires possibles :
-              table.table(id='slot')
-                thead
-                  tr
-                    th.text-center #
-                    th.text-center Lundi
-                    th.text-center Mardi
-                    th.text-center Mercredi
-                    th.text-center Jeudi
-                    th.text-center Vendredi
-                    th.text-center Samedi
-                    th.text-center Dimanche
-                tbody
-                  tr.text-center
-                    th.text-center(scope='row') AM
-                    td
-                      if slotJSON['mondayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['tuesdayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['wednesdayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['thursdayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['fridayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['saturdayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['sundayAM']
-                        i.fa.fa-check
-                      else
-                        p
-                  tr.text-center
-                    th.text-center(scope='row') PM
-                    td
-                      if slotJSON['mondayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['tuesdayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['wednesdayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['thursdayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['fridayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['saturdayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['sundayPM']
-                        i.fa.fa-check
-                      else
-                        p
-                  tr.text-center
-                    th.text-center(scope='row')= 'Soir (>16h)'
-                    td
-                      if slotJSON['mondayEVE']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['tuesdayEVE']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['wednesdayEVE']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['thursdayEVE']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['fridayEVE']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['saturdayEVE']
-                        i.fa.fa-check
-                      else
-                        p
-                    td
-                      if slotJSON['sundayEVE']
-                        i.fa.fa-check
-                      else
-                        p
+          div.media-left.media-middle.hidden-xs
+            i.fa.fa-calendar
+          div.media-body.hidden-xs
+            table.table(id='slot')
+              thead
+                tr
+                  th.text-center #
+                  th.text-center#monday Lundi
+                  th.text-center#tuesday Mardi
+                  th.text-center#wednesday Mercr.
+                  th.text-center#thursday Jeudi
+                  th.text-center#friday Vendr.
+                  th.text-center#saturday Samedi
+                  th.text-center#sunday Dimanche
+              tbody
+                tr.text-center
+                  th.text-center(scope='row') AM
+                  td
+                    if slotJSON['mondayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['tuesdayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['wednesdayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['thursdayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['fridayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['saturdayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['sundayAM']
+                      i.fa.fa-check
+                    else
+                      p
+                tr.text-center
+                  th.text-center(scope='row') PM
+                  td
+                    if slotJSON['mondayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['tuesdayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['wednesdayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['thursdayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['fridayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['saturdayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['sundayPM']
+                      i.fa.fa-check
+                    else
+                      p
+                tr.text-center
+                  th.text-center(scope='row')= 'Soir (>16h)'
+                  td
+                    if slotJSON['mondayEVE']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['tuesdayEVE']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['wednesdayEVE']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['thursdayEVE']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['fridayEVE']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['saturdayEVE']
+                      i.fa.fa-check
+                    else
+                      p
+                  td
+                    if slotJSON['sundayEVE']
+                      i.fa.fa-check
+                    else
+                      p
           if (!alreadySubscribed && volunteer)
             if (longterm.vol_nb - longterm.applicants.length) >= 0
               input.center-block.btn.btn-default(type='button' value='S\'inscrire' data-toggle='modal' data-target='#longterm-modal' style='margin-top: 10px')
               .modal.fade(id='longterm-modal' tab-index='-1' role='dialog' aria-labelledby='myModalLabel')
                 .modal-dialog(role='document')
                   .modal-content
-                    form.inline(action='/volunteer/longterm/subscribe/'+longterm._id, method='post', onsubmit='return validatePhone()')
+                    form.subscribe_form.inline(action='/volunteer/longterm/subscribe/'+longterm._id, method='post', onsubmit='return validatePhone()')
                       .modal-header
                         button.close(type='button' data-dismiss="modal" aria-label="Close")
                           span(aria-hidden='true')&times;
@@ -260,12 +263,18 @@ block content
                             .form-group.conn-input
                               label.control-label Téléphone
                               input.form-control(type='text', placeholder='', name='phone', aria-describedby='basic-addon1', required aria-required='true', id='phone')
+                        else if (!volunteer.parents_email && (volunteer.admin && volunteer.admin.school_id))
+                          .modal-body
+                            h6 Afin que tes parents soient aussi au courant des endroits où tu vas faire du bénévolat, tu peux rajouter leur adresse courriel
+                            .form-group.conn-input
+                              label.control-label Courriel des parents (optionnel)
+                              input.form-control(type='email', placeholder='', name='parents_email', aria-describedby='basic-addon1', id='parents_email')
                       .modal-footer
                         a.btn.btn-warning(data-dismiss='modal') Annuler
-                        input.btn.btn-default(type='submit' value='Oui' role='button')
+                        input.btn.btn-default#longterm_subscribe(type='submit' value='Oui' role='button')
             else
               button.center-block.btn.btn-default(type='button' disabled='disabled' style='margin-top: 10px') Complet
-        if ((student_questions && student_answers && student_questions.length > 0 && student_answers.length > 0) || (organism_questions && organism_answers && organism_questions.length > 0 && organism_answers.length > 0))
+        if (student_questions && student_questions.length > 0 && ((status =='denied')||(status =='pending')||(status =='corrected')||(status =='validated')||(status =='confirmed')))
           h2 Questionnaire
       .col-md-4.col-md-offset-1
         if (alreadySubscribed)
@@ -276,7 +285,7 @@ block content
                   div.media-left.media-top
                     h4 <strong>Mon engagement</strong>
                   div.media-top.media-right
-                    button.btn.longterm(data-toggle='modal' data-target='#addLTHoursModal')
+                    div.btn.longterm(data-toggle='modal' data-target='#addLTHoursModal')
                       i.fa.fa-plus
                       p.inline Ajouter des heures
                 #addLTHoursModal.modal.fade(tabindex='-1', role='dialog' aria-labelledby="addLTHoursModalLabel")
@@ -313,16 +322,22 @@ block content
                             p.text-center 0h
     .row.background__color
       .col-md-10.col-md-offset-1
-        if (student_questions && student_answers && student_questions.length > 0 && student_answers.length > 0)
+        if (student_questions && student_questions.length > 0 && ((status =='denied')||(status =='pending')||(status =='corrected')||(status =='validated')||(status =='confirmed')))
           div.panel.panel-default
-            form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
+            form.edit_form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
               div.panel-heading
                 h4 Ton retour d'expérience
                 if status == 'denied'
                   span.badge(style='background-color: #E33831')= 'À corriger'
                   i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
                 else if status == 'corrected'
-                  span.badge(style='background-color: #113A20')= 'Corrigé'
+                  span.badge(style='background-color: #FF800E')= 'Corrigé'
+                  i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
+                else if status == 'confirmed'
+                  span.badge(style='background-color: #113A20')= 'Confirmé par l\'organisme'
+                  i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
+                else if status == 'pending'
+                  span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
                   i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
               div.panel-body
                 each question, q_I in student_questions
@@ -330,7 +345,7 @@ block content
                     div.panel-heading
                       h6= question 
                     div.panel-body
-                      if ((status == 'denied') || (status == 'corrected'))
+                      if ((status == 'pending') || (status == 'confirmed') || (status == 'denied') || (status == 'corrected'))
                         h6.answer_to_edit #{student_answers[q_I]}
                       else
                         h6 #{student_answers[q_I]}
@@ -349,6 +364,7 @@ block content
 
 block footscript
   script(type='text/javascript').
+    'use strict';
     function validatePhone(){
       const phone_number = $('#phone').val();
       console.log('phone_number.length : ' + phone_number.length);
@@ -361,12 +377,51 @@ block footscript
   script(type='text/javascript').
     'use strict';
     $(document).ready(function(){
+      //--------AMPLITUDE
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('v_visit_longterm');
+
+        $('.subscribe_form').submit(function(){
+          let event_props = {};
+          event_props.type = 'longterm';
+          amplitude.getInstance().logEvent('v_subscribe_opp', event_props);
+          amplitude.getInstance().logEvent('g_revenue');
+        });
+        $('.edit_form').submit(function(){
+          let event_props = {};
+          event_props.type = 'longterm';
+          amplitude.getInstance().logEvent('v_correct_opp', event_props);
+        });
+        $('.addLTHoursForm').submit(function(){
+          let event_props = {};
+          event_props.type = 'longterm';
+          amplitude.getInstance().logEvent('v_hourspending_opp', event_props);
+        });
+      };
+
       const lt_id = !{JSON.stringify(longterm._id)};
+      const status = !{JSON.stringify(status)};
       $('.edit').click(function(){
         $('.edit').removeClass('fa').removeClass('fa-pencil');
         $('.answer_to_edit').each(function(index){
           $(this).html("<p>Correction de la réponse</p><textarea rows='4' name='new_response'>"+$(this).text()+"</textarea>");
         });
-        $('.submit-button').html("<input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='lt_id' value="+lt_id+"></input><input type='submit' value='Envoyer les corrections' class='btn btn-warning'></input>");
+        $('.submit-button').html("<input class='hidden' name='url' value="+window.location.pathname+"></input><input class='hidden' name='status' value="+status+"></input></input><input class='hidden' name='lt_id' value="+lt_id+"></input><input type='submit' value='Envoyer les corrections' class='btn btn-warning'></input>");
       });
+      if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+        $('#slot').addClass('table-xs');
+        $('.activity__unit').css('padding', '20px');
+        $('.media-left').addClass('hidden');
+        $('#monday').text('L.');
+        $('#tuesday').text('Ma.');
+        $('#wednesday').text('Me.');
+        $('#thursday').text('J.');
+        $('#friday').text('V.');
+        $('#saturday').text('S.');
+        $('#sunday').text('D.');
+      } else if (/iPad|Tablet/i.test(navigator.userAgent)) {
+        $('#slot').css('font-size', '12px');
+      } else {
+        $('#slot').css('font-size', '10px');
+      };
     });

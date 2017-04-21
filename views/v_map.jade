@@ -3,7 +3,6 @@ block vars
   - var page = 'map'
   - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
   - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
-  - var the_favo = {}; if (typeof the_favorite !== 'undefined') {the_favo = the_favorite; console.log('the_favo : ' + the_favo)} else {the_favo = {}; console.log('the_favo : ' + the_favo)};
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
 
 block head
@@ -11,48 +10,49 @@ block head
   meta(name='description', content='Opportunités de bénévolat à Montréal')
 block content
   each act, index in activities
-    if act._id != the_favo._id
-      div(tabindex='-1', role='dialog', class='modal fade ' + act._id, id=act._id)
-        .modal-dialog(role='document')
-          .modal-content
-            .modal-header
-              button.close(type='button', data-dismiss='modal', aria-label='Close')
-                span(aria-hidden='true') &times;        
-              #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
-            .modal-body.my-modal-body
-              h4 <b>#{act.intitule}</b>
-              table.table
-                tr
-                  th.text-center Places restantes
-                  th.text-center Date
-                  th.text-center Heure de début
-                  th.text-center Heure de fin
-                  if act.min_age
-                    th.text-center Âge minimal
-                each day, nb in act.days
-                  if day.day
-                    tr
-                      td.text-center= (day.vol_nb-day.applicants.length)
-                      td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
-                      td.text-center= day.start_time
-                      td.text-center= day.end_time
-                      if act.min_age
-                        td.text-center= act.min_age
-                    #identifiant(style="display:none")
-                      p= act._id
-                p <b>Adresse : </b> #{act.address}
-            .modal-footer
-              button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-              if volunteer
-                a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act._id) Plus d'infos
-  each lt, index in longterms
-    div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id, id=lt.long_term._id)
+    div(tabindex='-1', role='dialog', class='modal fade ' + act._id)
       .modal-dialog(role='document')
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> <b>#{lt.org_name}</b>
+            #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
+          .modal-body.my-modal-body
+            h4 <b>#{act.intitule}</b>
+            p #{act.description}
+            table.table
+              tr
+                th.text-center Places restantes
+                th.text-center Date
+                th.text-center Heure de début
+                th.text-center Heure de fin
+                if act.min_age
+                  th.text-center Âge minimal
+              each day, nb in act.days
+                if day.day
+                  tr
+                    td.text-center= (day.vol_nb-day.applicants.length)
+                    td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
+                    td.text-center= day.start_time
+                    td.text-center= day.end_time
+                    if act.min_age
+                      td.text-center= act.min_age
+                  #identifiant(style="display:none")
+                    p= act._id
+              p <b>Adresse : </b> #{act.address}
+          .modal-footer
+            input.btn.btn-default(type='button', data-dismiss='modal', value='Fermer')
+            if volunteer
+              a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = act._id, href='/activity/'+act._id, target='_blank') Plus d'infos
+  each lt, index in longterms
+    div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id)
+      .modal-dialog(role='document')
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              span(aria-hidden='true') &times;        
+            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> 
+              a.inline(href='/all/organism/'+lt.long_term.org_id)=lt.org_name
           .modal-body.my-modal-body
             h4 <b>#{lt.long_term.intitule}</b>
             p #{lt.long_term.description}
@@ -60,174 +60,187 @@ block content
             if lt.long_term.min_age
               p <b>Âge minimal : </b> #{lt.long_term.min_age}
           .modal-footer
-            button.btn.btn-default(type='button', data-dismiss='modal') Fermer
+            input.btn.btn-default(type='button', data-dismiss='modal' value='Fermer')
             if volunteer
-              a.subscribe-button-longterm.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id, href='/longterm/'+lt.long_term._id) Plus d'infos
-  if (typeof the_favo !== 'undefined') && the_favo.days
-    div(tabindex='-1', role='dialog', class='modal fade ' + the_favo._id, id=the_favo._id)
-      .modal-dialog(role='document')
-        .modal-content
-          .modal-header
-            button.close(type='button', data-dismiss='modal', aria-label='Close')
-              span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{the_favo.event_intitule} <small>par</small> <b>#{the_favo.org_name}</b>
-          .modal-body.my-modal-body
-            h4 <b>#{the_favo.intitule}</b>
-            table.table
-              tr
-                th.text-center Places restantes
-                th.text-center Date
-                th.text-center Heure de début
-                th.text-center Heure de fin
-                if the_favo.min_age
-                  th.text-center Âge minimal
-              if (typeof the_favo !== 'undefined')
-                each day, nb in the_favo.days
-                  if day.day
-                    tr
-                      td.text-center= (day.vol_nb-day.applicants.length)
-                      td.text-center= days_name[correctDate(day.day).getDay()]  + ' ' + correctDate(day.day).getDate() + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
-                      td.text-center= day.start_time
-                      td.text-center= day.end_time
-                      if the_favo.min_age
-                        td.text-center= the_favo.min_age + ' ans'
-                    #identifiant(style="display:none")
-                      p= the_favo._id
-              p <b>Adresse : </b> #{the_favo.address}
-          .modal-footer
-            button.btn.btn-default(type='button', data-dismiss='modal') Fermer
-            if volunteer
-              a.subscribe-button-activity.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" activité = the_favo._id, href='/activity/'+the_favo._id) Plus d'infos
+              a.subscribe-button-longterm.btn.btn-default(type='button' aria-expanded="false" aria-controls="collapseExample" longterm = lt.long_term._id, href='/longterm/'+lt.long_term._id, target='_blank') Plus d'infos
   .container-fluid
     .row.fill
       .col-sm-4.col-xs-12#map-left
         #filter_div.row
-          .col-sd-6.col-md-5.col-md-offset-1.col-xs-10.col-xs-offset-1#acts_filter(style='cursor: pointer;')
+          .col-xs-6.col-sm-12.col-md-5.col-md-offset-1#acts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-acts
               i.inline.fa.fa-check-square-o#acts_check
-              p.inline Ponctuels
+              p.inline Ponctuel
               i.inline.fa.fa-bolt
-          .col-sd-6.col-md-5.col-md-offset-0.col-xs-10.col-xs-offset-1#lts_filter(style='cursor: pointer;')
+          .col-xs-6.col-sm-12.col-md-5#lts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
-              p.inline Engagements
+              p.inline Long terme
+        #search_div
+          .row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').visible-xs
+            .col-xs-12.text-center
+              form.form-inline
+                .input-group
+                  input.form-control(id="address_field-xs" placeholder="Changer d'adresse")
+                  span.input-group-addon.btn.btn-default#loc_submit
+                    i.fa.fa-search
+          .row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').hidden-xs
+            .col-sm-12.col-md-10.col-md-offset-1
+              .input-group
+                input.form-control(type="search" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
+                span.input-group-addon.btn.btn-default
+                  i.fa.fa-search
         #offers-list-logged.no-side-padding.scrollable.row
-          ul.list-group.list-opportunity
+          ul.list-group.list-opportunity(id="jetsContent")
             if error
               p.alert.alert-danger #{error}
             if success
               p.alert.alert-success #{success}
-            if (typeof the_favo !== 'undefined') && the_favo.days
-              li.list-group-item(id='the_favo', opp_type='activity')
-                  .panel.panel-default
-                    .panel-heading
-                      div.media-left.media-middle
-                        a(href='#')
-                          if the_favo.cause == 'Solidarité'
-                            i.fa.fa-heart
-                          else if the_favo.cause == 'Nature'
-                            i.fa.fa-envira(style='color: #5BCF8F')
-                          else if the_favo.cause == 'Sport et Culture'
-                            i.fa.fa-institution(style='color: #FFC858')
-                          else if the_favo.cause == 'Enfance'
-                            i.fa.fa-child(style='color: #FF4F3C')
-                      div.media-body
-                        h5.media-heading <b>#{the_favo.org_name}</b>
-                        h6.media-heading <b>#{the_favo.intitule}</b>
-                        //h6
-                          i.fa.fa-map-marker
-                          p.inline Adresse : #{the_favo.address}
-                      div.media-right.media-middle
-                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+the_favo._id) Plus d'infos
-                    .panel-body
-                        h5 Dans le cadre de : <b>#{the_favo.event_intitule}</b>
-                        if the_favo.days.length < 3
-                          each day, day_i in the_favo.days
-                            if day.day
-                              h4
-                                h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                                h6.inline
-                                  i.fa.fa-user
-                                  p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-                        else
-                          if the_favo.days[0].day && the_favo.days[1].day
-                            h6.inline <b>#{days_name[correctDate(the_favo.days[0].day).getDay()]  + ' ' + (correctDate(the_favo.days[0].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[0].day).getMonth()]  + ' ' + correctDate(the_favo.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(the_favo.days[1].day).getDay()]  + ' ' + (correctDate(the_favo.days[1].day).getDate()) + ' ' + months_name[correctDate(the_favo.days[1].day).getMonth()]  + ' ' + correctDate(the_favo.days[1].day).getFullYear()}</b>, ...
             each act, index in activities
-              if act._id != the_favo._id
-                li.list-group-item(id= act._id, opp_type='activity')
-                  .panel.panel-default
-                    .panel-heading
-                      div.media-left.media-middle
-                        a(href='#')
-                          if act.cause == 'Solidarité'
+              li.list-group-item(id= act._id, opp_type='activity', lat=act.lat, lon=act.lon, data-target= "."+act._id, style='cursor: pointer;' age_filtered='false', type_filtered='false', category_filtered='false')
+                .panel.panel-default
+                  .panel-heading
+                    div.media-left.media-middle
+                      a(href='#')
+                        if act.school_id
+                          i.fa.fa-graduation-cap.intern
+                        else if act.cause == 'Solidarité'
                             i.fa.fa-heart
-                          else if act.cause == 'Nature'
-                            i.fa.fa-envira(style='color: #5BCF8F')
-                          else if act.cause == 'Sport et Culture'
-                            i.fa.fa-institution(style='color: #FFC858')
-                          else if act.cause == 'Enfance'
-                            i.fa.fa-child(style='color: #FF4F3C')
-                      div.media-body
-                        h5.media-heading <b>#{act.org_name}</b>
-                        h6.media-heading <b>#{act.intitule}</b>
-                        //h6
-                          i.fa.fa-map-marker
-                          p.inline Adresse : #{act.address}
-                      div.media-right.media-middle
-                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+act._id) Plus d'infos
-                    .panel-body
-                        h5 Dans le cadre de : <b>#{act.event_intitule}</b>
-                        if act.days.length < 3
+                        else if act.cause == 'Nature'
+                          i.fa.fa-envira(style='color: #5BCF8F')
+                        else if act.cause == 'Sport et Culture'
+                          i.fa.fa-institution(style='color: #FFC858')
+                        else if act.cause == 'Enfance'
+                          i.fa.fa-child(style='color: #FF4F3C')
+                    div.media-body
+                      h5.media-heading <b>#{act.org_name}</b>
+                      h6.media-heading <b>#{act.intitule}</b>
+                      div.visible-xs
+                        i.fa.fa-compass.inline
+                        h6.dist.inline
+                        h6.inline.dist_reference km de toi
+                    div.media-right.media-top
+                      span.badge.activity Ponctuel
+                  .panel-body
+                      h5 Dans le cadre de : <b>#{act.event_intitule}</b>
+                      if act.days.length < 3
+                        each day, day_i in act.days
+                          if day.day
+                            h4
+                              h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
+                              h6.inline
+                                i.fa.fa-user
+                                p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
+                      else
+                        if act.days[0].day && act.days[1].day
+                          h6.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
                           each day, day_i in act.days
-                            if day.day
-                              h4
-                                h6.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
-                                h6.inline
-                                  i.fa.fa-user
-                                  p.inline= (day.vol_nb-day.applicants.length)+' places restantes'
-                        else
-                          if act.days[0].day && act.days[1].day
-                            h6.inline <b>#{days_name[correctDate(act.days[0].day).getDay()]  + ' ' + (correctDate(act.days[0].day).getDate()) + ' ' + months_name[correctDate(act.days[0].day).getMonth()]  + ' ' + correctDate(act.days[0].day).getFullYear()}</b>, <b>#{days_name[correctDate(act.days[1].day).getDay()]  + ' ' + (correctDate(act.days[1].day).getDate()) + ' ' + months_name[correctDate(act.days[1].day).getMonth()]  + ' ' + correctDate(act.days[1].day).getFullYear()}</b>, ...
+                            p.hidden <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
             each lt, index in longterms
-                li.list-group-item(id= lt.long_term._id, opp_type='longterm')
-                  .panel.panel-default
-                    .panel-heading
-                      div.media-left.media-middle
-                        a(href='#')
-                          if lt.cause == 'Solidarité'
-                            i.fa.fa-heart
-                          else if lt.cause == 'Nature'
-                            i.fa.fa-envira(style='color: #5BCF8F')
-                          else if lt.cause == 'Sport et Culture'
-                            i.fa.fa-institution(style='color: #FFC858')
-                          else if lt.cause == 'Enfance'
-                            i.fa.fa-child(style='color: #FF4F3C')
-                      div.media-body
-                        h5.media-heading <b>#{lt.org_name}</b>
-                        h6.media-heading <b>#{lt.long_term.intitule}</b>
-                        h6
-                          i.fa.fa-map-marker
-                          p.inline Adresse : #{lt.long_term.address}
-                      div.media-right.media-middle
-                        button.btn.btn-default.media-object(type='button' data-toggle="modal" data-target= "."+lt.long_term._id) Plus d'infos
-      .col-sm-8.col-xs-12.no-side-padding
+              li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon, data-target= "."+lt.long_term._id, style='cursor: pointer;' age_filtered='false', category_filtered='false', type_filtered='false')
+                .panel.panel-default
+                  .panel-heading
+                    div.media-left.media-middle
+                      a(href='#')
+                        if lt.school_id
+                          i.fa.fa-graduation-cap.intern
+                        else if lt.cause == 'Solidarité'
+                          i.fa.fa-heart
+                        else if lt.cause == 'Nature'
+                          i.fa.fa-envira(style='color: #5BCF8F')
+                        else if lt.cause == 'Sport et Culture'
+                          i.fa.fa-institution(style='color: #FFC858')
+                        else if lt.cause == 'Enfance'
+                          i.fa.fa-child(style='color: #FF4F3C')
+                    div.media-body
+                      h5.media-heading <b>#{lt.org_name}</b>
+                      h6.media-heading <b>#{lt.long_term.intitule}</b>
+                      h6
+                        i.fa.fa-map-marker
+                        p.inline Adresse : #{lt.long_term.address}
+                      div.visible-xs
+                        i.fa.fa-compass.inline
+                        h6.dist.inline
+                        h6.inline.dist_reference km de toi
+                    div.media-right.media-top
+                      span.badge.longterm Long terme
+            li.list-group-item
+              .panel.panel-default
+                .panel-heading(style='height: 60vh;')
+                  h3.text-center(style='margin-top: 20vh') Tu veux plus d'offres ?
+                  p.hidden.dist 10000000000
+                  p.text-center
+                    i.fa.fa-refresh.fa-4x
+                  h5.text-center Modifie tes filtres de recherche
+                  h5.text-center Dézoome la carte
+                  h5.text-center Demande nous des idées de bénévolat à contact@simplyk.io
+      .col-sm-8.col-xs-12.no-side-padding.hidden-xs
         #map
 
 block footscript
   script.
+    var page = 'map';
     var acts = !{JSON.stringify(activities)};
     var lts = !{JSON.stringify(longterms)};
-    var the_fav = !{JSON.stringify(the_favorite)};
-    var page = 'map';
+    var school_name = !{JSON.stringify(school_name)};
+    var first_age_filtered = !{JSON.stringify(first_age_filtered)};
+    var nature_indexes = !{JSON.stringify(nature_indexes)};
+    var sol_indexes = !{JSON.stringify(sol_indexes)};
+    var culture_indexes = !{JSON.stringify(culture_indexes)};
+    var child_indexes = !{JSON.stringify(child_indexes)};
+    var adult_indexes = !{JSON.stringify(adult_indexes)};
   //clusterer api
-  script(src="/javascripts/marker-clusterer.js", type="text/javascript")
-
-  script(src='/javascripts/initmap.js')
-  script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap"
-         async defer)
+  script(src="/bower_components/jets/jets.min.js")
+  script.
+    var on_mobile = false;
+    if ((/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
+      on_mobile = true;
+      console.log('On mobile');
+      document.write('<script src="/javascripts/initmap_mobile.js"><\/script>');
+      document.write('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&signed_in=true&libraries=places,geometry&callback=initAutocomplete" async defer><\/script>');
+    } else {
+      console.log('On desktop or tablet');
+      document.write('<script src="/javascripts/initmap2.js"><\/script>');
+      document.write('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap" async defer><\/script>');
+      let jets = new Jets({
+        searchTag: '#jetsSearch',
+        contentTag: '#jetsContent',
+        searchSelector: '*'
+      });
+    }
+  //script(src="/javascripts/marker-clusterer.js", type="text/javascript")
          
   //Modal bootstrap
+  script(type='text/javascript').
+    'use strict';
+    let group = !{JSON.stringify(group)};
+    $(document).ready(function(){
+      $('#offers-list-logged').outerHeight(($('#map-left').outerHeight(true) - $('#filter_div').outerHeight(true)) - $('#search_div').outerHeight(true));
+      if (env == 'prod') {
+        if (group == 'volunteer'){
+          let user_id = !{JSON.stringify(volunteer._id)};
+          let email = !{JSON.stringify(volunteer.email)};
+          let firstname = !{JSON.stringify(volunteer.firstname)};
+          let lastname = !{JSON.stringify(volunteer.lastname)};
+          let age = !{JSON.stringify(age)};
+          amplitude.getInstance().setUserId(user_id);
+          let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', firstname + ' ' + lastname).setOnce('group', group).setOnce('age', age);
+          amplitude.getInstance().identify(identify);
+          amplitude.getInstance().logEvent('v_visit_map');
+        } else if (group == 'organism') {
+          amplitude.getInstance().logEvent('o_visit_map');
+        } else if (group == 'admin') {
+          amplitude.getInstance().logEvent('a_visit_map');
+        }
+      }
+    });
   script(type='text/javascript').
     $('#myModal').on('shown.bs.modal', function () {
       $('#myInput').focus();
     });
+    $('.list-group-item').click(function(){
+      $('' + $(this).attr('data-target')).modal('show');
+    });
+    window.intercomSettings = {
+      app_id: "oora32p1"
+    };

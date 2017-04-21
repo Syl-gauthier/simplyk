@@ -15,6 +15,9 @@ var VolunteerSchema = new Schema({
   birthdate: Date,
   phone: String,
   complete: Boolean,
+  shares: Number,
+  preferences: [Number],
+  fb_id: String, //user_id from FB
   emergency: { // this contact is needed for underaged
     em_name: String,
     em_phone: Number,
@@ -62,6 +65,7 @@ var VolunteerSchema = new Schema({
     slot: String,
     hours_pending: Number,
     hours_done: Number,
+    last_interaction: Date,
     status: String, //confirmed, pending, validated, denied, subscribed, corrected
     student_questions: [String],
     student_answers: [String],
@@ -111,7 +115,8 @@ var VolunteerSchema = new Schema({
       ref: 'Admin'
     },
     added: Date
-  }]
+  }],
+  parents_email: String
 });
 
 VolunteerSchema.methods.generateHash = crypt.generateHash;

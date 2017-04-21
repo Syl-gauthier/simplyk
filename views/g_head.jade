@@ -5,7 +5,7 @@ meta(name='google-signin-client_id', content='456503566619-20q669of0e5ts010ft8fr
 // The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags
 
 
-script.
+script(type="text/javascript" async).
 	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -37,21 +37,33 @@ link(rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.
 
 
 // Google Sign-in
-script(src='https://apis.google.com/js/platform.js', async='', defer='')
+//script(src='https://apis.google.com/js/platform.js', async='', defer='')
 
-//Mouseflow
-script(type="text/javascript").
-	var _mfq = _mfq || [];
-		(function() {
-		var mf = document.createElement("script");
-		mf.type = "text/javascript"; mf.async = true;
-		mf.src = "//cdn.mouseflow.com/projects/e665618e-dba7-4b8e-8890-22cf4c057537.js";
-		document.getElementsByTagName("head")[0].appendChild(mf);
-	})();
+// Lucky Orange
+script(type='text/javascript').
+	window.__lo_site_id = 80699;
+	(function() {
+		var wa = document.createElement('script'); wa.type = 'text/javascript'; wa.async = true;
+		wa.src = 'https://d10lpsik1i8c69.cloudfront.net/w.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(wa, s);
+	  })();
+
+//FB pixel
+script.
+	!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+	n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+	t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+	document,'script','https://connect.facebook.net/en_US/fbevents.js');
+	fbq('init', '128872457652957', {
+	em: 'insert_email_variable,'
+	});
+	fbq('track', 'PageView');
+noscript.
+	<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=128872457652957&ev=PageView&noscript=1"/>
 
 
 //octicons/fonticons
-script(src="https://use.fonticons.com/a977a97f.js")
+script(src="https://use.fonticons.com/a977a97f.js" async)
 link(rel="stylesheet" href="/stylesheets/octicons/octicons.css")
 meta(name='apple-mobile-web-app-title', content='Simplyk')
 meta(name='application-name', content='Simplyk')

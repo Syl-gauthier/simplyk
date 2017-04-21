@@ -5,7 +5,7 @@
 $(document).ready(function() {
   //Edit password functions
   $('#edit-password-button').click(function(){
-    console.log("Open edit password form");
+    console.log("Open edit password form " + $('#password-group').find('.display'));
     $('#password-group').find('.display').addClass('hidden');
     $('#password-group').find('.editing').removeClass('hidden');
   });

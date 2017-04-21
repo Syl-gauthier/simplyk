@@ -6,212 +6,249 @@ block head
   title À propos de Simplyk
   meta(name='description', content='Simplyk: à propos')
 block content
-      .container-fluid
-        .row(style='border-bottom: 1px solid #ccc')
-          ul.nav.nav-pills#nav-us
-            li(role='presentation')
-              a#being-button(href='#') <i class='fa fa-tachometer'></i> Raison d'être
-            li(role='presentation')
-              a#history-button(href='#') <i class='fa fa-paper-plane-o'></i> Notre histoire
-            li(role='presentation')
-              a#team-button(href='#') <i class='fa fa-space-shuttle'></i> L'équipe
-            li(role='presentation')
-              a#partners-button(href='#') <i class='fa fa-rss'></i> Partenaires
-            li(role='presentation')
-              a#press-button(href='#') <i class='fa fa-newspaper-o'></i> Presse
-        .row.not-fullscreen-section--1
-          .section__title
-            h2.text-center Raison d'être
-            h3.text-center.subtitle Simplyk a une mission et des valeurs fortes
-          .row
-            .col-md-4.col-md-offset-1
-              .panel.panel-default(style='box-shadow: 1px 1px 1px #363;')
-                .panel-heading
-                  span.pull-right.badge(style=('background-color : #363')) Mission
-                  h2.subtitle.text-center Mission
-                  img.center-block(src='images/target_tune.svg', style='max-height: 13vh;')
+  .container-fluid
+    .row(style='border-bottom: 1px solid #ccc')
+      ul.nav.nav-pills#nav-us
+        li(role='presentation')
+          a#being-button(href='#') <i class='fa fa-tachometer'></i> Raison d'être
+        li(role='presentation')
+          a#history-button(href='#') <i class='fa fa-paper-plane-o'></i> Notre histoire
+        li(role='presentation')
+          a#team-button(href='#') <i class='fa fa-space-shuttle'></i> L'équipe
+        li(role='presentation')
+          a#partners-button(href='#') <i class='fa fa-rss'></i> Partenaires
+        li(role='presentation')
+          a#press-button(href='#') <i class='fa fa-newspaper-o'></i> Presse
+    .row.not-fullscreen-section--1
+      .section__title
+        h2.text-center Raison d'être
+        h3.text-center.subtitle Simplyk a une mission et des valeurs fortes
+      .row
+        .col-md-4.col-md-offset-1
+          .panel.panel-default(style='box-shadow: 1px 1px 1px #363;')
+            .panel-heading
+              span.pull-right.badge(style=('background-color : #363')) Mission
+              h2.subtitle.text-center Mission
+              img.center-block(src='images/target_tune.svg', style='max-height: 13vh;')
 
-                .panel-body
-                  i.fa.fa-quote-left.fa-2x.fa-pull-left.fa-border
-                  h4.text.text-center Simplyk vise à encourager et faciliter le bénévolat
-                  p.text.text-center Nous avons réalisé qu'il n'est pas toujours facile de donner de son temps. Entre les formulaires, le manque d'informations et le temps à passer sur un grand nombre de sites web, il y a souvent de quoi être découragé. Nous voulons mettre fin à ce gâchis d'énergie, et supprimer toutes les barrières qui font qu'une personne va se décourager à être bénévole.
-            .col-md-4.col-md-offset-2
-              .panel.panel-default(style='box-shadow: 1px 1px 1px #363;')
+            .panel-body
+              i.fa.fa-quote-left.fa-2x.fa-pull-left.fa-border
+              h4.text.text-center Simplyk vise à encourager et faciliter le bénévolat
+              p.text.text-center Nous avons réalisé qu'il n'est pas toujours facile de donner de son temps. Entre les formulaires, le manque d'informations et le temps à passer sur un grand nombre de sites web, il y a souvent de quoi être découragé. Nous voulons mettre fin à ce gâchis d'énergie, et supprimer toutes les barrières qui font qu'une personne va se décourager à être bénévole.
+        .col-md-4.col-md-offset-2
+          .panel.panel-default(style='box-shadow: 1px 1px 1px #363;')
+            .panel-heading
+              span.pull-right.badge(style=('background-color : #363')) Valeurs
+              h2.subtitle.text-center Constitution Simplyk
+              img.center-block(src='images/book_of_ester_tune.svg', style='max-height: 13vh;')
+            .panel-body
+              i.fa.fa-quote-left.fa-2x.fa-pull-left.fa-border
+              h4.text.text-center Simplyk est une entreprise à impact social avec des valeurs ancrées dans le marbre
+              p.text.text-center <b>Article 1 :</b>  Simplyk est et restera toujours gratuit pour les organismes
+              p.text.text-center <b>Article 2 :</b>  Simplyk est et restera toujours gratuit pour les bénévoles
+              p.text.text-center <b>Article 3 :</b>  L'engagement des bénévoles et le travail des organismes sont précieux, Simplyk existe pour les faciliter
+              p.text.text-center <b>Article 4 :</b>  Simplyk se doit d'utiliser le meilleur de la technologie pour appliquer l'<b>Article 3</b>
+    .row.not-fullscreen-section--2#history
+      .section__title
+        h2.text-center Notre histoire
+        h3.text-center.subtitle Comment le projet a t-il vu le jour ?
+      .row
+        .col-md-4.col-md-offset-1
+          img.center-block(src='/images/our_history.jpg', style='box-shadow: 1px 1px 3px #363; margin-top: 20px; margin-bottom: 20px; max-height: 30vh')
+          h4.text-center François et Thibaut, co-fondateurs
+        .col-md-4.col-md-offset-2
+          .panel.panel-default(style='box-shadow: 1px 1px 1px #363;')
+            .panel-heading
+              span.pull-right.badge(style=('background-color : #363')) Histoire
+              h2.subtitle.text-center Naissance de Simplyk
+              img.center-block(src='images/birth_tune.svg', style='max-height: 13vh;')
+            .panel-body
+              i.fa.fa-quote-left.fa-2x.fa-pull-left.fa-border
+              p.text.text-center Quand François est arrivé à Montréal pour sa maîtrise en 2014, il a cherché à faire du bénévolat et a eu énormément de difficultés à trouver. En interviewant des gens autour de lui, il s'est aperçu qu'il n'était pas seul dans cette situation. Il a parlé de son problème à Thibaut, passionné de technologie web, et le projet Simplyk est né. Depuis ce jour nous avons travaillé sans relache à l’objectif de fournir un outil technologique aux bénévoles. La première version est sortie en juillet 2016, et depuis, chaque semaine est ponctuée d’améliorations.
+    .row.not-fullscreen-section--1#team
+      .section__title
+        h2.text-center L'équipe
+      .row
+        .col-xs-10.col-xs-offset-1
+          .row
+            h3.text-center.subtitle Une équipe de feu pour un projet solidaire
+          .row(style='margin-top: 10vh;')
+            .col-md-4.col-xs-12
+              .panel.panel-default.panel-profile
                 .panel-heading
-                  span.pull-right.badge(style=('background-color : #363')) Valeurs
-                  h2.subtitle.text-center Constitution Simplyk
-                  img.center-block(src='images/book_of_ester_tune.svg', style='max-height: 13vh;')
-                .panel-body
-                  i.fa.fa-quote-left.fa-2x.fa-pull-left.fa-border
-                  h4.text.text-center Simplyk est une entreprise d'économie sociale avec des valeurs ancrées dans le marbre
-                  p.text.text-center <b>Article 1 :</b>  Simplyk est et restera toujours gratuit pour les organismes
-                  p.text.text-center <b>Article 2 :</b>  Simplyk est et restera toujours gratuit pour les bénévoles
-                  p.text.text-center <b>Article 3 :</b>  L'engagement des bénévoles et le travail des organismes sont précieux, Simplyk existe pour les faciliter
-                  p.text.text-center <b>Article 4 :</b>  Simplyk se doit d'utiliser le meilleur de la technologie pour appliquer l'<b>Article 3</b>
-        .row.not-fullscreen-section--2#history
-          .section__title
-            h2.text-center Notre histoire
-            h3.text-center.subtitle Comment le projet a t-il vu le jour ?
-          .row
-            .col-md-4.col-md-offset-1
-              img.center-block(src='/images/our_history.jpg', style='box-shadow: 1px 1px 3px #363; margin-top: 20px; margin-bottom: 20px; max-height: 30vh')
-              h4.text-center François et Thibaut, co-fondateurs
-            .col-md-4.col-md-offset-2
-              .panel.panel-default(style='box-shadow: 1px 1px 1px #363;')
+                  a.pull-right(href='https://www.linkedin.com/in/francoisdekerret/' target="_blank")
+                    i.fa.fa-linkedin
+                  h3.text-center François
+                .panel-body.text-center
+                  img(src='images/francois.jpg').img-responsive.center-block.img-portrait
+                  .caption
+                    p
+                    p CEO, <small>Co-fondateur</small>
+            .col-md-4.col-xs-12
+              .panel.panel-default.panel-profile
                 .panel-heading
-                  span.pull-right.badge(style=('background-color : #363')) Histoire
-                  h2.subtitle.text-center Naissance de Simplyk
-                  img.center-block(src='images/birth_tune.svg', style='max-height: 13vh;')
-                .panel-body
-                  i.fa.fa-quote-left.fa-2x.fa-pull-left.fa-border
-                  p.text.text-center Quand François est arrivé à Montréal pour sa maîtrise en 2014, il a cherché à faire du bénévolat et a eu énormément de difficultés à trouver. En interviewant des gens autour de lui, il s'est aperçu qu'il n'était pas seul dans cette situation. Il a parlé de son problème à Thibaut, passionné de technologie web, et le projet Simplyk est né. Depuis ce jour nous avons travaillé sans relache à l’objectif de fournir un outil technologique aux bénévoles. La première version est sortie en juillet 2016, et depuis, chaque semaine est ponctuée d’améliorations.
-        .row.not-fullscreen-section--1#team
-          .section__title
-            h2.text-center L'équipe
+                  a.pull-right(href='https://www.linkedin.com/in/thibaut-jaurou/' target="_blank")
+                    i.fa.fa-linkedin
+                  h3.text-center Thibaut
+                .panel-body.text-center
+                  img(src='images/thibaut.jpg').img-responsive.center-block.img-portrait
+                  .caption
+                    p
+                    p CTO, <small>Co-fondateur</small>
+            .col-md-4.col-xs-12
+              .panel.panel-default.panel-profile
+                .panel-heading
+                  a.pull-right(href='https://www.linkedin.com/in/nolwendesire/' target="_blank")
+                    i.fa.fa-linkedin
+                  h3.text-center Nolwen
+                .panel-body.text-center
+                  img(src='https://media.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAAX-AAAAJGVlZWUxZjdjLTI5ODAtNDgzZS05ZWU2LWQ3MGRmZjg0NmVhNQ.jpg').img-responsive.center-block.img-portrait
+                  .caption
+                    p  
+                    p Responsable communauté
+            .col-md-4.col-xs-12
+              .panel.panel-default.panel-profile
+                .panel-heading
+                  a.pull-right(href='https://www.linkedin.com/in/ali-zniber-16467987/' target="_blank")
+                    i.fa.fa-linkedin
+                  h3.text-center Ali
+                .panel-body.text-center
+                  img(src='https://media.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAAifAAAAJGRjMGM1MTE1LTc3ZjUtNDc4OC1hMzQxLTI2YjMzYWZiNWM0MA.jpg').img-responsive.center-block.img-portrait
+                  .caption
+                    p  
+                    p Responsable organismes
+            .col-md-4.col-xs-12
+              .panel.panel-default.panel-profile
+                .panel-heading
+                  a.pull-right(href='https://www.linkedin.com/in/alison-stevens-874b5319/' target="_blank")
+                    i.fa.fa-linkedin
+                  h3.text-center Alison
+                .panel-body.text-center
+                  img(src='https://media.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAAx8AAAAJDczZjRkOWRkLTg1OGQtNDI3ZC1iZTFiLTFhMDZmNTJjOTY1Nw.jpg').img-responsive.center-block.img-portrait
+                  .caption
+                    p
+                    p Conseillère communautaire
+            .col-md-4.col-xs-12
+              .panel.panel-default.panel-profile
+                .panel-heading
+                  a.pull-right(href='https://www.linkedin.com/in/sebastianaristizabal/' target="_blank")
+                    i.fa.fa-linkedin
+                  h3.text-center Sébastian
+                .panel-body.text-center
+                  img(src='https://media.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAANaAAAAJDExNDFjZTZiLTBiYzMtNGU4OC04ZmIzLTVhNThmODExZDlhMw.jpg').img-responsive.center-block.img-portrait
+                  .caption
+                    p
+                    p Conseiller entrepreunarial
+    .row.not-fullscreen-section--2#partners
+      .section__title
+        h2.text-center(style='color: black') Partenaires
+      .row
+        .col-xs-10.col-xs-offset-1
           .row
-            .col-xs-10.col-xs-offset-1
-              .row
-                h3.text-center.subtitle Une équipe de feu pour un projet solidaire
-              .row(style='margin-top: 10vh;')
-                .col-md-3.col-xs-6
-                  .panel.panel-default.panel-profile
-                    .panel-heading
-                      a.pull-right(href='https://www.linkedin.com/in/francoisdekerret/' target="_blank")
-                        i.fa.fa-linkedin
-                      h3.text-center François
-                    .panel-body.text-center
-                      img(src='images/francois.jpg').img-responsive.center-block.img-portrait
-                      .caption
-                        p
-                        p CEO, <small>Co-fondateur</small>
-                .col-md-3.col-xs-6
-                  .panel.panel-default.panel-profile
-                    .panel-heading
-                      a.pull-right(href='https://www.linkedin.com/in/thibaut-jaurou/' target="_blank")
-                        i.fa.fa-linkedin
-                      h3.text-center Thibaut
-                    .panel-body.text-center
-                      img(src='images/thibaut.jpg').img-responsive.center-block.img-portrait
-                      .caption
-                        p
-                        p CTO, <small>Co-fondateur</small>
-                .col-md-3.col-xs-6
-                  .panel.panel-default.panel-profile
-                    .panel-heading
-                      a.pull-right(href='https://www.linkedin.com/in/nolwendesire/' target="_blank")
-                        i.fa.fa-linkedin
-                      h3.text-center Nolwen
-                    .panel-body.text-center
-                      img(src='https://media.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAAX-AAAAJGVlZWUxZjdjLTI5ODAtNDgzZS05ZWU2LWQ3MGRmZjg0NmVhNQ.jpg').img-responsive.center-block.img-portrait
-                      .caption
-                        p  
-                        p Responsable communauté
-                .col-md-3.col-xs-6
-                  .panel.panel-default.panel-profile
-                    .panel-heading
-                      a.pull-right(href='https://www.linkedin.com/in/ali-zniber-16467987/' target="_blank")
-                        i.fa.fa-linkedin
-                      h3.text-center Ali
-                    .panel-body.text-center
-                      img(src='https://media.licdn.com/mpr/mpr/shrinknp_400_400/AAEAAQAAAAAAAAifAAAAJGRjMGM1MTE1LTc3ZjUtNDc4OC1hMzQxLTI2YjMzYWZiNWM0MA.jpg').img-responsive.center-block.img-portrait
-                      .caption
-                        p  
-                        p Responsable organismes
-        .row.not-fullscreen-section--2#partners
-          .section__title
-            h2.text-center(style='color: black') Partenaires
-          .row
-            .col-xs-10.col-xs-offset-1
-              .row
-                h3.text-center.subtitle D'importants partenaires dans le milieu entrepreunarial et communautaire
-              .row(style='margin-top: 15vh;')
-                .col-md-2.col-xs-6.col-md-offset-1
-                  a(href='https://mobilisonslocal.ca/' target="_blank")
-                    img.center-block(src='http://veilleaction.org/images/Mobilisons_Local.PNG', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
-                .col-md-2.col-xs-6
-                  a(href='http://www.cabm.net/' target="_blank")
-                    img.center-block(src='https://www.arrondissement.com/userImgs/directory/logos/260x140/47073.jpg', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
-                .col-md-2.col-xs-6
-                  a(href='https://www.facebook.com/NOVA.HEC.MTL/' target="_blank")
-                    img.center-block(src='https://scontent.fyhu1-1.fna.fbcdn.net/v/t1.0-9/11248879_905913282832720_5434240178862469539_n.png?oh=4e0c2ee4d947892ce437c15046cfc846&oe=5945E769', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
-                .col-md-2.col-xs-6
-                  a(href='http://cjestlaurent.org/' target="_blank")
-                    img.center-block(src='http://cjestlaurent.org/wp-content/uploads/2016/04/Logo_CJE_hori.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
-                .col-md-2.col-xs-6
-                  a(href='https://lexstart.ca/' target="_blank")
-                    img.center-block(src='images/lexstart', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
-              .row(style='margin-top: 10vh;')
-                .col-md-2.col-xs-6.col-md-offset-1
-                  a(href='http://d3center.ca/en/home/' target="_blank")
-                    img.center-block(src='http://d3center.ca/wp-content/uploads/2016/08/D3-logo-print-nowords.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
-                .col-md-2.col-xs-6
-                  a(href='http://entrepreneuriat.poly-udem.ca/' target="_blank")
-                    img.center-block(src='http://entrepreneuriat.poly-udem.ca/profiles/minimal/themes/custom/lexus/logo.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
-                .col-md-2.col-xs-6
-                  a(href='http://cjecdn.qc.ca/' target="_blank")
-                    img.center-block(src='images/cje.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
-                .col-md-2.col-xs-6
-                  a(href='http://www.esplanademtl.org/' target="_blank")
-                    img.center-block(src='http://www.esplanademtl.org/wp-content/uploads/2015/10/logo-_esplanade-e1472753730414.jpg', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
-                .col-md-2.col-xs-6
-                  a(href='http://matv.ca/montreal' target="_blank")
-                    img.center-block(src='http://matv.ca/bundles/vox/images/logo-vox-ma-tv.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
-        .row.not-fullscreen-section--1#press
-          .section__title
-            h2.text-center Presse
-            h3.text-center.subtitle Simplyk dans les médias
-          .row(style='margin-top: 15vh; min-height: 50vh;')
-            .col-md-2.col-md-offset-2.col-xs-5.col-xs-offset-1
-              a(href='https://novae.ca/2016/12/simplyk-trouver-benevolat-correspond/' target="_blank")
-                .panel.panel-default
-                  .panel-heading(style='background-color: black; height: 12vh;')
-                    img.center-block(src='https://novae.ca/app/themes/novae/img/novae-logo-fr.png', style='max-width:100%; max-height:10vh; padding-top: auto; margin-bottom: auto')
-                  .panel-body.text-center(style='height: calc(100% - 12vh);')
-                    p(style='color: black') Novae parle de Simplyk
-            .col-md-2.col-xs-5
-              a(href='http://ici.radio-canada.ca/premiere/premiereplus/societe/85087/la-route-des-20-sur-les-traces-dune-generation' target="_blank")
-                .panel.panel-default
-                  .panel-heading(style='height: 12vh;')
-                    img.center-block(src='http://ici.radio-canada.ca/Content/_images/logo/svg/black/ici-radio-canada-ca.svg', style='max-width:100%; max-height:10vh; padding-top: auto; margin-bottom: auto')
-                  .panel-body.text-center(style='height: calc(100% - 12vh);')
-                    p(style='color: black') Simplyk parle de l'engagement des jeunes sur Radio Canada
-            .col-md-2.col-xs-5.col-xs-offset-1.col-md-offset-0
-              a(href='http://journalmetro.com/plus/carrieres/1085174/francois-de-kerret-un-jeune-homme%E2%80%A8-aux-grandes-ambitions/' target="_blank")
-                .panel.panel-default
-                  .panel-heading(style='height: 12vh; background-color: #006330;')
-                    img.center-block(src='images/metro.png', style='max-width:100%; max-height:10vh; padding-top: auto; margin-bottom: auto')
-                  .panel-body.text-center(style='height: calc(100% - 12vh);')
-                    p(style='color: black') Métro dresse le portrait de François, co-fondateur de Simplyk
-            .col-md-2.col-xs-5
-              a(href='http://cibl1015.com/' target="_blank")
-                .panel.panel-default
-                  .panel-heading(style='height: 12vh; background-color: black;')
-                    img.center-block(src='http://cibl1015.com/wp-content/uploads/2016/09/Logo_CIBL_2016.png', style='max-width:100%; max-height:10vh; padding-top: auto; margin-bottom: auto')
-                  .panel-body.text-center(style='height: calc(100% - 12vh);')
-                    p(style='color: black') Simplyk chez CIBL après sa victoire à À go on change le monde
-        #footer.row(style='background-color: black; min-height: 15vh; color: white;')
-          .col-md-2
-          .col-md-8
-            div.text-center
-              h3 Suivez-nous !
-              a(href="https://www.facebook.com/simplykMTL/?fref=ts")
-                i.fa.fa-facebook.fa-2x
-              a(href="https://twitter.com/simplykMTL")
-                i.fa.fa-twitter.fa-2x
-              a(href="https://angel.co/simplyk")
-                i.fa.fa-angellist.fa-2x
-              a(href="https://www.linkedin.com/company/simplyk")
-                i.fa.fa-linkedin.fa-2x
-          .col-md-2
-            h4 Crédits <i class="fa fa-creative-commons" aria-hidden="true"></i>
-            p <a href='https://thenounproject.com/term/seedling/659773/'>Seedling</a> by Peter K. / CC BY
-            p <a href='https://thenounproject.com/term/book-of-ester/304884/'>Book Of Ester</a> by Gilad Sotil / CC BY
-            p <a href='https://thenounproject.com/term/target/374837/'>Target</a> by Fernando Affonso / CC BY
+            h3.text-center.subtitle D'importants partenaires dans le milieu entrepreunarial et communautaire
+          .row(style='margin-top: 15vh;')
+            .col-md-2.col-xs-6.col-md-offset-1.hidden-xs
+              a(href='https://mobilisonslocal.ca/' target="_blank")
+                img.center-block(src='http://veilleaction.org/images/Mobilisons_Local.PNG', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+            .col-md-2.col-xs-6
+              a(href='http://www.cabm.net/' target="_blank")
+                img.center-block(src='https://www.arrondissement.com/userImgs/directory/logos/260x140/47073.jpg', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+            .col-md-2.col-xs-6
+              a(href='https://www.facebook.com/NOVA.HEC.MTL/' target="_blank")
+                img.center-block(src='https://scontent.fyhu1-1.fna.fbcdn.net/v/t1.0-9/11248879_905913282832720_5434240178862469539_n.png?oh=4e0c2ee4d947892ce437c15046cfc846&oe=5945E769', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+            .col-md-2.col-xs-6
+              a(href='http://cjestlaurent.org/' target="_blank")
+                img.center-block(src='http://cjestlaurent.org/wp-content/uploads/2016/04/Logo_CJE_hori.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+            .col-md-2.col-xs-6
+              a(href='https://lexstart.ca/' target="_blank")
+                img.center-block(src='images/lexstart', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+          .row(style='margin-top: 10vh;')
+            .col-md-2.col-xs-6.col-md-offset-1
+              a(href='http://d3center.ca/en/home/' target="_blank")
+                img.center-block(src='http://d3center.ca/wp-content/uploads/2016/08/D3-logo-print-nowords.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+            .col-md-2.col-xs-6
+              a(href='http://matv.ca/montreal' target="_blank")
+                img.center-block(src='http://matv.ca/bundles/vox/images/logo-vox-ma-tv.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+            .col-md-2.col-xs-6.hidden-xs
+              a(href='http://www.esplanademtl.org/' target="_blank")
+                img.center-block(src='http://www.esplanademtl.org/wp-content/uploads/2015/10/logo-_esplanade-e1472753730414.jpg', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+            .col-md-2.col-xs-6
+              a(href='http://cjecdn.qc.ca/' target="_blank")
+                img.center-block(src='images/cje.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+            .col-md-2.col-xs-6
+              a(href='http://entrepreneuriat.poly-udem.ca/' target="_blank")
+                img.center-block(src='http://entrepreneuriat.poly-udem.ca/profiles/minimal/themes/custom/lexus/logo.png', style='max-width:90%; max-height:15vh; padding-top: auto; margin-bottom: auto')
+    .row.not-fullscreen-section--1#press
+      .section__title
+        h2.text-center Presse
+        h3.text-center.subtitle Simplyk dans les médias
+      div(style='margin-top: 15vh; min-height: 50vh;')
+        .row
+          .col-md-2.col-md-offset-2.col-xs-6
+            a(href='https://novae.ca/2016/12/simplyk-trouver-benevolat-correspond/' target="_blank")
+              .panel.panel-default
+                .panel-heading(style='background-color: black; height: 12vh;')
+                  img.center-block(src='https://novae.ca/app/themes/novae/img/novae-logo-fr.png', style='max-width:100%; max-height:10vh; padding-top: auto; margin-bottom: auto')
+                .panel-body.text-center(style='height: calc(100% - 12vh);')
+                  p(style='color: black') Novae parle de Simplyk
+          .col-md-2.col-xs-6
+            a(href='http://ici.radio-canada.ca/premiere/premiereplus/societe/85087/la-route-des-20-sur-les-traces-dune-generation' target="_blank")
+              .panel.panel-default
+                .panel-heading(style='height: 12vh;')
+                  img.center-block(src='http://ici.radio-canada.ca/Content/_images/logo/svg/black/ici-radio-canada-ca.svg', style='max-width:100%; max-height:10vh; padding-top: auto; margin-bottom: auto')
+                .panel-body.text-center(style='height: calc(100% - 12vh);')
+                  p(style='color: black') Simplyk parle de l'engagement des jeunes sur Radio Canada
+          .col-md-2.col-xs-6.col-md-offset-0
+            a(href='http://journalmetro.com/plus/carrieres/1085174/francois-de-kerret-un-jeune-homme%E2%80%A8-aux-grandes-ambitions/' target="_blank")
+              .panel.panel-default
+                .panel-heading(style='height: 12vh; background-color: #006330;')
+                  img.center-block(src='images/metro.png', style='max-width:100%; max-height:10vh; padding-top: auto; margin-bottom: auto')
+                .panel-body.text-center(style='height: calc(100% - 12vh);')
+                  p(style='color: black') Métro dresse le portrait de François, co-fondateur de Simplyk
+          .col-md-2.col-xs-6
+            a(href='http://cibl1015.com/' target="_blank")
+              .panel.panel-default
+                .panel-heading(style='height: 12vh; background-color: black;')
+                  img.center-block(src='http://cibl1015.com/wp-content/uploads/2016/09/Logo_CIBL_2016.png', style='max-width:100%; max-height:10vh; padding-top: auto; margin-bottom: auto')
+                .panel-body.text-center(style='height: calc(100% - 12vh);')
+                  p(style='color: black') Simplyk chez CIBL après sa victoire à À go on change le monde
+        unless group
+          .row(style='padding-top: 5vh')
+            h4.text-center <b>Démarrer l'aventure</b>
+          .row.text-center
+            a.btn.btn-default(href='/register_volunteer' style='margin-top: 5px') En tant que bénévole
+          .row.text-center
+            a.btn.btn-info(href='/register_volunteer' style='margin-top: 5px') En tant qu'organisme
+    #footer.row(style='background-color: black; min-height: 15vh; color: white;')
+      .col-md-2
+      .col-md-8
+        div.text-center
+          h3 Suivez-nous !
+          a(href="https://www.facebook.com/simplykMTL/?fref=ts")
+            i.fa.fa-facebook.fa-2x
+          a(href="https://twitter.com/simplykMTL")
+            i.fa.fa-twitter.fa-2x
+          a(href="https://angel.co/simplyk")
+            i.fa.fa-angellist.fa-2x
+          a(href="https://www.linkedin.com/company/simplyk")
+            i.fa.fa-linkedin.fa-2x
+      .col-md-2
+        h4 Crédits <i class="fa fa-creative-commons" aria-hidden="true"></i>
+        p <a href='https://thenounproject.com/term/seedling/659773/'>Seedling</a> by Peter K. / CC BY
+        p <a href='https://thenounproject.com/term/book-of-ester/304884/'>Book Of Ester</a> by Gilad Sotil / CC BY
+        p <a href='https://thenounproject.com/term/target/374837/'>Target</a> by Fernando Affonso / CC BY
+        p <a href='https://thenounproject.com/term/hammer/677146/'>Hammer</a> by Joost Haar / CC BY
 
 
 block footscript
   script.
     $( document ).ready(function() {
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('g_visit_us');
+      }
+      if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+        $('.jumbotron p').css('font-size', 'small');
+      }
       $('#history-button').click(function(){
         $('html, body').animate({
           scrollTop: $('#history').offset().top - 50

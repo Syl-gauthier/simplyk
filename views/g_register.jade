@@ -1,81 +1,146 @@
 extends ./g_layout.jade
 block vars
   - var page = 'register'
+  - function createYearsArray(){var result_array = new Array(); for(var i = 2010; i > 1900; i--){result_array.push(i)}; return result_array;}
 block head
   title S'inscrire
   meta(name='description', content='Inscrivez-vous pour trouver du bénévolat, ou recruter des bénévoles')
+  style.
+    .form-input {padding: 3px;}
+    .law {font-size: 12px;}
+    .birth_inputs {padding: 0px;}
+    #fb-button {background-color: #3B5998; border-color: #3B5998; color:white}
+
+block share
+  #fb-root
+  script.
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v2.8&appId=1829081597379617";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+    function fb_connect(){
+      console.log('#fb-button click');
+      FB.login(function(response){
+        console.log('FB response : ' + JSON.stringify(response));
+        if (response.status == 'connected') {
+          console.log('FB connected');
+          FB.api('/'+response.authResponse.userID+'?fields=email,id,name,first_name,last_name,age_range,verified', function(response){
+            if (response && !response.error){
+              console.log(JSON.stringify(response));
+              $.post('/login', {'fb': true, 'user': response}, function(datas){
+                console.log('datas : ' + JSON.stringify(datas));
+                if (datas.redirection) {
+                  window.location.href = datas.redirection;
+                } else {
+                  window.location.href = '';
+                }
+              });
+            } else {
+              //TO WRITE
+            }
+          });
+        }
+      }, {scope: 'public_profile, email'});
+    }
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId: 1829081597379617,
+        xfbml: true,
+        version: 'v2.8'
+      });
+     }
+
 block content
       #map-section.container-fluid
         .row
-          .col-md-4.col-md-offset-4
+          .col-md-4.col-md-offset-4.col-xs-10.col-xs-offset-1
             .page-header
               h1 Inscription
               .alert.alert-danger.hidden#email-exists
                 | The email address you entered is already in use
               if error
                 p.alert.alert-danger #{error}
-                  .input-group.conn-input
+                  .input-group.form-input
                 label.control-label Adresse courriel
                 input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.io', name='email', aria-describedby='basic-addon1', required)
-          .col-md-2.col-md-offset-1
-            .page-header
-              h4 Ou si vous avez déjà un compte
-            a.btn.btn-default(href='/login') Se connecter
         .row
-          .col-md-4.col-md-offset-4
+          .col-md-4.col-md-offset-4.col-xs-10.col-xs-offset-1
             form#registerform(action="/register_#{type}", method="post", role='form')
               if type == 'volunteer'
+                .text-center#social-login__div
+                  .btn.btn-default#fb-button(onclick='return fb_connect();')
+                    i.fa.fa-facebook
+                    p.inline <b>Continuer avec Facebook</b>
+                p.text-center <b>OU</b>
                 .row
-                  .col-md-6
-                    .form-group.conn-input
-                      label.control-label Adresse courriel *
-                      input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.io', name='email', aria-describedby='basic-addon1', required)
-                    .form-group.conn-input
-                      label.control-label Prénom *
-                      input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', required)
-                    .form-group.conn-input
-                      label.control-label Nom *
-                      input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', required)
-                  .col-md-6
-                    .form-group.conn-input
-                      label.control-label Date de naissance *
-                      i.fa.fa-question-circle(data-toggle='tooltip' data-placement='top' title='Pour proposer du bénévolat adapté à ton âge')
-                      input#birthdate.form-control(type='date', placeholder='', name='birthdate', aria-describedby='basic-addon1' required)
-                    .form-group.conn-input
-                      label.control-label Numéro de téléphone
-                      input#mail.form-control(type='text', placeholder='Ex: 514 314 1592', name='phone', aria-describedby='basic-addon1')
-                    .form-group.conn-input
-                      label.control-label Définir un mot de passe *
-                      input#password.form-control(type='password', placeholder='', name='password', aria-describedby='basic-addon1', required)
-                .form-group.conn-input
+                  .form-input
+                    input#firstname.form-control(type='text', placeholder='Prénom', name='firstname', aria-describedby='basic-addon1', required)
+                  .form-input
+                    input#lastname.form-control(type='text', placeholder='Nom', name='lastname', aria-describedby='basic-addon1', required)
+                  .form-input
+                    input#mail.form-control(type='email', placeholder='Adresse email', name='email', aria-describedby='basic-addon1', required)
+                  .form-input
+                    label.control-label Date de naissance *
+                    i.fa.fa-question-circle(data-toggle='tooltip' data-placement='top' title='Pour proposer du bénévolat adapté à ton âge')
+                    .row
+                      .col-xs-5
+                        select.inline#birthdate_month.form-control(type='number', placeholder='Mois', name='birthdate_month', aria-describedby='basic-addon1' required)
+                          option(value='01') Janvier
+                          option(value='02') Février
+                          option(value='03') Mars
+                          option(value='04') Avril
+                          option(value='05') Mai
+                          option(value='06') Juin
+                          option(value='07') Juillet
+                          option(value='08') Août
+                          option(value='09') Septembre
+                          option(value='10') Octobre
+                          option(value='11') Novembre
+                          option(value='12') Décembre
+                      .col-xs-3.birth_inputs
+                        select#birthdate_day.form-control(type='number', placeholder='Jour', name='birthdate_day', aria-describedby='basic-addon1' required)
+                          each i in ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']
+                            option(value=i)= i
+                      .col-xs-4
+                        select.inline#birthdate_year.form-control(type='number', placeholder='Année', name='birthdate_year', aria-describedby='basic-addon1' required)
+                          each i in createYearsArray()
+                            option(value=i, id=i)= i
+                  .form-input
+                    input#password.form-control(type='password', placeholder='Définir un mot de passe', name='password', aria-describedby='basic-addon1', required)
+                  .form-input
+                    input#phone.form-control(type='text', placeholder='Téléphone (facultatif)', name='phone', aria-describedby='basic-addon1')
+                .form-input
                   input#admin_checkbox(type='checkbox' name='admin_checkbox') 
-                  |   Je suis actuellement inscrit dans un établissement scolaire
+                  |   <b>Je suis actuellement inscrit dans un établissement scolaire </b>
                   br
-                  .form-group.conn-input.hidden#admin_dropdown
+                  .form-input.hidden#admin_dropdown
                     label.control-label Établissement scolaire
                     select#admin.form-control(placeholder='', name='admin', aria-describedby='basic-addon1')
                       each school, school_i in schools_list
                         option= school
-                  .form-group.conn-input.hidden#classes_dropdown
+                  .form-input.hidden#classes_dropdown
                     label.control-label Classe
                     each client, client_i in clients
                       select.form-control.hidden(placeholder='', aria-describedby='basic-addon1', id=client.id, class='client_classes_item')
                         each classe, classe_i in client.classes
                           option= classe  
               if type == 'organism'
-                .form-group.conn-input
+                .form-group.form-input
                   label.control-label Nom de l'organisme *
                   input#mail.form-control(type='text', placeholder='Ex: Simplyk', name='name', aria-describedby='basic-addon1', required)
-                .form-group.conn-input
+                .form-group.form-input
                   label.control-label Mission de l'organisme *
                   textarea.form-control(rows='6', name='description', aria-describedby='basic-addon1',required) 
-                .form-group.conn-input
+                .form-group.form-input
                   label.control-label Numéro de téléphone *
                   input#mail.form-control(type='text', placeholder='Ex: 514 314 1592', name='phone', aria-describedby='basic-addon1', required)
-                .form-group.conn-input
+                .form-group.form-input
                   label.control-label Site web *
                   input#mail.form-control(type='text', placeholder='Ex: www.simplyk.io', name='website', aria-describedby='basic-addon1', required)
-                .form-group.conn-input
+                .form-group.form-input
                   label.control-label Cause
                   select#cause.form-control(placeholder='', name='cause', aria-describedby='basic-addon1')
                     option Nature
@@ -83,50 +148,54 @@ block content
                     option Sport et Culture
                     option Enfance
                 h2 Informations du responsable des bénévoles
-                .form-group.conn-input
+                .form-group.form-input
                   label.control-label Prénom *
                   input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', required)
-                .form-group.conn-input
+                .form-group.form-input
                   label.control-label Nom *
                   input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', required)
-                .form-group.conn-input
-                    label.control-label Adresse courriel *
-                    input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.io', name='email', aria-describedby='basic-addon1', required)
-                .form-group.conn-input
+                .form-group.form-input
+                  label.control-label Adresse courriel (liée à l'organisme) *
+                  i.fa.fa-question-circle(data-toggle='tooltip' data-placement='top' title='Si possible, une adresse courriel propre à l\'organisme, cela facilite la validation de l\'authenticité de l\'organisme')
+                  input#mail.form-control(type='email', placeholder='Ex: francois@simplyk.io', name='email', aria-describedby='basic-addon1', required)
+                .form-group.form-input
                   label.control-label Définir un mot de passe *
                   input#password.form-control(type='password', placeholder='', name='password', aria-describedby='basic-addon1', required)
-              //if type == 'admin'
-                .form-group.conn-input
-                  label.control-label Nom de l'organisation
-                  input#name.form-control(type='text', name='name', aria-describedby='basic-addon1', required)
-                .form-group.conn-input
-                  label.control-label Nom
-                  input#lastname.form-control(type='text', name='lastname', aria-describedby='basic-addon1', required)
-                .form-group.conn-input
-                  label.control-label Prénom
-                  input#firstname.form-control(type='text', placeholder='', name='firstname', aria-describedby='basic-addon1', required)
-                .form-group.conn-input
-                  label.control-label Type d'organisation
-                  select#type.form-control(placeholder='', name='type', aria-describedby='basic-addon1')
-                    option Entreprise
-                    option École
-              .form-group.conn-input
-                p.
+              .form-input
+                p.law(align='justify').
                   En cliquant sur le bouton "s'inscrire", j'accepte les <a href="\legal" target="_blank">conditions générales d'utilisation </a>. Si je suis mineur je dois prévenir un responsable avant de me rendre à une activité.
-              .form-group.conn-input
-                input.btn.btn-default#submit-button(type='submit', form='registerform', value='S \'inscrire', style='margin-bottom: 50px;')
+              .form-input.text-center
+                input.btn.btn-default#submit-button(type='submit', form='registerform', value='S\'inscrire')
+        .row
+          .col-md-2.col-md-offset-9.col-xs-10.col-xs-offset-1
+            .page-header.well
+              h4 Ou si tu as déjà un compte
+              a.btn.btn-default(href='/login') Se connecter
 block footscript
-  script(src="/bower_components/jquery-ui/ui/widgets/datepicker.js")
+  //script(src="/bower_components/jquery-ui/ui/widgets/datepicker.js")
   script.
     $(document).ready(function(){
+      'use strict';
+      var event_props = {};
+      if (window.location.pathname == '/register_organism'){
+        event_props.type = 'org';
+      } else if (window.location.pathname == '/register_volunteer') {
+        event_props.type = 'vol';
+      } else {
+        event_props.type = 'prob';
+      }
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('g_visit_register', event_props);
+      }
       var clients = !{JSON.stringify(clients)};
-      if ( $('#birthdate').prop('type') != 'date' ) {
+      $('#1995').attr('selected', true);
+      /*if ( $('#birthdate').prop('type') != 'date' ) {
         $('#birthdate').datepicker({
           changeMonth: true,
           changeYear: true,
           yearRange: "1950:2020"
         });
-      }
+      }*/
       $('#admin_checkbox').click(function(){
         $('#admin_dropdown').removeClass('hidden');
         $('#admin_dropdown').toggle(this.checked);
@@ -153,6 +222,14 @@ block footscript
     })
     var password = document.getElementById('password');
   script.
+    var event_props = {};
+    if (window.location.pathname == '/register_organism'){
+      event_props.type = 'org';
+    } else if (window.location.pathname == '/register_volunteer') {
+      event_props.type = 'vol';
+    } else {
+      event_props.type = 'prob';
+    }
     $('form#registerform').submit(function(e) {
         e.preventDefault(); // Prevent default post
         var form = $(this);
@@ -167,6 +244,10 @@ block footscript
                 //Remove the current event handler and submit
                 $('form#registerform').unbind('submit'); 
                 $('form#registerform').submit();
+                if (env == 'prod') {
+                  amplitude.getInstance().logEvent('g_register', event_props);
+                }
+                fbq('track', 'CompleteRegistration');
             }
         }
 

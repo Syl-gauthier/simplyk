@@ -76,3 +76,10 @@ block content
 			1. Vous avez le droit de supprimer votre compte<br>
 			2. Pour supprimer votre compte vous devez contacter simplyk pour demander une suppression du compte. Toutes vos informations seront irrémédiablement supprimées.<br>
 
+block footscript
+	script.
+		$( document ).ready(function(){
+			if (env == 'prod') {
+				amplitude.getInstance().logEvent('g_visit_legal');
+			}
+		});

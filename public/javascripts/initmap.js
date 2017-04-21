@@ -1,4 +1,5 @@
 function initMap() {
+  //<------------------------------------------
   'use strict';
   let markers = [];
   let adult_index = [];
@@ -9,7 +10,16 @@ function initMap() {
   let age_printed = 'all';
   let printed = 'all'; //Markers currently onscreen
   let markerCluster = {};
-
+  let filters = [1,1,1,1,0,0];
+  /*
+  0. 1 = Nature, 0 = Non-Nature
+  1. 1 = Solidarity, 0 = Non-Solidarity
+  2. 1 = Culture, 0 = Non-Culture
+  3. 1 = Children, 0 = Non-Children  
+  4. 0 = Kids, 1 = Adults    
+  5. 0 = All, 1 = Ponctuals, 2 = Longterms
+  *///--------------------------------------->
+  /*
   function listStar(i) {
     listElement = document.getElementById("offers-list").childNodes[0].childNodes[i];
     $(listElement).addClass('starring');
@@ -26,7 +36,9 @@ function initMap() {
     listElement = document.getElementById("offers-list").childNodes[0].childNodes[i];
     listElement.childNodes[2].childNodes[0].click();
     console.log(listElement.childNodes[2]);
-  }
+  }*/
+  
+  //<------------------------------------
 
   function setMapIfExists(map, i, type) {
     console.log('markers[14] : ' + JSON.stringify(acts[14]));
@@ -280,6 +292,7 @@ function initMap() {
     markerCluster = new MarkerClusterer(map, mks, options);
     return mks;
   };
+
   let scrollable = true;
 
   if (page == 'landing') {
@@ -306,7 +319,11 @@ function initMap() {
     minimumClusterSize: 15,
     imagePath: '/images/m'
   };
+  //--------------------------------->
 
+  function filterOnCategory(type) {
+    console.log(type);
+  }
 
 
   function filterByAge(map) {
@@ -335,17 +352,68 @@ function initMap() {
     }
   }
 
-
+  //<-----------------------------------------------------
   // Create legend
   const legend = document.createElement('div');
   legend.id = 'legend';
   let legend_content = [];
-  legend_content.push('<h5 class="leaf" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-envira fa-lg fa-fw leaf"></i> Nature </h5><br>');
-  legend_content.push('<h5 class="soli" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-heart fa-lg fa-fw soli"></i> Solidarité </h5><br>');
-  legend_content.push('<h5 class="cult" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-institution fa-lg fa-fw cult"></i> Sport et culture </h5><br>');
-  legend_content.push('<h5 class="child" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-child fa-lg fa-fw child"></i> Enfance </h5>');
+  legend_content.push('<h5 id="blop" class="leaf legend" filter="checked" type="leaf" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-envira fa-lg fa-fw leaf"></i> Nature </h5><br>');
+  legend_content.push('<h5 class="soli legend" filter="checked" type="soli" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-heart fa-lg fa-fw soli"></i> Solidarité </h5><br>');
+  legend_content.push('<h5 class="cult legend" filter="checked" type="cult" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-institution fa-lg fa-fw cult"></i> Sport et culture </h5><br>');
+  legend_content.push('<h5 class="child legend" filter="checked" type="child" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-child fa-lg fa-fw child"></i> Enfance </h5>');
   legend.innerHTML = legend_content.join('');
   legend.index = 1;
+
+  legend.childNodes[0].addEventListener('click', function(event) {
+    console.info('Nature filter ');
+    if ($(this).attr('filter') == 'checked') {
+      $(this).attr('filter', 'unchecked');
+      $(this).removeClass('leaf');
+      $(this).children().removeClass('leaf');
+      hideCategory('leaf');
+    } else {
+      $(this).attr('filter', 'checked');
+      $(this).addClass('leaf');
+      $(this).children().addClass('leaf');
+      showCategory('leaf');
+    }
+  });
+  legend.childNodes[2].addEventListener('click', function(event) {
+    console.info('Solidarity filter');
+    if ($(this).attr('filter') == 'checked') {
+      $(this).attr('filter', 'unchecked');
+      $(this).removeClass('soli');
+      $(this).children().removeClass('soli');
+    } else {
+      $(this).attr('filter', 'checked');
+      $(this).addClass('soli');
+      $(this).children().addClass('soli');
+    }
+  });
+  legend.childNodes[4].addEventListener('click', function(event) {
+    console.info('Soprt and culture filter');
+    if ($(this).attr('filter') == 'checked') {
+      $(this).attr('filter', 'unchecked');
+      $(this).removeClass('cult');
+      $(this).children().removeClass('cult');
+    } else {
+      $(this).attr('filter', 'checked');
+      $(this).addClass('cult');
+      $(this).children().addClass('cult');
+    }
+  });
+  legend.childNodes[6].addEventListener('click', function(event) {
+    console.info('Children filter');
+    if ($(this).attr('filter') == 'checked') {
+      $(this).attr('filter', 'unchecked');
+      $(this).removeClass('child');
+      $(this).children().removeClass('child');
+    } else {
+      $(this).attr('filter', 'checked');
+      $(this).addClass('child');
+      $(this).children().addClass('child');
+    }
+  });
   map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
   // Create localization search bar
   const localization_bar_div = document.createElement('div');
@@ -360,11 +428,12 @@ function initMap() {
   map.controls[google.maps.MapTypeControlStyle.HORIZONTAL_BAR].push(localization_bar_div);
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(localization_bar_div);
   markers = generateMarkers(map, markers);
+
+  //----------------------------------------------------->
+
   if (page == 'landing') {
     filterByAge(map);
   };
-
-
 
   //MARKERS FILTERING ON MAP MOUVEMENT
 
@@ -542,11 +611,13 @@ function initMap() {
       filterOnLocation();
     }
   });
+
   $('#age_filter').click(function() {
     filterByAge(map);
     filterOnLocation();
   });
 
+  //<---------------------------------------------
   google.maps.event.addListenerOnce(map, 'tilesloaded', initAutocomplete);
   //AUTOCOMPLETE input
   function initAutocomplete() {
@@ -599,4 +670,5 @@ function initMap() {
       });
     }
   };
+  //----------------------------------------->
 }
