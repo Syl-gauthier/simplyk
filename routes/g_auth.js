@@ -282,13 +282,13 @@ router.post('*/logout', function(req, res, next) {
 });
 
 /* GET Registration Page */
-router.get('/register_organism', function(req, res) {
+router.get('*/register_organism', function(req, res) {
   res.render('g_register.jade', {
     type: 'organism'
   });
 });
 
-router.get('/register_volunteer', function(req, res, next) {
+router.get('*/register_volunteer', function(req, res, next) {
   //Get schools_list
   school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
     if (err) {
