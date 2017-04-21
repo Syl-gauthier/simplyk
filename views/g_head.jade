@@ -39,15 +39,14 @@ link(rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.
 // Google Sign-in
 //script(src='https://apis.google.com/js/platform.js', async='', defer='')
 
-//Mouseflow
-script(type="text/javascript").
-	var _mfq = _mfq || [];
-		(function() {
-		var mf = document.createElement("script");
-		mf.type = "text/javascript"; mf.async = true;
-		mf.src = "//cdn.mouseflow.com/projects/e665618e-dba7-4b8e-8890-22cf4c057537.js";
-		document.getElementsByTagName("head")[0].appendChild(mf);
-	})();
+// Lucky Orange
+script(type='text/javascript').
+	window.__lo_site_id = 80699;
+	(function() {
+		var wa = document.createElement('script'); wa.type = 'text/javascript'; wa.async = true;
+		wa.src = 'https://d10lpsik1i8c69.cloudfront.net/w.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(wa, s);
+	  })();
 
 //FB pixel
 script.
