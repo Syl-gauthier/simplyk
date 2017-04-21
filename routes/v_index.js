@@ -827,8 +827,6 @@ function sendEmailOneDayBeforeEvent(event_date, volunteer, activity, start_time,
     start_date_to_send = moment(start_date).format('dddd D MMMM');
   }
 
-
-
   agenda.schedule(moment(dayBefore).toDate(), 'sendDayBeforeEmail', {
     firstname: volunteer.firstname,
     lastname: volunteer.lastname,

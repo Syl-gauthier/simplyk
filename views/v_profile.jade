@@ -70,13 +70,13 @@ block content
         .col-md-5
           .media.tp-15(style='margin-top: 6%')
             .col-md-4.col-xs-6.text-center
-              .well.rank__well(class=badges[0]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title='Tu as validé le niveau Débutant en finalisant ton inscription !')
+              .well.rank__well(class=badges[0]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title='Tu as validé le niveau Intentionné en finalisant ton inscription !')
                 img.rank__img(src='/images/dog_ballon'+ badges[0] +'.svg')
-                p.rank__subtitle <b>Débutant</b>
+                p.rank__subtitle <b>Intentionné</b>
             .col-md-4.col-xs-6.text-center(data-toggle='modal' data-target='#share_modal' style='cursor: pointer')
-              .well.rank__well(class=badges[1]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title=badges[1]>0 ? (badges[2]<5 ? 'Pour débloquer le badge Populaire de niveau ' + (badges[1]+1) + ', il te faut inviter ' + getTooltipText(1, badges[1]) + ' amis au total sur la plateforme': 'Félicitation, tu es aussi Populaire que Gandhi !'):'Pour débloquer le badge Populaire de niveau 1, il te faut inviter 2 amis sur la plateforme')
+              .well.rank__well(class=badges[1]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title=badges[1]>0 ? (badges[2]<5 ? 'Pour devenir Ambassadeur de niveau ' + (badges[1]+1) + ', invite ' + getTooltipText(1, badges[1]) + ' amis au total sur la plateforme': 'Félicitation, tu es Maître Ambassadeur, point de départ d\'une tonne de bonnes actions !'):'Pour devenir Ambassadeur de niveau 1, invite 2 amis sur la plateforme')
                 img.rank__img(src='/images/porte_voix'+ badges[1] +'.svg')
-                p.rank__subtitle <b>Populaire</b>
+                p.rank__subtitle <b>Ambassadeur</b>
             #share_modal.modal.fade(role='dialog' aria-labelledby='modalShareLabel')
               .modal-dialog(role='document')
                 .modal-content
@@ -91,19 +91,19 @@ block content
                   .modal-footer
                     a.btn.btn-default(data-dismiss='modal') Fermer
             .col-md-4.col-xs-6.text-center
-              .well.rank__well(class=badges[2]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title=badges[2]>0 ? (badges[2]<5 ? 'Pour débloquer le badge Marathonien de niveau ' + (badges[2]+1) + ', il te faut valider ' + getTooltipText(2, badges[2]) + 'h de participation en engagement long terme' : 'Félicitation, tu es Maître Marathonien !'):'Pour débloquer le badge Marathonien de niveau 1, il te faut valider une participation dans un engagement long terme')
+              .well.rank__well(class=badges[2]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="top" title=badges[2]>0 ? (badges[2]<5 ? 'Pour devenir Marathonien de niveau ' + (badges[2]+1) + ', valide ' + getTooltipText(2, badges[2]) + 'h de participation en engagement long terme' : 'Félicitation, tu es Maître Marathonien !'):'Pour devenir Marathonien de niveau 1, valide une participation dans un engagement long terme')
                 img.rank__img(src='/images/yeezy'+ badges[2] +'.svg')
                 p.rank__subtitle <b>Marathonien</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well(class=badges[3]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[3]>0 ? (badges[3]<5 ? 'Pour débloquer le badge Gourou de niveau ' + (badges[3]+1) + ', il te faut valider au moins une participation dans un évènement ponctuel, une dans un engagement long terme et ' + getTooltipText(3, badges[3]) + 'h totales de participation': 'Félicitation, tu es Gourou Absolu !'):'Pour débloquer le badge Gourou de niveau 1, il te faut valider une participation dans un évènement ponctuel et une dans un engagement long terme')
+              .well.rank__well(class=badges[3]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[3]>0 ? (badges[3]<5 ? 'Pour suivre les pas de Gandhi au niveau ' + (badges[3]+1) + ', valide au moins une participation dans un évènement ponctuel, une dans un engagement long terme et ' + getTooltipText(3, badges[3]) + 'h totales de participation': 'Félicitation, Gandhi est fier de toi !'):'Pour suivre les pas de Gandhi au niveau 1, valide une participation dans un évènement ponctuel et une dans un engagement long terme')
                 img.rank__img(src='/images/bienfaiteur'+ badges[3] +'.svg')
-                p.rank__subtitle <b>Gourou</b>
+                p.rank__subtitle <b>Gandhi</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well(class=(badges[4]>0 && badges[4]!=404) ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[4]>0 ? (badges[4]<5 ? 'Pour débloquer le badge Fan de niveau ' + (badges[4]+1) + ', il te faut comptabiliser au moins ' + getTooltipText(4, badges[4]) + ' connexions à la plateforme': (badges[4]==404 ? 'Problème de badge' : 'Félicitation, tu es Fan Absolu !')):'Pour débloquer le badge Fan de niveau 1, il te faut comptabiliser au moins 10 connexions à la plateforme')
+              .well.rank__well(class=(badges[4]>0 && badges[4]!=404) ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[4]>0 ? (badges[4]<5 ? 'Pour devenir Motivé de niveau ' + (badges[4]+1) + ', il te faut comptabiliser au moins ' + getTooltipText(4, badges[4]) + ' connexions à la plateforme': (badges[4]==404 ? 'Problème de badge' : 'Félicitation, ta motivation est sans borne et ta bienfaisance se ressent autour de toi !')):'Pour devenir Motivé de niveau 1, il te faut comptabiliser au moins 10 connexions à la plateforme')
                 img.rank__img(src=(badges[4]!=404 ? '/images/whale'+ badges[4] +'.svg':''))
-                p.rank__subtitle <b>Fan</b>
+                p.rank__subtitle <b>Motivé</b>
             .col-md-4.col-xs-6.text-center
-              .well.rank__well(class=badges[5]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[5]>0 ? (badges[5]<5 ? 'Pour débloquer le badge Sprinter de niveau ' + (badges[5]+1) + ', il te faut valider ' + getTooltipText(5, badges[5]) + 'h de participation en évènement ponctuel': 'Félicitation, tu es Maître Sprinter !') :'Pour débloquer le badge Sprinter de niveau 1, il te faut valider une participation dans un évènement ponctuel')
+              .well.rank__well(class=badges[5]>0 ? '':'rank__well--not' data-toggle="tooltip" data-placement="bottom" title=badges[5]>0 ? (badges[5]<5 ? 'Pour devenir Sprinter de niveau ' + (badges[5]+1) + ', valide ' + getTooltipText(5, badges[5]) + 'h de participation en évènement ponctuel': 'Félicitation, tu es le Usain Bolt du bénévolat !') :'Pour devenir Sprinter de niveau 1, valide une participation dans un évènement ponctuel')
                 img.rank__img(src='/images/shoes_punch'+ badges[5] +'.svg')
                 p.rank__subtitle <b>Sprinter</b>
     if events_past.length || events_denied.length || first_lt_denied || first_ext_denied || longterm_waiting
