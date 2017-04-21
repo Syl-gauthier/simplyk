@@ -699,7 +699,7 @@ router.post('/forgottenpassword', function(req, res, next) {
       next(err);
       console.error(err);
       res.status(404).send({
-        error: 'Problème de serveur : réessayer et sinon contactez nous à francois@simplyk.org'
+        error: 'Problème de serveur : réessayer et sinon contactez nous à contact@simplyk.io'
       });
     } else if (doc) {
       console.info('Password forgotten : volunteer password changed');
@@ -720,7 +720,7 @@ router.post('/forgottenpassword', function(req, res, next) {
           next(err);
           console.error(err);
           res.status(404).send({
-            error: 'Problème de serveur : réessayer et sinon contactez nous à francois@simplyk.org'
+            error: 'Problème de serveur : réessayer et sinon contactez nous à contact@simplyk.io'
           });
         } else if (doc) {
           console.info('Password forgotten : admin password changed');
@@ -741,7 +741,7 @@ router.post('/forgottenpassword', function(req, res, next) {
               next(err);
               console.error(err);
               res.status(404).send({
-                error: 'Problème de serveur : réessayer et sinon contactez nous à francois@simplyk.org'
+                error: 'Problème de serveur : réessayer et sinon contactez nous à contact@simplyk.io'
               });
             } else if (doc) {
               console.info('Password forgotten : organism password changed');
