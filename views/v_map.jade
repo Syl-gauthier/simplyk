@@ -8,6 +8,7 @@ block vars
 block head
   title Carte
   meta(name='description', content='Opportunités de bénévolat à Montréal')
+
 block content
   each act, index in activities
     div(tabindex='-1', role='dialog', class='modal fade ' + act._id)
@@ -16,9 +17,14 @@ block content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
-          .modal-body.my-modal-body
+            .h4.modal-title #{act.event_intitule} <small>par</small> 
+              a.inline(href='/all/organism/'+act.org_id)=act.org_name
+          .modal-body
             h4 <b>#{act.intitule}</b>
+            if act.impact
+              .well.well--sk 
+                i.fa.fa-border.fa-pull-left.fa-quote-left
+                p.text-center #{act.impact}
             p #{act.description}
             table.table
               tr
@@ -53,7 +59,7 @@ block content
               span(aria-hidden='true') &times;        
             #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> 
               a.inline(href='/all/organism/'+lt.long_term.org_id)=lt.org_name
-          .modal-body.my-modal-body
+          .modal-body
             h4 <b>#{lt.long_term.intitule}</b>
             p #{lt.long_term.description}
             p <b>Adresse : </b> #{lt.long_term.address}

@@ -538,6 +538,17 @@ var BasicInfos = function (_React$Component7) {
 					),
 					_react2.default.createElement('input', { type: 'text', className: 'form-control', id: 'intitule_event', name: 'intitule_event', required: true })
 				),
+				_react2.default.createElement('p', { id: 'address_result', 'class': 'hidden' }),
+				_react2.default.createElement(
+					'div',
+					{ className: 'input-group conn-input' },
+					_react2.default.createElement(
+						'span',
+						{ className: 'input-group-addon' },
+						'Description de l\'\xE9v\xE8nement'
+					),
+					_react2.default.createElement('textarea', { className: 'form-control', id: 'description', name: 'event_description', rows: '6', required: true })
+				),
 				_react2.default.createElement(
 					'div',
 					{ className: 'input-group conn-input', id: 'address_container' },
@@ -547,17 +558,6 @@ var BasicInfos = function (_React$Component7) {
 						'Adresse de l\'\xE9v\xE8nement'
 					),
 					_react2.default.createElement('input', { type: 'address', className: 'form-control', id: 'address', name: 'address', placeholder: 'Indiquez un lieu UNIQUE (format: n\xB0 de rue, nom de rue, ville)', required: true })
-				),
-				_react2.default.createElement('p', { id: 'address_result', 'class': 'hidden' }),
-				_react2.default.createElement(
-					'div',
-					{ className: 'input-group' },
-					_react2.default.createElement(
-						'span',
-						{ className: 'input-group-addon' },
-						'Description de l\'\xE9v\xE8nement'
-					),
-					_react2.default.createElement('textarea', { className: 'form-control', id: 'description', name: 'event_description', rows: '6', required: true })
 				),
 				_react2.default.createElement(
 					'div',
