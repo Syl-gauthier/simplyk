@@ -55,6 +55,7 @@ var OrganismSchema = new Schema({
 		expiration_date: Date,
 		min_hours: Number,
 		slot: String,
+		impact: String,
 		vol_nb: Number,
 		language: String,
 		min_age: Number,

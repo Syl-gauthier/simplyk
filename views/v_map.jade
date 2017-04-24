@@ -61,6 +61,10 @@ block content
               a.inline(href='/all/organism/'+lt.long_term.org_id)=lt.org_name
           .modal-body
             h4 <b>#{lt.long_term.intitule}</b>
+            if lt.long_term.impact
+              .well.well--sk 
+                i.fa.fa-border.fa-pull-left.fa-quote-left
+                p.text-center #{lt.long_term.impact}
             p #{lt.long_term.description}
             p <b>Adresse : </b> #{lt.long_term.address}
             if lt.long_term.min_age
