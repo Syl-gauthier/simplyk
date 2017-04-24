@@ -183,12 +183,12 @@ var TimePicker = function (_React$Component3) {
 		value: function render() {
 			if (this.props.required == 'true') {
 				if (this.props.checked == 'true') {
-					return _react2.default.createElement('input', { type: 'text', key: this.props.name, ref: 'timepicker', name: this.props.name, value: this.state.value, className: 'timepicker form-control', placeholder: this.props.placeholder /*onBlur={this.props.validate(this.state.value)}*/, required: true });
+					return _react2.default.createElement('input', { type: 'text', key: this.props.name, ref: 'timepicker', name: this.props.name, value: this.state.value, className: 'timepicker form-control white', placeholder: this.props.placeholder /*onBlur={this.props.validate(this.state.value)}*/, required: true });
 				} else {
-					return _react2.default.createElement('input', { type: 'text', key: this.props.name, ref: 'timepicker', name: this.props.name, value: this.state.value, className: 'timepicker form-control', placeholder: this.props.placeholder /*onBlur={this.props.validate(this.state.value)}*/, disabled: true });
+					return _react2.default.createElement('input', { type: 'text', key: this.props.name, ref: 'timepicker', name: this.props.name, value: this.state.value, className: 'timepicker form-control grey', placeholder: this.props.placeholder /*onBlur={this.props.validate(this.state.value)}*/, disabled: true });
 				}
 			} else {
-				return _react2.default.createElement('input', { type: 'text', key: this.props.name, ref: 'timepicker', name: this.props.name, value: this.state.value, className: 'timepicker form-control', placeholder: this.props.placeholder /*onBlur={this.props.validate(this.state.value)}*/ });
+				return _react2.default.createElement('input', { type: 'text', key: this.props.name, ref: 'timepicker', name: this.props.name, value: this.state.value, className: 'timepicker form-control grey', placeholder: this.props.placeholder /*onBlur={this.props.validate(this.state.value)}*/ });
 			}
 		}
 	}]);

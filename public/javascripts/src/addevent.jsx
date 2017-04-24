@@ -122,14 +122,14 @@ class TimePicker extends React.Component {
 			if (this.props.required == 'true'){
 				if (this.props.checked == 'true'){
 					return (
-						<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ required/>);
+						<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control white" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ required/>);
 				} else {
 					return (
-						<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ disabled/>);
+						<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control grey" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ disabled/>);
 				}
 			} else {
 				return (
-					<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*//>);
+					<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control grey" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*//>);
 			}
 		}
 }
