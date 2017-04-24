@@ -1,10 +1,7 @@
 var assert = require('assert');
 var emailer = require('./emailer.js');
 
-
-
-
-describe('email/emailer.js', function () {
+describe.skip('email/emailer.js', function () {
   var content = {
       customMessage: 'This is an automated test message',
       link: 'www.foo.foo',
