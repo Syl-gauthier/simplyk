@@ -226,15 +226,20 @@ block footscript
     let group = !{JSON.stringify(group)};
     $(document).ready(function(){
       $('#offers-list-logged').outerHeight(($('#map-left').outerHeight(true) - $('#filter_div').outerHeight(true)) - $('#search_div').outerHeight(true));
+      console.log('group : ' + group);
       if (env == 'prod') {
         if (group == 'volunteer'){
-          let user_id = !{JSON.stringify(volunteer._id)};
-          let email = !{JSON.stringify(volunteer.email)};
-          let firstname = !{JSON.stringify(volunteer.firstname)};
-          let lastname = !{JSON.stringify(volunteer.lastname)};
-          let age = !{JSON.stringify(age)};
+          let volunteer = !{JSON.stringify(volunteer)};
+          let user_id = volunteer._id;
+          let email = volunteer.email;
+          let firstname = volunteer.firstname;
+          let lastname = volunteer.lastname;
+          let age = volunteer.age;
+          let school_name = (volunteer.school_name ? volunteer.school_name : 'adult');
+          let school_id = (volunteer.school_id ? volunteer.school_id : 'no-client');
           amplitude.getInstance().setUserId(user_id);
           let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', firstname + ' ' + lastname).setOnce('group', group).setOnce('age', age);
+          identify.setOnce('school_id', school_id).setOnce('school_name', school_name);
           amplitude.getInstance().identify(identify);
           amplitude.getInstance().logEvent('v_visit_map');
         } else if (group == 'organism') {

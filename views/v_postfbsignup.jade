@@ -97,11 +97,15 @@ block footscript
   script.
     $(document).ready(function(){
       'use strict';
+      var event_props = {};
+      event_props.type = 'vol';
+      var password = document.getElementById('password');
       if (env == 'prod') {
         amplitude.getInstance().logEvent('g_visit_postFBregister');
-        amplitude.getInstance().logEvent('g_visit_register', {'type': 'vol'});
+        amplitude.getInstance().setUserProperties({'group', 'vol'});
       }
       var clients = !{JSON.stringify(clients)};
+      $('#1995').attr('selected', true);
       $('#admin_checkbox').click(function(){
         $('#admin_dropdown').removeClass('hidden');
         $('#admin_dropdown').toggle(this.checked);
@@ -125,37 +129,33 @@ block footscript
           }
         }
       });
-    })
-    var password = document.getElementById('password');
-  script.
-    var event_props = {};
-    event_props.type = 'vol';
+    });
     $('form#registerform').submit(function(e) {
-        e.preventDefault(); // Prevent default post
-        var form = $(this);
+      e.preventDefault(); // Prevent default post
+      var form = $(this);
 
-        function onSuccess(response) {
-            if(response.exists) {
-                console.log('Email already exists'); 
-                $('#email-exists').removeClass('hidden');
-                window.scrollTo(0,0);
-            }
-            else{
-                //Remove the current event handler and submit
-                $('form#registerform').unbind('submit'); 
-                $('form#registerform').submit();
-                if (env == 'prod') {
-                  amplitude.getInstance().logEvent('g_register', event_props);
-                }
-            }
-        }
+      function onSuccess(response) {
+          if(response.exists) {
+              console.log('Email already exists'); 
+              $('#email-exists').removeClass('hidden');
+              window.scrollTo(0,0);
+          } else{
+              //Remove the current event handler and submit
+              $('form#registerform').unbind('submit'); 
+              $('form#registerform').submit();
+              if (env == 'prod') {
+                amplitude.getInstance().setGroup('user', ['vol', 'facebook']);
+                amplitude.getInstance().logEvent('g_register', event_props);
+              }
+          }
+      }
 
-        $.ajax({
-            type: 'POST',
-            url: 'register_check', 
-            data: form.serialize(),
-            success: onSuccess
-        });
+      $.ajax({
+          type: 'POST',
+          url: 'register_check', 
+          data: form.serialize(),
+          success: onSuccess
+      });
     });
     $(function () {
       $('[data-toggle="tooltip"]').tooltip()
