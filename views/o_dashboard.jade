@@ -368,12 +368,17 @@ block footscript
       let group = !{JSON.stringify(group)};
       if (env == 'prod') {
         if (group == 'organism') {
-          let user_id = !{JSON.stringify(organism._id)};
-          let email = !{JSON.stringify(organism.email)};
-          let org_name = !{JSON.stringify(organism.org_name)};
+          let organism = !{JSON.stringify(organism)};
+          let user_id = organism._id;
+          let email = organism.email;
+          let events_nb = organism.events.length;
+          let lt_nb = organism.long_terms.length;
+          let email = organism.email;
+          let org_name = organism.org_name;
           amplitude.getInstance().setUserId(user_id);
           let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', org_name).setOnce('group', group);
           amplitude.getInstance().identify(identify);
+          amplitude.getInstance().setUserProperties({'lts_nb': lt_nb, 'events_nb': events_nb});
           amplitude.getInstance().logEvent('o_visit_dashboard');
         } else {
           amplitude.getInstance().logEvent('a_visit_dashboard');

@@ -8,6 +8,7 @@ block vars
 block head
   title Carte
   meta(name='description', content='Opportunités de bénévolat à Montréal')
+
 block content
   each act, index in activities
     div(tabindex='-1', role='dialog', class='modal fade ' + act._id)
@@ -16,9 +17,14 @@ block content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
-          .modal-body.my-modal-body
+            .h4.modal-title #{act.event_intitule} <small>par</small> 
+              a.inline(href='/all/organism/'+act.org_id)=act.org_name
+          .modal-body
             h4 <b>#{act.intitule}</b>
+            if act.impact
+              .well.well--sk 
+                i.fa.fa-border.fa-pull-left.fa-quote-left
+                p.text-center #{act.impact}
             p #{act.description}
             table.table
               tr
@@ -53,8 +59,12 @@ block content
               span(aria-hidden='true') &times;        
             #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> 
               a.inline(href='/all/organism/'+lt.long_term.org_id)=lt.org_name
-          .modal-body.my-modal-body
+          .modal-body
             h4 <b>#{lt.long_term.intitule}</b>
+            if lt.long_term.impact
+              .well.well--sk 
+                i.fa.fa-border.fa-pull-left.fa-quote-left
+                p.text-center #{lt.long_term.impact}
             p #{lt.long_term.description}
             p <b>Adresse : </b> #{lt.long_term.address}
             if lt.long_term.min_age
@@ -216,15 +226,20 @@ block footscript
     let group = !{JSON.stringify(group)};
     $(document).ready(function(){
       $('#offers-list-logged').outerHeight(($('#map-left').outerHeight(true) - $('#filter_div').outerHeight(true)) - $('#search_div').outerHeight(true));
+      console.log('group : ' + group);
       if (env == 'prod') {
         if (group == 'volunteer'){
-          let user_id = !{JSON.stringify(volunteer._id)};
-          let email = !{JSON.stringify(volunteer.email)};
-          let firstname = !{JSON.stringify(volunteer.firstname)};
-          let lastname = !{JSON.stringify(volunteer.lastname)};
-          let age = !{JSON.stringify(age)};
+          let volunteer = !{JSON.stringify(volunteer)};
+          let user_id = volunteer._id;
+          let email = volunteer.email;
+          let firstname = volunteer.firstname;
+          let lastname = volunteer.lastname;
+          let age = volunteer.age;
+          let school_name = (volunteer.school_name ? volunteer.school_name : 'adult');
+          let school_id = (volunteer.school_id ? volunteer.school_id : 'no-client');
           amplitude.getInstance().setUserId(user_id);
           let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', firstname + ' ' + lastname).setOnce('group', group).setOnce('age', age);
+          identify.setOnce('school_id', school_id).setOnce('school_name', school_name);
           amplitude.getInstance().identify(identify);
           amplitude.getInstance().logEvent('v_visit_map');
         } else if (group == 'organism') {

@@ -81,6 +81,14 @@ body{
 	max-height: 50px;
 }
 
+.well--sk {
+	border: 1px solid #5bcf8f;
+}
+
+.well--sk>p {
+	margin: 0 0 0px;
+}
+
 .activity {
 	background-color: #5BCF8F !important;
 }
@@ -527,9 +535,9 @@ body{
 	background-color: #8BE78F;
 }
 
-.my-modal-body {
-	color: white;
-	background-color: #5BCF8F;
+.modal-body--sk {
+	color: black;
+	background-color: #f2f2f2;
 }
 
 .pinkow {

@@ -177,9 +177,9 @@ block footscript
     $(document).ready(function(){
       'use strict';
       var event_props = {};
-      if (window.location.pathname == '/register_organism'){
+      if (window.location.href.includes('organism')){
         event_props.type = 'org';
-      } else if (window.location.pathname == '/register_volunteer') {
+      } else if (window.location.href.includes('volunteer')) {
         event_props.type = 'vol';
       } else {
         event_props.type = 'prob';
@@ -223,9 +223,9 @@ block footscript
     var password = document.getElementById('password');
   script.
     var event_props = {};
-    if (window.location.pathname == '/register_organism'){
+    if (window.location.href.includes('organism')){
       event_props.type = 'org';
-    } else if (window.location.pathname == '/register_volunteer') {
+    } else if (window.location.href.includes('volunteer')) {
       event_props.type = 'vol';
     } else {
       event_props.type = 'prob';
@@ -245,6 +245,7 @@ block footscript
                 $('form#registerform').unbind('submit'); 
                 $('form#registerform').submit();
                 if (env == 'prod') {
+                  amplitude.getInstance().setGroup('user', [event_props.type, 'classic']);
                   amplitude.getInstance().logEvent('g_register', event_props);
                 }
                 fbq('track', 'CompleteRegistration');

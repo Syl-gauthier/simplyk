@@ -63,6 +63,7 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 				intitule: req.body.title,
 				description: req.body.description,
 				address: req.body.address,
+				impact: req.body.impact,
 				lat: lat,
 				lon: lon,
 				expiration_date: req.body.expiration_date_submit,

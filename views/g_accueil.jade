@@ -27,6 +27,10 @@ block content
             #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
           .modal-body.my-modal-body
             h4 <b>#{act.intitule}</b>
+            if act.impact
+              .well.well--sk 
+                i.fa.fa-border.fa-pull-left.fa-quote-left
+                p.text-center #{act.impact}
             p #{act.description}
             p <b>Adresse : </b> #{act.address}
             table.table
@@ -61,6 +65,10 @@ block content
             #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> <b>#{lt.org_name}</b>
           .modal-body.my-modal-body
             h4 <b>#{lt.long_term.intitule}</b>
+            if lt.long_term.impact
+              .well.well--sk 
+                i.fa.fa-border.fa-pull-left.fa-quote-left
+                p.text-center #{lt.long_term.impact}
             p #{lt.long_term.description}
             p <b>Adresse : </b> #{lt.long_term.address}
             if lt.long_term.min_age
@@ -211,31 +219,31 @@ block content
                             p.hidden <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
 
             each lt, index in longterms
-                li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon, data-target= "."+lt.long_term._id, style='cursor: pointer;', category_filtered='false', type_filtered='false', age_filtered=lt.long_term.min_age ? (lt.long_term.min_age<16 ? 'false' : 'true') : 'false')
-                  .panel.panel-default
-                    .panel-heading
-                      div.media-left.media-middle
-                        a(href='#')
-                          if lt.cause == 'Solidarité'
-                            i.fa.fa-heart
-                          else if lt.cause == 'Nature'
-                            i.fa.fa-envira(style='color: #5BCF8F')
-                          else if lt.cause == 'Sport et Culture'
-                            i.fa.fa-institution(style='color: #FFC858')
-                          else if lt.cause == 'Enfance'
-                            i.fa.fa-child(style='color: #FF4F3C')
-                      div.media-body
-                        h5.media-heading <b>#{lt.org_name}</b>
-                        h6.media-heading <b>#{lt.long_term.intitule}</b>
-                        h6
-                          i.fa.fa-map-marker
-                          p.inline Adresse : #{lt.long_term.address}
-                        div.visible-xs
-                          i.fa.fa-compass.inline
-                          h6.dist.inline
-                          h6.inline.dist_reference km de toi
-                      div.media-right.media-top
-                        span.badge.longterm Long terme
+              li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon, data-target= "."+lt.long_term._id, style='cursor: pointer;', category_filtered='false', type_filtered='false', age_filtered=lt.long_term.min_age ? (lt.long_term.min_age<16 ? 'false' : 'true') : 'false')
+                .panel.panel-default
+                  .panel-heading
+                    div.media-left.media-middle
+                      a(href='#')
+                        if lt.cause == 'Solidarité'
+                          i.fa.fa-heart
+                        else if lt.cause == 'Nature'
+                          i.fa.fa-envira(style='color: #5BCF8F')
+                        else if lt.cause == 'Sport et Culture'
+                          i.fa.fa-institution(style='color: #FFC858')
+                        else if lt.cause == 'Enfance'
+                          i.fa.fa-child(style='color: #FF4F3C')
+                    div.media-body
+                      h5.media-heading <b>#{lt.org_name}</b>
+                      h6.media-heading <b>#{lt.long_term.intitule}</b>
+                      h6
+                        i.fa.fa-map-marker
+                        p.inline Adresse : #{lt.long_term.address}
+                      div.visible-xs
+                        i.fa.fa-compass.inline
+                        h6.dist.inline
+                        h6.inline.dist_reference km de toi
+                    div.media-right.media-top
+                      span.badge.longterm Long terme
             li.list-group-item
               .panel.panel-default
                 .panel-heading(style='min-height: 60vh;')
