@@ -373,7 +373,6 @@ block footscript
           let email = organism.email;
           let events_nb = organism.events.length;
           let lt_nb = organism.long_terms.length;
-          let email = organism.email;
           let org_name = organism.org_name;
           amplitude.getInstance().setUserId(user_id);
           let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', org_name).setOnce('group', group);
