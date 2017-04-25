@@ -24,12 +24,12 @@ block content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
+            #myModalLabel.h4.modal-title #{act.event_intitule} <small>par </small>
+              a.inline(href='/all/organism/'+act.org_id)=act.org_name
           .modal-body.my-modal-body
-            h4 <b>#{act.intitule}</b>
             if act.impact
               .well.well--sk 
-                i.fa.fa-border.fa-pull-left.fa-quote-left
+                i.fa.fa-pull-left.fa-star-o
                 p.text-center #{act.impact}
             p #{act.description}
             p <b>Adresse : </b> #{act.address}
@@ -62,12 +62,12 @@ block content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> <b>#{lt.org_name}</b>
+            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> 
+              a.inline(href='/all/organism/'+lt._id)=lt.org_name
           .modal-body.my-modal-body
-            h4 <b>#{lt.long_term.intitule}</b>
             if lt.long_term.impact
               .well.well--sk 
-                i.fa.fa-border.fa-pull-left.fa-quote-left
+                i.fa.fa-pull-left.fa-star-o
                 p.text-center #{lt.long_term.impact}
             p #{lt.long_term.description}
             p <b>Adresse : </b> #{lt.long_term.address}
