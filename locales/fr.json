@@ -68,6 +68,10 @@
 	"g_org": "Organismes",
 	"g_vol": "Bénévoles",
 	"g_nav_listorg": "Liste des organismes",
-	"address": "address",
-	"more_infos": "more_infos"
+	"address": "Adresse",
+	"Solidarity": "Solidarité",
+	"Culture": "Sport et Culture",
+	"Nature": "Nature",
+	"Child": "Enfance",
+	"more_infos": "Plus d'infos"
 }

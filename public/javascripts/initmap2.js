@@ -75,10 +75,10 @@ function initMap() {
   const legend = document.createElement('div');
   legend.id = 'legend';
   let legend_content = [];
-  legend_content.push('<h5 id="blop" class="leaf legend" filter="checked" type="leaf" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw leaf"></i> <b>Nature</b> </h5><br>');
-  legend_content.push('<h5 class="soli legend" filter="checked" type="soli" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw soli"></i> <b>Solidarité</b> </h5><br>');
-  legend_content.push('<h5 class="cult legend" filter="checked" type="cult" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw cult"></i> <b>Sport et culture</b> </h5><br>');
-  legend_content.push('<h5 class="child legend" filter="checked" type="child" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw child"></i> <b>Enfance</b> </h5>');
+  legend_content.push('<h5 id="blop" class="leaf legend" filter="checked" type="leaf" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw leaf"></i></h5><br>');
+  legend_content.push('<h5 class="soli legend" filter="checked" type="soli" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw soli"></i></h5><br>');
+  legend_content.push('<h5 class="cult legend" filter="checked" type="cult" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw cult"></i></h5><br>');
+  legend_content.push('<h5 class="child legend" filter="checked" type="child" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw child"></i></h5>');
   if (school_name) {
     legend_content.push('<br><h5 class="intern legend" filter="checked" type="intern" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-graduation-cap fa-lg fa-fw intern"></i> <b>' + school_name + '</b> </h5>');
   }
@@ -619,6 +619,12 @@ function initMap() {
       console.log('place : ' + JSON.stringify(place));
       geocodeAddress(geocoder, map);
     });
+
+    //INTERNATIONALIZATION
+    $('h5.soli').append('<b> ' + $('#i18n_solidarity').attr('Solidarity') + '</b>');
+    $('h5.leaf').append('<b> ' + $('#i18n_nature').attr('Nature') + '</b>');
+    $('h5.cult').append('<b> ' + $('#i18n_culture').attr('Culture') + '</b>');
+    $('h5.child').append('<b> ' + $('#i18n_child').attr('Child') + '</b>');
 
 
     //GEOCODING SERVICE

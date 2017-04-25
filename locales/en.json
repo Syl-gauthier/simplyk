@@ -68,6 +68,10 @@
 	"g_org": "Organization",
 	"g_vol": "Volunteer",
 	"g_nav_listorg": "List of organizations",
-	"address": "address",
-	"more_infos": "more_infos"
+	"address": "Address",
+	"Solidarity": "Solidarity",
+	"Culture": "Sport & Culture",
+	"Nature": "Environment",
+	"Child": "Children",
+	"more_infos": "More infos"
 }
