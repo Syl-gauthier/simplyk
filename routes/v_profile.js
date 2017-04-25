@@ -506,6 +506,7 @@ router.post('/volunteer/hours_pending/:act_id-:day', permissions.requireGroup('v
                     firstname: req.session.volunteer.firstname,
                     lastname: req.session.volunteer.lastname,
                     recipient: orga.email,
+                    link: 'www.simplyk.io/organism/dashboard',
                     customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'évènement ' + event.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
                   });
                   emailer.sendHoursPendingVolEmail({
@@ -710,6 +711,7 @@ router.post('/volunteer/LThours_pending/:lt_id', permissions.requireGroup('volun
                     firstname: req.session.volunteer.firstname,
                     lastname: req.session.volunteer.lastname,
                     recipient: orga.email,
+                    link: 'www.simplyk.io/organism/dashboard',
                     customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient de rentrer ses ' + req.body.hours_pending + ' h  de participation à l\'engagement ' + new_lt.intitule + '.', 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
                   });
                 }
@@ -950,7 +952,8 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 firstname: req.session.volunteer.firstname,
                 lastname: req.session.volunteer.lastname,
                 recipient: req.body.org_email.toLowerCase(),
-                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'En tant qu\'élève de ' + req.session.volunteer.admin.school_name + ', il a besoin que vous lui validiez ces heures s\'il les a réellement faites. Sinon, il est utile aussi que vous signaliez qu\'il y a une erreur ! :)', 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone, 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
+                link: 'www.simplyk.io/organism/validate_extra/'+newTodo._id,
+                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'En tant qu\'élève de ' + req.session.volunteer.admin.school_name + ', il a besoin que vous lui validiez ces heures s\'il les a réellement faites (en cliquant sur le bouton ci-dessus).', ' Sinon, il est utile aussi que vous signaliez qu\'il y a une erreur ! :)', 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone, 'Rendez-vous sur la plateforme pour valider ou corriger ces heures de participation !', 'Ceci est très important pour le bénévole !']
               });
 
               emailer.sendHoursPendingVolEmail({
