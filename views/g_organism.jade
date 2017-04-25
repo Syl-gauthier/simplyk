@@ -6,8 +6,8 @@ block vars
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
   - function getCauseDesign(cause){if (cause=='Solidarité') {return '#0099FF'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Nature') {return '#5BCF8F'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
 block head
-  title Organisme membre de Simplyk
-  meta(name='description', content='Organisme publiant des opportunités sur Simplyk')
+  title #{organism.org_name} - Simplyk
+  meta(name='description', content='Trouve du bénévolat cool avec ' + organism.org_name + ' qui publie des engagements sur Simplyk')
   style.
     .panel {margin-top: 5vh; margin-bottom: 5vh;}
     .background {background-color: #eee}
