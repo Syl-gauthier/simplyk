@@ -284,7 +284,8 @@ router.post('*/logout', function(req, res, next) {
 /* GET Registration Page */
 router.get('*/register_organism', function(req, res) {
   res.render('g_register.jade', {
-    type: 'organism'
+    type: 'organism',
+    clients: null
   });
 });
 
