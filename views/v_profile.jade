@@ -59,6 +59,7 @@ block content
                   p.inline <b>#{Math.round(100*volunteer.preferences[3])}%</b>
           .col-xs-7
             h1(data-toggle="tooltip" data-html='true' data-placement="left" title='Badges: <b>'+bonus+'</b>pts <br>Heures validées: <b>'+scores[0]+'</b>pts <br>Partages: <b>'+scores[1]+'</b>pts <br>Fidélité: <b>'+scores[2]+'</b>pts') <b>#{score}</b> pts
+            h6 avec <b>#{events_hours_done + lt_hours_done + manuals_hours_done + extras_hours_done}h </b>validées
         .row.text-center
           .col-xs-12
             if (volunteer.admin)
