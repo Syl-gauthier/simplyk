@@ -10,48 +10,48 @@ block content
 		.row
 			.col-md-6.col-md-offset-3
 				.page-header
-					h1 Connexion
+					h1 #{__('signin')}
 					if error == 1
-						p.alert.alert-danger Wrong mail or password
+						p.alert.alert-danger #{__('g_login_wrong_mail')}
 					if error == 2
-						p.alert.alert-danger Ton adresse courriel n'est pas encore vérifiée, vérifie-la en cliquant sur le lien dans le mail de confirmation que tu as reçu. Si tu ne l'as pas reçu, regarde dans tes spams, ta boite courriel nous a peut-être mal jugée !
+						p.alert.alert-danger #{__('g_login_not_verified')}
 					p.alert.alert-success.hidden#forgotten-success
 			.col-md-2.col-md-offset-1
 				.page-header
-					h4 Ou si vous n'avez pas encore de compte
-				button.btn.btn-default.dropdown-toggle(href='/register' data-toggle="dropdown") S'inscrire 
+					h4 #{__('no_account')}
+				button.btn.btn-default.dropdown-toggle(href='/register' data-toggle="dropdown") #{__('signup')}
 					span.caret
 				ul.dropdown-menu#drop-down-but
 					li
-						a.toggle-but(href='register_organism') Organismes
+						a.toggle-but(href='register_organism') #{__('g_org')}
 					li
-						a.toggle-but(href='register_volunteer') Bénévoles
+						a.toggle-but(href='register_volunteer') #{__('g_vol')}
 
 		.row
 			.col-md-5.col-md-offset-3
 				form#loginform(action="/login", method="post", role='form')
 					.input-group.conn-input
-						span#basic-addon1.input-group-addon Adresse courriel
+						span#basic-addon1.input-group-addon #{__('email')}
 						input#mail.form-control(type='email', placeholder='Ex: contact@simplyk.org', name='email', aria-describedby='basic-addon1', required)
 					.input-group.conn-input
-						span#basic-addon1.input-group-addon Mot de passe
+						span#basic-addon1.input-group-addon #{__('password')}
 						input#password.form-control(type='password', placeholder='', name='password', aria-describedby='basic-addon1', required)
-					input.btn.btn-default#login_button(type='submit', form='loginform', value='Se connecter')
-				a(data-toggle='modal' data-target='#forgottenModal', style='cursor: pointer;') Mot de passe oublié ?
+					input.btn.btn-default#login_button(type='submit', form='loginform', value=__('signin'))
+				a(data-toggle='modal' data-target='#forgottenModal', style='cursor: pointer;') #{__('forgotten_password')} ?
 				.modal.fade(tabindex='-1', role='dialog' aria-labelledby="extraModalLabel", id='forgottenModal')
 					div.modal-dialog(role='document')
 						form(id='forgottenForm', role='form').modal-content
 							.modal-header
 								button(type='button' class="close" data-dismiss="modal" aria-label="Close")
 									span(aria-hidden='true')
-									h4.modal-title Mot de passe oublié
+									h4.modal-title #{__('forgotten_password')}
 							div.modal-body
 								p.alert.alert-danger.hidden#forgotten-danger
-								label(for='email') Courriel
+								label(for='email') #{__('email')}
 								input.form-control(type='email', name='email', required)
 							div.modal-footer
-								input.btn.btn-warning(type='submit', form='forgottenForm', value='Réinitialiser le mot de passe')
-								a.btn.btn-default(data-dismiss='modal') Fermer
+								input.btn.btn-warning(type='submit', form='forgottenForm', value=__('reset_password'))
+								a.btn.btn-default(data-dismiss='modal') #{__('close')}
 
 
 block footscript

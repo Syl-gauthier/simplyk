@@ -48,7 +48,7 @@ block content
                   #identifiant(style="display:none")
                     p= act._id
           .modal-footer
-            input.btn.btn-default(type='button', data-dismiss='modal', value=__("Close"))
+            input.btn.btn-default(type='button', data-dismiss='modal', value=__("close"))
             a#link-btn-ref.btn.btn-default(href='/all/activity/'+act._id, target='_blank') #{__("more_infos")}
   each lt, index in longterms
     div(tabindex='-1', role='dialog', class='modal fade ' + lt.long_term._id)
@@ -65,7 +65,7 @@ block content
             if lt.long_term.min_age
               p <b>#{__("Min_age")} : </b> #{lt.long_term.min_age} #{__("y.o")}
           .modal-footer
-            input.btn.btn-default(type='button', data-dismiss='modal' value=' #{__("Close")}')
+            input.btn.btn-default(type='button', data-dismiss='modal' value=' #{__("close")}')
             a#link-btn-ref.btn.btn-default(href='/all/longterm/'+lt.long_term._id, target='_blank') #{__("more_infos")}
   .container-fluid
     #first_section.landing-section.row
