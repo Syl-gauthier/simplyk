@@ -1202,6 +1202,21 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
   });
 });
 
+router.get('/organism/validate_extra/:todo_id', function(req, res, next) {
+  console.log('Todo_id : ' + req.params.todo_id);
+  OrgTodo.findOne({
+    '_id': req.params.todo_id
+  }, function(err, to_do) {
+    if (err) {
+      err.type = 'MINOR';
+      err.print = 'Porblème de validation de la participation de l\'élève';
+      next(err);
+    } else {
+      res.render('validate_extra.jade', {});
+    }
+  });
+});
+
 router.get(/dashboard/, permissions.requireGroup('organism', 'admin'), function(req, res) {
   res.redirect('/dashboard');
 });
