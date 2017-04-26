@@ -181,7 +181,7 @@ function initMap() {
   let loc_bar_content = [];
   loc_bar_content.push('<div id="localization_bar_div" class="center-block hidden-xs" style="margin-right: 5px; margin-left: 5px;">');
   loc_bar_content.push('<form class="form-inline" style="margin-top:10px;"><div class="input-group" style="min-width: 25%">');
-  loc_bar_content.push('<input id="address_field" class="form-control" placeholder="Chercher une adresse">');
+  loc_bar_content.push('<input id="address_field" class="form-control">');
   loc_bar_content.push('<span id="loc_submit" class="btn btn-default input-group-addon"><i class="fa fa-search"></i></span>');
   loc_bar_content.push('</div></form></div>');
   localization_bar_div.innerHTML = loc_bar_content.join('');
@@ -621,10 +621,11 @@ function initMap() {
     });
 
     //INTERNATIONALIZATION
-    $('h5.soli').append('<b> ' + $('#i18n_solidarity').attr('Solidarity') + '</b>');
-    $('h5.leaf').append('<b> ' + $('#i18n_nature').attr('Nature') + '</b>');
-    $('h5.cult').append('<b> ' + $('#i18n_culture').attr('Culture') + '</b>');
-    $('h5.child').append('<b> ' + $('#i18n_child').attr('Child') + '</b>');
+    $('h5.soli').append('<b> ' + $('#i18n').attr('solidarity') + '</b>');
+    $('h5.leaf').append('<b> ' + $('#i18n').attr('nature') + '</b>');
+    $('h5.cult').append('<b> ' + $('#i18n').attr('culture') + '</b>');
+    $('h5.child').append('<b> ' + $('#i18n').attr('child') + '</b>');
+    $('#address_field').attr('placeholder', $('#i18n').attr('address'));
 
 
     //GEOCODING SERVICE

@@ -162,7 +162,7 @@ block content
           .row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').hidden-xs
             .col-sm-12.col-md-10.col-md-offset-1
               .input-group
-                input.form-control(type="search" id="jetsSearch", placeholder="Ex: 26 février, Équiterre, etc...")
+                input.form-control(type="search" id="jetsSearch", placeholder=__("jets_placeholder"))
                 span.input-group-addon.btn.btn-default
                   i.fa.fa-search
         #offers-list.no-side-padding.scrollable.row
@@ -195,7 +195,7 @@ block content
                     div.media-right.media-top
                       span.badge.activity #{__("One_time")}
                   .panel-body
-                      h5 Dans le cadre de : <b>#{act.event_intitule}</b>
+                      h5 #{__("As_part")} <b>#{act.event_intitule}</b>
                       if act.days.length < 3
                         each day, day_i in act.days
                           if day.day
@@ -273,10 +273,7 @@ block content
         p.visible-xs
         a.white.inline(href='/legal') #{__("Use_terms")}
     .hidden
-      #i18n_solidarity(solidarity=__('Solidarity'))
-      #i18n_nature(nature=__('Nature'))
-      #i18n_culture(culture=__('Culture'))
-      #i18n_child(child=__('Child'))
+      #i18n(solidarity=__('Solidarity'), nature=__('Nature'), culture=__('Culture'), child=__('Child'), address=__('Find_address'))
 
 
 block footscript

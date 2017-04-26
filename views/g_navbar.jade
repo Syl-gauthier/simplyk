@@ -147,7 +147,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("g_nav_subscribe")}
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("signup")}
                   span.caret
                 ul.dropdown-menu#drop-down-but
                   li
@@ -167,4 +167,4 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           unless page=='login'
             li(role='presentation')
               form.navbar-form(method='get', action='/login')
-                input.btn.btn-default#login_visit_btn(type='submit', value=__("g_nav_login"))
+                input.btn.btn-default#login_visit_btn(type='submit', value=__("signin"))
