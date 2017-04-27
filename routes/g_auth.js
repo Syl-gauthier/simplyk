@@ -662,9 +662,14 @@ router.get('/verifyO/:verifyString', function(req, res, next) {
       if (organism.email_verified != true) {
         organism.email_verified = true;
         organism.save({});
+        let post_extra = false;
+        if (req.query.type = 'postextra') {
+          post_extra = true;
+        }
 
         res.render('g_verify.jade', {
-          email: organism.email
+          email: organism.email,
+          post_extra
         });
       } else {
         res.render('g_message.jade', {

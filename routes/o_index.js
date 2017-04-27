@@ -595,10 +595,26 @@ router.get('/organism/longterm/:lt_id', permissions.requireGroup('organism', 'ad
 });
 
 
-router.post('/organism/correcthours', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
+router.post('/organism/correcthours', function(req, res, next) {
   console.info('Correct Hours starts');
   const correct_hours = req.body.correct_hours;
   console.info('DATAS : req.body : ' + JSON.stringify(req.body));
+  // INIT ORG_ID AND ORG_NAME
+  let org_id = {};
+  let org_name = {};
+  if (req.session.group == 'organism') {
+    org_id = req.session.organism._id;
+    org_name = req.session.organism.org_name;
+  } else if (req.body.org_id) {
+    org_id = req.body.org_id;
+    org_name = req.body.org_name;
+  } else {
+    err = {};
+    console.error('ERROR IN CORRECT HOURS where we cant organism');
+    err.type = 'MINOR';
+    next(err);
+    res.sendStatus(404);
+  }
   console.info('Correct_hours: ' + correct_hours);
   Volunteer.findOne({
     _id: req.body.vol_id
@@ -844,14 +860,14 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
                 client.events.create({
                   event_name: 'org_correcthours',
                   created_at: Math.round(Date.now() / 1000),
-                  user_id: req.session.organism._id,
+                  user_id: org_id,
                   metadata: {
                     act_id: req.body.act_id,
                     lt_id: req.body.lt_id
                   }
                 });
                 client.users.update({
-                  user_id: req.session.organism._id,
+                  user_id: org_id,
                   update_last_request_at: true
                 });
                 //Send email to felicitate the volunteer
@@ -859,7 +875,7 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
                   firstname: myVolunteer.firstname,
                   recipient: myVolunteer.email,
                   activity_name: activity_name,
-                  customMessage: req.session.organism.org_name + ' vient de valider ta participation de ' + correct_hours + ' h (nombre d\'heures corrigés par l\'organisme) à ' + activity_name + ' !'
+                  customMessage: org_name + ' vient de valider ta participation de ' + correct_hours + ' h (nombre d\'heures corrigés par l\'organisme) à ' + activity_name + ' !'
                 });
                 OrgTodo.findOneAndRemove({
                   _id: req.body.todo
@@ -902,8 +918,24 @@ router.post('/organism/correcthours', permissions.requireGroup('organism', 'admi
   });
 });
 
-router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
+router.post('/organism/confirmhours', function(req, res, next) {
   console.info('Confirm Hours starts');
+  // INIT ORG_ID AND ORG_NAME
+  let org_id = {};
+  let org_name = {};
+  if (req.session.group == 'organism') {
+    org_id = req.session.organism._id;
+    org_name = req.session.organism.org_name;
+  } else if (req.body.org_id) {
+    org_id = req.body.org_id;
+    org_name = req.body.org_name;
+  } else {
+    err = {};
+    console.error('ERROR IN CORRECT HOURS where we cant organism');
+    err.type = 'MINOR';
+    next(err);
+    res.sendStatus(404);
+  }
   Volunteer.findOne({
     _id: req.body.vol_id
   }, function(err, myVolunteer) {
@@ -923,14 +955,14 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
       client.events.create({
         event_name: 'org_confirmhours',
         created_at: Math.round(Date.now() / 1000),
-        user_id: req.session.organism._id,
+        user_id: org_id,
         metadata: {
           act_id: req.body.act_id,
           lt_id: req.body.lt_id
         }
       });
       client.users.update({
-        user_id: req.session.organism._id,
+        user_id: org_id,
         update_last_request_at: true
       });
       //If we deal with an event
@@ -981,7 +1013,7 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
         firstname: myVolunteer.firstname,
         recipient: myVolunteer.email,
         activity_name: activity_name,
-        customMessage: req.session.organism.org_name + ' vient de valider ta participation de ' + hours_pending + ' h à ' + activity_name + ' !'
+        customMessage: org_name + ' vient de valider ta participation de ' + hours_pending + ' h à ' + activity_name + ' !'
       });
       Volunteer.findOne(query, function(err, vol) {
         if (err) {
@@ -1203,16 +1235,60 @@ router.post('/organism/confirmhours', permissions.requireGroup('organism', 'admi
 });
 
 router.get('/organism/validate_extra/:todo_id', function(req, res, next) {
-  console.log('Todo_id : ' + req.params.todo_id);
+  let nextUrl = '/login';
+  let verifyNext = false;
+  console.log('req.params.todo_id : ' + req.params.todo_id);
+  if (req.session.group == 'organism') {
+    nextUrl = '/organism/dashboard';
+  };
+  if (req.query.verify) {
+    console.log('We verify Url also : ' + req.query.verify);
+    nextUrl = req.query.verify + '?type=postextra';
+    verifyNext = true;
+  }
   OrgTodo.findOne({
-    '_id': req.params.todo_id
-  }, function(err, to_do) {
+    '_id': req.params.todo_id.toString()
+  }, function(err, todo) {
     if (err) {
-      err.type = 'MINOR';
-      err.print = 'Porblème de validation de la participation de l\'élève';
+      err.type = 'CRASH';
+      err.print = 'Problème de validation de la participation de l\'élève';
       next(err);
     } else {
-      res.render('validate_extra.jade', {});
+      if (todo) {
+        console.log('TO_DO to validate : ' + JSON.stringify(todo));
+        //If organism already connected
+        if (req.session.group == 'organism') {
+          res.render('o_validate_extra.jade', {
+            organism: req.session.organism,
+            group: req.session.group,
+            todo,
+            nextUrl,
+            verifyNext
+          });
+        } else {
+          Organism.findOne({
+            '_id': todo.org_id
+          }, function(err, org) {
+            if (err) {
+              err.type = 'CRASH';
+              err.print = 'Problème de validation de la participation de l\'élève';
+              next(err);
+            } else {
+              res.render('o_validate_extra.jade', {
+                organism: org,
+                todo,
+                nextUrl,
+                verifyNext
+              });
+            }
+          });
+        }
+      } else {
+        let err = {};
+        err.type = 'CRASH';
+        err.print = 'Problème de validation de la participation de l\'élève';
+        next(err);
+      }
     }
   });
 });

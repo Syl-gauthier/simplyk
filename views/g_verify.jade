@@ -12,7 +12,11 @@ block content
           h1.text-center Félicitations !
           div.icon-center
             i.fa.fa-key.fa-5x
+          if post_extra
+            h2.text-center <b>Ton retour a bien été pris en compte et ...</b>
           h2.text-center Ton adresse courriel a été vérifié !
+          if post_extra
+            h4.text-center Tu peux maintenant poster des offres de bénévolat sur la plateforme GRATUITEMENT avec les identifiants de connexion se trouvant dans le courriel que tu as reçu !
           p.text-center= email
           a.btn.btn-default.icon-center(href='/login') C'est parti !
 
