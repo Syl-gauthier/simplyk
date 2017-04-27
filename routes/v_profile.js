@@ -306,6 +306,16 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
                   volunteer: req.session.volunteer,
                   group: req.session.group
                 });
+                agenda.cancel({
+                  'data.event_date': (new Date(req.params.day)).toString(),
+                  'data.activity_id': (req.params.act_id).toString()
+                }, function(err, numRemoved){
+                  if (err) {
+                    console.error('ERROR : in unsubscribe and err ' + err);
+                  } else {
+                    console.info('INFO : in unsubscribe and number agenda canceled ' + numRemoved);
+                  }
+                });
               });
             }
           });

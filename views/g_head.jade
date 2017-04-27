@@ -2,6 +2,7 @@ doctype html
 meta(http-equiv='X-UA-Compatible', content='IE=edge')
 meta(name='viewport', content='width=device-width, initial-scale=1')
 meta(name='google-signin-client_id', content='456503566619-20q669of0e5ts010ft8frbbh8b1atuv7.apps.googleusercontent.com')
+meta(charset="utf-8")
 // The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags
 
 
@@ -39,15 +40,14 @@ link(rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.
 // Google Sign-in
 //script(src='https://apis.google.com/js/platform.js', async='', defer='')
 
-//Mouseflow
-script(type="text/javascript").
-	var _mfq = _mfq || [];
-		(function() {
-		var mf = document.createElement("script");
-		mf.type = "text/javascript"; mf.async = true;
-		mf.src = "//cdn.mouseflow.com/projects/e665618e-dba7-4b8e-8890-22cf4c057537.js";
-		document.getElementsByTagName("head")[0].appendChild(mf);
-	})();
+// Lucky Orange
+script(type='text/javascript').
+	window.__lo_site_id = 80699;
+	(function() {
+		var wa = document.createElement('script'); wa.type = 'text/javascript'; wa.async = true;
+		wa.src = 'https://d10lpsik1i8c69.cloudfront.net/w.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(wa, s);
+	  })();
 
 //FB pixel
 script.

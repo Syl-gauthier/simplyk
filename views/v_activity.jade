@@ -6,8 +6,8 @@ block vars
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
   - function getCauseDesign(cause){if (cause=='Solidarité') {return '#00b3ff'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Nature') {return '#5BCF8F'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
 block head
-  title Activité de bénévolat
-  meta(name='description', content='Informations sur les activités de bénévolat ')
+  title Bénévolat pour #{organism.org_name} (#{activity.event_intitule}) - Simplyk
+  meta(name='description', content='Viens faire du bénévolat avec ' + organism.org_name + ' - ' + activity.event_intitule + ' (' + activity.intitule + ') | Simplyk')
   style.
     .org_name {color:#5BCF8F}
     .org_name:hover {text-decoration: none; color: #FFC518}
@@ -65,7 +65,7 @@ block share
   meta(property='og:type', content='website')
   meta(property='og:title', content='Bénévolat avec ' + organism.org_name)
   meta(property='og:description', content='Viens faire du bénévolat chez ' + organism.org_name + ' pour ' + activity.event_intitule +'. Simplyk est la plateforme de bénévolat de référence à Montréal. Des opportunités de bénévolat pour tous les goûts y sont visibles !')
-  meta(property='og:image', content='http://platform.simplyk.org/images/carte.png')
+  meta(property='og:image', content='http://www.simplyk.io/images/carte.png')
   meta(property='fb:app_id', content='1829081597379617')
   //meta(property='og:url', content= window.location.href)
   

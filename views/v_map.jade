@@ -6,7 +6,7 @@ block vars
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
 
 block head
-  title Carte
+  title Carte d'opportunités de bénévolat - Simplyk
   meta(name='description', content='Opportunités de bénévolat à Montréal')
 
 block content
@@ -20,10 +20,9 @@ block content
             .h4.modal-title #{act.event_intitule} <small>par</small> 
               a.inline(href='/all/organism/'+act.org_id)=act.org_name
           .modal-body
-            h4 <b>#{act.intitule}</b>
             if act.impact
               .well.well--sk 
-                i.fa.fa-border.fa-pull-left.fa-quote-left
+                i.fa.fa-pull-left.fa-star-o
                 p.text-center #{act.impact}
             p #{act.description}
             table.table
@@ -60,10 +59,9 @@ block content
             #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> 
               a.inline(href='/all/organism/'+lt.long_term.org_id)=lt.org_name
           .modal-body
-            h4 <b>#{lt.long_term.intitule}</b>
             if lt.long_term.impact
               .well.well--sk 
-                i.fa.fa-border.fa-pull-left.fa-quote-left
+                i.fa.fa-pull-left.fa-star-o
                 p.text-center #{lt.long_term.impact}
             p #{lt.long_term.description}
             p <b>Adresse : </b> #{lt.long_term.address}
