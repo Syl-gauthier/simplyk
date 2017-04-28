@@ -456,6 +456,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                       res.render('v_postsubscription.jade', {
                         session: req.session,
                         org_phone: organism.phone,
+                        org_email: organism.email,
                         org_name: newActivity.org_name,
                         day: dayString,
                         link_to_share: '/activity/' + req.params.act_id,
@@ -480,7 +481,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                       var vol_content = {
                         recipient: volunteer_refreshed.email,
                         firstname: volunteer_refreshed.firstname,
-                        customMessage: ['Tu es inscrit le ' + dayString + ' à : ' + newActivity.address, 'L\'organisme ' + organism.org_name + ' va être au mis au courant de ton inscription. Entre en contact avec ' + organism.firstname + ' ' + organism.lastname + ' au ' + organism.phone + ' pour parler des détails de l\'activité !', 'Après l\'évènement, tu pourras ajouter des heures d\'engagement à ton profil pour faire progresser ton profil de citoyen engagé :)'],
+                        customMessage: ['Tu es inscrit le ' + dayString + ' à : ' + newActivity.address, 'Avant de t\'y rendre, prend bien contact avec ' + organism.firstname + ' ' + organism.lastname + ' au ' + organism.phone + ' ou par courriel avec ' + organism.email + ' pour parler des détails de l\'activité !'],
                       };
                       emailer.sendSubscriptionVolEmail(vol_content);
                       //Intercom create addlongterm event
