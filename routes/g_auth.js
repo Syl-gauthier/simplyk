@@ -584,6 +584,28 @@ router.post('*/register_check', function(req, res) {
   userExists(req.body.email, handleCheck);
 });
 
+router.post('*/not_volunteer_check', function(req, res) {
+  console.log('Check if a volunteer account exists with email ' + req.body.email);
+  function volExists(exists) {
+    res.json({
+      success: true,
+      exists: exists
+    });
+  };
+
+  Volunteer.findOne({
+    'email': req.body.email
+  }, function(err, vol) {
+    if (vol) {
+      console.log('A vol exists with this email');
+      volExists(true);
+    } else {
+      console.log('No vol with this email');
+      volExists(false);
+    }
+  });
+});
+
 router.post('/sendVerificationEmail', function(req, res) {
   emailer.sendVerifyEmail({
     recipient: req.body.recipient,

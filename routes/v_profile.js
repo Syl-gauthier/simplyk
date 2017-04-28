@@ -969,7 +969,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 lastname: req.session.volunteer.lastname,
                 recipient: req.body.org_email.toLowerCase(),
                 link: 'http://' + req.headers.host+'/organism/validate_extra/'+newTodo._id+verifyUrl,
-                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'Pour valider ou corriger ses heures, cliquez sur le bouton ci-dessous ou utilisez ce lien : '+'http://' + req.headers.host+'/organism/validate_extra/'+newTodo._id+verifyUrl+' ).', ' Sinon, il est utile aussi que vous signaliez qu\'il y a une erreur ! :)', 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone, 'Ceci est très important pour le bénévole !']
+                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'Pour valider ou corriger ses heures, cliquez sur le bouton ci-dessous ou utilisez ce lien : '+'http://' + req.headers.host+'/organism/validate_extra/'+newTodo._id+verifyUrl+' ).', 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone, 'Ceci est très important pour le bénévole !']
               });
 
               emailer.sendHoursPendingVolEmail({

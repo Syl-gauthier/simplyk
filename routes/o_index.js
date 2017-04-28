@@ -1286,7 +1286,7 @@ router.get('/organism/validate_extra/:todo_id', function(req, res, next) {
       } else {
         let err = {};
         err.type = 'CRASH';
-        err.print = 'Problème de validation de la participation de l\'élève';
+        err.print = 'Il semblerait que la participation du bénévole a déjà été validée';
         next(err);
       }
     }
