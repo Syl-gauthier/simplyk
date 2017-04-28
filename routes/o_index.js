@@ -602,14 +602,15 @@ router.post('/organism/correcthours', function(req, res, next) {
   // INIT ORG_ID AND ORG_NAME
   let org_id = {};
   let org_name = {};
-  if (req.session.group == 'organism') {
+  console.log('GROUP : ' + req.session.group);
+  if (req.session.group == 'organism' || req.session.group == 'admin') {
     org_id = req.session.organism._id;
     org_name = req.session.organism.org_name;
   } else if (req.body.org_id) {
     org_id = req.body.org_id;
     org_name = req.body.org_name;
   } else {
-    err = {};
+    let err = {};
     console.error('ERROR IN CORRECT HOURS where we cant organism');
     err.type = 'MINOR';
     next(err);
@@ -900,7 +901,7 @@ router.post('/organism/correcthours', function(req, res, next) {
           }
         });
       } else {
-        err = {};
+        let err = {};
         err.stack = 'It seems that the todo has already been done since the hours_pending in volunteer is less than the hours in the TODO';
         err.type = 'MINOR';
         next(err);
@@ -908,7 +909,7 @@ router.post('/organism/correcthours', function(req, res, next) {
         res.sendStatus(404);
       }
     } else {
-      err = {};
+      let err = {};
       err.stack = 'Volunteer doesnt exist';
       err.type = 'MINOR';
       next(err);
@@ -923,15 +924,15 @@ router.post('/organism/confirmhours', function(req, res, next) {
   // INIT ORG_ID AND ORG_NAME
   let org_id = {};
   let org_name = {};
-  if (req.session.group == 'organism') {
+  if (req.session.group == 'organism' || req.session.group == 'admin') {
     org_id = req.session.organism._id;
     org_name = req.session.organism.org_name;
   } else if (req.body.org_id) {
     org_id = req.body.org_id;
     org_name = req.body.org_name;
   } else {
-    err = {};
-    console.error('ERROR IN CORRECT HOURS where we cant organism');
+    let err = {};
+    console.error('ERROR IN CONFIRM HOURS where we cant organism');
     err.type = 'MINOR';
     next(err);
     res.sendStatus(404);
@@ -1225,7 +1226,7 @@ router.post('/organism/confirmhours', function(req, res, next) {
         }
       });
     } else {
-      err = {};
+      let err = {};
       err.stack = 'Volunteer doesnt exist';
       err.type = 'MINOR';
       next(err);

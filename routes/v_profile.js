@@ -960,7 +960,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
               //if the organism exists but not email_verified
               let email_verified = theOrg.email_verified;
               let verifyUrl = '';
-              if (!email_verified) {
+              if (theOrg.email_verify_string && !email_verified) {
                 verifyUrl = '?verify=http://' + req.headers.host + '/verifyO/' + theOrg.email_verify_string;
               }
 
@@ -969,7 +969,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 lastname: req.session.volunteer.lastname,
                 recipient: req.body.org_email.toLowerCase(),
                 link: 'http://' + req.headers.host+'/organism/validate_extra/'+newTodo._id+verifyUrl,
-                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'Pour valider ou corriger ses heures, cliquez sur le bouton ci-dessous ou utilisez ce lien : '+'http://' + req.headers.host+'/organism/validate_extra/'+newTodo._id+verifyUrl+' ).', 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone, 'Ceci est très important pour le bénévole !']
+                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'Pour valider ou corriger ses heures, cliquez sur le bouton ci-dessous ou utilisez ce lien : '+'http://' + req.headers.host+'/organism/validate_extra/'+newTodo._id+verifyUrl, 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone, 'Ceci est très important pour le bénévole !']
               });
 
               emailer.sendHoursPendingVolEmail({
@@ -1025,7 +1025,7 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                     button: {
                       link: 'http://' + hostname+'/organism/validate_extra/'+newTodo._id+'?verify='+verifyUrl
                     },
-                    customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name + '.', 'Vous recevez ce message car cet élève mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Pour valider ou corriger ses heures utiles dans sa scolarité, cliquez sur le bouton ci-dessous ou utilisez ce lien : '+'http://' + hostname+'/organism/validate_extra/'+newTodo._id+'?verify='+verifyUrl + ' ).', 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone],
+                    customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name + '.', 'Vous recevez ce message car cet élève mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Pour valider ou corriger ses heures utiles dans sa scolarité, cliquez sur le bouton ci-dessous ou utilisez ce lien : '+'http://' + hostname+'/organism/validate_extra/'+newTodo._id+'?verify='+verifyUrl, 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone],
                     after_button: ['Si vous voulez ensuite vous connecter à Simplyk, vos identifiants de connexion sont les suivants :', 'Email: ' + org_saved.email, 'Mot de passe: ' + passToChange],
                     firstname: req.session.volunteer.firstname,
                     lastname: req.session.volunteer.lastname
