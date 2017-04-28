@@ -219,7 +219,7 @@ function sendHoursPendingOrgEmail(content) {
   content.title = 'Valider la participation';
   content.button = {
     text: 'Valider la participation',
-    link: 'www.simplyk.io/organism/dashboard'
+    link: content.link
   };
   verify_template.render(content, function(err, results) {
     if (err) {

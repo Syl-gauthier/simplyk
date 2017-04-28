@@ -61,6 +61,14 @@ html
                         tr
                           td(align='center', style='border-radius: 3px;', bgcolor='#FFA73B')
                             a(href=button.link, target='_blank', style='font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;') #{button.text}
+            if (after_button)
+              tr
+                td(bgcolor='#ffffff', align='left', style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;")
+                  if (typeof after_button == 'string')
+                    p(style='margin: 0;') #{after_button}
+                  else if (typeof after_button == 'object')
+                    each sub, ind in after_button
+                      p(style='margin: 0;') #{sub}
             // COPY
             if type == 'verify'
               tr
