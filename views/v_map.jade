@@ -238,7 +238,7 @@ block footscript
           let ex_nb = volunteer.extras ? volunteer.extras.length : 0;
           let shares = volunteer.shares ? volunteer.shares : 0;
           let school_name = ((volunteer.admin && volunteer.admin.school_name) ? volunteer.admin.school_name : 'adult');
-          let school_id = ((volunteer.admin && volunteer.admin.school_id) ? volunteer.admin.school_id : 'no-client');
+          let school_id = ((volunteer.admin && volunteer.admin.school_id && (volunteer.admin.school_id).toString()) ? (volunteer.admin.school_id).toString() : 'no-client');
           amplitude.getInstance().setUserId(user_id);
           let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', firstname + ' ' + lastname).setOnce('group', group).set('age', age).set('shares', shares).set('events_nb', ev_nb).set('lts_nb', lt_nb).set('extras_nb', ex_nb).set('phone', phone);
           identify.setOnce('school_id', school_id).setOnce('school_name', school_name);
