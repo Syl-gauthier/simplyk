@@ -228,15 +228,20 @@ block footscript
       if (env == 'prod') {
         if (group == 'volunteer'){
           let volunteer = !{JSON.stringify(volunteer)};
+          let age = !{JSON.stringify(age)};
           let user_id = volunteer._id;
           let email = volunteer.email;
           let firstname = volunteer.firstname;
           let lastname = volunteer.lastname;
-          let age = volunteer.age;
-          let school_name = (volunteer.school_name ? volunteer.school_name : 'adult');
-          let school_id = (volunteer.school_id ? volunteer.school_id : 'no-client');
+          let phone = volunteer.phone;
+          let ev_nb = volunteer.events ? volunteer.events.length : 0;
+          let lt_nb = volunteer.long_terms ? volunteer.long_terms.length : 0;
+          let ex_nb = volunteer.extras ? volunteer.extras.length : 0;
+          let shares = volunteer.shares ? volunteer.shares : 0;
+          let school_name = (volunteer.admin.school_name ? volunteer.admin.school_name : 'adult');
+          let school_id = (volunteer.admin.school_id ? volunteer.admin.school_id : 'no-client');
           amplitude.getInstance().setUserId(user_id);
-          let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', firstname + ' ' + lastname).setOnce('group', group).setOnce('age', age);
+          let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', firstname + ' ' + lastname).setOnce('group', group).set('age', age).set('shares', shares).set('events_nb', ev_nb).set('lts_nb', lt_nb).set('extras_nb', ex_nb).set('phone', phone);
           identify.setOnce('school_id', school_id).setOnce('school_name', school_name);
           amplitude.getInstance().identify(identify);
           amplitude.getInstance().logEvent('v_visit_map');
