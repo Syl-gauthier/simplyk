@@ -309,7 +309,7 @@ router.post('/volunteer/unsubscribe/:act_id-:day', permissions.requireGroup('vol
                 agenda.cancel({
                   'data.event_date': (new Date(req.params.day)).toString(),
                   'data.activity_id': (req.params.act_id).toString()
-                }, function(err, numRemoved){
+                }, function(err, numRemoved) {
                   if (err) {
                     console.error('ERROR : in unsubscribe and err ' + err);
                   } else {
@@ -968,8 +968,8 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                 firstname: req.session.volunteer.firstname,
                 lastname: req.session.volunteer.lastname,
                 recipient: req.body.org_email.toLowerCase(),
-                link: 'http://' + req.headers.host+'/organism/validate_extra/'+newTodo._id+verifyUrl,
-                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'Pour valider ou corriger ses heures, cliquez sur le bouton ci-dessous ou utilisez ce lien : '+'http://' + req.headers.host+'/organism/validate_extra/'+newTodo._id+verifyUrl, 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone, 'Ceci est très important pour le bénévole !']
+                link: 'http://' + req.headers.host + '/organism/validate_extra/' + newTodo._id + verifyUrl,
+                customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' vient d\'ajouter ' + req.body.hours_pending + ' h  de participation dans votre organisme.', 'Pour valider ou corriger ses heures, cliquez sur le bouton ci-dessous ou utilisez ce lien : ' + 'http://' + req.headers.host + '/organism/validate_extra/' + newTodo._id + verifyUrl, 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone, 'Ceci est très important pour le bénévole !']
               });
 
               emailer.sendHoursPendingVolEmail({
@@ -1010,35 +1010,40 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
                   console.error(err);
                   reject(err);
                 } else {
-                  var hostname = req.headers.host;
-                  var verifyUrl = 'http://' + hostname + '/verifyO/' + randomString;
-                  console.log('Verify url sent: ' + verifyUrl);
+                  if (org_saved) {
+                    var hostname = req.headers.host;
+                    var verifyUrl = 'http://' + hostname + '/verifyO/' + randomString;
+                    console.log('Verify url sent: ' + verifyUrl);
 
-                  newTodo.org_id = newActivity.org_id = org_saved._id;
-                  newActivity.org_name = org_saved.org_name;
-                  newActivity.email = org_saved.email;
-                  newActivity.org_phone = org_saved.phone;
+                    newTodo.org_id = newActivity.org_id = org_saved._id;
+                    newActivity.org_name = org_saved.org_name;
+                    newActivity.email = org_saved.email;
+                    newActivity.org_phone = org_saved.phone;
 
 
-                  emailer.sendAutomaticSubscriptionOrgEmail({
-                    recipient: org_saved.email,
-                    button: {
-                      link: 'http://' + hostname+'/organism/validate_extra/'+newTodo._id+'?verify='+verifyUrl
-                    },
-                    customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name + '.', 'Vous recevez ce message car cet élève mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Pour valider ou corriger ses heures utiles dans sa scolarité, cliquez sur le bouton ci-dessous ou utilisez ce lien : '+'http://' + hostname+'/organism/validate_extra/'+newTodo._id+'?verify='+verifyUrl, 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone],
-                    after_button: ['Si vous voulez ensuite vous connecter à Simplyk, vos identifiants de connexion sont les suivants :', 'Email: ' + org_saved.email, 'Mot de passe: ' + passToChange],
-                    firstname: req.session.volunteer.firstname,
-                    lastname: req.session.volunteer.lastname
-                  });
+                    emailer.sendAutomaticSubscriptionOrgEmail({
+                      recipient: org_saved.email,
+                      button: {
+                        link: 'http://' + hostname + '/organism/validate_extra/' + newTodo._id + '?verify=' + verifyUrl
+                      },
+                      customMessage: [req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname + ' est élève à l\'établissement ' + req.session.volunteer.admin.school_name + '.', 'Vous recevez ce message car cet élève mentionne avoir fait ' + req.body.hours_pending + 'h de bénévolat dans votre organisme.', 'Pour valider ou corriger ses heures utiles dans sa scolarité, cliquez sur le bouton ci-dessous ou utilisez ce lien : ' + 'http://' + hostname + '/organism/validate_extra/' + newTodo._id + '?verify=' + verifyUrl, 'L\'élève est accessible par téléphone au : ' + req.session.volunteer.phone],
+                      after_button: ['Si vous voulez ensuite vous connecter à Simplyk, vos identifiants de connexion sont les suivants :', 'Email: ' + org_saved.email, 'Mot de passe: ' + passToChange],
+                      firstname: req.session.volunteer.firstname,
+                      lastname: req.session.volunteer.lastname
+                    });
 
-                  emailer.sendHoursPendingVolEmail({
-                    name: org_saved.org_name,
-                    hours: req.body.hours_pending,
-                    recipient: req.session.volunteer.email,
-                    customMessage: ['Tes ' + req.body.hours_pending + ' h  de participation à ' + req.body.intitule + ' ont bien été prises en compte.', 'Il semblerait, avec les informations que tu as fournis, que ' + org_saved.org_name + ' n\'était pas encore inscrit sur Simplyk. On lui a tout de même envoyé un courriel pour qu\'il puisse valider tes heures.', 'Si tes heures ne sont pas validées bientôt par l\'organisme, n\'hésite pas à le relancer pour que ton bénévolat soit pris en compte sur ton profil :)']
-                  });
-                  console.info('INFO: student add extra hours to an organism which has NOT subscribed to the platform : ' + org_saved.org_name);
-                  resolve();
+                    emailer.sendHoursPendingVolEmail({
+                      name: org_saved.org_name,
+                      hours: req.body.hours_pending,
+                      recipient: req.session.volunteer.email,
+                      customMessage: ['Tes ' + req.body.hours_pending + ' h  de participation à ' + req.body.intitule + ' ont bien été prises en compte.', 'Il semblerait, avec les informations que tu as fournis, que ' + org_saved.org_name + ' n\'était pas encore inscrit sur Simplyk. On lui a tout de même envoyé un courriel pour qu\'il puisse valider tes heures.', 'Si tes heures ne sont pas validées bientôt par l\'organisme, n\'hésite pas à le relancer pour que ton bénévolat soit pris en compte sur ton profil :)']
+                    });
+                    console.info('INFO: student add extra hours to an organism which has NOT subscribed to the platform : ' + org_saved.org_name);
+                    resolve();
+                  } else {
+                    let err = {};
+                    reject(err);
+                  }
                 }
               });
 
