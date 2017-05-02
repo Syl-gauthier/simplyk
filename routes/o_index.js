@@ -1286,8 +1286,8 @@ router.get('/organism/validate_extra/:todo_id', function(req, res, next) {
         }
       } else {
         let err = {};
-        err.type = 'CRASH';
-        err.print = 'Il semblerait que la participation du bénévole a déjà été validée';
+        err.type = 'NORMAL';
+        err.print = 'Il semblerait que la participation du bénévole ait déjà été validée';
         next(err);
       }
     }
