@@ -722,15 +722,26 @@ router.get('/volunteer/student_questions/:lt_id', permissions.requireGroup('volu
 
 router.get('/volunteer/sharewithfriends', permissions.requireGroup('volunteer'), function(req, res) {
   if (req.query.link) {
+    let type = req.query.link.charAt(1) == 'a' ? 'activity' : 'other';
+    console.log('type : ' + type + ' because req.query.link.charAt(1) = ' + req.query.link.charAt(1));
     res.render('v_sharewithfriends.jade', {
       volunteer: req.session.volunteer,
       session: req.session,
       link: req.query.link,
-      group: req.session.group
+      group: req.session.group,
+      type
     });
   } else {
     res.redirect('/volunteer/profile');
   }
+});
+
+router.get('/volunteer/contact_warning', permissions.requireGroup('volunteer'), function(req, res) {
+  res.render('v_contact_warning.jade', {
+    volunteer: req.session.volunteer,
+    session: req.session,
+    group: req.session.group
+  });
 });
 
 router.post('/volunteer/student_questions', permissions.requireGroup('volunteer'), function(req, res, next) {
