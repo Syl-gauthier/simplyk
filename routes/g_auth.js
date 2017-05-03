@@ -586,6 +586,7 @@ router.post('*/register_check', function(req, res) {
 
 router.post('*/not_volunteer_check', function(req, res) {
   console.log('Check if a volunteer account exists with email ' + req.body.email);
+
   function volExists(exists) {
     res.json({
       success: true,
@@ -596,12 +597,20 @@ router.post('*/not_volunteer_check', function(req, res) {
   Volunteer.findOne({
     'email': req.body.email
   }, function(err, vol) {
-    if (vol) {
-      console.log('A vol exists with this email');
-      volExists(true);
+    if (err) {
+      console.log('TAKE A LOOK : ' + JSON.stringify(err));
+      res.json({
+        success: false,
+        exists: null
+      });
     } else {
-      console.log('No vol with this email');
-      volExists(false);
+      if (vol) {
+        console.log('A vol exists with this email');
+        volExists(true);
+      } else {
+        console.log('No vol with this email');
+        volExists(false);
+      }
     }
   });
 });
