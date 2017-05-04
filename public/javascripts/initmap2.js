@@ -75,10 +75,10 @@ function initMap() {
   const legend = document.createElement('div');
   legend.id = 'legend';
   let legend_content = [];
-  legend_content.push('<h5 id="blop" class="leaf legend" filter="checked" type="leaf" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw leaf"></i> <b>Nature</b> </h5><br>');
-  legend_content.push('<h5 class="soli legend" filter="checked" type="soli" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw soli"></i> <b>Solidarité</b> </h5><br>');
-  legend_content.push('<h5 class="cult legend" filter="checked" type="cult" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw cult"></i> <b>Sport et culture</b> </h5><br>');
-  legend_content.push('<h5 class="child legend" filter="checked" type="child" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw child"></i> <b>Enfance</b> </h5>');
+  legend_content.push('<h5 id="blop" class="leaf legend" filter="checked" type="leaf" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw leaf"></i></h5><br>');
+  legend_content.push('<h5 class="soli legend" filter="checked" type="soli" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw soli"></i></h5><br>');
+  legend_content.push('<h5 class="cult legend" filter="checked" type="cult" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw cult"></i></h5><br>');
+  legend_content.push('<h5 class="child legend" filter="checked" type="child" style="margin-top:5px; margin-bottom:5px; cursor: pointer;"><i class="fa fa-check-square-o fa-lg fa-fw child"></i></h5>');
   if (school_name) {
     legend_content.push('<br><h5 class="intern legend" filter="checked" type="intern" style="margin-top:5px; margin-bottom:5px;"><i class="fa fa-graduation-cap fa-lg fa-fw intern"></i> <b>' + school_name + '</b> </h5>');
   }
@@ -181,7 +181,7 @@ function initMap() {
   let loc_bar_content = [];
   loc_bar_content.push('<div id="localization_bar_div" class="center-block hidden-xs" style="margin-right: 5px; margin-left: 5px;">');
   loc_bar_content.push('<form class="form-inline" style="margin-top:10px;"><div class="input-group" style="min-width: 25%">');
-  loc_bar_content.push('<input id="address_field" class="form-control" placeholder="Chercher une adresse">');
+  loc_bar_content.push('<input id="address_field" class="form-control">');
   loc_bar_content.push('<span id="loc_submit" class="btn btn-default input-group-addon"><i class="fa fa-search"></i></span>');
   loc_bar_content.push('</div></form></div>');
   localization_bar_div.innerHTML = loc_bar_content.join('');
@@ -619,6 +619,13 @@ function initMap() {
       console.log('place : ' + JSON.stringify(place));
       geocodeAddress(geocoder, map);
     });
+
+    //INTERNATIONALIZATION
+    $('h5.soli').append('<b> ' + $('#i18n').attr('solidarity') + '</b>');
+    $('h5.leaf').append('<b> ' + $('#i18n').attr('nature') + '</b>');
+    $('h5.cult').append('<b> ' + $('#i18n').attr('culture') + '</b>');
+    $('h5.child').append('<b> ' + $('#i18n').attr('child') + '</b>');
+    $('#address_field').attr('placeholder', $('#i18n').attr('address'));
 
 
     //GEOCODING SERVICE

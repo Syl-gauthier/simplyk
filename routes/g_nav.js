@@ -145,6 +145,25 @@ router.get('/all/longterm/:lt_id', function(req, res, next) {
   }
 });
 
+router.get('/fr', function(req, res) {
+  res.cookie('i18n', 'fr');
+  let backUrl = req.header('Referer') || '/';
+  if (backUrl && backUrl != '/fr' && backUrl != '/en') {
+    res.redirect(backUrl);
+  } else {
+    res.redirect('/');
+  }
+});
+
+router.get('/en', function(req, res) {
+  res.cookie('i18n', 'en');
+  let backUrl = req.header('Referer') || '/';
+  if (backUrl && backUrl != '/fr' && backUrl != '/en') {
+    res.redirect(backUrl);
+  } else {
+    res.redirect('/');
+  }
+});
 
 router.get('/all/organism/:org_id', function(req, res, next) {
   console.log('In GET to a organism page with lt_id:' + req.params.org_id);

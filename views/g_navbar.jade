@@ -30,100 +30,130 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
           li(role='presentation')
             form.navbar-form(method='post', action='./logout', id='logoutForm')
               li.dropdown
-                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("g_nav_explore")} 
                   span.caret
                 ul.dropdown-menu#drop-down-bu
                   li
-                    a.toggle-but(href='/listorganisms') Liste des organismes
+                    a.toggle-but(href='/listorganisms') #{__("g_nav_listorg")}
                   li
-                    a.toggle-but(href='/contact') Contactez-nous
+                    a.toggle-but(href='/contact') #{__("g_nav_contact")}
                   li
-                    a.toggle-but(href='/us') À propos
+                    a.toggle-but(href='/us') #{__("g_nav_us")}
                   li
-                    a.toggle-but#logout_btn(onclick="console.log('OLOLO click');$(this).closest('form').submit();" href='#') Déconnexion
+                    a.toggle-but#logout_btn(onclick="console.log('OLOLO click');$(this).closest('form').submit();" href='#') #{__("g_nav_logout")
           unless page=='profile'
             li.navbar-link(role='presentation')
-              a(href='/volunteer/profile') Mon tableau de bord
+              a(href='/volunteer/profile') #{__("g_nav_dashboard")}
           unless page=='map'
             li.navbar-link(role='presentation')
-              a(href='/volunteer/map') Carte
+              a(href='/volunteer/map') #{__("g_nav_map")}
         else if group == 'organism'
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("g_nav_explore")} 
                   span.caret
                 ul.dropdown-menu#drop-down-bu
                   li
-                    a.toggle-but(href='/listorganisms') Liste des organismes
+                    a.toggle-but(href='/listorganisms') #{__("g_nav_listorg")}
                   li
-                    a.toggle-but(href='/contact') Contactez-nous
+                    a.toggle-but(href='/contact') #{__("g_nav_contact")}
                   li
-                    a.toggle-but(href='/organism/profile') Mon profil
+                    a.toggle-but(href='/organism/profile') #{__("g_nav_profil")}
                   li
-                    a.toggle-but(href='/us') À propos
+                    a.toggle-but(href='/us') #{__("g_nav_us")}
           unless page == 'dashboard'
             li.navbar-link(role='presentation')
-              a(href='/organism/dashboard') Tableau de bord
+              a(href='/organism/dashboard') #{__("g_nav_dashboard")}
           unless page=='map'
             li.navbar-link(role='presentation')
-              a(href='/organism/map') Carte
+              a(href='/organism/map') #{__("g_nav_map")}
+          //li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("language_initiales")} 
+                  span.caret
+                ul.dropdown-menu#drop-down-but
+                  li
+                    a.toggle-but#org_register_btn(href='/fr') FR
+                  li
+                    a.toggle-but#vol_register_btn(href='/en') EN
           li(role='presentation')
             form.navbar-form( method='post', action='./logout')
-              button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
+              button.btn.btn-default.logout_nav_btn(type='submit') #{__("g_nav_logout")}
         else if group == 'admin'
           unless page == 'students'
             li.navbar-link(role='presentation')
-              a(href='/admin/classes') Mes élèves
+              a(href='/admin/classes') #{__("g_nav_students")}
           li.navbar-link(role='presentation')
-            a(href='/organism/dashboard') Mon bénévolat interne 
+            a(href='/organism/dashboard') #{__("g_nav_intern")}
               if (todos && (todos.length > 0))
                 p.badge(style='background-color: #E33831; padding: 0px 4px')= todos.length
           li(role='presentation')
             form.navbar-form
               li.dropdown
-                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("g_nav_explore")} 
                   span.caret
                 ul.dropdown-menu#drop-down-bu
                   li
-                    a.toggle-but(href='/listorganisms') Liste des organismes
+                    a.toggle-but(href='/listorganisms') #{__("g_nav_listorg")}
                   li
-                    a.toggle-but(href='/admin/profile') Mon profil
+                    a.toggle-but(href='/admin/profile') #{__("g_nav_profil")}
                   li
-                    a.toggle-but(href='/organism/map') Carte
+                    a.toggle-but(href='/organism/map') #{__("g_nav_map")}
                   li
-                    a.toggle-but(href='/contact') Contactez-nous
+                    a.toggle-but(href='/contact') #{__("g_nav_contact")}
                   li
-                    a.toggle-but(href='/us') À propos
-          li(role='presentation')
-            form.navbar-form( method='post', action='/logout')
-              button.btn.btn-default.logout_nav_btn(type='submit') Déconnexion
-        else
-          li.navbar-link(role='presentation')
-            a(href='/register_organism') Je cherche des bénévoles !
-          li(role='presentation')
+                    a.toggle-but(href='/us') #{__("g_nav_us")}
+          //li(role='presentation')
             form.navbar-form
               li.dropdown
-                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Explore 
-                  span.caret
-                ul.dropdown-menu#drop-down-bu
-                  li
-                    a.toggle-but(href='/listorganisms') Liste des organismes
-                  li
-                    a.toggle-but(href='/contact') Contactez-nous
-                  li
-                    a.toggle-but(href='/us') À propos
-          li(role='presentation')
-            form.navbar-form
-              li.dropdown
-                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Inscris-toi ! 
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("language_initiales")} 
                   span.caret
                 ul.dropdown-menu#drop-down-but
                   li
-                    a.toggle-but#org_register_btn(href='/register_organism') Organismes
+                    a.toggle-but#org_register_btn(href='/fr') FR
                   li
-                    a.toggle-but#vol_register_btn(href='/register_volunteer') Bénévoles
+                    a.toggle-but#vol_register_btn(href='/en') EN
+          li(role='presentation')
+            form.navbar-form( method='post', action='/logout')
+              button.btn.btn-default.logout_nav_btn(type='submit') #{__("g_nav_logout")}
+        else
+          li.navbar-link(role='presentation')
+            a(href='/register_organism') #{__("g_nav_lookfor")}
+          li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("g_nav_explore")} 
+                  span.caret
+                ul.dropdown-menu#drop-down-bu
+                  li
+                    a.toggle-but(href='/listorganisms') #{__("g_nav_listorg")}
+                  li
+                    a.toggle-but(href='/contact') #{__("g_nav_contact")}
+                  li
+                    a.toggle-but(href='/us') #{__("g_nav_us")}
+          li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("signup")}
+                  span.caret
+                ul.dropdown-menu#drop-down-but
+                  li
+                    a.toggle-but#org_register_btn(href='/register_organism') #{__("g_org")}
+                  li
+                    a.toggle-but#vol_register_btn(href='/register_volunteer') #{__("g_vol")}
+          li(role='presentation')
+            form.navbar-form
+              li.dropdown
+                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("language_initiales")} 
+                  span.caret
+                ul.dropdown-menu#drop-down-but
+                  li
+                    a.toggle-but#org_register_btn(href='/fr') FR
+                  li
+                    a.toggle-but#vol_register_btn(href='/en') EN
           unless page=='login'
             li(role='presentation')
               form.navbar-form(method='get', action='/login')
-                input.btn.btn-default#login_visit_btn(type='submit', value='Connexion')
+                input.btn.btn-default#login_visit_btn(type='submit', value=__("signin"))

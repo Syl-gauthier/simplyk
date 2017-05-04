@@ -19,7 +19,7 @@ block content
             if message
               p.alert.alert-success #{message}
           .col-md-4
-            h2.pull-left Mes infos
+            h2.pull-left #{__("infos")}
         .row
           .col-md-4.col-md-offset-8
             .media
@@ -46,24 +46,24 @@ block content
             ul.nav.nav-tabs(role='tablist')
               li(role='presentation' class=activeTabs(todos.length)[0])
                 a(href='#needs' aria-controls='needs' role='tab' data-toggle='tab') 
-                  h4 Mes besoins
+                  h4 #{__("needs")}
               li(role='presentation' class=activeTabs(todos.length)[1])
                 a(href='#todo' aria-controls='todo' role='tab' data-toggle='tab') 
-                  h4 À faire 
+                  h4 #{__("todo")}
                     span.badge(style='background-color: #C11')= todos.length
         .row
           .tab-content
             #needs.tab-pane.fade(role='tabpanel' class=activeTabs(todos.length)[2])
               .col-md-4.col-md-offset-1
-                h2.page-header Mes bénévoles ponctuels
+                h2.page-header #{__("one_time_vol")}
                 if error
                   p.alert.alert-danger #{error}
-                h4 Besoin de bénévoles pour un évènement ponctuel ?
-                a.btn.btn-default(href='/organism/addevent') Ajouter un évènement !
+                h4 #{__("o_dashboard_need_punctual")}
+                a.btn.btn-default(href='/organism/addevent') #{__("add_event")}
                 h3
                 ul.list-group.list-opportunity
                   if ev_to_come.length
-                    h3 À venir
+                    h3 #{__("to_come")}
                   each event, event_i in ev_to_come
                     if isOk(event)
                       li.list-group-item(id= event._id)
@@ -76,7 +76,7 @@ block content
                               h4.media-heading <b>#{event.intitule}</b>
                               h6
                                 i.fa.fa-map-marker
-                                p.inline Adresse : #{event.address}
+                                p.inline #{__("Address")} : #{event.address}
                           .panel-body
                             each act, act_i in event.acts
                               h4 <b>#{act.intitule}</b>
@@ -85,12 +85,12 @@ block content
                                   h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
                                   h6.inline
                                     i.fa.fa-user
-                                    p.inline= day.applicants.length+' bénévoles se sont inscrits'
+                                    p.inline= day.applicants.length+ __("o_vols_have_subscribed")
                               div.media-right.media-middle
                           .panel-footer
-                            a.btn.btn-default.infos-button-event(id= event._id, href='/organism/event/'+event._id) Informations
+                            a.btn.btn-default.infos-button-event(id= event._id, href='/organism/event/'+event._id) Infos
                   if ev_past.length
-                    h3 Terminés
+                    h3 #{__("finished")}
                   each event, event_i in ev_past
                     if isOk(event)
                       li.list-group-item(id= event._id)
@@ -103,7 +103,7 @@ block content
                               h4.media-heading <b>#{event.intitule}</b>
                               h6
                                 i.fa.fa-map-marker
-                                p.inline Adresse : #{event.address}
+                                p.inline #{__("Address")} : #{event.address}
                           .panel-body
                             each act, act_i in event.acts
                               h4 <b>#{act.intitule}</b>
@@ -112,17 +112,17 @@ block content
                                   h5.inline <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
                                   h6.inline
                                     i.fa.fa-user
-                                    p.inline= day.applicants.length+' bénévoles se sont inscrits'
+                                    p.inline= day.applicants.length+ __("o_vols_have_subscribed")
                           .panel-footer
-                            a.btn.btn-default.infos-button-event(id= event._id, href='/organism/event/'+event._id) Informations
+                            a.btn.btn-default.infos-button-event(id= event._id, href='/organism/event/'+event._id) Infos
               .col-md-4.col-md-offset-2.no-side-padding
-                h2.page-header Mes bénévoles long terme
-                h4 Besoin de bénévoles sur du long terme ?
-                a.btn.longterm(href='/organism/addlongterm') Ajouter un long terme !
+                h2.page-header #{__("longterm_vol")}
+                h4 #{__("o_dashboard_need_longterm")}
+                a.btn.longterm(href='/organism/addlongterm') #{__("add_longterm")}
                 h3
                 ul.list-group
                   if organism.long_terms.length
-                    h3 En cours
+                    h3 #{__("ongoing")}
                   each lt, lt_i in organism.long_terms
                     li.list-group-item.list-longterm-item(id= lt._id)
                       .panel.panel-default
@@ -134,16 +134,16 @@ block content
                             h4.media-heading <b>#{lt.intitule}</b>
                             h6
                               i.fa.fa-map-marker
-                              p.inline Adresse : #{lt.address}
+                              p.inline #{__("Address")} : #{lt.address}
                           if lt.tags == 'archived'
                             div.media-right.media-top
-                              span.badge(style='background-color: #E33831')= 'Archivé'
+                              span.badge(style='background-color: #E33831')= __("archived")
                         .panel-body
                           h6.inline
                             i.fa.fa-user
-                            p.inline= lt.applicants.length+' bénévoles se sont inscrits'
+                            p.inline= lt.applicants.length+__("o_vols_have_subscribed")
                         .panel-footer
-                          a.btn.infos-button-longterm.longterm(id= lt._id, href='/organism/longterm/'+lt._id) Informations
+                          a.btn.infos-button-longterm.longterm(id= lt._id, href='/organism/longterm/'+lt._id) Infos
             #todo.tab-pane.fade(role='tabpanel' class=activeTabs(todos.length)[3])
               .col-md-10.col-md-offset-1
                 if todos.length
@@ -154,14 +154,14 @@ block content
                           .panel-heading
                             div.media
                               div.media-left.media-middle
-                                span.badge(style='background-color: #5bcf8f') PONCTUEL
+                                span.badge(style='background-color: #5bcf8f') #{__("One_time")}
                               div.media-body
                                 h4.media-heading <b>#{todo.event_name}</b> - #{todo.firstname} #{todo.lastname}
                               div.media-right
                           .panel-body
                             div.media
                               div.media-body
-                               h5 #{todo.firstname} #{todo.lastname} a t-il bien réalisé #{todo.hours}h durant cet évènement (#{todo.activity_intitule}) ?
+                               h5 #{__("o_todo_sentence_onetime0")} #{todo.firstname} #{todo.lastname} #{__("o_todo_sentence_onetime1")} #{todo.hours}#{__("o_todo_sentence_onetime2")} (#{todo.activity_intitule}) ?
                               div.media-right.media-middle
                                 if todo.student
                                   div.btn-group(style='width: 120px', todo=todo._id)

@@ -25,7 +25,8 @@ router.get('/login', function(req, res, next) {
       error: req.query.login_error
     });
   } else {
-    res.render('g_login.jade');
+    res.render('g_login.jade', {
+    });
   }
 });
 

@@ -1,10 +1,11 @@
 extends ./g_layout.jade
 block vars
   - var page = 'activity'
-  - var days_name = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
-  - var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+  - var days_name = [__("Sunday,"), __("Monday,"), __("Tuesday,"), __("Wednesday,"), __("Thursday,"), __("Friday,"), __("Saturday,")]
+  - var months_name = [__("January"), __("February"), __("March"), __("April"), __("May"), __("June"), __("July"), __("August"), __("September"), __("October"), __("November"), __("December")]
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
   - function getCauseDesign(cause){if (cause=='Solidarité') {return '#00b3ff'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Nature') {return '#5BCF8F'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
+  - function getCauseTranslation(cause){return __(cause);};
 block head
   title Bénévolat pour #{organism.org_name} (#{activity.event_intitule}) - Simplyk
   meta(name='description', content='Viens faire du bénévolat avec ' + organism.org_name + ' - ' + activity.event_intitule + ' (' + activity.intitule + ') | Simplyk')
@@ -30,7 +31,7 @@ block share
         console.info('bitly : ' + JSON.stringify(datas));
         if(datas.status_code < 400){
           $('#propose').click(function(){
-            $(this).parent().html("<div class='alert alert-info text-center'><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> Par Messenger</a><p> Ou partage ce lien : </p><input type='text' id='link_to_share'></input></div>");
+            $(this).parent().html("<div class='alert alert-info text-center'><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> " + __("by_messenger") + "</a><p> " + __("g_social_share_link") + " : </p><input type='text' id='link_to_share'></input></div>");
             console.info('We are in the status_code OK !');
             $('#link_to_share').val(datas.data.url);
             $('#messenger').click(function(){
@@ -79,30 +80,30 @@ block content
           a.org_name(href='/all/organism/'+organism._id)
             h2(style='margin-top: 10%')= organism.org_name
           p(style = 'white-space: pre-wrap') <b>Mission:</b> #{organism.description}
-          p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
+          p <b>#{__("supervisor")}:</b> #{organism.firstname + ' ' + organism.lastname}
           if group
-            p <b>Courriel:</b> #{organism.email}
+            p <b>#{__(email)}:</b> #{organism.email}
             if organism.phone
-              p <b>Téléphone:</b> #{organism.phone}
+              p <b>#{__(phone)}:</b> #{organism.phone}
             div(style='margin-top: 10px;')
-              a.btn.btn-warning#propose Proposer à des amis
+              a.btn.btn-warning#propose #{__("invite_friends")}
           else
             div
-              a.btn.btn-default(href='/login') Se connecter
-              p.inline  ou 
-              a(href='/register_volunteer')  Créer un compte
+              a.btn.btn-default(href='/login') #{__("signin")}
+              p.inline  #{__("or")} 
+              a(href='/register_volunteer')  #{__("signup")}
             div(style='margin-top: 10px;')
-              a.btn.btn-warning#propose Proposer à des amis
+              a.btn.btn-warning#propose #{__("invite_friends")}
     .row.activity__background
       .col-md-6.col-md-offset-1
         .page-header.activity__unit
-          span.badge(style='background-color: '+getCauseDesign(organism.cause))= organism.cause
+          span.badge(style='background-color: '+getCauseDesign(organism.cause))= getCauseTranslation(organism.cause)
           h1= activity.event_intitule
           p= event[0].description
-          p <b>Adresse : </b> #{event[0].address} 
+          p <b>#{__("Address")} : </b> #{event[0].address} 
           h3= activity.intitule
           if activity.description
-            p <b>Description de l'activité :</b> #{activity.description}
+            p <b>#{__("activity_description")} :</b> #{activity.description}
           each day, index in activity.days
             if day.day
               li.list-group-item
@@ -110,8 +111,8 @@ block content
                   i.fa.fa-calendar
                 div.media-body
                   h4= days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()
-                  p= 'De ' + day.start_time + ' à ' + day.end_time
-                  p= 'Encore ' + (day.vol_nb-day.applicants.length) + ' places'
+                  p= __("From") + ' ' + day.start_time + ' ' + __("to") + ' ' + day.end_time
+                  p= (day.vol_nb-day.applicants.length) + ' ' + __("remaining")
                   #identifiant(style='display:none')
                     p= event._id
                 div.media-right.media-middle
