@@ -194,7 +194,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/organism/dashboard', permissions.requireGroup('organism', 'admin'), function(req, res, next) {
-  res.setLocale(req.cookies.i18n);
+  //res.setLocale(req.cookies.i18n);
   console.info('req.body : ' + req.body);
   if (req.body.org) {
     req.session.organism = req.body.org;
