@@ -28,7 +28,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
       ul.nav.navbar-nav.navbar-right
         if group == 'volunteer'
           li(role='presentation')
-            form.navbar-form
+            form.navbar-form(method='post', action='./logout', id='logoutForm')
               li.dropdown
                 a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("g_nav_explore")} 
                   span.caret
@@ -39,25 +39,14 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                     a.toggle-but(href='/contact') #{__("g_nav_contact")}
                   li
                     a.toggle-but(href='/us') #{__("g_nav_us")}
+                  li
+                    a.toggle-but#logout_btn(onclick="console.log('OLOLO click');$(this).closest('form').submit();" href='#') #{__("g_nav_logout")
           unless page=='profile'
             li.navbar-link(role='presentation')
               a(href='/volunteer/profile') #{__("g_nav_dashboard")}
           unless page=='map'
             li.navbar-link(role='presentation')
               a(href='/volunteer/map') #{__("g_nav_map")}
-          //li(role='presentation')
-            form.navbar-form
-              li.dropdown
-                a.btn.btn-default.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") #{__("language_initiales")} 
-                  span.caret
-                ul.dropdown-menu#drop-down-but
-                  li
-                    a.toggle-but#org_register_btn(href='/fr') FR
-                  li
-                    a.toggle-but#vol_register_btn(href='/en') EN
-          li(role='presentation')
-            form.navbar-form( method='post', action='./logout')
-              button.btn.btn-default.logout_nav_btn(type='submit') #{__("g_nav_logout")}
         else if group == 'organism'
           li(role='presentation')
             form.navbar-form

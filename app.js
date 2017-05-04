@@ -289,7 +289,7 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
-    console.error('ERROR MID : \n' + err + '\n ' + err.type + ' @ ' + req.method + req.originalUrl + '\n');
+    console.error('ERROR MID : ' + err.type + ' @  ' + req.method + '  ' + req.originalUrl + '\n err : ' + JSON.stringify(err) + '\n ');
     console.error('ERROR MID stack : \n' + err.stack + '\n');
     var session = {};
     var group = {};
@@ -313,11 +313,28 @@ if (app.get('env') === 'development') {
           organism = req.session.organism;
           console.error('ERROR happened to : ' + req.session.organism.email + ' and message displayed : ' + err.print);
         }
+      } else {
+        console.error('ERROR happened with no group and message displayed : ' + err.print);
       }
+    } else {
+      console.error('ERROR happened with no session and message displayed : ' + err.print);
     }
-    if (err.type == 'CRASH') { // CRASH OR MINOR
-      res.status(err.status || 500);
+    if (err.type == 'CRASH') {
+      res.status(err.status || 404);
       res.render('g_error', {
+        type: 1,
+        message: err.print,
+        error: err,
+        group,
+        organism,
+        volunteer,
+        admin,
+        session
+      });
+    } else if (err.type == 'MINOR') {} else if (err.type == 'NORMAL') {
+      res.status(err.status || 200);
+      res.render('g_error', {
+        type: 2,
         message: err.print,
         error: err,
         group,
@@ -327,9 +344,11 @@ if (app.get('env') === 'development') {
         session
       });
     } else {
+      var message = (err && err.print) ? err.print : '';
       res.status(err.status || 500);
       res.render('g_error', {
-        message: err.print,
+        type: 0,
+        message,
         group,
         organism,
         volunteer,
@@ -343,7 +362,7 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  console.error('ERROR MID : \n' + err + '\n ' + err.type + ' @  ' + req.method + '  ' + req.originalUrl + '\n');
+  console.error('ERROR MID : ' + err.type + ' @  ' + req.method + '  ' + req.originalUrl + '\n err : ' + JSON.stringify(err) + '\n ');
   console.error('ERROR MID stack : \n' + err.stack + '\n');
   var session = {};
   var group = {};
@@ -367,11 +386,16 @@ app.use(function(err, req, res, next) {
         organism = req.session.organism;
         console.error('ERROR happened to : ' + req.session.organism.email + ' and message displayed : ' + err.print);
       }
+    } else {
+      console.error('ERROR happened with no group and message displayed : ' + err.print);
     }
+  } else {
+    console.error('ERROR happened with no session and message displayed : ' + err.print);
   }
-  if (err.type == 'CRASH') { // CRASH OR MINOR
-    res.status(err.status || 500);
+  if (err.type == 'CRASH') {
+    res.status(err.status || 404);
     res.render('g_error', {
+      type: 1,
       message: err.print,
       error: err,
       group,
@@ -380,10 +404,24 @@ app.use(function(err, req, res, next) {
       admin,
       session
     });
-  } else if (err.type == 'MINOR') {} else {
+  } else if (err.type == 'MINOR') {} else if (err.type == 'NORMAL') {
+    res.status(err.status || 200);
+    res.render('g_error', {
+      type: 2,
+      message: err.print,
+      error: err,
+      group,
+      organism,
+      volunteer,
+      admin,
+      session
+    });
+  } else {
+    var message = "L'équipe technique est mise au courant de ce problème";
     res.status(err.status || 500);
     res.render('g_error', {
-      message: err.print,
+      type: 0,
+      message,
       group,
       organism,
       volunteer,

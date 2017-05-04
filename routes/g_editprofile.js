@@ -190,7 +190,7 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 				});
 			});
 		} else {
-			let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)'
+			let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse contact@simplyk.io :)'
 			console.error(err);
 			err.type = 'MINOR';
 			next(err);
@@ -262,7 +262,7 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 			intercom_custom = 'description';
 			path_to_new_object = type;
 		} else {
-			let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)'
+			let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse contact@simplyk.io :)'
 			console.error(err);
 			ok = false;
 			res.status(404).send({
@@ -324,7 +324,7 @@ router.post('*/edit-profile', permissions.requireGroup('volunteer', 'organism'),
 			});
 		}
 	} else {
-		let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse francois@simplyk.org :)';
+		let err = 'Aucune donnée envoyée au serveur. Essaies de modifier à nouveau ton profil, sinon contacte nous à l\'adresse contact@simplyk.io :)';
 		err.type = 'MINOR';
 		next(err);
 		console.error(err);

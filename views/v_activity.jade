@@ -7,8 +7,12 @@ block vars
   - function getCauseDesign(cause){if (cause=='Solidarité') {return '#00b3ff'} else if (cause=='Sport et Culture') {return '#ffc858'} else if (cause=='Nature') {return '#5BCF8F'} else if (cause=='Enfance') {return '#FF4F3C'} else {return ''}}
   - function getCauseTranslation(cause){return __(cause);};
 block head
-  title Activité de bénévolat
-  meta(name='description', content='Informations sur les activités de bénévolat ')
+  title Bénévolat pour #{organism.org_name} (#{activity.event_intitule}) - Simplyk
+  meta(name='description', content='Viens faire du bénévolat avec ' + organism.org_name + ' - ' + activity.event_intitule + ' (' + activity.intitule + ') | Simplyk')
+  style.
+    .org_name {color:#5BCF8F}
+    .org_name:hover {text-decoration: none; color: #FFC518}
+
 block share
   script.
     var bitly_token = '074139d6c2b2511f886ae9e554856c4ecf3ca141';
@@ -62,7 +66,7 @@ block share
   meta(property='og:type', content='website')
   meta(property='og:title', content='Bénévolat avec ' + organism.org_name)
   meta(property='og:description', content='Viens faire du bénévolat chez ' + organism.org_name + ' pour ' + activity.event_intitule +'. Simplyk est la plateforme de bénévolat de référence à Montréal. Des opportunités de bénévolat pour tous les goûts y sont visibles !')
-  meta(property='og:image', content='http://platform.simplyk.org/images/carte.png')
+  meta(property='og:image', content='http://www.simplyk.io/images/carte.png')
   meta(property='fb:app_id', content='1829081597379617')
   //meta(property='og:url', content= window.location.href)
   
@@ -73,10 +77,11 @@ block content
         img.center-block(src='/images/happy_city_white.svg', align='middle', style='max-height:30vh; padding-top:3vh')
       .col-md-5.col-md-offset-1.col-xs-12
         .page-header
-          h2(style='margin-top: 10%')= organism.org_name
+          a.org_name(href='/all/organism/'+organism._id)
+            h2(style='margin-top: 10%')= organism.org_name
           p(style = 'white-space: pre-wrap') <b>Mission:</b> #{organism.description}
           p <b>#{__("supervisor")}:</b> #{organism.firstname + ' ' + organism.lastname}
-          if volunteer
+          if group
             p <b>#{__(email)}:</b> #{organism.email}
             if organism.phone
               p <b>#{__(phone)}:</b> #{organism.phone}

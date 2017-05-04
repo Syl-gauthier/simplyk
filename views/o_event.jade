@@ -4,7 +4,7 @@ block vars
 	- function isPast(days){return ((days.map(function(day){return (Date.parse(day.day)<Date.now())})).indexOf(true) > -1)};
 
 block head
-	title Bénévoles à court terme
+	title Bénévoles à court terme - Simplyk
 	meta(name='description', content='Gère tes bénévoles inscrits à court terme')
 block share
 	script.
@@ -64,7 +64,12 @@ block content
 				p
 					h1.inline.intitule= event.intitule
 					i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='intitule')
-				p Adresse: #{event.address}
+				p <b>Adresse :</b> #{event.address}
+				if event.min_age
+					p
+						p.inline <b>Âge minimal :</b> 
+						p.inline.min_age #{event.min_age} ans
+						i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='min_age')
 				p
 					p.inline.description= event.description
 					i.fa.fa-pencil.fa-xs.edit(style="cursor: pointer" type='description')
@@ -198,6 +203,12 @@ block footscript
 					const text_textarea = div.text();
 					div.html("<form name='edit-form' method='post' action='/edit-event'><textarea name='description' id='des'></textarea><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
 					$('#des').val(text_textarea);
+				} else if (type == 'min_age'){
+					let div = $('p.min_age');
+					const age_init = parseInt(div.text());
+					console.log('age_init : ' + age_init);
+					div.html("<form name='edit-form' method='post' action='/edit-event'><input type='number' name='min_age' id='mina'></input><input class='hidden' name='url' value="+window.location.pathname+"></input><input type='submit' value='Modifier'></input></form>");
+					$('#mina').val(age_init);
 				}
 			});
 			$(function () {

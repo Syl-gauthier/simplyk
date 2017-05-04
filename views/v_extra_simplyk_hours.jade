@@ -1,5 +1,6 @@
 extends ./g_layout.jade
 block vars
+    - function createHoursArray(){var result_array = new Array(); for(var i = 0.5; i < 60; i=i+0.5){result_array.push(i)}; return result_array;}
 
 block head
     script(src='/bower_components/pickadate/lib/picker.js', type='text/javascript')
@@ -9,7 +10,7 @@ block head
     link(href='/bower_components/pickadate/lib/themes/classic.css', rel='stylesheet')
     link(href='/bower_components/pickadate/lib/themes/classic.date.css', rel='stylesheet')
     link(href='/bower_components/pickadate/lib/themes/classic.time.css', rel='stylesheet')
-    title Ajoute des heures de bénévolat extra-Simplyk
+    title Ajoute des heures de bénévolat extra-Simplyk - Simplyk
     meta(name='description', content='Ajoute des heures de bénévolat extra-Simplyk ')
 block content
     .container-fluid
@@ -47,7 +48,9 @@ block content
                         .col-md-6
                             .form-group.conn-input
                                 label(for='hours_pending') Nombres d'heures réalisées
-                                input.form-control(id='hours_pending', type='number', name='hours_pending', step='0.5', min="0", max="100", required)
+                                select.form-control(id='hours_pending' name='hours_pending' required)
+                                    each val, ind in createHoursArray()
+                                        option(value=val)=(val%1==0?val+'h':(val-0.5)+'h30')
                     .form-group.conn-input
                         label(for='firstname') Prénom du responsable
                         input.form-control(id='firstname', name='firstname' type='text' required)
@@ -60,7 +63,7 @@ block content
                             label(for='answer'+q_i) !{question.replace(/\n/g, '<br/>')}
                             textarea.form-control(id='answer'+q_i, name='answer'+q_i, rows="6" required)
                     .row
-                        input.btn.btn-default.form-control(type='submit', form='addextrahours', style="margin-bottom: 100px;")
+                        input.btn.btn-default.form-control(type='button', value='Submit', style="margin-bottom: 100px;", onclick="validateForm()")
 
 
     .modal#warningModal(role='dialog')
@@ -96,16 +99,34 @@ block footscript
                     $('html, body').animate({
                         scrollTop: $(".page-header").offset().top
                     }, 300);
-                    return false;
                 } else {
-                    return true;
+                    $.post('not_volunteer_check', {'email': email}, function(response){
+                        console.log('repsonse : ' + JSON.stringify(response));
+                        if (response.success) {
+                            if(response.exists) {
+                                console.log('In response exists');
+                                $('#validation').text('L\'adresse courriel entrée correspond au compte d\'un bénévole, elle ne peut donc pas être utilisée pour valider des heures en tant qu\'organisme').addClass('alert').addClass('alert-danger');
+                                $('html, body').animate({
+                                    scrollTop: $(".page-header").offset().top
+                                }, 300);
+                            } else {
+                                console.log('In response !exists, return true');
+                                document.forms["addextrahours"].submit();
+                            }
+                        } else {
+                            console.log('In response not success');
+                            $('#validation').text('L\'adresse courriel entrée ne peut pas être vérifiée avec succès. Réessaye de soumettre le formulaire, de réécrire l\'adresse, et si ça ne fonctionne toujours pas, envoie nous un courriel à contact@simplyk.io').addClass('alert').addClass('alert-danger');
+                            $('html, body').animate({
+                                scrollTop: $(".page-header").offset().top
+                            }, 300);
+                        }
+                    })
                 }
             } else {
                 $('#validation').text('Le champ de courriel doit contenir un email valide').addClass('alert').addClass('alert-danger');
                 $('html, body').animate({
                     scrollTop: $(".page-header").offset().top
                 }, 300);
-                return false;
             }
         };
 
@@ -122,7 +143,8 @@ block footscript
             var input = $('.datepicker');
             input.pickadate({
                 firstDay: 1,
-                formatSubmit: 'yyyy-mm-dd'
+                formatSubmit: 'yyyy-mm-dd',
+                max: new Date()
             });
 
             $('#addextrahours').on('keyup keypress', function(e) {

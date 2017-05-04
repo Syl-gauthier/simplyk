@@ -5,8 +5,11 @@ block vars
 	- var months_name = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
 	- function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
 block head
-	title Événement de bénévolat
+	title Événement de bénévolat - Simplyk
 	meta(name='description', content='Informations sur l\'événement de bénévolat ')
+	style.
+		.org_name {color:#5BCF8F}
+		.org_name:hover {text-decoration: none; color: #FFC518}
 block share
 	script.
 		var bitly_token = '074139d6c2b2511f886ae9e554856c4ecf3ca141';
@@ -123,7 +126,7 @@ block content
 											else
 												div.media-right.media-middle
 													h4 <b>Passé</b>
-				if (student_questions.length > 0 && ((status =='denied')||(status =='pending')||(status =='corrected')||(status =='validated')||(status =='confirmed')))
+				if (student_questions.length > 0 && ((status =='denied')||(status =='pending')||(status =='corrected')||(status =='validated')||(status =='refused')||(status =='confirmed')))
 					div.panel.panel-default
 						form#correct_answers_form(name='edit-form' method='post' action='/volunteer/edit-student-feedbacks')
 							div.panel-heading
@@ -140,6 +143,8 @@ block content
 								else if status == 'pending'
 									span.badge(style='background-color: #FF800E')= 'En attente de l\'organisme'
 									i.fa.fa-2x.fa-pencil.edit(style="cursor: pointer")
+								else if status == 'refused'
+									span.badge(style='background-color: #000')= 'Refusé par ton responsable'
 							div.panel-body
 								each question, q_I in student_questions
 									div.panel.panel-warning
@@ -222,16 +227,13 @@ block content
 													div.media-right.media-middle
 														h4 <b>Passé</b>
 			.col-md-3.col-md-offset-1.no-side-padding
-				h4 L'organisme <b> #{organism.org_name} </b>
-				h5 <b>Mission : </b> #{organism.description}
+				a.org_name(href='/all/organism/'+organism._id)
+					h2(style='margin-top: 10%')= organism.org_name
+				p(style = 'white-space: pre-wrap') <b>Mission:</b> #{organism.description}
 				p <b>Responsable:</b> #{organism.firstname + ' ' + organism.lastname}
 				p <b>Courriel:</b> #{organism.email}
 				if organism.phone
 					p <b>Téléphone:</b> #{organism.phone}
-				a(href='http://'+organism.website) Site web
-				h5
-					i.fa.fa-at
-					p.inline #{organism.email}
 				div(style='margin-top: 10px;')
 					a.btn.btn-warning#propose Proposer à des amis
 

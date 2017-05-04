@@ -45,7 +45,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
       Organism.findById(req.session.organism._id, function(err, organism) {
         //Verify min_age is a number
         let min_age = req.body.min_age;
-        if ((typeof min_age !== 'number') && min_age != '') {
+        if (min_age && (typeof min_age !== 'number') && min_age != '') {
           min_age = parseInt(min_age.toString());
           console.info('min_age is not a number : ' + req.body.min_age + ' and now with parseInt : ' + min_age);
           if (isNaN(min_age)) {
@@ -61,6 +61,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
           min_age,
           address: req.body.address,
           language: req.body.language,
+          impact: req.body.event_impact,
           description: req.body.event_description,
           status: "",
           activities: [],
@@ -127,6 +128,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
             event_intitule: req.body.intitule_event,
             address: req.body.address,
             min_age: min_age,
+            impact: req.body.event_impact,
             language: req.body.language,
             cause: req.session.organism.cause,
             email: req.session.organism.email,

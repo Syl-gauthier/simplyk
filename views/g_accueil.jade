@@ -1,7 +1,7 @@
 extends ./g_layout.jade
 block head
-  title Simplyk : bénévolat à portée de main
-  meta(name='description', content='La plateforme de mise en relation de jeunes bénévoles et d\'organismes à Montréal')
+  title Bénévolat à portée de main au Québec - Simplyk
+  meta(name='description', content='Viens changer le monde en trouvant les actions bénévoles qui t\'importent proches de chez toi ! Simplyk est la plateforme de référence de mise en relation d\'organismes et de bénévoles.')
   script.
     if ((/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
       console.log('On mobile');
@@ -15,6 +15,7 @@ block vars
   - function isAdult(ageMin){var result=false;if(ageMin>=16){result=true}return result;}
   - var school_name = ""; if (volunteer && volunteer.admin.school_name){school_name = volunteer.admin.school_name};
 
+
 block content
   each act, index in activities
     #myModal(tabindex='-1', role='dialog', class='modal fade ' + act._id)
@@ -22,10 +23,14 @@ block content
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
-              span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{act.event_intitule} <small> #{__("by")}</small> <b>#{act.org_name}</b>
+              span(aria-hidden='true') &times;     
+            #myModalLabel.h4.modal-title #{act.event_intitule} <small>#{__("by")} </small>
+              a.inline(href='/all/organism/'+act.org_id)=act.org_name
           .modal-body.my-modal-body
-            h4 <b>#{act.intitule}</b>
+            if act.impact
+              .well.well--sk 
+                i.fa.fa-pull-left.fa-star-o
+                p.text-center #{act.impact}
             p #{act.description}
             p <b>#{__("address")} : </b> #{act.address}
             table.table
@@ -57,9 +62,13 @@ block content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>#{__("by")}</small> <b>#{lt.org_name}</b>
+            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>#{__("by")}</small> 
+              a.inline(href='/all/organism/'+lt._id)=lt.org_name
           .modal-body.my-modal-body
-            h4 <b>#{lt.long_term.intitule}</b>
+            if lt.long_term.impact
+              .well.well--sk 
+                i.fa.fa-pull-left.fa-star-o
+                p.text-center #{lt.long_term.impact}
             p #{lt.long_term.description}
             p <b>#{__("address")} : </b> #{lt.long_term.address}
             if lt.long_term.min_age
@@ -76,7 +85,6 @@ block content
           div
             h4 #{__("g_acc_subtitle")} <br><br>
           div.hidden-xs
-            button.landing-buttons__item.btn.btn-warning.btn-lg#letsgo #{__("g_acc_know_btn")}
             button.landing-buttons__item.btn.btn-warning.btn-lg.more#more <b>#{__("g_acc_go_btn")}</b>
       .col-sm-6.col-sm-offset-0.col-xs-offset-1.col-xs-11.section-div.hidden-xs
         img#landscape(src='images/happy_city.svg', align='middle')
@@ -211,31 +219,31 @@ block content
                             p.hidden <b>#{days_name[correctDate(day.day).getDay()]  + ' ' + (correctDate(day.day).getDate()) + ' ' + months_name[correctDate(day.day).getMonth()]  + ' ' + correctDate(day.day).getFullYear()} : </b>
 
             each lt, index in longterms
-                li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon, data-target= "."+lt.long_term._id, style='cursor: pointer;', category_filtered='false', type_filtered='false', age_filtered=lt.long_term.min_age ? (lt.long_term.min_age<16 ? 'false' : 'true') : 'false')
-                  .panel.panel-default
-                    .panel-heading
-                      div.media-left.media-middle
-                        a(href='#')
-                          if lt.cause == 'Solidarité'
-                            i.fa.fa-heart
-                          else if lt.cause == 'Nature'
-                            i.fa.fa-envira(style='color: #5BCF8F')
-                          else if lt.cause == 'Sport et Culture'
-                            i.fa.fa-institution(style='color: #FFC858')
-                          else if lt.cause == 'Enfance'
-                            i.fa.fa-child(style='color: #FF4F3C')
-                      div.media-body
-                        h5.media-heading <b>#{lt.org_name}</b>
-                        h6.media-heading <b>#{lt.long_term.intitule}</b>
-                        h6
-                          i.fa.fa-map-marker
-                          p.inline #{__("address")} : #{lt.long_term.address}
-                        div.visible-xs
-                          i.fa.fa-compass.inline
-                          h6.dist.inline
-                          h6.inline.dist_reference #{__("kms_from")}
-                      div.media-right.media-top
-                        span.badge.longterm #{__("Longterm")}
+              li.list-group-item(id= lt.long_term._id, opp_type='longterm', lat=lt.long_term.lat, lon=lt.long_term.lon, data-target= "."+lt.long_term._id, style='cursor: pointer;', category_filtered='false', type_filtered='false', age_filtered=lt.long_term.min_age ? (lt.long_term.min_age<16 ? 'false' : 'true') : 'false')
+                .panel.panel-default
+                  .panel-heading
+                    div.media-left.media-middle
+                      a(href='#')
+                        if lt.cause == 'Solidarité'
+                          i.fa.fa-heart
+                        else if lt.cause == 'Nature'
+                          i.fa.fa-envira(style='color: #5BCF8F')
+                        else if lt.cause == 'Sport et Culture'
+                          i.fa.fa-institution(style='color: #FFC858')
+                        else if lt.cause == 'Enfance'
+                          i.fa.fa-child(style='color: #FF4F3C')
+                    div.media-body
+                      h5.media-heading <b>#{lt.org_name}</b>
+                      h6.media-heading <b>#{lt.long_term.intitule}</b>
+                      h6
+                        i.fa.fa-map-marker
+                        p.inline #{__("address")} : #{lt.long_term.address}
+                      div.visible-xs
+                        i.fa.fa-compass.inline
+                        h6.dist.inline
+                        h6.inline.dist_reference #{__("kms_from")}
+                    div.media-right.media-top
+                      span.badge.longterm #{__("Longterm")}
             li.list-group-item
               .panel.panel-default
                 .panel-heading(style='min-height: 60vh;')
@@ -254,7 +262,7 @@ block content
         p.text-left.left-align.white(style='white-space:pre;')
          | #{__("g_nav_contact")}
          | 514-570-6926
-         | francois@simplyk.org
+         | contact@simplyk.io
       .col-md-4.col-xs-6
         p.white.text-center.hidden-xs #{__("Follow_us")}
         div.text-center
@@ -318,8 +326,12 @@ block footscript
       }
       $('.list-group-item').click(function(){
         $('' + $(this).attr('data-target')).modal('show');
+        fbq('track', 'ViewContent', {'content_type': $(this).attr('opp_type'), 'content_name': $(this).attr('id')});
       });
-      $('#letsgo, .age-button').click(function(){
+      $('.modal').on('shown.bs.modal', function(){
+        fbq('track', 'ViewContent', {'content_type': 'show_modal_on_landing'});
+      });
+      $('.age-button').click(function(){
         $('html, body').animate({
           scrollTop: $('#map-left').offset().top - 50
         }, 500)

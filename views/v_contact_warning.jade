@@ -1,0 +1,27 @@
+extends ./g_layout.jade
+block vars
+  - var page = 'contactwarning'
+block head
+  title Entre en contact avec l'organisme
+  meta(name='description', content='Entre en contact avec l\'organisme')
+
+block content
+  .container-fluid
+    .row
+      .col-md-8.col-md-offset-2
+        .page-header.jumbotron
+          h2.text-center Attention, prends bien contact avec l'organisme 
+          div.icon-center
+            img(src='/images/phone.svg')
+          h4.text-center Tant que tu n'as pas pris contact avec l'organisme, tu ne peux pas savoir s'il n'y a pas eu de changements de lieu, d'horaires, etc... Ne te déplace pas si tu n'es pas sûr de la bonne tenue de l'évènement
+          a.btn.btn-default.icon-center(href='/volunteer/profile') Suivant 
+
+block footscript
+  script(type='text/javascript').
+    'use strict';
+    $(document).ready(function(){
+      //--------AMPLITUDE
+      if (env == 'prod') {
+        amplitude.getInstance().logEvent('v_visit_contact_warning');
+      };
+    });

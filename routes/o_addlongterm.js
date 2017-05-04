@@ -37,7 +37,7 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 
 	//Verify min_age is a number
 	let min_age = req.body.min_age;
-	if ((typeof min_age !== 'number') && min_age != '') {
+	if (min_age && (typeof min_age !== 'number') && min_age != '') {
 		min_age = parseInt(min_age.toString());
 		console.info('min_age is not a number : ' + req.body.min_age + ' and now with parseInt : ' + min_age);
 		if (isNaN(min_age)) {
@@ -63,6 +63,7 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 				intitule: req.body.title,
 				description: req.body.description,
 				address: req.body.address,
+				impact: req.body.impact,
 				lat: lat,
 				lon: lon,
 				expiration_date: req.body.expiration_date_submit,

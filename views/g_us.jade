@@ -3,7 +3,7 @@ block vars
   - var page = 'us'
   
 block head
-  title À propos de Simplyk
+  title Notre histoire, nos valeurs - Simplyk
   meta(name='description', content='Simplyk: à propos')
 block content
   .container-fluid
@@ -219,12 +219,13 @@ block content
                   img.center-block(src='http://cibl1015.com/wp-content/uploads/2016/09/Logo_CIBL_2016.png', style='max-width:100%; max-height:10vh; padding-top: auto; margin-bottom: auto')
                 .panel-body.text-center(style='height: calc(100% - 12vh);')
                   p(style='color: black') #{__("g_press_cibl")}
-        .row(style='padding-top: 5vh')
-          h4.text-center <b>#{__("g_us_start")}</b>
-        .row.text-center
-          a.btn.btn-default(href='/register_volunteer' style='margin-top: 5px') #{__("g_us_as_vol")}
-        .row.text-center
-          a.btn.btn-info(href='/register_volunteer' style='margin-top: 5px') #{__("g_us_as_org")}
+        unless group
+          .row(style='padding-top: 5vh')
+            h4.text-center <b>#{__("g_us_start")}</b>
+          .row.text-center
+            a.btn.btn-default(href='/register_volunteer' style='margin-top: 5px') #{__("g_us_as_vol")}
+          .row.text-center
+            a.btn.btn-info(href='/register_volunteer' style='margin-top: 5px') #{__("g_us_as_org")}
     #footer.row(style='background-color: black; min-height: 15vh; color: white;')
       .col-md-12
         div.text-center

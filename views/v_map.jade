@@ -6,8 +6,9 @@ block vars
   - function correctDate(date){var tz_offset = (new Date()).getTimezoneOffset() * 60 * 1000;var corrected_datetime = new Date(date.getTime() + tz_offset);return corrected_datetime}
 
 block head
-  title Carte
+  title Carte d'opportunités de bénévolat - Simplyk
   meta(name='description', content='Opportunités de bénévolat à Montréal')
+
 block content
   each act, index in activities
     div(tabindex='-1', role='dialog', class='modal fade ' + act._id)
@@ -16,9 +17,13 @@ block content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{act.event_intitule} <small>par</small> <b>#{act.org_name}</b>
-          .modal-body.my-modal-body
-            h4 <b>#{act.intitule}</b>
+            .h4.modal-title #{act.event_intitule} <small>par</small> 
+              a.inline(href='/all/organism/'+act.org_id)=act.org_name
+          .modal-body
+            if act.impact
+              .well.well--sk 
+                i.fa.fa-pull-left.fa-star-o
+                p.text-center #{act.impact}
             p #{act.description}
             table.table
               tr
@@ -51,9 +56,13 @@ block content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
-            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> <b>#{lt.org_name}</b>
-          .modal-body.my-modal-body
-            h4 <b>#{lt.long_term.intitule}</b>
+            #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> 
+              a.inline(href='/all/organism/'+lt.long_term.org_id)=lt.org_name
+          .modal-body
+            if lt.long_term.impact
+              .well.well--sk 
+                i.fa.fa-pull-left.fa-star-o
+                p.text-center #{lt.long_term.impact}
             p #{lt.long_term.description}
             p <b>Adresse : </b> #{lt.long_term.address}
             if lt.long_term.min_age
@@ -74,7 +83,7 @@ block content
           .col-xs-6.col-sm-12.col-md-5#lts_filter(style='cursor: pointer;')
             h5.text-center.btn-filter.btn-filter-lts
               i.inline.fa.fa-check-square-o#lts_check
-              p.inline Engagement
+              p.inline Long terme
         #search_div
           .row(style='padding-bottom: 13px; border-bottom: 1px solid #ddd;').visible-xs
             .col-xs-12.text-center
@@ -162,7 +171,7 @@ block content
                         h6.dist.inline
                         h6.inline.dist_reference km de toi
                     div.media-right.media-top
-                      span.badge.longterm Engagement
+                      span.badge.longterm Long terme
             li.list-group-item
               .panel.panel-default
                 .panel-heading(style='height: 60vh;')
@@ -219,13 +228,22 @@ block footscript
       $('#offers-list-logged').outerHeight(($('#map-left').outerHeight(true) - $('#filter_div').outerHeight(true)) - $('#search_div').outerHeight(true));
       if (env == 'prod') {
         if (group == 'volunteer'){
-          let user_id = !{JSON.stringify(volunteer._id)};
-          let email = !{JSON.stringify(volunteer.email)};
-          let firstname = !{JSON.stringify(volunteer.firstname)};
-          let lastname = !{JSON.stringify(volunteer.lastname)};
+          let volunteer = !{JSON.stringify(volunteer)};
           let age = !{JSON.stringify(age)};
+          let user_id = volunteer._id;
+          let email = volunteer.email;
+          let firstname = volunteer.firstname;
+          let lastname = volunteer.lastname;
+          let phone = volunteer.phone;
+          let ev_nb = volunteer.events ? volunteer.events.length : 0;
+          let lt_nb = volunteer.long_terms ? volunteer.long_terms.length : 0;
+          let ex_nb = volunteer.extras ? volunteer.extras.length : 0;
+          let shares = volunteer.shares ? volunteer.shares : 0;
+          let school_name = ((volunteer.admin && volunteer.admin.school_name) ? volunteer.admin.school_name : 'adult');
+          let school_id = ((volunteer.admin && volunteer.admin.school_id && (volunteer.admin.school_id).toString()) ? (volunteer.admin.school_id).toString() : 'no-client');
           amplitude.getInstance().setUserId(user_id);
-          let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', firstname + ' ' + lastname).setOnce('group', group).setOnce('age', age);
+          let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', firstname + ' ' + lastname).setOnce('group', group).set('age', age).set('shares', shares).set('events_nb', ev_nb).set('lts_nb', lt_nb).set('extras_nb', ex_nb).set('phone', phone);
+          identify.setOnce('school_id', school_id).setOnce('school_name', school_name);
           amplitude.getInstance().identify(identify);
           amplitude.getInstance().logEvent('v_visit_map');
         } else if (group == 'organism') {

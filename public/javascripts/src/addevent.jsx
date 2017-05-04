@@ -122,14 +122,14 @@ class TimePicker extends React.Component {
 			if (this.props.required == 'true'){
 				if (this.props.checked == 'true'){
 					return (
-						<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ required/>);
+						<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control white" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ required/>);
 				} else {
 					return (
-						<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ disabled/>);
+						<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control grey" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*/ disabled/>);
 				}
 			} else {
 				return (
-					<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*//>);
+					<input type="text" key={this.props.name} ref="timepicker" name={this.props.name} value={this.state.value} className="timepicker form-control grey" placeholder={this.props.placeholder} /*onBlur={this.props.validate(this.state.value)}*//>);
 			}
 		}
 }
@@ -317,14 +317,18 @@ class BasicInfos extends React.Component {
 					<span className="input-group-addon">Titre de l'évènement</span>
 					<input type="text" className="form-control" id="intitule_event" name="intitule_event" required/>
 				</div>
+				<p id='address_result' class='hidden'></p>
+				<div className="input-group conn-input">
+					<span className="input-group-addon">Description de l'évènement</span>
+					<textarea className="form-control" id="description" name="event_description" rows="6" required/>
+				</div>
 				<div className="input-group conn-input" id='address_container'>
 					<span className="input-group-addon">Adresse de l'évènement</span>
 					<input type="address" className="form-control" id="address" name="address" placeholder="Indiquez un lieu UNIQUE (format: n° de rue, nom de rue, ville)" required/>
 				</div>
-				<p id='address_result' class='hidden'></p>
-				<div className="input-group">
-					<span className="input-group-addon">Description de l'évènement</span>
-					<textarea className="form-control" id="description" name="event_description" rows="6" required/>
+				<div className="input-group conn-input">
+					<span className="input-group-addon">Impact de l'évènement</span>
+					<input className="form-control" type='text' maxLength='140' id="event_impact" name="event_impact" placeholder="Aider les enfants en difficulté avec leur réussite scolaire !" required/>
 				</div>
 			</div>
 		)

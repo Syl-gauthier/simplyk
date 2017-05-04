@@ -8,7 +8,7 @@ block vars
   - function activeTabs(todo){console.info(todo);if(todo > 0){console.info('todo == 0');return ['', 'active', '', 'active in']}else{console.info('todo else');return ['active', '', 'active in', '']}};
 
 block head
-  title Tableau de bord
+  title Tableau de bord Organisme - Simplyk
   meta(name='description', content='Gérer ses bénévoles et ses demandes de bénévoles')
 block content
       .container-fluid
@@ -368,12 +368,16 @@ block footscript
       let group = !{JSON.stringify(group)};
       if (env == 'prod') {
         if (group == 'organism') {
-          let user_id = !{JSON.stringify(organism._id)};
-          let email = !{JSON.stringify(organism.email)};
-          let org_name = !{JSON.stringify(organism.org_name)};
+          let organism = !{JSON.stringify(organism)};
+          let user_id = organism._id;
+          let email = organism.email;
+          let events_nb = organism.events.length;
+          let lt_nb = organism.long_terms.length;
+          let org_name = organism.org_name;
           amplitude.getInstance().setUserId(user_id);
           let identify = new amplitude.Identify().setOnce('email', email).setOnce('name', org_name).setOnce('group', group);
           amplitude.getInstance().identify(identify);
+          amplitude.getInstance().setUserProperties({'lts_nb': lt_nb, 'events_nb': events_nb});
           amplitude.getInstance().logEvent('o_visit_dashboard');
         } else {
           amplitude.getInstance().logEvent('a_visit_dashboard');
@@ -457,6 +461,7 @@ block footscript
           let todo_id = $(this).attr('todo');
           let hours = $(this).attr('hours');
           let input_group = $("div[class='btn-group'][todo='"+todo_id+"']");
+          let event_props = {};
           $.post('/organism/confirmhours', {vol_id: vol_id, type: type, lt_id: lt_id, todo: todo_id, hours: hours})
           .done(function(data, status){
             if (env == 'prod') {

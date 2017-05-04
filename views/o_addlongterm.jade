@@ -10,7 +10,7 @@ block head
   link(href='/bower_components/pickadate/lib/themes/classic.css', rel='stylesheet')
   link(href='/bower_components/pickadate/lib/themes/classic.date.css', rel='stylesheet')
   link(href='/bower_components/pickadate/lib/themes/classic.time.css', rel='stylesheet')
-  title Trouve des bénévoles à long terme
+  title Trouver des bénévoles à long terme - Simplyk
   meta(name='description', content='Ajoute une opportunité de bénévolat à long terme')
 block content
   .container-fluid
@@ -33,10 +33,15 @@ block content
             label(for='address') Adresse
             input.form-control(id='address', type='text', name='address', required)
             p#address_result
+          .form-group.conn-input
+            label(for='impact') Phrase d'impact
+              i.fa.fa-question-circle(data-toggle='tooltip' data-placement='top' title='Phrase courte expliquant l\'impact du bénévolat')
+            input.form-control(id='impact', name='impact', placeholder="Aider les enfants en difficulté avec leur réussite scolaire !" maxlength="140", type='text' required)
           .row
             .col-md-6
               .form-group.conn-input
-                label(for='expiration_date') Date limite d'inscription
+                label(for='expiration_date') Date de fin
+                  i.fa.fa-question-circle(data-toggle='tooltip' data-placement='top' title='Date à laquelle l\'engagement ne sera plus visible sur la plateforme')
                 input.form-control.datepicker(id='expiration_date', type='text', name='expiration_date' required)
             .col-md-6
               .form-group.conn-input
@@ -186,6 +191,9 @@ block footscript
     };
 
     $( document ).ready(function() {
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      });
       let event_props = {};
       event_props.type = 'longterm';
       if (env == 'prod') {

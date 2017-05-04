@@ -60,7 +60,7 @@ block content
             img(src='/images/friends.svg')
           h2.text-center C'est toujours mieux à plusieurs !
           h4.text-center#share_div(style='margin-top: 25px;')
-          a.btn.btn-default.icon-center(href='/volunteer/profile') Suivant
+          a.btn.btn-default.icon-center(href=(type=='activity' ? '/volunteer/contact_warning' : '/volunteer/profile')) Suivant
 
 block footscript
   script(type='text/javascript').
