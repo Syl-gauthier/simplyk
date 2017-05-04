@@ -73,8 +73,8 @@ block content
                 .text-center#social-login__div
                   .btn.btn-default#fb-button(onclick='return fb_connect();')
                     i.fa.fa-facebook
-                    p.inline <b>Continuer avec Facebook</b>
-                p.text-center <b>OU</b>
+                    p.inline <b>#{__("continue_facebook")}</b>
+                p.text-center <b>#{__("or")}</b>
                 .row
                   .form-input
                     input#firstname.form-control(type='text', placeholder=__("firstname"), name='firstname', aria-describedby='basic-addon1', required)
@@ -88,18 +88,18 @@ block content
                     .row
                       .col-xs-5
                         select.inline#birthdate_month.form-control(type='number', placeholder='Mois', name='birthdate_month', aria-describedby='basic-addon1' required)
-                          option(value='01') Janvier
-                          option(value='02') Février
-                          option(value='03') Mars
-                          option(value='04') Avril
-                          option(value='05') Mai
-                          option(value='06') Juin
-                          option(value='07') Juillet
-                          option(value='08') Août
-                          option(value='09') Septembre
-                          option(value='10') Octobre
-                          option(value='11') Novembre
-                          option(value='12') Décembre
+                          option(value='01')=__("January")
+                          option(value='02')=__("February")
+                          option(value='03')=__("March")
+                          option(value='04')=__("April")
+                          option(value='05')=__("May")
+                          option(value='06')=__("June")
+                          option(value='07')=__("July")
+                          option(value='08')=__("August")
+                          option(value='09')=__("September")
+                          option(value='10')=__("October")
+                          option(value='11')=__("November")
+                          option(value='12')=__("December")
                       .col-xs-3.birth_inputs
                         select#birthdate_day.form-control(type='number', placeholder='Jour', name='birthdate_day', aria-describedby='basic-addon1' required)
                           each i in ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']
@@ -111,7 +111,7 @@ block content
                   .form-input
                     input#password.form-control(type='password', placeholder=__("define_password"), name='password', aria-describedby='basic-addon1', required)
                   .form-input
-                    input#phone.form-control(type='text', placeholder='__("phone")', name='phone', aria-describedby='basic-addon1')
+                    input#phone.form-control(type='text', placeholder=__("phone"), name='phone', aria-describedby='basic-addon1')
                 .form-input
                   input#admin_checkbox(type='checkbox' name='admin_checkbox') 
                   |   <b>#{__("currently_school")} </b>
@@ -122,7 +122,7 @@ block content
                       each school, school_i in schools_list
                         option= school
                   .form-input.hidden#classes_dropdown
-                    label.control-label #{__(classe)
+                    label.control-label #{__(classe)}
                     each client, client_i in clients
                       select.form-control.hidden(placeholder='', aria-describedby='basic-addon1', id=client.id, class='client_classes_item')
                         each classe, classe_i in client.classes
@@ -143,10 +143,10 @@ block content
                 .form-group.form-input
                   label.control-label Cause
                   select#cause.form-control(placeholder='', name='cause', aria-describedby='basic-addon1')
-                    option #{__('nature')}
-                    option #{__('solidarity')}
-                    option #{__('culture')}
-                    option #{__('child')}
+                    option(value='Nature') #{__('nature')}
+                    option(value='Solidarité') #{__('solidarity')}
+                    option(value='Sport et Culture') #{__('culture')}
+                    option(value='Enfance') #{__('child')}
                 h2 #{__('g_register_responsible')}
                 .form-group.form-input
                   label.control-label #{__('firstname')} *
@@ -159,7 +159,7 @@ block content
                   i.fa.fa-question-circle(data-toggle='tooltip' data-placement='top' title=__('g_register_email_expl'))
                   input#mail.form-control(type='email', placeholder='Ex: francois@simplyk.io', name='email', aria-describedby='basic-addon1', required)
                 .form-group.form-input
-                  label.control-label #{__('define_password') *
+                  label.control-label #{__('define_password')} *
                   input#password.form-control(type='password', placeholder='', name='password', aria-describedby='basic-addon1', required)
               .form-input
                 p.law(align='justify').
@@ -169,8 +169,8 @@ block content
         .row
           .col-md-2.col-md-offset-9.col-xs-10.col-xs-offset-1
             .page-header.well
-              h4 Ou si tu as déjà un compte
-              a.btn.btn-default(href='/login') Se connecter
+              h4 #{__('no_account')}
+              a.btn.btn-default(href='/login') #{__('signin')}
 
 block footscript
   script(type='text/javascript' async).

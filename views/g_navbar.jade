@@ -40,7 +40,7 @@ nav#nav-me.navbar.navbar-default.navbar-fixed-top
                   li
                     a.toggle-but(href='/us') #{__("g_nav_us")}
                   li
-                    a.toggle-but#logout_btn(onclick="console.log('OLOLO click');$(this).closest('form').submit();" href='#') #{__("g_nav_logout")
+                    a.toggle-but#logout_btn(onclick="console.log('OLOLO click');$(this).closest('form').submit();" href='#') #{__("g_nav_logout")}
           unless page=='profile'
             li.navbar-link(role='presentation')
               a(href='/volunteer/profile') #{__("g_nav_dashboard")}

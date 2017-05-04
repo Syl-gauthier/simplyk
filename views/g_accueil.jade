@@ -74,7 +74,7 @@ block content
             if lt.long_term.min_age
               p <b>#{__("Min_age")} : </b> #{lt.long_term.min_age} #{__("y.o")}
           .modal-footer
-            input.btn.btn-default(type='button', data-dismiss='modal' value=' #{__("close")}')
+            input.btn.btn-default(type='button', data-dismiss='modal', value=__("close"))
             a#link-btn-ref.btn.btn-default(href='/all/longterm/'+lt.long_term._id, target='_blank') #{__("more_infos")}
   .container-fluid
     #first_section.landing-section.row
