@@ -695,7 +695,7 @@ router.get('/verifyO/:verifyString', function(req, res, next) {
         organism.email_verified = true;
         organism.save({});
         let post_extra = false;
-        if (req.query.type = 'postextra') {
+        if (req.query.type == 'postextra') {
           post_extra = true;
         }
 
