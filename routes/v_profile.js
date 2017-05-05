@@ -1055,73 +1055,88 @@ router.post('/volunteer/addextrahours', permissions.requireGroup('volunteer'), f
 
               newTodo.save(function(err, newTodo_saved) {
                 if (err) {
-                  err.type = 'MINOR';
+                  err.type = 'CASH';
+                  err.print = "Problème d'enregistrement de la participation";
                   next(err);
-                };
-              });
-              newActivity.save(function(err, activity_saved) {
-                if (err) {
-                  err.type = 'MINOR';
-                  next(err);
-                };
-                let extra_to_add = {
-                  activity_id: activity_saved._id,
-                  status: 'pending',
-                  email: activity_saved.email,
-                  org_name: activity_saved.org_name,
-                  org_phone: activity_saved.org_phone,
-                  intitule: activity_saved.intitule,
-                  description: activity_saved.description,
-                  status: 'pending',
-                  days: activity_saved.days,
-                  hours_pending: req.body.hours_pending,
-                  extra: true,
-                  student_questions: questions.student_questions,
-                  organism_questions: questions.organism_questions,
-                  student_answers
-                };
-                console.log('extra_to_add : ' + JSON.stringify(extra_to_add));
-                Volunteer.findOneAndUpdate({
-                  '_id': req.session.volunteer._id
-                }, {
-                  '$push': {
-                    'extras': extra_to_add
-                  }
-                }, {
-                  new: true
-                }, function(err, newVolunteer) {
-                  if (err) {
-                    err.type = 'CRASH';
-                    err.print = 'Problème lors de la mise à jour des informations du bénévole';
-                    next(err);
-                  } else {
-                    req.session.volunteer = newVolunteer;
-                    sendEmailIfHoursNotValidated(req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname, newTodo._id);
-                    req.session.save(function() {
-                      res.render('v_postsubscription.jade', {
-                        session: req.session,
-                        org_name: activity_saved.org_name,
-                        volunteer: req.session.volunteer,
-                        group: req.session.group,
-                        type: 'extra'
-                      });
-                    });
+                } else {
+                  if (newTodo_saved) {
+                    newActivity.save(function(err, activity_saved) {
+                      if (err) {
+                        err.type = 'CRASH';
+                        err.print = "Problème d'enregistrement de la participation";
+                        next(err);
+                      } else {
+                        if (activity_saved) {
+                          let extra_to_add = {
+                            activity_id: activity_saved._id,
+                            status: 'pending',
+                            email: activity_saved.email,
+                            org_name: activity_saved.org_name,
+                            org_phone: activity_saved.org_phone,
+                            intitule: activity_saved.intitule,
+                            description: activity_saved.description,
+                            status: 'pending',
+                            days: activity_saved.days,
+                            hours_pending: req.body.hours_pending,
+                            extra: true,
+                            student_questions: questions.student_questions,
+                            organism_questions: questions.organism_questions,
+                            student_answers
+                          };
+                          console.log('extra_to_add : ' + JSON.stringify(extra_to_add));
+                          Volunteer.findOneAndUpdate({
+                            '_id': req.session.volunteer._id
+                          }, {
+                            '$push': {
+                              'extras': extra_to_add
+                            }
+                          }, {
+                            new: true
+                          }, function(err, newVolunteer) {
+                            if (err) {
+                              err.type = 'CRASH';
+                              err.print = 'Problème lors de la mise à jour des informations du bénévole';
+                              next(err);
+                            } else {
+                              req.session.volunteer = newVolunteer;
+                              sendEmailIfHoursNotValidated(req.session.volunteer.firstname + ' ' + req.session.volunteer.lastname, newTodo._id);
+                              req.session.save(function() {
+                                res.render('v_postsubscription.jade', {
+                                  session: req.session,
+                                  org_name: activity_saved.org_name,
+                                  volunteer: req.session.volunteer,
+                                  group: req.session.group,
+                                  type: 'extra'
+                                });
+                              });
 
-                    //Intercom create vol_add_extra
-                    client.events.create({
-                      event_name: 'vol_add_extra',
-                      created_at: Math.round(Date.now() / 1000),
-                      user_id: req.session.volunteer._id,
-                      metadata: {
-                        act_id: activity_saved._id,
-                        intitule_activity: activity_saved.intitule,
-                        org_name: activity_saved.org_name
+                              //Intercom create vol_add_extra
+                              client.events.create({
+                                event_name: 'vol_add_extra',
+                                created_at: Math.round(Date.now() / 1000),
+                                user_id: req.session.volunteer._id,
+                                metadata: {
+                                  act_id: activity_saved._id,
+                                  intitule_activity: activity_saved.intitule,
+                                  org_name: activity_saved.org_name
+                                }
+                              });
+                            }
+                          })
+                        } else {
+                          err.type = 'CRASH';
+                          err.print = "Problème d'enregistrement de la participation";
+                          next(err);
+                        }
                       }
                     });
+                  } else {
+                    err.type = 'CRASH';
+                    err.print = "Problème d'enregistrement de la participation";
+                    next(err);
                   }
-                })
+                }
               });
-
             })
             .catch(err => {
               err.type = 'CRASH';
