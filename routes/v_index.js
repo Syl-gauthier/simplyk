@@ -508,6 +508,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
                         };
                         emailer.sendSubscriptionOrgEmail(org_content);
                         var vol_content = {
+                          res,
                           recipient: volunteer_refreshed.email,
                           firstname: volunteer_refreshed.firstname,
                           customMessage: ['Tu es inscrit le ' + dayString + ' à : ' + newActivity.address, 'Avant de t\'y rendre, prend bien contact avec ' + organism.firstname + ' ' + organism.lastname + ' au ' + organism.phone + ' ou par courriel avec ' + organism.email + ' pour parler des détails de l\'activité !'],
@@ -582,7 +583,7 @@ router.post('/volunteer/longterm/subscribe/:lt_id', permissions.requireGroup('vo
     };
     console.log('phone : ' + phone);
 
-    ltSubs.subscribe(req.session.volunteer, req.params.lt_id, req.headers.host, phone, function(err, results) {
+    ltSubs.subscribe(req.session.volunteer, req.params.lt_id, req.headers.host, phone, res, function(err, results) {
       if (err) {
         err.type = 'CRASH';
         err.print = 'Inscription annulée : problème dans la base de donnée';

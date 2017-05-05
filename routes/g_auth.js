@@ -25,8 +25,7 @@ router.get('/login', function(req, res, next) {
       error: req.query.login_error
     });
   } else {
-    res.render('g_login.jade', {
-    });
+    res.render('g_login.jade', {});
   }
 });
 
@@ -384,6 +383,7 @@ router.post('/register_volunteer', function(req, res, next) {
               console.log('Verify url sent: ' + verifyUrl);
 
               emailer.sendVerifyEmail({
+                res,
                 group: 'vol',
                 recipient: req.body.email,
                 button: {
@@ -501,6 +501,7 @@ router.post('/register_organism', function(req, res, next) {
 
             console.log('Verify url sent: ' + verifyUrl);
             emailer.sendVerifyEmail({
+              res,
               group: 'org',
               recipient: email,
               button: {
@@ -618,6 +619,7 @@ router.post('*/not_volunteer_check', function(req, res) {
 
 router.post('/sendVerificationEmail', function(req, res) {
   emailer.sendVerifyEmail({
+    res,
     recipient: req.body.recipient,
     button: {
       link: req.body.verify_url
@@ -632,8 +634,8 @@ router.post('/sendVerificationEmail', function(req, res) {
 router.get('/waitforverifying', function(req, res) {
   res.render('g_message.jade', {
     page: 'waitforverifying',
-    message: 'Vous allez recevoir un courriel de vérification. Dans ce courriel, cliquez sur le lien pour vérifier votre compte. Et l\'aventure pourra commencer !',
-    header: 'Courriel de vérification',
+    message: res.__("g_message_p"),
+    header:  res.__("verification_email"),
     redirection: 'login',
     recipient: req.query.recipient,
     verify_url: req.query.verify_url,

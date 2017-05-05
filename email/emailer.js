@@ -2,6 +2,7 @@
  *Wrap nodemailer to provide convinient functions to send emails
  * */
 var nodemailer = require('nodemailer');
+var i18n = require('i18n');
 var EmailTemplate = require('email-templates').EmailTemplate;
 
 var emailCredentials = process.env.EMAIL_CREDENTIALS;
@@ -30,21 +31,20 @@ function callSendMail(mailOptions) {
 
 //Send email with verify url
 function sendVerifyEmail(content) {
-  console.log('content.group : ' + JSON.stringify(content));
   console.log('content.group : ' + content.group);
   if (content.group == 'vol') {
     console.log('content.group : vol');
-    content.subtitle = 'Simplyk vise à créer une société plus solidaire en facilitant l\'implication bénévole. La plateforme t\'aide à t\'impliquer dans ta communauté en te trouvant des opportunités de bénévolat qui te correspondent. Tout d\'abord, confirme ton compte grâce au bouton ci-dessous';
+    content.subtitle = content.res.__("e_verify_volsub");
   } else if (content.group == 'org') {
     console.log('content.group : org');
-    content.subtitle = 'Simplyk vise à créer une société plus solidaire en facilitant l\'implication bénévole. La plateforme va t\'aider à trouver des bénévoles facilement, afin d\'avoir plus d\'impact. Avant de poster tes besoins, confirme ton compte grâce au bouton ci-dessous';
+    content.subtitle = content.res.__('e_verify_orgsub');
   } else {
     console.log('content.group : nothing');
-    content.subtitle = 'On est ravi que tu sois maintenant sur la plateforme Simplyk. Tout d\'abord, confirme ton compte grâce au bouton ci-dessous';
+    content.subtitle = content.res.__("e_verify_nothingsub");
   }
   content.type = 'verify';
-  content.button.text = 'Vérifier mon compte';
-  content.title = 'Bienvenue ' + content.firstname + ' !';
+  content.button.text = content.res.__('validate_account');
+  content.title = content.res.__('welcome') + ' ' + content.firstname + ' !';
   verify_template.render(content, function(err, results) {
     if (err) {
       return console.error(err);
@@ -53,7 +53,7 @@ function sendVerifyEmail(content) {
     var mailOptions = {
       from: '"François @ Simplyk" <contact@simplyk.io>', // sender address
       to: content.recipient,
-      subject: content.firstname + ', vérifie ton courriel', // Subject line
+      subject: content.firstname + ', ' + content.res.__("verify_email"), // Subject line
       text: '', // plaintext body
       html: results.html
     };
@@ -62,6 +62,7 @@ function sendVerifyEmail(content) {
 
   });
 };
+
 
 function sendSubscriptionOrgEmail(content) {
   content.subtitle = content.customMessage;
@@ -82,16 +83,15 @@ function sendSubscriptionOrgEmail(content) {
       text: '', // plaintext body
       html: results.html
     };
-
     callSendMail(mailOptions);
-
   });
 };
+
 
 function sendSubscriptionVolEmail(content) {
   content.subtitle = content.customMessage;
   content.type = 'subscriptionvol';
-  content.title = 'Merci ' + content.firstname + ' !';
+  content.title = content.res.__("Thank_you") + ' ' + content.firstname + ' !';
   content.button = {
     text: 'Voir mon profil',
     link: 'www.simplyk.io'
@@ -108,10 +108,10 @@ function sendSubscriptionVolEmail(content) {
       text: '', // plaintext body
       html: results.html
     };
-
     callSendMail(mailOptions);
   });
 };
+
 
 function sendForgottenPasswordEmail(content) {
   content.subtitle = content.customMessage;
@@ -138,6 +138,7 @@ function sendForgottenPasswordEmail(content) {
   });
 };
 
+
 function sendUnsubscriptionEmail(content) {
   content.subtitle = ['Malheureusement,', content.customMessage];
   content.type = 'unsubscriptionorg';
@@ -162,6 +163,7 @@ function sendUnsubscriptionEmail(content) {
     callSendMail(mailOptions);
   });
 };
+
 
 function sendTransAddEvent(content) {
   content.subtitle = content.customMessage;
@@ -188,6 +190,7 @@ function sendTransAddEvent(content) {
   });
 };
 
+
 function sendTransAddLongTerm(content) {
   content.subtitle = content.customMessage;
   content.type = 'transaddlongterm';
@@ -212,6 +215,7 @@ function sendTransAddLongTerm(content) {
     callSendMail(mailOptions);
   });
 };
+
 
 function sendHoursPendingOrgEmail(content) {
   content.subtitle = content.customMessage;

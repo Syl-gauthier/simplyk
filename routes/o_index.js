@@ -34,6 +34,8 @@ var opp_management = require('../middlewares/opp_management.js');
 router.get('/', function(req, res, next) {
   //res.setLocale(req.cookies.i18n);
   console.log('Organism index');
+  console.log('i18n.__("language_initiales") : ' + res.__("language_initiales"));
+  console.log('req.cookies.i18n : ' + req.cookies.i18n);
   Activity.find({
     'archived': {
       $ne: true
