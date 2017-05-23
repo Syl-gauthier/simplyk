@@ -1,18 +1,18 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var ObjectId = Schema.ObjectId;
-var emailer = require('../email/emailer.js');
-var date = require('../lib/dates/date_browser.js');
-
 var permissions = require('../middlewares/permissions.js');
 var Organism = require('../models/organism_model.js');
 var Volunteer = require('../models/volunteer_model.js');
 var Admin = require('../models/admin_model.js');
 var Activity = require('../models/activity_model.js');
 var OrgTodo = require('../models/o_todo_model.js');
+
+var emailer = require('../public/javascripts/email/emailer.js');
+var date = require('../public/javascripts/dates/date_browser.js');
 
 
 router.get('/admin/classes', permissions.requireGroup('admin'), function(req, res, next) {

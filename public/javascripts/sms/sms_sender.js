@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var Volunteer = require('../../models/volunteer_model.js');
+var Volunteer = require('../../../models/volunteer_model.js');
 
 var Nexmo = require('nexmo');
 var PhoneNumber = require('libphonenumber-js');

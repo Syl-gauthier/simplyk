@@ -1,7 +1,7 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
-var emailer = require('../email/emailer.js');
+var emailer = require('../public/javascripts/email/emailer.js');
 var mongoose = require('mongoose');
 var gmaps = require('../public/javascripts/geo/gmaps.js');
 var Intercom = require('intercom-client');

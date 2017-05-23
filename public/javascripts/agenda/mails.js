@@ -1,9 +1,11 @@
-var emailer = require('../../email/emailer.js');
-var sms = require('../../lib/sms/sms_sender.js');
 var moment = require('moment');
-var OrgTodo = require('../../models/o_todo_model.js');
-var Organism = require('../../models/organism_model.js');
-var Activity = require('../../models/activity_model.js');
+
+var emailer = require('../email/emailer.js');
+var sms = require('../sms/sms_sender.js');
+
+var OrgTodo = require('../../../models/o_todo_model.js');
+var Organism = require('../../../models/organism_model.js');
+var Activity = require('../../../models/activity_model.js');
 
 module.exports = function(agenda) {
 

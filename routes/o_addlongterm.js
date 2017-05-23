@@ -1,20 +1,23 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
-var mongoose = require('mongoose');
-var emailer = require('../email/emailer.js');
-var gmaps = require('../public/javascripts/geo/gmaps.js');
-var sloter = require('../lib/slot.js');
+
+var moment = require('moment');
+
 var Intercom = require('intercom-client');
 var client = new Intercom.Client({
 	token: process.env.INTERCOM_TOKEN
 });
-var agenda = require('../lib/agenda.js');
-var moment = require('moment');
 
-var permissions = require('../middlewares/permissions.js');
+var mongoose = require('mongoose');
 var Organism = require('../models/organism_model.js');
 
+var emailer = require('../public/javascripts/email/emailer.js');
+var gmaps = require('../public/javascripts/geo/gmaps.js');
+var sloter = require('../public/javascripts/slot.js');
+var agenda = require('../public/javascripts/agenda.js');
+
+var permissions = require('../middlewares/permissions.js');
 
 router.get('/organism/addlongterm', permissions.requireGroup('organism', 'admin'), function(req, res) {
 	const hash = require('intercom-client').SecureMode.userHash({
@@ -146,6 +149,5 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 		}
 	});
 });
-
 
 module.exports = router;

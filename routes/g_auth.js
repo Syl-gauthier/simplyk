@@ -3,20 +3,19 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var Intercom = require('intercom-client');
-var school_list = require('../lib/ressources/school_list.js');
-var client_school_list = require('../lib/ressources/client_school_list.js');
+var randomstring = require('randomstring');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
 
+var school_list = require('../public/javascripts/ressources/school_list.js');
+var client_school_list = require('../public/javascripts/ressources/client_school_list.js');
 var crypt = require('../public/javascripts/auth/crypt');
+var emailer = require('../public/javascripts/email/emailer.js')
 
 var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
 var Admin = require('../models/admin_model.js');
-
-var emailer = require('../email/emailer.js')
-var randomstring = require('randomstring');
 
 var emailCredentials = process.env.EMAIL_CREDENTIALS;
 

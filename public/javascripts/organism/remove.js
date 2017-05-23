@@ -1,9 +1,9 @@
 'use strict';
 var express = require('express');
-var Organism = require('../../models/organism_model.js');
-var Volunteer = require('../../models/volunteer_model.js');
-var Activity = require('../../models/activity_model.js');
-var OrgTodo = require('../../models/o_todo_model.js');
+var Organism = require('../../../models/organism_model.js');
+var Volunteer = require('../../../models/volunteer_model.js');
+var Activity = require('../../../models/activity_model.js');
+var OrgTodo = require('../../../models/o_todo_model.js');
 
 
 

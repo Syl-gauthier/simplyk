@@ -1,5 +1,5 @@
 'use strict';
-const Admin = require('../../models/admin_model.js');
+const Admin = require('../../../models/admin_model.js');
 
 const getClientSchools = function(callback) {
 	Admin.find({

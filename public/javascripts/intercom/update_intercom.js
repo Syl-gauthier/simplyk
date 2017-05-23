@@ -8,9 +8,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var Intercom = require('intercom-client');
-var Organism = require('../../models/organism_model.js');
-var Volunteer = require('../../models/volunteer_model.js');
-var Admin = require('../../models/admin_model.js');
+var Organism = require('../../../models/organism_model.js');
+var Volunteer = require('../../../models/volunteer_model.js');
+var Admin = require('../../../models/admin_model.js');
 
 var client = new Intercom.Client({
 	token: process.env.INTERCOM_TOKEN

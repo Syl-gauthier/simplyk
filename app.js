@@ -59,7 +59,7 @@ mongoose.connect('mongodb://' + db_credentials);
 
 
 //Init agendas
-require('./lib/agenda.js');
+require('./public/javascripts/agenda.js');
 
 passport.use('local-volunteer', new LocalStrategy({
     usernameField: 'email',
