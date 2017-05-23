@@ -1,6 +1,6 @@
 extends ./g_layout.jade
 block vars
-    - function createHoursArray(){var result_array = new Array(); for(var i = 0.5; i < 60; i=i+0.5){result_array.push(i)}; return result_array;}
+    - function createHoursArray(){var result_array = new Array(); for(var i = 0.25; i < 60; i=i+0.25){result_array.push(i)}; return result_array;}
 
 block head
     script(src='/bower_components/pickadate/lib/picker.js', type='text/javascript')
@@ -50,7 +50,7 @@ block content
                                 label(for='hours_pending') Nombres d'heures réalisées
                                 select.form-control(id='hours_pending' name='hours_pending' required)
                                     each val, ind in createHoursArray()
-                                        option(value=val)=(val%1==0?val+'h':(val-0.5)+'h30')
+                                        option(value=val)=(val%1==0?val+'h':((val-0.5)%1==0?(val-0.5)+'h30':((val-0.25)%1==0?(val-0.25)+'h15':((val-0.75)%1==0?(val-0.75)+'h45':''))))
                     .form-group.conn-input
                         label(for='firstname') Prénom du responsable
                         input.form-control(id='firstname', name='firstname' type='text' required)
