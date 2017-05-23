@@ -10,6 +10,7 @@ block vars
   - function addHoursIfExists(arr){return arr.reduce(function(acc, curV, curI) {if(curV > 0 ){return acc + curV;} else {return acc;}})}
   - function getNotifications(type){if(type == 'em'){if(volunteer.extras.filter(function(ext){return ext.status == 'denied'}).length < 1){return ''}else{return '#E33831'}}else if (type == 'el'){if(volunteer.events.filter(function(evt){return evt.status == 'denied'}).length < 1){if(volunteer.long_terms.filter(function(lt){return lt.status == 'denied'}).length < 1){return ''}else{return '#E33831'}}else{return '#E33831'}}}
   - function getTooltipText(badge, level){var seuils = {};var seuils_array = [[], [2, 4, 6, 8, 15], [0, 10, 30, 75, 150], [0, 10, 30, 100, 150], [10, 20, 50, 100, 500], [0, 5, 10, 50, 100]];return (seuils_array[badge])[level];}
+  - function transformInHours(floatHours){var hours = Math.floor(floatHours); var minutes = floatHours - hours; return (hours + 'h' + (minutes == 0 ? '' : (minutes == 0.25 ? '15' : (minutes == 0.5 ? '30' : (minutes == 0.75 ? '45' : '')))));}
 
 
 
@@ -864,9 +865,9 @@ block content
                             if ext.hours_done || ext.hours_pending
                               h4
                                 if ext.hours_done
-                                  span.badge(style='background-color: #113A20')= ext.hours_done + ' heures réalisées '
+                                  span.badge(style='background-color: #113A20')= transformInHours(ext.hours_done) + ' réalisées '
                                 if ext.hours_pending
-                                  span.badge(style='background-color: #FF800E')= ext.hours_pending + ' heures à confirmer '
+                                  span.badge(style='background-color: #FF800E')= transformInHours(ext.hours_pending) + ' à confirmer '
                           .panel-footer
                             .btn-group
                               if ext.status == 'denied'
