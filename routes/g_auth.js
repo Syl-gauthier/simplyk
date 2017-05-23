@@ -8,7 +8,8 @@ var client_school_list = require('../lib/ressources/client_school_list.js');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
-var crypt = require('../auth/crypt');
+
+var crypt = require('../public/javascripts/auth/crypt');
 
 var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
@@ -635,7 +636,7 @@ router.get('/waitforverifying', function(req, res) {
   res.render('g_message.jade', {
     page: 'waitforverifying',
     message: res.__("g_message_p"),
-    header:  res.__("verification_email"),
+    header: res.__("verification_email"),
     redirection: 'login',
     recipient: req.query.recipient,
     verify_url: req.query.verify_url,
