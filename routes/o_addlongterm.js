@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var emailer = require('../email/emailer.js');
-var gmaps = require('../middlewares/gmaps.js');
+var gmaps = require('../public/javascripts/geo/gmaps.js');
 var sloter = require('../lib/slot.js');
 var Intercom = require('intercom-client');
 var client = new Intercom.Client({
@@ -48,7 +48,7 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 	}
 
 	gmaps.codeAddress(req.body.address, function(lat, lon) {
-		if ('ZERO_RESULTS' === lat) {
+		if (lat == 'ZERO_RESULTS' || lat == 'ERROR') {
 			var error = 'La position de l\'adresse que vous avez mentionné n\'a pas été trouvé par Google Maps';
 			res.render('o_addlongterm.jade', {
 				session: req.session,
