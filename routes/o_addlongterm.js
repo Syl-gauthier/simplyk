@@ -14,7 +14,7 @@ var Organism = require('../models/organism_model.js');
 
 var emailer = require('../public/javascripts/email/emailer.js');
 var gmaps = require('../public/javascripts/geo/gmaps.js');
-var sloter = require('../public/javascripts/slot.js');
+var sloter = require('../public/javascripts/dates/slot.js');
 var agenda = require('../public/javascripts/agenda.js');
 
 var permissions = require('../middlewares/permissions.js');

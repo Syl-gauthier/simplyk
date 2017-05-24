@@ -7,7 +7,7 @@ var Activity = require('../models/activity_model.js');
 var Volunteer = require('../models/volunteer_model.js');
 
 var emailer = require('../public/javascripts/email/emailer.js');
-var rewindSlotString = require('../public/javascripts/slot.js').rewindSlotString;
+var rewindSlotString = require('../public/javascripts/dates/slot.js').rewindSlotString;
 
 router.get('/listorganisms', function(req, res, next) {
   Organism.find({

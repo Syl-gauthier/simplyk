@@ -18,9 +18,9 @@ var Activity = require('../models/activity_model.js');
 var OrgTodo = require('../models/o_todo_model.js');
 
 var longtermsList = require('../public/javascripts/longterms.js').listFromOrganisms;
-var rewindSlotString = require('../public/javascripts/slot.js').rewindSlotString;
 var emailer = require('../public/javascripts/email/emailer.js');
 var date = require('../public/javascripts/dates/date_browser.js');
+var rewindSlotString = require('../public/javascripts/dates/slot.js').rewindSlotString;
 var game = require('../public/javascripts/badges.js');
 
 var permissions = require('../middlewares/permissions.js');
