@@ -19,19 +19,19 @@ uglify().on('error', function(err) {
 
 //BABEL TASK
 gulp.task('babel', () => {
-  return gulp.src('./public/javascripts/src/**/*.jsx', {
+  return gulp.src('./public/javascripts/react/src/**/*.jsx', {
       read: true
     })
     .pipe(babel({
       presets: ['react', 'es2015']
     }))
-    .pipe(gulp.dest('./public/javascripts/lib'));
+    .pipe(gulp.dest('./public/javascripts/react/lib'));
 });
 
 //BROWSERIFY TASK
 gulp.task('browserify', ['babel'], function() {
 
-  return gulp.src('./public/javascripts/lib/**/*.js', {
+  return gulp.src('./public/javascripts/react/lib/**/*.js', {
       read: false
     })
     .pipe(tap(function(file) {
@@ -49,7 +49,7 @@ gulp.task('browserify', ['babel'], function() {
     .pipe(uglify())
     .on('error', gutil.log)
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('./public/javascripts/'));
+    .pipe(gulp.dest('./public/javascripts/react/'));
 });
 
 /*gulp.task('boyboy', function() {
@@ -67,7 +67,7 @@ gulp.task('browserify', ['babel'], function() {
 
 //WATCH TASKS
 gulp.task('watch', () => {
-  gulp.watch('./public/javascripts/src/**/*.jsx', ['browserify']);
+  gulp.watch('./public/javascripts/react/src/**/*.jsx', ['browserify']);
 })
 
 //DEFAULT TASK

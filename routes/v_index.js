@@ -22,7 +22,7 @@ var date = require('../public/javascripts/dates/date_browser.js');
 var game = require('../public/javascripts/badges.js');
 var update_intercom = require('../public/javascripts/intercom/update_intercom.js');
 var ltSubs = require('../public/javascripts/subscribe/longterm_subs.js');
-const schools_res = require('../res/schools_res.js');
+const schools_res = require('../public/javascripts/schools/questions.js');
 
 /*GET map page*/
 router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req, res, next) {

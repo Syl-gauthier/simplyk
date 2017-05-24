@@ -14,7 +14,7 @@ if (emailCredentials === 'undefined') {
 var transporter = nodemailer.createTransport(emailCredentials);
 
 // import templates
-const verify_template = new EmailTemplate('email/templates/basic_template');
+const verify_template = new EmailTemplate('public/javascripts/email/templates/basic_template');
 
 //Wrap sendMail
 function callSendMail(mailOptions) {

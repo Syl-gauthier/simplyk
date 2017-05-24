@@ -2,7 +2,7 @@ var express = require('express');
 var Organism = require('../../../models/organism_model.js');
 var Volunteer = require('../../../models/volunteer_model.js');
 var emailer = require('../email/emailer.js');
-var schools_res = require('../../../res/schools_res.js');
+var schools_res = require('../schools/questions.js');
 
 //Subscribe a volunteer to an organism long term
 var subscribe = function(volunteer, longterm_id, hostname, phone, res, callback) {

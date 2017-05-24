@@ -8,8 +8,8 @@ var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
 
-var school_list = require('../public/javascripts/ressources/school_list.js');
-var client_school_list = require('../public/javascripts/ressources/client_school_list.js');
+var school_list = require('../public/javascripts/schools/schools_list.js');
+var client_school_list = require('../public/javascripts/schools/client_schools_list.js');
 var crypt = require('../public/javascripts/auth/crypt');
 var emailer = require('../public/javascripts/email/emailer.js')
 
@@ -291,7 +291,7 @@ router.get('*/register_organism', function(req, res) {
 
 router.get('*/register_volunteer', function(req, res, next) {
   //Get schools_list
-  school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
+  school_list.getSchoolList('./public/res/schools_list.csv', function(err, schools_list) {
     if (err) {
       err.type = 'MINOR';
       next(err);
@@ -554,7 +554,7 @@ router.post('/register_admin', function(req, res) {
 });
 
 router.get('/completeProfileFB', function(req, res, next) {
-  school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
+  school_list.getSchoolList('./public/res/schools_list.csv', function(err, schools_list) {
     if (err) {
       err.type = 'MINOR';
       next(err);

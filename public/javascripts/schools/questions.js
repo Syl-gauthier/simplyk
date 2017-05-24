@@ -3,7 +3,7 @@ const express = require('express');
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Admin = require('../models/admin_model.js');
+const Admin = require('../../../models/admin_model.js');
 
 function getQuestions(admin_in_volunteer, callback) {
   //admin is corresponding to the volunteer one : volunteer.admin = {school_name, school_id, class}
