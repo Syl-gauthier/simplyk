@@ -53,7 +53,7 @@ gulp.task('browserify', ['babel'], function() {
 });
 
 /*gulp.task('boyboy', function() {
-  return gulp.src('./public/javascripts/initmap2.js')
+  return gulp.src('./public/javascripts/initmap.js')
     .pipe(rename({
       suffix: '.min'
     }))

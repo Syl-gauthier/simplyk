@@ -15,11 +15,11 @@ var Activity = require('../models/activity_model.js');
 var permissions = require('../middlewares/permissions.js');
 
 var emailer = require('../public/javascripts/email/emailer.js');
-var agenda = require('../public/javascripts/agenda.js');
-var longtermsList = require('../public/javascripts/longterms.js').listFromOrganisms;
+var agenda = require('../public/javascripts/agenda/agenda.js');
+var longtermsList = require('../public/javascripts/organism/longterms.js').listFromOrganisms;
 var rewindSlotString = require('../public/javascripts/dates/slot.js').rewindSlotString;
 var date = require('../public/javascripts/dates/date_browser.js');
-var game = require('../public/javascripts/badges.js');
+var game = require('../public/javascripts/game/badges.js');
 var update_intercom = require('../public/javascripts/intercom/update_intercom.js');
 var ltSubs = require('../public/javascripts/subscribe/longterm_subs.js');
 const schools_res = require('../public/javascripts/schools/questions.js');

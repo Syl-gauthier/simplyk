@@ -1,7 +1,7 @@
 'use strict';
 
-const Volunteer = require('../../models/volunteer_model.js');
-const Organism = require('../../models/organism_model.js');
+const Volunteer = require('../../../models/volunteer_model.js');
+const Organism = require('../../../models/organism_model.js');
 
 const Intercom = require('intercom-client');
 const client = new Intercom.Client({

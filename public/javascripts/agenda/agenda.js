@@ -17,7 +17,7 @@ agenda.on('ready', function() {
 	const jobsToDo = ['mails'];
 
 	jobsToDo.map(function(jobs) {
-		require('./agenda/' + jobs + '.js')(agenda);
+		require('./' + jobs + '.js')(agenda);
 	});
 	agenda.start();
 });

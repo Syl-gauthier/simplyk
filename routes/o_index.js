@@ -17,11 +17,11 @@ var Organism = require('../models/organism_model.js');
 var Activity = require('../models/activity_model.js');
 var OrgTodo = require('../models/o_todo_model.js');
 
-var longtermsList = require('../public/javascripts/longterms.js').listFromOrganisms;
+var longtermsList = require('../public/javascripts/organism/longterms.js').listFromOrganisms;
 var emailer = require('../public/javascripts/email/emailer.js');
 var date = require('../public/javascripts/dates/date_browser.js');
 var rewindSlotString = require('../public/javascripts/dates/slot.js').rewindSlotString;
-var game = require('../public/javascripts/badges.js');
+var game = require('../public/javascripts/game/badges.js');
 
 var permissions = require('../middlewares/permissions.js');
 

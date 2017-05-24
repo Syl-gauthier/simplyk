@@ -30,5 +30,5 @@ var listFromOrganisms = function(organisms, age) {
 }
 
 module.exports = {
-	listFromOrganisms: listFromOrganisms
+	listFromOrganisms
 };

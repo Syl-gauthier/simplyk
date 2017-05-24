@@ -11,8 +11,8 @@ var client = new Intercom.Client({
 var school_list = require('../public/javascripts/schools/schools_list.js');
 var update_intercom = require('../public/javascripts/intercom/update_intercom.js');
 var emailer = require('../public/javascripts/email/emailer.js');
-var agenda = require('../public/javascripts/agenda.js');
-var game = require('../public/javascripts/badges.js');
+var agenda = require('../public/javascripts/agenda/agenda.js');
+var game = require('../public/javascripts/game/badges.js');
 const getClientSchools = require('../public/javascripts/schools/client_schools_list.js').getClientSchools;
 
 var permissions = require('../middlewares/permissions.js');
