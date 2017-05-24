@@ -1,10 +1,10 @@
 const expect = require("expect.js");
-const getSchoolList = require('../school_list.js').getSchoolList;
+const getSchoolList = require('../schools_list.js').getSchoolList;
 
 
 describe('schoolslist', function() {
 	it("should return an array of Strings only", function(done) {
-		getSchoolList('./lib/ressources/__test__/school_sample.csv', function(err, list) {
+		getSchoolList('./public/javascripts/schools/__test__/school_sample.csv', function(err, list) {
 			if (err) {
 				done(err)
 			};

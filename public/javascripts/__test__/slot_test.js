@@ -1,5 +1,5 @@
 var expect = require('expect.js');
-var sloter = require('../slot.js');
+var sloter = require('../dates/slot.js');
 
 describe('slot-creation', function() {
 	it('should return the good slotString', function() {

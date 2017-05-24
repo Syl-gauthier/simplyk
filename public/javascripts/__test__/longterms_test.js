@@ -1,5 +1,5 @@
 var expect = require("expect.js");
-var longtermsListCreation = require("../longterms.js").listFromOrganisms;
+var longtermsListCreation = require("../organism/longterms.js").listFromOrganisms;
 
 describe("longterms", function() {
 	describe("listFromOrganisms", function() {
