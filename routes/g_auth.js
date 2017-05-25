@@ -3,19 +3,19 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var Intercom = require('intercom-client');
-var school_list = require('../lib/ressources/school_list.js');
-var client_school_list = require('../lib/ressources/client_school_list.js');
+var randomstring = require('randomstring');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
-var crypt = require('../auth/crypt');
+
+var school_list = require('../public/javascripts/schools/schools_list.js');
+var client_school_list = require('../public/javascripts/schools/client_schools_list.js');
+var crypt = require('../public/javascripts/auth/crypt');
+var emailer = require('../public/javascripts/email/emailer.js')
 
 var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
 var Admin = require('../models/admin_model.js');
-
-var emailer = require('../email/emailer.js')
-var randomstring = require('randomstring');
 
 var emailCredentials = process.env.EMAIL_CREDENTIALS;
 
@@ -291,7 +291,7 @@ router.get('*/register_organism', function(req, res) {
 
 router.get('*/register_volunteer', function(req, res, next) {
   //Get schools_list
-  school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
+  school_list.getSchoolList('./public/res/schools_list.csv', function(err, schools_list) {
     if (err) {
       err.type = 'MINOR';
       next(err);
@@ -554,7 +554,7 @@ router.post('/register_admin', function(req, res) {
 });
 
 router.get('/completeProfileFB', function(req, res, next) {
-  school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
+  school_list.getSchoolList('./public/res/schools_list.csv', function(err, schools_list) {
     if (err) {
       err.type = 'MINOR';
       next(err);
@@ -635,7 +635,7 @@ router.get('/waitforverifying', function(req, res) {
   res.render('g_message.jade', {
     page: 'waitforverifying',
     message: res.__("g_message_p"),
-    header:  res.__("verification_email"),
+    header: res.__("verification_email"),
     redirection: 'login',
     recipient: req.query.recipient,
     verify_url: req.query.verify_url,

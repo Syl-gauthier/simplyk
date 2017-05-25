@@ -2,30 +2,27 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
-var mongoose = require('mongoose');
-var emailer = require('../email/emailer.js');
+var moment = require('moment');
 var Intercom = require('intercom-client');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
-var moment = require('moment');
 
-var Schema = mongoose.Schema;
-var ObjectId = Schema.ObjectId;
 var Organism = require('../models/organism_model.js');
 var Volunteer = require('../models/volunteer_model.js');
 var Activity = require('../models/activity_model.js');
-var agenda = require('../lib/agenda.js');
 
 var permissions = require('../middlewares/permissions.js');
-var longtermsList = require('../lib/longterms.js').listFromOrganisms;
-var rewindSlotString = require('../lib/slot.js').rewindSlotString;
-var date = require('../lib/dates/date_browser.js');
-var game = require('../lib/badges.js');
-var update_intercom = require('../lib/intercom/update_intercom.js');
-var ltSubs = require('../lib/subscribe/longterm_subs.js');
-const schools_res = require('../res/schools_res.js');
-var app = express();
+
+var emailer = require('../public/javascripts/email/emailer.js');
+var agenda = require('../public/javascripts/agenda/agenda.js');
+var longtermsList = require('../public/javascripts/organism/longterms.js').listFromOrganisms;
+var rewindSlotString = require('../public/javascripts/dates/slot.js').rewindSlotString;
+var date = require('../public/javascripts/dates/date_browser.js');
+var game = require('../public/javascripts/game/badges.js');
+var update_intercom = require('../public/javascripts/intercom/update_intercom.js');
+var ltSubs = require('../public/javascripts/subscribe/longterm_subs.js');
+const schools_res = require('../public/javascripts/schools/questions.js');
 
 /*GET map page*/
 router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req, res, next) {

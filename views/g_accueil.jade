@@ -297,18 +297,18 @@ block footscript
     var child_indexes = !{JSON.stringify(child_indexes)};
     var adult_indexes = !{JSON.stringify(adult_indexes)};
   //clusterer api
-  //script(src="/javascripts/marker-clusterer.js", type="text/javascript")
+  //script(src="/javascripts/geo/marker-clusterer.js", type="text/javascript")
   script(src="/bower_components/jets/jets.min.js")
   script.
     var on_mobile = false;
     if ((/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
       on_mobile = true;
       console.log('On mobile');
-      document.write('<script src="/javascripts/initmap_mobile.js"><\/script>');
+      document.write('<script src="/javascripts/geo/initmap_mobile.js"><\/script>');
       document.write('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&signed_in=true&libraries=places,geometry&callback=initAutocomplete" async defer><\/script>');
     } else {
       console.log('On desktop or tablet');
-      document.write('<script src="/javascripts/initmap2.js"><\/script>');
+      document.write('<script src="/javascripts/geo/initmap.js"><\/script>');
       document.write('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRPJIqo9jqMb99E47aKuO64rxugd3S-Wk&libraries=places&callback=initMap" async defer><\/script>');
       let jets = new Jets({
         searchTag: '#jetsSearch',
