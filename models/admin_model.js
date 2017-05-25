@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
-var crypt = require('../auth/crypt');
+var crypt = require('../public/javascripts/auth/crypt');
 
 //Admin schema creation
 var AdminSchema = new Schema({

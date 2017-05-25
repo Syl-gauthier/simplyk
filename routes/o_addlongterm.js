@@ -1,20 +1,23 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
-var mongoose = require('mongoose');
-var emailer = require('../email/emailer.js');
-var gmaps = require('../middlewares/gmaps.js');
-var sloter = require('../lib/slot.js');
+
+var moment = require('moment');
+
 var Intercom = require('intercom-client');
 var client = new Intercom.Client({
 	token: process.env.INTERCOM_TOKEN
 });
-var agenda = require('../lib/agenda.js');
-var moment = require('moment');
 
-var permissions = require('../middlewares/permissions.js');
+var mongoose = require('mongoose');
 var Organism = require('../models/organism_model.js');
 
+var emailer = require('../public/javascripts/email/emailer.js');
+var gmaps = require('../public/javascripts/geo/gmaps.js');
+var sloter = require('../public/javascripts/dates/slot.js');
+var agenda = require('../public/javascripts/agenda/agenda.js');
+
+var permissions = require('../middlewares/permissions.js');
 
 router.get('/organism/addlongterm', permissions.requireGroup('organism', 'admin'), function(req, res) {
 	const hash = require('intercom-client').SecureMode.userHash({
@@ -48,7 +51,7 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 	}
 
 	gmaps.codeAddress(req.body.address, function(lat, lon) {
-		if ('ZERO_RESULTS' === lat) {
+		if (lat == 'ZERO_RESULTS' || lat == 'ERROR') {
 			var error = 'La position de l\'adresse que vous avez mentionné n\'a pas été trouvé par Google Maps';
 			res.render('o_addlongterm.jade', {
 				session: req.session,
@@ -146,6 +149,5 @@ router.post('/organism/addlongterm', permissions.requireGroup('organism', 'admin
 		}
 	});
 });
-
 
 module.exports = router;
