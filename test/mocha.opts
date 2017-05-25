@@ -1,3 +1,2 @@
 test/**/*.js 
-public/javascript/**/*.test.js
-lib/**/*.test.js
+public/javascripts/**/*.test.js
