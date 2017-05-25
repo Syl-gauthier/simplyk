@@ -1,3 +1,4 @@
+//if this is a client side test, it should be run with karma in browser
 var assert = require('assert');
 var bcrypt = require('bcrypt-nodejs');
 var crypt = require('./crypt');
