@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "./node_modules/bower/bin/bower install && gulp default",
     "start": "node ./bin/www",
-    "ci": "./node_modules/mocha/bin/mocha ./lib/**/*/__test__/*.js",
+    "ci": "./node_modules/mocha/bin/mocha",
     "test": "mocha"
   },
   "dependencies": {
