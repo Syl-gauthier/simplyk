@@ -4,7 +4,6 @@
 var nodemailer = require('nodemailer');
 var i18n = require('i18n');
 var EmailTemplate = require('email-templates').EmailTemplate;
-
 var emailCredentials = process.env.EMAIL_CREDENTIALS;
 if (emailCredentials === 'undefined') {
   throw Error('Email credentials are not present');
@@ -17,7 +16,7 @@ var transporter = nodemailer.createTransport(emailCredentials);
 const verify_template = new EmailTemplate('public/javascripts/email/templates/basic_template');
 
 //Wrap sendMail
-function callSendMail(mailOptions) {
+function callSendMail(mailOptions, callback) {
   // send mail with defined transport object
   transporter.sendMail(mailOptions, function(error, info) {
     if (error) {
@@ -25,12 +24,13 @@ function callSendMail(mailOptions) {
     }
 
     console.log('Message sent: ' + info.response);
+    if (typeof callback == 'function') callback(error, info);
   });
 }
 
 
 //Send email with verify url
-function sendVerifyEmail(content) {
+function sendVerifyEmail(content, callback) {
   console.log('content.group : ' + content.group);
   if (content.group == 'vol') {
     console.log('content.group : vol');
@@ -58,13 +58,13 @@ function sendVerifyEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
 
   });
 };
 
 
-function sendSubscriptionOrgEmail(content) {
+function sendSubscriptionOrgEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'subscriptionorg';
   content.title = 'Nouveau bénévole !';
@@ -83,12 +83,12 @@ function sendSubscriptionOrgEmail(content) {
       text: '', // plaintext body
       html: results.html
     };
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
 
-function sendSubscriptionVolEmail(content) {
+function sendSubscriptionVolEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'subscriptionvol';
   content.title = content.res.__("Thank_you") + ' ' + content.firstname + ' !';
@@ -108,12 +108,12 @@ function sendSubscriptionVolEmail(content) {
       text: '', // plaintext body
       html: results.html
     };
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
 
-function sendForgottenPasswordEmail(content) {
+function sendForgottenPasswordEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'forgottenMessage';
   content.title = 'Nouveau mot de passe !';
@@ -134,12 +134,11 @@ function sendForgottenPasswordEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-
-function sendUnsubscriptionEmail(content) {
+function sendUnsubscriptionEmail(content, callback) {
   content.subtitle = ['Malheureusement,', content.customMessage];
   content.type = 'unsubscriptionorg';
   content.title = 'Désinscription d\'un bénévole :( ';
@@ -160,12 +159,11 @@ function sendUnsubscriptionEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-
-function sendTransAddEvent(content) {
+function sendTransAddEvent(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'transaddevent';
   content.title = 'Création d\'évènement';
@@ -186,12 +184,11 @@ function sendTransAddEvent(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-
-function sendTransAddLongTerm(content) {
+function sendTransAddLongTerm(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'transaddlongterm';
   content.title = 'Création d\'engagement';
@@ -212,12 +209,11 @@ function sendTransAddLongTerm(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-
-function sendHoursPendingOrgEmail(content) {
+function sendHoursPendingOrgEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'hourspendingorg';
   content.title = 'Valider la participation';
@@ -238,11 +234,11 @@ function sendHoursPendingOrgEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-function sendHoursPendingVolEmail(content) {
+function sendHoursPendingVolEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'hourspendingvol';
   content.title = 'Heures enregistrées';
@@ -263,11 +259,11 @@ function sendHoursPendingVolEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-function sendStudentQuestionsEmail(content) {
+function sendStudentQuestionsEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'studentquestions';
   content.title = 'Retours enregistrés';
@@ -288,11 +284,11 @@ function sendStudentQuestionsEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-function sendHoursPendingReminderOrgEmail(content) {
+function sendHoursPendingReminderOrgEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'hourspendingorg';
   content.title = 'Valider la participation';
@@ -313,11 +309,11 @@ function sendHoursPendingReminderOrgEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-function sendExtraHoursPendingReminderOrgEmail(content) {
+function sendExtraHoursPendingReminderOrgEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'extrahourspendingorg';
   content.title = 'En attente';
@@ -338,11 +334,11 @@ function sendExtraHoursPendingReminderOrgEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-function sendHoursConfirmedVolEmail(content) {
+function sendHoursConfirmedVolEmail(content, callback) {
   content.subtitle = ['Félicitation ' + content.firstname + ',', content.customMessage];
   content.type = 'hoursconfirmedvol';
   content.title = 'Participation confirmée !';
@@ -363,12 +359,12 @@ function sendHoursConfirmedVolEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
 
-function sendAutomaticSubscriptionOrgEmail(content) {
+function sendAutomaticSubscriptionOrgEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.title = 'Bénévolat de ' + content.firstname + ' ' + content.lastname + ' !';
   content.type = 'verify';
@@ -386,11 +382,11 @@ function sendAutomaticSubscriptionOrgEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-function sendManualHoursEmail(content) {
+function sendManualHoursEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'manualHours';
   content.title = 'Heures ajoutées';
@@ -412,11 +408,11 @@ function sendManualHoursEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-function sendAdminValidateEmail(content) {
+function sendAdminValidateEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'validateHours';
   content.title = 'Heures validées';
@@ -437,11 +433,11 @@ function sendAdminValidateEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-function sendAdminCorrectEmail(content) {
+function sendAdminCorrectEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'correctHours';
   content.title = 'À corriger';
@@ -462,11 +458,11 @@ function sendAdminCorrectEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-function sendAdminRefuseEmail(content) {
+function sendAdminRefuseEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'refuseHours';
   content.title = 'Refusé';
@@ -487,11 +483,11 @@ function sendAdminRefuseEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 };
 
-function sendOneDayReminderEmail(content) {
+function sendOneDayReminderEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'reminder';
   content.title = 'Demain !';
@@ -513,11 +509,11 @@ function sendOneDayReminderEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 }
 
-function sendTomorrowReminderEmail(content) {
+function sendTomorrowReminderEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'reminder';
   content.title = 'Merci !';
@@ -539,11 +535,11 @@ function sendTomorrowReminderEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 }
 
-function sendOneWeekReminderEmail(content) {
+function sendOneWeekReminderEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'reminder';
   content.title = 'Bientôt';
@@ -565,11 +561,11 @@ function sendOneWeekReminderEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 }
 
-function sendFiveDaysLongTermExpirationEmail(content) {
+function sendFiveDaysLongTermExpirationEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'fivedayslongtermexpiration';
   content.title = 'Bientôt expiré';
@@ -590,11 +586,11 @@ function sendFiveDaysLongTermExpirationEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 }
 
-function sendLongTermExpirationEmail(content) {
+function sendLongTermExpirationEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'longtermexpiration';
   content.title = 'Expiré';
@@ -615,11 +611,11 @@ function sendLongTermExpirationEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 }
 
-function sendInboundSMSEmail(content) {
+function sendInboundSMSEmail(content, callback) {
   content.subtitle = content.customMessage;
   content.type = 'inboundsms';
   content.title = 'Inbound';
@@ -640,7 +636,7 @@ function sendInboundSMSEmail(content) {
       html: results.html
     };
 
-    callSendMail(mailOptions);
+    callSendMail(mailOptions, callback);
   });
 }
 
