@@ -20,6 +20,7 @@ var OrgTodo = require('../models/o_todo_model.js');
 const schools_res = require('../res/schools_res.js');
 var agenda = require('../lib/agenda.js');
 var game = require('../lib/badges.js');
+const floatToHours = require('../public/javascripts/dates/floatToHours.js').floatToHours;
 const getClientSchools = require('../lib/ressources/client_school_list.js').getClientSchools;
 
 
@@ -210,6 +211,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
           hash,
           client_schools,
           events_denied,
+          floatToHours,
           longterm_waiting
         });
       });

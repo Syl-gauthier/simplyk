@@ -67,7 +67,7 @@ block content
                           a.btn.btn-default(data-dismiss='modal') Annuler
                           input.btn.btn-warning(type='submit' form='correctStudentHoursForm'+todo._id, value='Envoyer')
       #button-div.text-center
-        a.text-center.btn.btn-default#continue(href=nextUrl) Continuer
+        a.text-center.btn.btn-default#continue.hidden(href=nextUrl) Continuer
 
 block footscript
   script(type='text/javascript').
@@ -89,12 +89,14 @@ block footscript
         console.log('$(this).attr("lt") : ' + $(this).attr("lt"));
         console.log('typeof $(this).attr("act") : ' + typeof $(this).attr("act"));
         console.log('typeof $(this).attr("lt") : ' + typeof $(this).attr("lt"));
+        $('#continue').removeClass('hidden');
         if(typeof $(this).attr('act') !== 'undefined'){
           console.log('We are beginning activity confirm_hours_student');
           let act_id = $(this).attr('act');
           let day = $(this).attr('day');
           $.post('/organism/confirmhours', {vol_id: vol_id, org_id: org_id, org_name: org_name, act_id: act_id, day: day, todo: todo_id, answers: answers_json, hours: hours, type: type})
           .done(function(data, status){
+            $('#continue').removeClass('hidden');
             if (env == 'prod') {
               event_props.type = type;
               amplitude.getInstance().logEvent('o_confirmhours', event_props);
@@ -130,6 +132,7 @@ block footscript
           let day = $(this).attr('day');
           $.post('/organism/correcthours', {vol_id: vol_id, org_id: org_id, org_name: org_name, act_id: act_id, day: day, todo: todo_id, answers: answers_json, correct_hours: correct_hours, hours_before: hours_before, type: type})
           .done(function(data, status){
+            $('#continue').removeClass('hidden');
             console.log("Remarque: " + status);
             if (env == 'prod') {
               event_props.type = type;
