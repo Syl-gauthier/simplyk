@@ -10,7 +10,6 @@ block vars
   - function addHoursIfExists(arr){return arr.reduce(function(acc, curV, curI) {if(curV > 0 ){return acc + curV;} else {return acc;}})}
   - function getNotifications(type){if(type == 'em'){if(volunteer.extras.filter(function(ext){return ext.status == 'denied'}).length < 1){return ''}else{return '#E33831'}}else if (type == 'el'){if(volunteer.events.filter(function(evt){return evt.status == 'denied'}).length < 1){if(volunteer.long_terms.filter(function(lt){return lt.status == 'denied'}).length < 1){return ''}else{return '#E33831'}}else{return '#E33831'}}}
   - function getTooltipText(badge, level){var seuils = {};var seuils_array = [[], [2, 4, 6, 8, 15], [0, 10, 30, 75, 150], [0, 10, 30, 100, 150], [10, 20, 50, 100, 500], [0, 5, 10, 50, 100]];return (seuils_array[badge])[level];}
-  - function transformInHours(floatHours){var hours = Math.floor(floatHours); var minutes = floatHours - hours; return (hours + 'h' + (minutes == 0 ? '' : (minutes == 0.25 ? '15' : (minutes == 0.5 ? '30' : (minutes == 0.75 ? '45' : '')))));}
 
 
 
@@ -60,7 +59,7 @@ block content
                   p.inline <b>#{Math.round(100*volunteer.preferences[3])}%</b>
           .col-xs-7
             h1(data-toggle="tooltip" data-html='true' data-placement="left" title='Badges: <b>'+bonus+'</b>pts <br>Heures validées: <b>'+scores[0]+'</b>pts <br>Partages: <b>'+scores[1]+'</b>pts <br>Fidélité: <b>'+scores[2]+'</b>pts') <b>#{score}</b> pts
-            h6 avec <b>#{events_hours_done + lt_hours_done + manuals_hours_done + extras_hours_done}h </b>validées
+            h6 avec <b>#{floatToHours(events_hours_done + lt_hours_done + manuals_hours_done + extras_hours_done)} </b>validées
         .row.text-center
           .col-xs-12
             if (volunteer.admin)
@@ -326,9 +325,9 @@ block content
                       if longterm_waiting.hours_done || longterm_waiting.hours_pending
                         h4
                           if longterm_waiting.hours_done
-                            span.badge(style='background-color: #113A20')= longterm_waiting.hours_done + ' heures réalisées '
+                            span.badge(style='background-color: #113A20')= floatToHours(longterm_waiting.hours_done) + ' réalisées '
                           if longterm_waiting.hours_pending
-                            span.badge(style='background-color: #FF800E')= longterm_waiting.hours_pending + ' heures à confirmer '
+                            span.badge(style='background-color: #FF800E')= floatToHours(longterm_waiting.hours_pending) + ' à confirmer '
                     .panel-footer
                       form.event_hours_pending_modal_form(method='post' action='/volunteer/LThours_pending/'+longterm_waiting._id, id='hoursPendingNotificationForm'+longterm_waiting._id)
                         div.input-group
@@ -491,7 +490,7 @@ block content
                             li
                               h4.text-right
                                 if event.hours_pending
-                                  span.badge(style='background-color: #FF800E')= event.hours_pending + ' heures à confirmer'
+                                  span.badge(style='background-color: #FF800E')= floatToHours(event.hours_pending) + ' à confirmer'
                         #identifiant(style='display:none')
                           p= event._id
 
@@ -574,7 +573,7 @@ block content
                             li
                               h4.text-right
                                 if event.hours_done
-                                  span.badge(style='background-color: #113A20')= event.hours_done + ' heures réalisées'
+                                  span.badge(style='background-color: #113A20')= floatToHours(event.hours_done) + ' réalisées'
                         #identifiant(style='display:none')
                           p= event._id
 
@@ -609,7 +608,7 @@ block content
                             li
                               h4.text-right
                                 if event.hours_done
-                                  span.badge(style='background-color: #113A20')= event.hours_done + ' heures réalisées'
+                                  span.badge(style='background-color: #113A20')= floatToHours(event.hours_done) + ' réalisées'
                         #identifiant(style='display:none')
                           p= event._id
           .col-md-4.col-md-offset-2
@@ -654,9 +653,9 @@ block content
                             if lt.hours_done || lt.hours_pending
                               h4
                                 if lt.hours_done
-                                  span.badge(style='background-color: #113A20')= lt.hours_done + ' heures réalisées '
+                                  span.badge(style='background-color: #113A20')= floatToHours(lt.hours_done) + ' réalisées '
                                 if lt.hours_pending
-                                  span.badge(style='background-color: #FF800E')= lt.hours_pending + ' heures à confirmer '
+                                  span.badge(style='background-color: #FF800E')= floatToHours(lt.hours_pending) + ' à confirmer '
                           .panel-footer
                             .btn-group
                               if lt.status == 'denied'
@@ -865,9 +864,9 @@ block content
                             if ext.hours_done || ext.hours_pending
                               h4
                                 if ext.hours_done
-                                  span.badge(style='background-color: #113A20')= transformInHours(ext.hours_done) + ' réalisées '
+                                  span.badge(style='background-color: #113A20')= floatToHours(ext.hours_done) + ' réalisées '
                                 if ext.hours_pending
-                                  span.badge(style='background-color: #FF800E')= transformInHours(ext.hours_pending) + ' à confirmer '
+                                  span.badge(style='background-color: #FF800E')= floatToHours(ext.hours_pending) + ' à confirmer '
                           .panel-footer
                             .btn-group
                               if ext.status == 'denied'
@@ -953,7 +952,7 @@ block content
                               if man.hours_done
                                 h4
                                   if man.hours_done
-                                    span.badge(style='background-color: #113A20')= man.hours_done + ' heures réalisées '
+                                    span.badge(style='background-color: #113A20')= floatToHours(man.hours_done) + ' réalisées '
 
 block footscript
   script(src='/javascripts/edit-password.js')
