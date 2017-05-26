@@ -15,9 +15,6 @@ describe('Environnement variable', function() {
     it('should have a MONGO_DB_CREDENTIALS environnement variable', function() {
       assert.notEqual(undefined, process.env.MONGO_DB_CREDENTIALS);
     });
-    it('should have a MONGODB_URI environnement variable', function() {
-      assert.notEqual(undefined, process.env.MONGODB_URI);
-    });
   });
   
   describe('nexmoEnv', function() {
