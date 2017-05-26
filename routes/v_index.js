@@ -45,7 +45,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
       let my_school = null;
       if (req.session.volunteer.admin) {
         my_school = req.session.volunteer.admin.school_id;
-      };
+      }
       console.log('Volunteer age : ' + age);
 
       var isTooYoung = function(activity) {
@@ -69,7 +69,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
             return activity.school_id.toString() == my_school.toString();
           } else {
             return false;
-          };
+          }
         } else {
           return true;
         }
@@ -105,7 +105,7 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
             }
           }
         };
-      };
+      }
 
       Organism.find(lt_filter, {
         'org_name': true,
@@ -123,11 +123,12 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           //Filter organisms authorized to be seen by the volunteer
           const lt_organisms = organisms.filter(function(orga) {
             if (orga.school_id || orga.admin_id) {
+              let the_school = {};
               if (orga.school_id) {
-                var the_school = orga.school_id;
+                the_school = orga.school_id;
               } else {
-                var the_school = orga.admin_id;
-              };
+                the_school = orga.admin_id;
+              }
               if (my_school) {
                 return the_school.toString() == my_school.toString();
               } else {
@@ -147,13 +148,14 @@ router.get('/volunteer/map', permissions.requireGroup('volunteer'), function(req
           let school_name = null;
           if (req.session.volunteer.admin && req.session.volunteer.admin.school_name && req.session.volunteer.admin.school_id) {
             school_name = req.session.volunteer.admin.school_name;
-          };
+          }
           const first_age_filtered = false;
-          let nature_indexes = new Array();
-          let sol_indexes = new Array();
-          let culture_indexes = new Array();
-          let child_indexes = new Array();
-          let adult_indexes = new Array();
+          let nature_indexes = [];
+          let sol_indexes = [];
+          let culture_indexes = [];
+          let child_indexes = [];
+          let adult_indexes = [];
+
           longterms.map(function(lt) {
             if (lt.cause == 'Nature') {
               nature_indexes.push(lt.long_term._id);
@@ -207,8 +209,8 @@ router.get('/activity/:act_id', function(req, res, next) {
     //Find organism corresponding to the activity
     Activity.findById(req.params.act_id, function(err, activity) {
       if (err) {
-        err.type = 'CRASH'
-        err.print = 'Activité non trouvée dans la base de données'
+        err.type = 'CRASH';
+        err.print = 'Activité non trouvée dans la base de données';
         next(err);
       } else {
         if (activity) {
@@ -216,18 +218,18 @@ router.get('/activity/:act_id', function(req, res, next) {
             "events.activities": req.params.act_id
           }, function(err, organism) {
             if (err) {
-              err.type = 'CRASH'
-              err.print = 'Activité non trouvée dans la base de données'
+              err.type = 'CRASH';
+              err.print = 'Activité non trouvée dans la base de données';
               next(err);
             } else {
               if (organism) {
-                function isRightEvent(event) {
+                const isRightEvent = function(event) {
                   return event.activities.indexOf(req.params.act_id) >= 0;
                 };
 
                 var event_filtered = organism[0].events.filter(isRightEvent);
                 console.log('+++++++++++++++++++++');
-                console.log('Event find in organism corresponding to act : ' + event_filtered)
+                console.log('Event find in organism corresponding to act : ' + event_filtered);
                 console.log('+++++++++++++++++++++');
                 console.log('Activity : ' + activity);
                 res.render('v_activity.jade', {
@@ -241,16 +243,16 @@ router.get('/activity/:act_id', function(req, res, next) {
                 });
               } else {
                 let err = {};
-                err.type = 'CRASH'
-                err.print = 'Activité non trouvée dans la base de données'
+                err.type = 'CRASH';
+                err.print = 'Activité non trouvée dans la base de données';
                 next(err);
-              };
+              }
             }
           });
         } else {
           let err = {};
-          err.type = 'CRASH'
-          err.print = 'Activité non trouvée dans la base de données'
+          err.type = 'CRASH';
+          err.print = 'Activité non trouvée dans la base de données';
           next(err);
         }
       }
@@ -278,15 +280,15 @@ router.get('/longterm/:lt_id', function(req, res, next) {
       }
     }, function(err, organism) {
       if (err) {
-        err.type = 'CRASH'
-        err.print = 'Engagement non trouvé dans la base de données'
+        err.type = 'CRASH';
+        err.print = 'Engagement non trouvé dans la base de données';
         next(err);
       } else {
         if (organism) {
           console.log('Organism from longterm : ' + organism);
 
-          function isRightLongterm(long) {
-            console.log('long._id == req.params.lt_id : ' + (long._id.toString() == req.params.lt_id.toString()) + long._id + '  ' + req.params.lt_id)
+          const isRightLongterm = function(long) {
+            console.log('long._id == req.params.lt_id : ' + (long._id.toString() == req.params.lt_id.toString()) + long._id + '  ' + req.params.lt_id);
             return long._id.toString() == req.params.lt_id.toString();
           };
           var longterm = organism.long_terms.find(isRightLongterm);
@@ -297,7 +299,7 @@ router.get('/longterm/:lt_id', function(req, res, next) {
           const long_term_in_volunteer = req.session.volunteer.long_terms.find(function(lt) {
             console.log('longterm._id : ' + longterm._id);
             console.log('lt._id : ' + lt._id);
-            return longterm._id.toString() == lt._id.toString()
+            return longterm._id.toString() == lt._id.toString();
           });
 
           let student_questions = {};
@@ -305,10 +307,12 @@ router.get('/longterm/:lt_id', function(req, res, next) {
           let student_answers = {};
           let organism_answers = {};
           let status = '';
+          let hours_pending = null;
+          let hours_done = null;
           console.log('long_term_in_volunteer : ' + long_term_in_volunteer);
           if (long_term_in_volunteer) {
-            var hours_pending = long_term_in_volunteer.hours_pending;
-            var hours_done = long_term_in_volunteer.hours_done;
+            hours_pending = long_term_in_volunteer.hours_pending;
+            hours_done = long_term_in_volunteer.hours_done;
             console.log('hours_done : ' + hours_done);
             console.log('hours_pending : ' + hours_pending);
             if (long_term_in_volunteer.student_answers) {
@@ -318,10 +322,7 @@ router.get('/longterm/:lt_id', function(req, res, next) {
               organism_questions = long_term_in_volunteer.organism_questions;
               status = long_term_in_volunteer.status;
             }
-          } else {
-            var hours_pending = null;
-            var hours_done = null;
-          };
+          }
           res.render('v_longterm.jade', {
             session: req.session,
             lt_id: req.params.lt_id,
@@ -342,8 +343,8 @@ router.get('/longterm/:lt_id', function(req, res, next) {
           });
         } else {
           let err = {};
-          err.type = 'CRASH'
-          err.print = 'Engagement non trouvé dans la base de données'
+          err.type = 'CRASH';
+          err.print = 'Engagement non trouvé dans la base de données';
           next(err);
         }
       }
@@ -358,9 +359,9 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
   //Verify the volunteer is not already susbscribed to the activity
   function subscribeToActivity(student_q, organism_q) {
     function isActivity(activity) {
-      console.log('Activity day : + ' + Date.parse(activity.day) + Date.parse(req.params.activity_day))
+      console.log('Activity day : + ' + Date.parse(activity.day) + Date.parse(req.params.activity_day));
       return ((activity.activity_id.toString() === req.params.act_id) && (Date.parse(activity.day) === Date.parse(req.params.activity_day)));
-    };
+    }
 
     var alreadyExists = req.session.volunteer.events.find(isActivity);
     console.log('alreadyExists : ' + alreadyExists + typeof alreadyExists);
@@ -381,31 +382,33 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
 
       }, function(err, newActivity) {
         if (err) {
-          err.type = 'CRASH'
+          err.type = 'CRASH';
           err.print = 'Inscription annulée : problème dans la base de donnée';
           next(err);
         } else {
           if (newActivity) {
-            function isGoodDay(day) {
+            const isGoodDay = function(day) {
               return (Date.parse(day.day) === Date.parse(req.params.activity_day));
             };
             console.log('Isgood day result : ' + newActivity.days.find(isGoodDay));
             let phone = {};
             let parents_email = {};
+
             if (req.session.volunteer.phone) {
               phone = req.session.volunteer.phone;
             } else if (req.body.phone) {
               phone = req.body.phone;
             } else {
               phone = null;
-            };
+            }
+
             if (req.session.volunteer.parents_email) {
               parents_email = req.session.volunteer.parents_email;
             } else if (req.body.parents_email) {
               parents_email = req.body.parents_email;
             } else {
               parents_email = null;
-            };
+            }
             const start_time = newActivity.days.find(isGoodDay).start_time;
             const end_time = newActivity.days.find(isGoodDay).end_time;
 
@@ -445,7 +448,7 @@ router.post('/volunteer/event/subscribe/:act_id-:activity_day', permissions.requ
               new: true
             }, function(err, newVolunteer) {
               if (err) {
-                err.type = 'CRASH'
+                err.type = 'CRASH';
                 err.print = 'Inscription annulée : problème dans la base de donnée';
                 next(err);
               } else {
