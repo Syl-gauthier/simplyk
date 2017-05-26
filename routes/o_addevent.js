@@ -1,9 +1,9 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
-var emailer = require('../email/emailer.js');
+var emailer = require('../public/javascripts/email/emailer.js');
 var mongoose = require('mongoose');
-var gmaps = require('../middlewares/gmaps.js');
+var gmaps = require('../public/javascripts/geo/gmaps.js');
 var Intercom = require('intercom-client');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
@@ -33,7 +33,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
   console.log('DATAS : event in addevent: ' + JSON.stringify(req.body));
 
   gmaps.codeAddress(req.body.address, function(lat, lon) {
-    if ('ZERO_RESULTS' == lat) {
+    if (lat == 'ZERO_RESULTS' || lat == 'ERROR') {
       var error = 'La position de l\'adresse que vous avez mentionné n\'a pas été trouvé par Google Maps';
       res.render('o_addevent.jade', {
         session: req.session,
@@ -213,7 +213,7 @@ router.post('/test_address', function(req, res) {
 
   gmaps.codeAddress(req.body.address, function(lat, lon, string) {
     let response = {};
-    if (lat == 'ZERO_RESULTS') {
+    if (lat == 'ZERO_RESULTS' || lat == 'ERROR') {
       response.error = error;
       res.status(404).send(response);
       res.end();

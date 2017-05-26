@@ -1,32 +1,33 @@
-'use strict';
+"use strict";
 var express = require('express');
 var router = express.Router();
-var emailer = require('../email/emailer.js');
-var Intercom = require('intercom-client');
 var randomstring = require('randomstring');
-var school_list = require('../lib/ressources/school_list.js');
+var moment = require('moment');
+var Intercom = require('intercom-client');
 var client = new Intercom.Client({
   token: process.env.INTERCOM_TOKEN
 });
-var update_intercom = require('../lib/intercom/update_intercom.js');
 
-var moment = require('moment');
+var update_intercom = require('../public/javascripts/intercom/update_intercom.js');
+var emailer = require('../public/javascripts/email/emailer.js');
+var agenda = require('../public/javascripts/agenda/agenda.js');
+var game = require('../public/javascripts/game/badges.js');
+var school_list = require('../public/javascripts/schools/schools_list.js');
+const schools_res = require('../public/javascripts/schools/questions.js');
+const getClientSchools = require('../public/javascripts/schools/client_schools_list.js').getClientSchools;
+const floatToHours = require('../public/javascripts/dates/floatToHours.js').floatToHours;
 
 var permissions = require('../middlewares/permissions.js');
+
 var Volunteer = require('../models/volunteer_model.js');
 var Organism = require('../models/organism_model.js');
 var Activity = require('../models/activity_model.js');
 var OrgTodo = require('../models/o_todo_model.js');
-const schools_res = require('../res/schools_res.js');
-var agenda = require('../lib/agenda.js');
-var game = require('../lib/badges.js');
-const floatToHours = require('../public/javascripts/dates/floatToHours.js').floatToHours;
-const getClientSchools = require('../lib/ressources/client_school_list.js').getClientSchools;
 
 
 
 router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function(req, res, next) {
-  console.log('Begin get /profile')
+  console.log('Begin get /profile');
   var events_past = [];
   var events_pending = [];
   var events_subscribed = [];
@@ -53,7 +54,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
       error = 'Une erreur avec vos inscriptions';
       console.log(error);
     }
-  };
+  }
   const lt_nb = volunteer.long_terms.length;
   var lt_hours_done = 0;
   volunteer.long_terms.reduce(function(pre, cur, ind, arr) {
@@ -113,7 +114,7 @@ router.get('/volunteer/profile', permissions.requireGroup('volunteer'), function
   console.log('manuals_hours_done :  ' + manuals_hours_done);
   console.log('lt_hours_done :  ' + lt_hours_done);
   //Get schools_list
-  school_list.getSchoolList('./res/schools_list.csv', function(err, schools_list) {
+  school_list.getSchoolList('./public/res/schools_list.csv', function(err, schools_list) {
     if (err) {
       let error = {};
       error.print = err;

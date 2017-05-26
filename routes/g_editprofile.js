@@ -2,13 +2,15 @@
 const express = require('express');
 const router = express.Router();
 const Intercom = require('intercom-client');
+const mongoose = require('mongoose');
 const client = new Intercom.Client({
 	token: process.env.INTERCOM_TOKEN
 });
-const mongoose = require('mongoose');
-const getClientSchools = require('../lib/ressources/client_school_list.js').getClientSchools;
+
+const getClientSchools = require('../public/javascripts/schools/client_schools_list.js').getClientSchools;
 
 const permissions = require('../middlewares/permissions.js');
+
 const Volunteer = require('../models/volunteer_model.js');
 const Organism = require('../models/organism_model.js');
 const Admin = require('../models/admin_model.js');

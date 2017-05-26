@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
-var crypt = require('../auth/crypt');
+var crypt = require('../public/javascripts/auth/crypt');
 
 var VolunteerSchema = new Schema({
   id: ObjectId,
