@@ -30,7 +30,7 @@ block share
         console.info('bitly : ' + JSON.stringify(datas));
         if(datas.status_code < 400){
           $('#propose').click(function(){
-            $(this).parent().html("<div class='alert alert-info text-center'><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> " + __("by_messenger") + "</a><p> " + __("g_social_share_link") + " : </p><input type='text' id='link_to_share'></input></div>");
+            $(this).parent().html("<div class='alert alert-info text-center'><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> " + $('#i18n').attr("by_messenger") + "</a><p> " + $('#i18n').attr("g_social_share_link") + " : </p><input type='text' id='link_to_share'></input></div>");
             console.info('We are in the status_code OK !');
             $('#link_to_share').val(datas.data.url);
             $('#messenger').click(function(){

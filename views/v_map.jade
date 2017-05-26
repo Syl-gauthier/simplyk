@@ -57,7 +57,7 @@ block content
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;        
             #myModalLabel.h4.modal-title #{lt.long_term.intitule} <small>par</small> 
-              a.inline(href='/all/organism/'+lt.long_term.org_id)=lt.org_name
+              a.inline(href='/all/organism/'+lt._id)=lt.org_name
           .modal-body
             if lt.long_term.impact
               .well.well--sk 

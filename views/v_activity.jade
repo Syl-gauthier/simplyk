@@ -31,7 +31,7 @@ block share
         console.info('bitly : ' + JSON.stringify(datas));
         if(datas.status_code < 400){
           $('#propose').click(function(){
-            $(this).parent().html("<div class='alert alert-info text-center'><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> " + __("by_messenger") + "</a><p> " + __("g_social_share_link") + " : </p><input type='text' id='link_to_share'></input></div>");
+            $(this).parent().html("<div class='alert alert-info text-center'><a class='btn' id='messenger' style='background-color: white;'><img src='/images/facebook-messenger.svg' style='height: 20px; width: auto;'></img> " + $('#i18n').attr("by_messenger") + "</a><p> " + $('#i18n').attr("g_social_share_link") + " : </p><input type='text' id='link_to_share'></input></div>");
             console.info('We are in the status_code OK !');
             $('#link_to_share').val(datas.data.url);
             $('#messenger').click(function(){
@@ -82,9 +82,9 @@ block content
           p(style = 'white-space: pre-wrap') <b>Mission:</b> #{organism.description}
           p <b>#{__("supervisor")}:</b> #{organism.firstname + ' ' + organism.lastname}
           if group
-            p <b>#{__(email)}:</b> #{organism.email}
+            p <b>#{__('email')}:</b> #{organism.email}
             if organism.phone
-              p <b>#{__(phone)}:</b> #{organism.phone}
+              p <b>#{__('phone')}:</b> #{organism.phone}
             div(style='margin-top: 10px;')
               a.btn.btn-warning#propose #{__("invite_friends")}
           else
@@ -151,6 +151,7 @@ block content
                     else
                       h4 Passé
                   else
+    p.hidden#i18n(by_messenger=__("by_messenger"), g_social_share_link=__("g_social_share_link"))
 
 block footscript
   script(type="text/javascript").
