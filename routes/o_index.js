@@ -1294,6 +1294,15 @@ router.get('/organism/validate_extra/:todo_id', function(req, res, next) {
   });
 });
 
+router.get('/organism/share_opp/:opp_id', permissions.requireGroup('organism'), function(req, res, next){
+  let opp_id = req.params.opp_id;
+  res.render('o_share_opp.jade', {
+    organism: req.session.organism,
+    group: req.session.group,
+    opp_id
+  });
+});
+
 router.get(/dashboard/, permissions.requireGroup('organism', 'admin'), function(req, res) {
   res.redirect('/dashboard');
 });
