@@ -192,7 +192,7 @@ router.post('/organism/addevent', permissions.requireGroup('organism', 'admin'),
                           group: req.session.group
                         });
                       } else {
-                        res.redirect('/organism/dashboard');
+                        res.redirect('/organism/share_opp/activity-'+act._id);
                       };
                     });
                   }

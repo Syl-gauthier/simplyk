@@ -1294,6 +1294,24 @@ router.get('/organism/validate_extra/:todo_id', function(req, res, next) {
   });
 });
 
+router.get('/organism/share_opp/:type-:opp_id', permissions.requireGroup('organism'), function(req, res, next) {
+  const opp_id = req.params.opp_id;
+  const type = req.params.type;
+  if (type === 'activity' || type === 'longterm') {
+    res.render('o_share_opp.jade', {
+      organism: req.session.organism,
+      group: req.session.group,
+      opp_id,
+      type
+    });
+  } else {
+    let err = {};
+    err.type = 'CRASH';
+    err.print = "Impossible de trouver l'opportunité de bénévolat à partager";
+    next(err);
+  }
+});
+
 router.get(/dashboard/, permissions.requireGroup('organism', 'admin'), function(req, res) {
   res.redirect('/dashboard');
 });
