@@ -56,9 +56,11 @@ block content
   .container-fluid
     .row
       .col-md-6.col-md-offset-3
-        h1.text-center Atteins plus de bénévoles
+        h1.text-center #{__("reach_more")}
           div.icon-center.mt
             img(src='/images/porte_voix_solo.svg')
-        h4.text-center.mt En partageant ce lien sur les réseaux sociaux ou par email, tu pourras atteindre plus de bénévoles
+        h4.text-center.mt #{__("reach_more_subtitle")}
         input.form-control.text-center.mt.mb#propose(type='text')
+        .text-center
+          a.btn.btn-default.mt(href='/organism/dashboard')= __('next')
     p.hidden#datas(type=type, opp_id=opp_id)
