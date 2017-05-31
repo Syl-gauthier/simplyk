@@ -1,6 +1,6 @@
 var assert = require('assert');
-/*
-describe('Environnement variable', function() {
+
+describe.skip('Environnement variable', function() {
 
   describe('intercomEnv', function() {
     it('should have an INTERCOM_TOKEN environnement variable', function() {
@@ -34,4 +34,3 @@ describe('Environnement variable', function() {
   });
   
 });
-*/
